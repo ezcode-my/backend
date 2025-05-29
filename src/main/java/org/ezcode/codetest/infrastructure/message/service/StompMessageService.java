@@ -13,7 +13,11 @@ public class StompMessageService implements MessageService {
 
 	private final SimpMessagingTemplate messagingTemplate;
 
-	//TODO : STOMP 기반 메시지 서비스 구현체 구현 예정
+	/****
+	 * 사용자가 입장할 때 해당 사용자에게 STOMP 메시지를 전송합니다.
+	 *
+	 * @param principalName 메시지를 받을 사용자의 이름
+	 */
 	public void handleEnter(String principalName) {
 
 		messagingTemplate.convertAndSendToUser(

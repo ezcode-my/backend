@@ -9,6 +9,11 @@ import lombok.RequiredArgsConstructor;
 @Controller
 public class ChatViewController {
 
+	/**
+	 * 채팅 페이지 뷰를 반환합니다.
+	 *
+	 * @return 채팅 페이지의 뷰 이름("chat-page")
+	 */
 	@GetMapping("/chatting")
 	public String getChattingPage() {
 
