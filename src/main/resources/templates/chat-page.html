@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이벤트</title>
+
+    <!-- WebSocket 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <style>
+        #giftBox { display: none; }
+
+        body {
+            width: 100%;
+            height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- 로딩 표시 -->
+<div id="loader">
+    <p>페이지를 준비 중입니다...</p>
+</div>
+
+
+<script>
+    const socket = new SockJS('/ws');
+    const stomp = Stomp.over(socket);
+    const giftBox = document.getElementById("giftBox");
+
+    stomp.connect({}, () => {
+
+        //send 테스트
+        stomp.send(`/chat/enter`, {}, "테스터");
+
+        //구독 테스트
+        stomp.subscribe(`/user/queue/chatroom`, function (message) {
+            const payload = message.body;
+
+           console.info(payload+1);
+           console.info(payload+2);
+
+        });
+    });
+
+</script>
+
+</body>
+</html>
