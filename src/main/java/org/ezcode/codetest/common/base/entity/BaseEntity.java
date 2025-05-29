@@ -1,4 +1,4 @@
-package org.ezcode.codetest.global.entity;
+package org.ezcode.codetest.common.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -20,7 +20,7 @@ public abstract class BaseEntity {
 	protected LocalDateTime createdAt;
 
 	@LastModifiedDate
-	@Column(name = "updated_at", nullable = false)
-	protected LocalDateTime updatedAt;
+	@Column(name = "modified_at", nullable = false)
+	protected LocalDateTime modifiedAt;
 
 }
