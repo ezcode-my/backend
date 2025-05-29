@@ -13,5 +13,6 @@ public class ChatViewController {
 	public String getChattingPage() {
 
 		return "chat-page";
+
 	}
 }

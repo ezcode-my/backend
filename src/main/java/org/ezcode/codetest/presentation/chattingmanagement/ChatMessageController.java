@@ -22,6 +22,5 @@ public class ChatMessageController {
 
 		messageService.handleEnter(principal.getName());
 
-
 	}
 }

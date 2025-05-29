@@ -37,17 +37,17 @@
 
     stomp.connect({}, () => {
 
-        //send 테스트
-        stomp.send(`/chat/enter`, {}, "테스터");
-
         //구독 테스트
         stomp.subscribe(`/user/queue/chatroom`, function (message) {
             const payload = message.body;
 
-           console.info(payload+1);
-           console.info(payload+2);
+            console.info(payload+1);
+            console.info(payload+2);
 
         });
+
+        //send 테스트
+        stomp.send(`/chat/enter`, {}, "테스터");
     });
 
 </script>
