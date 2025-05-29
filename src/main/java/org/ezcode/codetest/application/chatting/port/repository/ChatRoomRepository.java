@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.chattingusecase.port.repository;
+package org.ezcode.codetest.application.chatting.port.repository;
 
 
 public interface ChatRoomRepository {
@@ -7,3 +7,6 @@ public interface ChatRoomRepository {
 
 
 }
+
+
+

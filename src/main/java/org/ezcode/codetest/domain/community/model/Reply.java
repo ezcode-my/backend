@@ -22,15 +22,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment extends BaseEntity {
+public class Reply extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "post_id", nullable = false)
-	private Discussion post;
+	@JoinColumn(name = "discussion_id", nullable = false)
+	private Discussion discussion;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
@@ -38,12 +38,12 @@ public class Comment extends BaseEntity {
 
 	// 부모 댓글 (NULL 가능)
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "parent_comment_id")
-	private Comment parent;
+	@JoinColumn(name = "parent_reply_id")
+	private Reply parent;
 
 	// 자식(대댓글) 목록
 	@OneToMany(mappedBy = "parent")
-	private List<Comment> replies = new ArrayList<>();
+	private List<Reply> replies = new ArrayList<>();
 
 	@Column(nullable = false)
 	private String content;

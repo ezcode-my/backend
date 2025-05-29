@@ -1,4 +1,7 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.user;
 
-public class UserJpaRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.ezcode.codetest.domain.user.model.entity.User;
+
+public interface UserJpaRepository extends JpaRepository<User, Long> {
 }

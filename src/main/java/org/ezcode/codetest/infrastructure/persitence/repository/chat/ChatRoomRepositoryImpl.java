@@ -1,4 +1,6 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.chat;
 
-public class ChatRoomRepositoryImpl {
+import org.ezcode.codetest.application.chatting.port.repository.ChatRoomRepository;
+
+public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 }

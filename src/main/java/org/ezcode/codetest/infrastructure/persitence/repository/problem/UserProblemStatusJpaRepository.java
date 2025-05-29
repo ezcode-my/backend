@@ -1,4 +1,7 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.problem;
 
-public interface UserProblemStatusJpaRepository {
+import org.ezcode.codetest.domain.problem.model.entity.UserProblemStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserProblemStatusJpaRepository extends JpaRepository<UserProblemStatus,Long> {
 }

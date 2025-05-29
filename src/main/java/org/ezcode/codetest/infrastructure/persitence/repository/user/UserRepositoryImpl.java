@@ -1,4 +1,6 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.user;
 
-public class UserRepositoryImpl {
+import org.ezcode.codetest.application.usermanagement.port.UserRepository;
+
+public class UserRepositoryImpl implements UserRepository {
 }

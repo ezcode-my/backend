@@ -1,4 +1,49 @@
 package org.ezcode.codetest.domain.chat.model;
 
-public class ChatRoom {
+import org.ezcode.codetest.common.base.entity.BaseEntity;
+import org.ezcode.codetest.domain.user.model.entity.User;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "chat_room")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ChatRoom extends BaseEntity {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+
+	private String title;
+
+	private Integer headCount;
+
+	private Boolean isDeleted;
+
+	@Builder
+	public ChatRoom(User user, String title, Integer headCount, Boolean isDeleted) {
+		this.user = user;
+		this.title = title;
+		this.headCount = headCount;
+		this.isDeleted = isDeleted;
+	}
+
+	public void increaseHeadCount() {
+		this.headCount++;
+	}
 }

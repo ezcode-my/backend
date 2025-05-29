@@ -1,7 +1,11 @@
-package org.ezcode.codetest.common.base;
+package org.ezcode.codetest.common.base.exception;
 
-public class BaseException extends RuntimeException {
-	public BaseException(String message) {
-		super(message);
-	}
+import org.springframework.http.HttpStatus;
+
+public abstract class BaseException extends RuntimeException {
+
+	public abstract ResponseCode getResponseCode();
+
+	public abstract HttpStatus getHttpStatus();
+
 }

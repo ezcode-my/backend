@@ -1,4 +1,7 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.problem;
 
-public interface TestcaseJpaRepository {
+import org.ezcode.codetest.domain.problem.model.entity.Testcase;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TestcaseJpaRepository extends JpaRepository<Testcase, Long> {
 }

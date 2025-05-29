@@ -18,10 +18,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "comment_like")
+@Table(name = "reply_vote")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DiscussionVote {
+public class ReplyVote {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +32,8 @@ public class DiscussionVote {
 	private User user;
 
 	@ManyToOne
-	@JoinColumn(name = "comment_id", nullable = false)
-	private Reply comment;
+	@JoinColumn(name = "reply_id", nullable = false)
+	private Reply reply;
 
 	@CreatedDate
 	@Column(name = "created_at", nullable = false, updatable = false)

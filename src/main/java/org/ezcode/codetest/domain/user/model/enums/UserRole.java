@@ -1,4 +1,4 @@
-package org.ezcode.codetest.domain.user.model;
+package org.ezcode.codetest.domain.user.model.enums;
 
 import lombok.Getter;
 import java.util.Arrays;

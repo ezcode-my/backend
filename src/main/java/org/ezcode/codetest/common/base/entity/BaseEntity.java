@@ -1,4 +1,4 @@
-package org.ezcode.codetest.common.base;
+package org.ezcode.codetest.common.base.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

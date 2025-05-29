@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class C extends BaseEntity {
+public class Discussion extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,23 +39,16 @@ public class C extends BaseEntity {
 	private Language language;
 
 	@Column(nullable = false)
-	private String title;
-
-	@Column(nullable = false)
 	private String content;
-
-	@Column(nullable = false)
-	private int viewCount;
 
 	@Column(nullable = false)
 	private boolean isDeleted;
 
 	@Builder
-	public C(User user, Problem problem, Language language, String title, String content) {
+	public Discussion(User user, Problem problem, Language language, String content) {
 		this.user = user;
 		this.problem = problem;
 		this.language = language;
-		this.title = title;
 		this.content = content;
 	}
 

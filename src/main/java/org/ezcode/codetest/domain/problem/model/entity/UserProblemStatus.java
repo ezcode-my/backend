@@ -1,8 +1,7 @@
-package org.ezcode.codetest.domain.submission.model;
+package org.ezcode.codetest.domain.problem.model.entity;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
-import org.ezcode.codetest.domain.problem.model.entity.Problem;
-import org.ezcode.codetest.domain.user.model.User;
+import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,12 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user_problem_status")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserProblemStatus extends BaseEntity {
 
 	@Id

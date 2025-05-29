@@ -1,5 +1,8 @@
-package org.ezcode.codetest.domain.submission.model;
+package org.ezcode.codetest.domain.problem.model.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum SubmitStatus {
 	IN_QUEUE(1, "In Queue"),
 	PROCESSING(2, "Processing"),
@@ -22,14 +25,6 @@ public enum SubmitStatus {
 	SubmitStatus(int code, String description) {
 		this.code = code;
 		this.description = description;
-	}
-
-	public int getCode() {
-		return code;
-	}
-
-	public String getDescription() {
-		return description;
 	}
 
 	public static SubmitStatus fromCode(int code) {

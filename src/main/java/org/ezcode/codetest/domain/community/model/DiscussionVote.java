@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "post_like")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostLike {
+public class DiscussionVote {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +32,8 @@ public class PostLike {
 	private User user;
 
 	@ManyToOne
-	@JoinColumn(name = "post_id", nullable = false)
-	private Post post;
+	@JoinColumn(name = "discussion_id", nullable = false)
+	private Discussion discussion;
 
 	@CreatedDate
 	@Column(name = "created_at", nullable = false, updatable = false)

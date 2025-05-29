@@ -1,4 +1,6 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.report;
 
-public class ReportRepositoryImpl {
+import org.ezcode.codetest.application.report.port.ReportRepository;
+
+public class ReportRepositoryImpl implements ReportRepository {
 }

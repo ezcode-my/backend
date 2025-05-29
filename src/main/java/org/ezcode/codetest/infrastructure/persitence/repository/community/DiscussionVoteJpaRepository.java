@@ -1,4 +1,7 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.community;
 
-public interface DiscussionVoteJpaRepository {
+import org.ezcode.codetest.domain.community.model.DiscussionVote;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface DiscussionVoteJpaRepository extends JpaRepository<DiscussionVote, Long> {
 }

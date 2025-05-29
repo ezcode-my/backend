@@ -10,7 +10,7 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import lombok.NonNull;
 
-public class Cu extends DefaultHandshakeHandler {
+public class CustomHandShakeHandler extends DefaultHandshakeHandler {
 
 	@Override
 	protected Principal determineUser(

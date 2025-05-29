@@ -1,9 +1,7 @@
-package org.ezcode.codetest.domain.submission.model;
+package org.ezcode.codetest.domain.problem.model.entity;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
-import org.ezcode.codetest.domain.problem.model.entity.Language;
-import org.ezcode.codetest.domain.user.model.User;
-import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,7 @@ import lombok.NoArgsConstructor;
 	@UniqueConstraint(name = "uk_user_problem", columnNames = {"user_id", "problem_id"})
 })
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ErrorNote extends BaseEntity {
 
 	@Id

@@ -1,6 +1,9 @@
-package org.ezcode.codetest.domain.user.model;
+package org.ezcode.codetest.domain.user.model.entity;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
+import org.ezcode.codetest.domain.user.model.enums.AuthType;
+import org.ezcode.codetest.domain.user.model.enums.Tier;
+import org.ezcode.codetest.domain.user.model.enums.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
