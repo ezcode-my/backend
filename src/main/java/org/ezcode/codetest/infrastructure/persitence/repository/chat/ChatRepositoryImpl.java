@@ -11,16 +11,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChatRepositoryImpl implements ChatRepository {
 
-	/*
-	private final ChatRepository chatRepository;
+	private final ChatJpaRepository chatRepository;
 
 	public Chat save(Chat chat) {
-		return chatJpaRepository.save(chat);
+		return chatRepository.save(chat);
 	}
 
-	public findOrElseThrow(Long id) {
+	public Chat findOrElseThrow(Long id) {
 
-		return
+		return chatRepository.findById(id).orElseThrow(() ->
+			new RuntimeException("해당 Entity를 찾을 수 없습니다. id = " + id));
+		// TODO: 프로젝트에서 사용하는 타입의 exception과 status를 던져줘야 함
 	}
-	*/
+
 }

@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatService {
 
 	private final ChatRepository chatRepository;
-	//private final ChatRoomRepository chatRoomRepository;
+	private final ChatRoomRepository chatRoomRepository;
 	private final MessageService messageService;
 
 }
