@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.ezcode.codetest.common.dto.AuthUser;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.springframework.stereotype.Component;
+import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Claims;
@@ -19,11 +20,15 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
-@Component
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
+
+	private static final String[] WHITE_LIST = {
+		"/signin",
+		"/signup"
+	};
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -31,6 +36,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		String bearerToken = request.getHeader("Authorization");
 		String url = request.getRequestURI();
+
+		if(isWhiteList(url)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
 		if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
 			if (request.getRequestURI().startsWith("/admin")){
@@ -81,5 +91,9 @@ public class JwtFilter extends OncePerRequestFilter {
 			log.error("Internal server error", e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	private boolean isWhiteList(String requestURI) {
+		return PatternMatchUtils.simpleMatch(WHITE_LIST, requestURI);
 	}
 }

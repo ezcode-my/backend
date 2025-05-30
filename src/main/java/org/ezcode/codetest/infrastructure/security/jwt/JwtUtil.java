@@ -1,5 +1,6 @@
 package org.ezcode.codetest.infrastructure.security.jwt;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -24,19 +25,21 @@ public class JwtUtil {
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final long TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7;
 
-	@Value("${jwt.secret.key}")
+	@Value("${jwt.secret}")
 	private String secretKey;
+
 	private Key key;
+
 	private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
 	@PostConstruct
-	public void init(){
-		byte[] bytes = Base64.getDecoder().decode(secretKey);
-		key = Keys.hmacShaKeyFor(bytes);
+	public void init() {
+		key = Keys.hmacShaKeyFor(secretKey.getBytes());
 	}
 
 	public String createToken(Long userId, String email, UserRole userRole, String username, String nickname) {
 		Date date = new Date();
+		log.info("토큰 생성 시작");
 
 		return BEARER_PREFIX +
 			Jwts.builder()

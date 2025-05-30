@@ -2,7 +2,7 @@ package org.ezcode.codetest.presentation.usermanagement.resolver;
 
 import org.ezcode.codetest.common.annotation.Auth;
 import org.ezcode.codetest.common.dto.AuthUser;
-import org.ezcode.codetest.common.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
