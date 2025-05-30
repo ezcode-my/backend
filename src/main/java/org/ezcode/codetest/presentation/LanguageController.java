@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,7 +26,7 @@ public class LanguageController {
 	private final LanguageService languageService;
 
 	@PostMapping
-	public ResponseEntity<LanguageResponse> createLanguage(@RequestBody LanguageRequest request) {
+	public ResponseEntity<LanguageResponse> createLanguage(@RequestBody @Valid LanguageRequest request) {
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(languageService.createLanguage(request));
