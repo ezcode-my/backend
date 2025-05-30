@@ -8,4 +8,5 @@ public abstract class BaseException extends RuntimeException {
 
 	public abstract HttpStatus getHttpStatus();
 
+	public abstract String getMessage();
 }
