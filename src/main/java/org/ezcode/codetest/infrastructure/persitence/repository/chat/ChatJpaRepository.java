@@ -1,8 +1,13 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.chat;
 
+import java.util.List;
+
 import org.ezcode.codetest.domain.chat.model.Chat;
+import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ChatJpaRepository extends JpaRepository<Chat, Long> {
+
+	List<Chat> findAllByChatRoomId(Long id);
 
 }

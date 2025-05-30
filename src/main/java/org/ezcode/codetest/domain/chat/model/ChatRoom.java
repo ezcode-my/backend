@@ -31,19 +31,15 @@ public class ChatRoom extends BaseEntity {
 
 	private String title;
 
-	private Integer headCount;
-
 	private Boolean isDeleted;
 
 	@Builder
-	public ChatRoom(User user, String title, Integer headCount, Boolean isDeleted) {
+	public ChatRoom(User user, String title, Boolean isDeleted) {
+
 		this.user = user;
 		this.title = title;
-		this.headCount = headCount;
 		this.isDeleted = isDeleted;
+
 	}
 
-	public void increaseHeadCount() {
-		this.headCount++;
-	}
 }

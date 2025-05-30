@@ -1,7 +1,8 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.chat;
 
-import org.ezcode.codetest.application.chatting.port.repository.ChatRepository;
-import org.ezcode.codetest.application.chatting.port.repository.ChatRoomRepository;
+import java.util.List;
+
+import org.ezcode.codetest.domain.chat.repository.ChatRepository;
 import org.ezcode.codetest.domain.chat.model.Chat;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +23,18 @@ public class ChatRepositoryImpl implements ChatRepository {
 		return chatRepository.findById(id).orElseThrow(() ->
 			new RuntimeException("해당 Entity를 찾을 수 없습니다. id = " + id));
 		// TODO: 프로젝트에서 사용하는 타입의 exception과 status를 던져줘야 함
+	}
+
+	public List<Chat> findAll() {
+
+		return chatRepository.findAll();
+
+	}
+
+	public List<Chat> findChatByRoomId(Long roomId) {
+
+		return chatRepository.findAllByChatRoomId(roomId);
+
 	}
 
 }
