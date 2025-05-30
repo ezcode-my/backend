@@ -1,4 +1,4 @@
-package org.ezcode.codetest.common.exception;
+package org.ezcode.codetest.domain.user.exception;
 
 public class AuthException extends RuntimeException {
 	public AuthException(String message) {
