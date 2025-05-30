@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,4 +24,10 @@ public class Language {
 
 	@Column(nullable = false)
 	private String version;
+
+	@Builder
+	public Language(String name, String version) {
+		this.name = name;
+		this.version = version;
+	}
 }
