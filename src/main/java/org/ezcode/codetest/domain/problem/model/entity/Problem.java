@@ -2,7 +2,6 @@ package org.ezcode.codetest.domain.problem.model.entity;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
-import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
@@ -30,7 +29,7 @@ public class Problem extends BaseEntity {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "creator_id", nullable = false)
 	private User creator;
 
 	@Enumerated(EnumType.STRING)
@@ -40,15 +39,14 @@ public class Problem extends BaseEntity {
 	@Column(nullable = false)
 	private String title;
 
-	@Column(columnDefinition = "TEXT", nullable = false)
-	private String content;
+	@Column(columnDefinition = "LONGTEXT", nullable = false)
+	private String description;
 
 	@Column(nullable = false)
 	private int score;
 
-	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private Difficulty difficulty;
+	private String difficulty;
 
 	@Column(nullable = false)
 	private String memoryLimit;
@@ -64,16 +62,34 @@ public class Problem extends BaseEntity {
 	private Boolean isDeleted;
 
 	@Builder
-	public Problem(User creator, Category category, String title, String content, int score, Difficulty difficulty,
+	public Problem(User creator, Category category, String title, String description, int score, String difficulty,
 		String memoryLimit, int timeLimit, Reference reference) {
 		this.creator = creator;
 		this.category = category;
 		this.title = title;
-		this.content = content;
+		this.description = description;
 		this.score = score;
 		this.difficulty = difficulty;
 		this.memoryLimit = memoryLimit;
 		this.timeLimit = timeLimit;
 		this.reference = reference;
+		isDeleted = false;
+	}
+
+	// 여러개를 하나의 객체로 만드는 것
+	public static Problem of(User creator, Category category, String title, String description, int score, String difficulty,
+		String memoryLimit, int timeLimit, Reference reference) {
+
+		return Problem.builder()
+			.creator(creator)
+			.category(category)
+			.title(title)
+			.description(description)
+			.score(score)
+			.difficulty(difficulty)
+			.memoryLimit(memoryLimit)
+			.timeLimit(timeLimit)
+			.reference(reference)
+			.build();
 	}
 }

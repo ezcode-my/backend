@@ -1,11 +1,22 @@
-package org.ezcode.codetest.infrastructure.persitence.repository.problem;
+package org.ezcode.codetest.domain.problem.repository;
+
+import java.util.Optional;
 
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
+public interface ProblemRepository {
+
+	Problem save(Problem problem);
+
+	Optional<Problem> findById(Long id);
+
 	Page<Problem> findAllByCategory(Category category, Pageable pageable);
+
+	Problem findByIdOrElseThrow(Long id);
+
+	Problem delete(Problem problem);
+
 }
