@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이벤트</title>
+
+    <!-- WebSocket 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <style>
+        #giftBox { display: none; }
+
+        body {
+            width: 100%;
+            height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- 로딩 표시 -->
+<div id="loader">
+    <p>페이지를 준비 중입니다...</p>
+</div>
+
+
+<script>
+    const socket = new SockJS('/ws');
+    const stomp = Stomp.over(socket);
+    const giftBox = document.getElementById("giftBox");
+
+    stomp.connect({}, () => {
+        // 1) 구독할 때 receipt 요청
+        const receiptId = 'sub-1';
+        stomp.subscribe(
+            '/user/queue/chatroom',
+            msg => console.log('받은 메시지:', msg.body),
+            { receipt: receiptId }
+        );
+
+        // 2) 서버가 SUBSCRIBE 처리 완료하면 onreceipt 콜백이 불린다
+        stomp.onreceipt = frame => {
+            if (frame.headers['receipt-id'] === receiptId) {
+                //안전하게 send
+                stomp.send('/chat/enter', {}, '테스터');
+            }
+        };
+    });
+
+</script>
+
+</body>
+</html>
