@@ -20,25 +20,31 @@ public class ChattingDomainService {
 	public void createChatRoom(ChatRoom chatRoom) {
 
 		chatRoomRepository.save(chatRoom);
+
 	}
 
 	public List<ChatRoom> getChatRoomList() {
 
 		return chatRoomRepository.findAll();
+
 	}
 
 	public ChatRoom getChatRoom(Long roomId) {
 
 		return chatRoomRepository.findOrElseThrow(roomId);
+
 	}
 
 	public Chat createChatting(Chat chat) {
 
 		return chatRepository.save(chat);
+
 	}
 
 	public List<Chat> getRoomChatting(Long roomId) {
 
-		return chatRepository.findChatsFromLastHour(roomId);
+		return chatRepository.findChatByRoomId(roomId);
+
 	}
+
 }

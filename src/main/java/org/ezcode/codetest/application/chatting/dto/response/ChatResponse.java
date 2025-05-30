@@ -18,7 +18,7 @@ public record ChatResponse(
 	public static ChatResponse from(Chat chat) {
 
 		return new ChatResponse(
-			chat.getCreatedAt(),
+			LocalDateTime.now(),
 			chat.getUser().getNickname(),
 			chat.getUser().getTier().toString(),
 			chat.getMessage()

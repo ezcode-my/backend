@@ -128,38 +128,34 @@
             li.classList.add('active');
             messagesEl.innerHTML = '';
 
-            // 5-3) 딜레이 후 신규 방 구독
-            setTimeout(() => {
-                chatSubscription = stomp.subscribe(
-                    `/topic/chat/${currentRoomId}`,
-                    m => {
-                        setTimeout(() => {
-                            let payload;
-                            try {
-                                payload = JSON.parse(m.body);
-                            } catch {
-                                const liFallback = document.createElement('li');
-                                liFallback.textContent = m.body;
-                                messagesEl.appendChild(liFallback);
-                                messagesEl.scrollTop = messagesEl.scrollHeight;
-                                return;
-                            }
-                            const { time, name, tier, message } = payload;
-                            const formattedTime = new Date(time)
-                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            const liB = document.createElement('li');
-                            liB.textContent = `[${formattedTime}] ${name} (${tier}): ${message}`;
-                            messagesEl.appendChild(liB);
+            // 5-3) 신규 방 구독
+            chatSubscription = stomp.subscribe(
+                `/topic/chat/${currentRoomId}`,
+                m => {
+                    setTimeout(() => {
+                        let payload;
+                        try {
+                            payload = JSON.parse(m.body);
+                        } catch {
+                            const liFallback = document.createElement('li');
+                            liFallback.textContent = m.body;
+                            messagesEl.appendChild(liFallback);
                             messagesEl.scrollTop = messagesEl.scrollHeight;
-                        }, 100);
-                    }
-                );
+                            return;
+                        }
+                        const { time, name, tier, message } = payload;
+                        const formattedTime = new Date(time)
+                            .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const liB = document.createElement('li');
+                        liB.textContent = `[${formattedTime}] ${name} (${tier}): ${message}`;
+                        messagesEl.appendChild(liB);
+                        messagesEl.scrollTop = messagesEl.scrollHeight;
+                    }, 100);
+                }
+            );
 
-                // 5-4) 추가 딜레이 후 신규 방 입장 요청
-                setTimeout(() => {
-                    stomp.send(`/chat/room/${currentRoomId}/enter`, {}, currentRoomId);
-                }, 100);
-            }, 100);
+            // 5-4) 신규 방 입장 요청
+            stomp.send(`/chat/room/${currentRoomId}/enter`, {}, currentRoomId);
         });
 
         // 6) 전송 버튼 클릭 (REST 호출 후 JSON 렌더링)

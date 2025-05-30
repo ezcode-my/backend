@@ -1,10 +1,7 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.chat;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.ezcode.codetest.domain.chat.exception.ChattingException;
-import org.ezcode.codetest.domain.chat.exception.ChattingExceptionCode;
 import org.ezcode.codetest.domain.chat.repository.ChatRepository;
 import org.ezcode.codetest.domain.chat.model.Chat;
 import org.springframework.stereotype.Repository;
@@ -24,21 +21,20 @@ public class ChatRepositoryImpl implements ChatRepository {
 	public Chat findOrElseThrow(Long id) {
 
 		return chatRepository.findById(id).orElseThrow(() ->
-			new ChattingException(ChattingExceptionCode.CHATTING_NOT_FOUND));
+			new RuntimeException("해당 Entity를 찾을 수 없습니다. id = " + id));
+		// TODO: 프로젝트에서 사용하는 타입의 exception과 status를 던져줘야 함
 	}
 
 	public List<Chat> findAll() {
 
 		return chatRepository.findAll();
+
 	}
 
-	public List<Chat> findChatsFromLastHour(Long roomId) {
+	public List<Chat> findChatByRoomId(Long roomId) {
 
-		LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
+		return chatRepository.findAllByChatRoomId(roomId);
 
-		return chatRepository.findByChatRoomIdAndCreatedAtAfterOrderByCreatedAtAsc(
-			roomId,
-			oneHourAgo
-			);
 	}
+
 }
