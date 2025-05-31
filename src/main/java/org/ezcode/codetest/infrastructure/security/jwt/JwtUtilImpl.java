@@ -1,14 +1,13 @@
 package org.ezcode.codetest.infrastructure.security.jwt;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
 import org.ezcode.codetest.common.exception.ServerException;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,12 +16,11 @@ import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "JwtUtil")
 @Component
-public class JwtUtil {
+public class JwtUtilImpl implements JwtUtil {
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final long TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7;
 

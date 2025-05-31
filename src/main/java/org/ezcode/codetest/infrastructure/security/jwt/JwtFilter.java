@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.ezcode.codetest.common.dto.AuthUser;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
-import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
-	private final JwtUtil jwtUtil;
+	private final JwtUtilImpl jwtUtilImpl;
 
 	private static final String[] WHITE_LIST = {
 		"/signin",
@@ -50,10 +49,10 @@ public class JwtFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		String jwt = jwtUtil.substringToken(bearerToken);
+		String jwt = jwtUtilImpl.substringToken(bearerToken);
 
 		try {
-			Claims claims = jwtUtil.extractClaims(jwt);
+			Claims claims = jwtUtilImpl.extractClaims(jwt);
 
 			if(claims == null){
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다");
