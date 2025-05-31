@@ -37,6 +37,10 @@ public class JwtUtilImpl implements JwtUtil {
 	}
 
 	public String createToken(Long userId, String email, UserRole userRole, String username, String nickname) {
+		if (userId == null || email == null || username == null || nickname == null) {
+			throw new IllegalArgumentException("토큰에 필요한 필수 매개변수가 null입니다.");
+		}
+
 		Date date = new Date();
 		log.info("토큰 생성 시작");
 
@@ -60,11 +64,19 @@ public class JwtUtilImpl implements JwtUtil {
 		throw new ServerException("토큰이 없습니다");
 	}
 
+	/*
+	Jwt 파싱 실패 예외 추가
+	 */
 	public Claims extractClaims(String token) {
-		return Jwts.parserBuilder()
-			.setSigningKey(key)
-			.build()
-			.parseClaimsJws(token)
-			.getBody();
+		try {
+			return Jwts.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+		} catch (io.jsonwebtoken.JwtException e) {
+			log.error("JWT 토큰 파싱 실패", e.getMessage());
+			throw new ServerException("유효한 토큰이 아닙니다");
+		}
 	}
 }
