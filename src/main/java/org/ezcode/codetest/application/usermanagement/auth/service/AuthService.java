@@ -22,7 +22,11 @@ public class AuthService {
 
 	private final UserDomainService userDomainService;
 	private final JwtUtil jwtUtil;
-
+	/*
+	이메일 로그인
+	- 이미 가입된 이메일 거절
+	- 비밀번호 암호화
+	 */
 	@Transactional
 	public SignupResponse signup(SignupRequest signupRequest) {
 		if (!userDomainService.existUser(signupRequest.getEmail())){
@@ -51,6 +55,12 @@ public class AuthService {
 		return SignupResponse.from(bearToken);
 	}
 
+	/*
+	이메일 로그인
+	- 가입된 이메일인지 검증
+	- 비밀번호가 맞는지 체크
+	- 토큰 발급
+	 */
 	@Transactional
 	public SigninResponse signin(@Valid SigninRequest signinRequest) {
 
