@@ -28,8 +28,13 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	}
 
 	@Override
-	public Page<Problem> findAllByCategory(Category category, Pageable pageable) {
-		return problemJpaRepository.findAllByCategory(category, pageable);
+	public Page<Problem> findByCategory(Category category, Pageable pageable) {
+		return problemJpaRepository.findByCategory(category, pageable);
+	}
+
+	@Override
+	public Page<Problem> findAll(Pageable pageable) {
+		return problemJpaRepository.findAll(pageable);
 	}
 
 	@Override

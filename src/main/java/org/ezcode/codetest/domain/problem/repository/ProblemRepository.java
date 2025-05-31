@@ -13,7 +13,9 @@ public interface ProblemRepository {
 
 	Optional<Problem> findById(Long id);
 
-	Page<Problem> findAllByCategory(Category category, Pageable pageable);
+	Page<Problem> findByCategory(Category category, Pageable pageable);
+
+	Page<Problem> findAll(Pageable pageable);
 
 	Problem findByIdOrElseThrow(Long id);
 

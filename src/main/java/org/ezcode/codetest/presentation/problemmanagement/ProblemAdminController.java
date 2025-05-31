@@ -25,8 +25,8 @@ public class ProblemAdminController {
 	public ResponseEntity<ProblemDetailResponse> createProblem(@Valid @RequestBody ProblemCreateRequest request) {
 
 		return ResponseEntity
-			.status(HttpStatus.CREATED)
-			.body(problemService.createProblem(request));
+				.status(HttpStatus.CREATED)
+				.body(problemService.createProblem(request));
 	}
 
 }

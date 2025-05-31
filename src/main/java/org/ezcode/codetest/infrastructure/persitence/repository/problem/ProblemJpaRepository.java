@@ -7,5 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
-	Page<Problem> findAllByCategory(Category category, Pageable pageable);
+
+	Page<Problem> findByCategory(Category category, Pageable pageable);
 }
