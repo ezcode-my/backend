@@ -34,6 +34,10 @@ public class AuthService {
 		}
 		log.info("서비스 레이어 진입, 이메일 검증 완료");
 
+		if (!signupRequest.getPassword().equals(signupRequest.getPasswordConfirm())){
+			throw new AuthException("비밀번호 입력이 일치하지 않습니다.");
+		}
+
 		String encodedPassword = userDomainService.encodePassword(signupRequest.getPassword());
 
 		User newUser = User.builder()

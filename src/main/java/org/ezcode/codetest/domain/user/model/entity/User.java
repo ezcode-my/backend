@@ -97,7 +97,7 @@ public class User extends BaseEntity {
 	// 	this.isDeleted = false;
 	// }
 
-	public void setDeleted(boolean deleted) {
+	public void setDeleted() {
 		this.isDeleted = true;
 	}
 

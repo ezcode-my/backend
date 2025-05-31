@@ -68,6 +68,9 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.121.Final:osx-aarch_64'
+
+
 }
 
 tasks.named('test') {

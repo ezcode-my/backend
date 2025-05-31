@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface UserRepository {
 	void createUser(User user);
 
