@@ -30,7 +30,7 @@ public class Chat extends BaseEntity {
 	private User user;
 
 	@ManyToOne
-	@JoinColumn(name = "chat_room_id", nullable = false)
+	@JoinColumn(name = "room_id", nullable = false)
 	private ChatRoom chatRoom;
 
 	private String message;

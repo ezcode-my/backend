@@ -28,22 +28,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 			.setAllowedOriginPatterns("*")
 			.setHandshakeHandler(new CustomHandShakeHandler())
 			.withSockJS();
-
 	}
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 
-		registry.enableStompBrokerRelay("/topic", "/queue")
+		registry
+			.enableStompBrokerRelay("/topic", "/queue")
 			.setRelayHost(mqAddress)
 			.setRelayPort(61613)
 			.setClientLogin(mqUsername)
 			.setClientPasscode(mqPassword)
 			.setSystemLogin(mqUsername)
 			.setSystemPasscode(mqPassword);
+
 		registry.setApplicationDestinationPrefixes("/chat");
 		registry.setUserDestinationPrefix("/user");
-
 	}
 }
 
