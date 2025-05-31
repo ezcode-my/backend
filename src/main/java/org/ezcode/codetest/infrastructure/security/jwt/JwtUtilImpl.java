@@ -47,7 +47,7 @@ public class JwtUtilImpl implements JwtUtil {
 				.claim("username", username)
 				.claim("nickname", nickname)
 				.claim("userRole", userRole == null ? UserRole.USER : userRole)
-				.setExpiration(new Date(date.getTime() + TOKEN_EXPIRATION_TIME))
+				.setExpiration(new Date(date.getTime() + TOKEN_EXPIRATION_TIME * 1000L)) //밀리초 단위
 				.setIssuedAt(date)
 				.signWith(key, signatureAlgorithm)
 				.compact();
