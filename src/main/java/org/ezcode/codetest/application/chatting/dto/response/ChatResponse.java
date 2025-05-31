@@ -13,7 +13,6 @@ public record ChatResponse(
 	String tier,
 
 	String message
-
 ) {
 	public static ChatResponse from(Chat chat) {
 

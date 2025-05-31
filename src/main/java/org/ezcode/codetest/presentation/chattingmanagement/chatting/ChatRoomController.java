@@ -22,7 +22,8 @@ public class ChatRoomController {
 	@PostMapping
 	public ResponseEntity<Void> createChatRoom(@RequestBody @Validated ChatRoomSaveRequest request) {
 
-		chatUseCase.createChatRoom(request, 1L);
+		//나중에 Authentication 에서 받아올수 있게끔 수정예정입니다
+		chatUseCase.createChatRoom(request, "chat27@naver.com");
 
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}

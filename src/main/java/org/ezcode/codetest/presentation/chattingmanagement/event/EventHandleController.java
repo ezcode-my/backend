@@ -30,7 +30,8 @@ public class EventHandleController {
 	) {
 		String sessionId = accessor.getSessionId();
 
-		chatUseCase.getChattingHistory(sessionId, principal.getName(), 1L, roomId);
+		//나중에 Authentication 에서 받아올수 있게끔 수정예정입니다
+		chatUseCase.getChattingHistory(sessionId, principal.getName(), "chat27@naver.com", roomId);
 	}
 
 	@MessageMapping("/room/{roomId}/left")
@@ -40,7 +41,7 @@ public class EventHandleController {
 	) {
 		String sessionId = accessor.getSessionId();
 
-		//나중에 @AuthenticationPrincipal 로 userId 획득해서 넣을 예정
-		chatUseCase.leftChatRoom(sessionId, 1L, roomId);
+		//나중에 Authentication 에서 받아올수 있게끔 수정예정입니다
+		chatUseCase.leftChatRoom(sessionId, "chat27@naver.com", roomId);
 	}
 }

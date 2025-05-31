@@ -3,7 +3,6 @@ package org.ezcode.codetest.infrastructure.message.event;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ezcode.codetest.application.chatting.dto.response.ChatRoomResponse;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.service.ChattingDomainService;
 import org.ezcode.codetest.infrastructure.message.service.StompMessageService;

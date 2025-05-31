@@ -13,9 +13,7 @@ import org.ezcode.codetest.domain.chat.model.Chat;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.service.ChattingDomainService;
 import org.ezcode.codetest.domain.user.model.entity.User;
-import org.ezcode.codetest.domain.user.model.enums.AuthType;
-import org.ezcode.codetest.domain.user.model.enums.UserRole;
-import org.ezcode.codetest.infrastructure.persitence.repository.user.UserJpaRepository;
+import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,49 +23,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChattingUseCase {
 
-	//private final UserDomainService userDomainService;
-	//임시로 user jpa 사용중입니다.
-	private final UserJpaRepository userRepository;
+	private final UserDomainService userDomainService;
 	private final ChattingDomainService chattingDomainService;
 	private final MessageService messageService;
 	private final SessionService sessionService;
 
 	@Transactional
-	public void createChatRoom(ChatRoomSaveRequest request, Long userId) {
+	public void createChatRoom(ChatRoomSaveRequest request, String email) {
 
-		//User user = userDomainService.findOrElseThrow(userId);
-
-		//User 임시 테스트용 생성
-		User user = User.builder()
-			.age(1)
-			.name("아무개")
-			.nickname("테스트계정이에요")
-			.email("chat27@naver.com")
-			.blogUrl("ddd")
-			.authType(AuthType.EMAIL)
-			.password("ddd")
-			.role(UserRole.USER)
-			.build();
-
-		//테이블 연관관계 때문에 임시 테스트용으로 생성, 나중에 없앨거임
-		userRepository.save(user);
+		User user = userDomainService.findUser(email);
 
 		chattingDomainService.createChatRoom(ChatRoom.builder()
 			.title(request.title())
-			.isDeleted(false)
-			.user(user)
-			.build());
-
-		//테스트 채팅룸 용도 나중에 지울 예정
-		chattingDomainService.createChatRoom(ChatRoom.builder()
-			.title("감자방")
-			.isDeleted(false)
-			.user(user)
-			.build());
-
-		//테스트 채팅룸 용도 나중에 지울 예정
-		chattingDomainService.createChatRoom(ChatRoom.builder()
-			.title("공부방")
 			.isDeleted(false)
 			.user(user)
 			.build());
@@ -87,15 +54,12 @@ public class ChattingUseCase {
 			.toList();
 
 		messageService.handleEnter(roomLists, principalName);
-
 	}
 
 	@Transactional
-	public void sendChatting(ChatSaveRequest request, Long userId, Long roomId) {
+	public void sendChatting(ChatSaveRequest request, String email, Long roomId) {
 
-		//User user = userDomainService.findOrElseThrow(userId);
-		//나중에 UserDomainService 올라오면 변경예정
-		User user = userRepository.findById(userId).get();
+		User user = userDomainService.findUser(email);
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomId);
 
@@ -107,14 +71,12 @@ public class ChattingUseCase {
 		);
 
 		messageService.handleBroadCastChat(ChatResponse.from(chat), roomId);
-
 	}
 
 	@Transactional
-	public void getChattingHistory(String sessionId, String principalName, Long userId, Long roomId) {
+	public void getChattingHistory(String sessionId, String principalName, String email, Long roomId) {
 
-		//User user = userDomainService.findOrElseThrow(userId);
-		User user = userRepository.findById(userId).get();
+		User user = userDomainService.findUser(email);
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomId);
 
@@ -135,14 +97,12 @@ public class ChattingUseCase {
 			.title(chatRoom.getTitle())
 			.headCount(headCount)
 			.build());
-
 	}
 
 	@Transactional
-	public void leftChatRoom(String sessionId, Long userId, Long roomId) {
+	public void leftChatRoom(String sessionId, String email, Long roomId) {
 
-		//User user = userDomainService.findOrElseThrow(userId);
-		User user = userRepository.findById(userId).get();
+		User user = userDomainService.findUser(email);
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomId);
 
@@ -155,7 +115,6 @@ public class ChattingUseCase {
 			.title(chatRoom.getTitle())
 			.headCount(roomData.get("headCount"))
 			.build());
-
 	}
 
 }
