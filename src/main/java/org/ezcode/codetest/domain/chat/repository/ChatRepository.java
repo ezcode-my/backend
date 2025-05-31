@@ -12,6 +12,6 @@ public interface ChatRepository {
 
 	List<Chat> findAll();
 
-	List<Chat> findChatByRoomId(Long roomId);
+	List<Chat> findChatsFromLastHour(Long roomId);
 
 }
