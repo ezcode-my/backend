@@ -8,7 +8,6 @@ import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.infrastructure.security.jwt.JwtUtil;
-import org.ezcode.codetest.infrastructure.security.jwt.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
