@@ -75,7 +75,7 @@ public class JwtUtilImpl implements JwtUtil {
 				.parseClaimsJws(token)
 				.getBody();
 		} catch (io.jsonwebtoken.JwtException e) {
-			log.error("JWT 토큰 파싱 실패", e.getMessage());
+			log.error("JWT 토큰 파싱 실패: {}", e.getMessage());
 			throw new ServerException("유효한 토큰이 아닙니다");
 		}
 	}
