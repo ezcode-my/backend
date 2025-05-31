@@ -17,7 +17,7 @@ public class UserDomainService {
 	private final PasswordEncoder passwordEncoder;
 
 	public boolean existUser(String email) {
-		return userRepository.findByEmail(email).isEmpty();
+		return userRepository.findByEmail(email).isPresent();
 	}
 
 	public void createUser(User user) {

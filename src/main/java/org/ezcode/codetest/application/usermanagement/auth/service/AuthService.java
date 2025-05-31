@@ -29,7 +29,7 @@ public class AuthService {
 	 */
 	@Transactional
 	public SignupResponse signup(SignupRequest signupRequest) {
-		if (!userDomainService.existUser(signupRequest.getEmail())){
+		if (userDomainService.existUser(signupRequest.getEmail())){
 			throw new AuthException("이미 가입된 계정입니다");
 		}
 		log.info("서비스 레이어 진입, 이메일 검증 완료");
