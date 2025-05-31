@@ -10,7 +10,5 @@ public record ChatRoomResponse(
 	String title,
 
 	Long headCount
-
 ) {
-
 }

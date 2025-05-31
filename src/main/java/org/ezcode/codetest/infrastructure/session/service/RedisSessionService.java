@@ -5,12 +5,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.ezcode.codetest.application.chatting.port.session.SessionService;
 import org.ezcode.codetest.domain.chat.exception.ChattingException;
 import org.ezcode.codetest.domain.chat.exception.ChattingExceptionCode;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -20,8 +22,11 @@ import lombok.RequiredArgsConstructor;
 public class RedisSessionService implements SessionService {
 
 	private final StringRedisTemplate redisTemplate;
+	private static final String CHATROOM_KEY_PREFIX = "chatroom:";
+	private static final String SESSION_KEY_PREFIX = "session:";
+	private static final String ROOM_COUNT_KEY_PREFIX = "roomCount:";
 
-	private final DefaultRedisScript<Long> addSessionScript = new DefaultRedisScript<>(
+	private final RedisScript<Long> addSessionScript = new DefaultRedisScript<>(
 		"local roomId = ARGV[2]\n" +
 			"redis.call('SET', KEYS[2], roomId)\n" +
 			"local added = redis.call('SADD', KEYS[1], ARGV[1])\n" +
@@ -33,7 +38,7 @@ public class RedisSessionService implements SessionService {
 		, Long.class
 	);
 
-	private final DefaultRedisScript<List> removeSessionScript = new DefaultRedisScript<>(
+	private final RedisScript<List<Long>> removeSessionScript = new DefaultRedisScript<>(
 		"local roomId = redis.call('GET', KEYS[1])\n" +
 			"if not roomId then\n" +
 			"  return {\"-1\", 0}\n" +
@@ -49,16 +54,16 @@ public class RedisSessionService implements SessionService {
 			"if not cnt then\n" +
 			"  cnt = \"0\"\n" +
 			"end\n" +
-			"return { roomId, tonumber(cnt) }\n"
-		, List.class
+			"return { tonumber(roomId), tonumber(cnt) }\n"
+		, (Class<List<Long>>)(Class<?>)List.class
 	);
 
 	@Override
 	public Long addSession(String sessionId, Long roomId) {
 
-		String roomKey = "chatroom:" + roomId;
-		String sessionKey = "session:" + sessionId;
-		String roomCountKey = "roomCount:" + roomId;
+		String roomKey = CHATROOM_KEY_PREFIX + roomId;
+		String sessionKey = SESSION_KEY_PREFIX + sessionId;
+		String roomCountKey = ROOM_COUNT_KEY_PREFIX + roomId;
 
 		List<String> keys = Arrays.asList(roomKey, sessionKey, roomCountKey);
 		Object[] args = new Object[] {sessionId, roomId.toString()};
@@ -74,31 +79,24 @@ public class RedisSessionService implements SessionService {
 	@Override
 	public Map<String, Long> removeSession(String sessionId) {
 
- 		String sessionKey = "session:" + sessionId;
+		String sessionKey = SESSION_KEY_PREFIX + sessionId;
 
-		List<Object> result = redisTemplate.execute(
+		List<Long> result = redisTemplate.execute(
 			removeSessionScript,
 			Collections.singletonList(sessionKey),
 			sessionId
 		);
 
-		if (result == null) {
+		if (result == null || result.size() < 2) {
 			throw new ChattingException(ChattingExceptionCode.INVALID_CHATTING_SESSION);
 		}
 
-		Object roomIdObj = result.get(0);
-		String roomIdStr = roomIdObj.toString();
+		Long roomId = result.get(0);
+		Long headCount = result.get(1);
 
-		if ("-1".equals(roomIdStr)) {
+		if (Objects.equals(roomId, -1L)) {
 			throw new ChattingException(ChattingExceptionCode.INVALID_CHATTING_SESSION);
 		}
-
-		Long roomId = Long.valueOf(roomIdStr);
-
-		Object cntObj = result.get(1);
-		Long headCount = (cntObj instanceof Long)
-			? (Long) cntObj
-			: Long.valueOf(cntObj.toString());
 
 		Map<String, Long> roomData = new HashMap<>();
 		roomData.put("roomId", roomId);
@@ -110,7 +108,7 @@ public class RedisSessionService implements SessionService {
 	@Override
 	public Long viewSession(Long roomId) {
 
-		String roomCountKey = "roomCount:" + roomId;
+		String roomCountKey = ROOM_COUNT_KEY_PREFIX + roomId;
 		String countStr = redisTemplate.opsForValue().get(roomCountKey);
 		if (countStr == null) {
 			return 0L;

@@ -22,6 +22,7 @@ public class ChatController {
 	@ResponseBody
 	public void createChat(@PathVariable Long roomId, @RequestBody ChatSaveRequest request) {
 
-		chatUseCase.sendChatting(request, 1L, roomId);
+		//나중에 Authentication 에서 받아올수 있게끔 수정예정입니다
+		chatUseCase.sendChatting(request, "chat27@naver.com", roomId);
 	}
 }
