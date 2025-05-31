@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "JwtUtil")

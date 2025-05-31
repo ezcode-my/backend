@@ -22,8 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthService {
 
 	private final UserDomainService userDomainService;
-	//비밀번호 인코딩은 도메인서비스에서?? 어플리케이션 서비스에서?? (인프라를 어플리케이션에 주입해도 되는감......?)
-	private final PasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
 
 	@Transactional
@@ -33,7 +31,7 @@ public class AuthService {
 		}
 		log.info("서비스 레이어 진입, 이메일 검증 완료");
 
-		String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
+		String encodedPassword = userDomainService.encodePassword(signupRequest.getPassword());
 
 		User newUser = User.builder()
 			.email(signupRequest.getEmail())
@@ -46,7 +44,10 @@ public class AuthService {
 		userDomainService.createUser(newUser);
 
 		String bearToken = jwtUtil.createToken(
-			newUser.getId(), newUser.getEmail(),  newUser.getRole(),newUser.getUsername(),newUser.getNickname());
+			newUser.getId(),
+			newUser.getEmail(),
+			newUser.getRole(),
+			newUser.getUsername(),newUser.getNickname());
 
 		return SignupResponse.from(bearToken);
 	}
@@ -58,7 +59,12 @@ public class AuthService {
 
 		userDomainService.userPasswordCheck(signinRequest.getEmail(), loginUser.getPassword());
 
-		String bearToken = jwtUtil.createToken(loginUser.getId(), loginUser.getEmail(), loginUser.getRole(), loginUser.getUsername(), loginUser.getNickname());
+		String bearToken = jwtUtil.createToken(
+			loginUser.getId(),
+			loginUser.getEmail(),
+			loginUser.getRole(),
+			loginUser.getUsername(),
+			loginUser.getNickname());
 
 		return SigninResponse.from(bearToken);
 	}
