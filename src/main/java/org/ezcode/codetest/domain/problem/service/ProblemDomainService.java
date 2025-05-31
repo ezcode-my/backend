@@ -12,7 +12,7 @@ public class ProblemDomainService {
 
 	private final ProblemRepository problemRepository;
 
-	public Problem createProblem(Problem problem) {
+	public Problem saveProblem(Problem problem) {
 		return problemRepository.save(problem);
 	}
 

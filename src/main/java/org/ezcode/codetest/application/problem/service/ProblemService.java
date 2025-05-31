@@ -30,7 +30,7 @@ public class ProblemService {
 			.build();
 		// user.setId(1L); User Entity Setter 필요
 
-		Problem savedProblem = problemDomainService.createProblem(
+		Problem savedProblem = problemDomainService.saveProblem(
 			ProblemCreateRequest.toEntity(requestDto, user)
 		);
 
