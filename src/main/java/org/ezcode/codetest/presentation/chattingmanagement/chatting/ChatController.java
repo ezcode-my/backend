@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,10 +19,9 @@ public class ChatController {
 	private final ChattingUseCase chatUseCase;
 
 	@PostMapping
+	@ResponseBody
 	public void createChat(@PathVariable Long roomId, @RequestBody ChatSaveRequest request) {
 
-		chatUseCase.sendChatting(request,1L,roomId);
-
+		chatUseCase.sendChatting(request, 1L, roomId);
 	}
-
 }
