@@ -59,6 +59,19 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     //testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // bcrypt
+    implementation 'at.favre.lib:bcrypt:0.10.2'
+
+    // jwt
+    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+    //Mac에서 빌드시 필요한 의존성
+    //implementation 'io.netty:netty-resolver-dns-native-macos:4.1.121.Final:osx-aarch_64'
+
+
 }
 
 tasks.named('test') {

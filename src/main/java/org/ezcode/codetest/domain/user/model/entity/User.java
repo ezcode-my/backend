@@ -28,7 +28,7 @@ public class User extends BaseEntity {
 	private Long id;
 
 	@Column(nullable = false)
-	private String name;
+	private String username;
 
 	@Column(nullable = false, unique = true)
 	private String email;
@@ -66,25 +66,38 @@ public class User extends BaseEntity {
 
 	private boolean isDeleted;
 
+
 	@Builder
-	public User(String name, String email, String password, String nickname, Integer age, UserRole role, AuthType authType,
-		String githubUrl, String blogUrl, String profileImageUrl, String introduction) {
-		this.name = name;
+	public User(String email, String password, String username, String nickname, Integer age){
 		this.email = email;
 		this.password = password;
+		this.username = username;
 		this.nickname = nickname;
 		this.age = age;
-		this.role = role;
-		this.authType = authType;
-		this.githubUrl = githubUrl;
-		this.blogUrl = blogUrl;
-		this.profileImageUrl = profileImageUrl;
-		this.introduction = introduction;
+		this.authType = AuthType.EMAIL;
 		this.tier = Tier.NEWBIE;
-		this.isDeleted = false;
+		this.role = UserRole.USER;
 	}
 
-	public void setDeleted(boolean deleted) {
+	// @Builder
+	// public User(String username, String email, String password, String nickname, Integer age,
+	// 	String githubUrl, String blogUrl, String profileImageUrl, String introduction) {
+	// 	this.username = username;
+	// 	this.email = email;
+	// 	this.password = password;
+	// 	this.nickname = nickname;
+	// 	this.age = age;
+	// 	this.role = UserRole.USER;
+	// 	this.authType = AuthType.EMAIL;
+	// 	this.githubUrl = githubUrl;
+	// 	this.blogUrl = blogUrl;
+	// 	this.profileImageUrl = profileImageUrl;
+	// 	this.introduction = introduction;
+	// 	this.tier = Tier.NEWBIE;
+	// 	this.isDeleted = false;
+	// }
+
+	public void setDeleted() {
 		this.isDeleted = true;
 	}
 
