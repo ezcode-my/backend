@@ -2,7 +2,6 @@ package org.ezcode.codetest.infrastructure.persitence.repository.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.ezcode.codetest.domain.user.model.entity.User;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
