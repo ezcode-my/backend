@@ -69,7 +69,7 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
     //Mac에서 빌드시 필요한 의존성
-    //implementation 'io.netty:netty-resolver-dns-native-macos:4.1.121.Final:osx-aarch_64'
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.121.Final:osx-aarch_64'
 
 
 }

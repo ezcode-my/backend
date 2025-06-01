@@ -8,19 +8,19 @@ import org.springframework.context.annotation.Configuration;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-@Configuration
+// @RequiredArgsConstructor
+// @Configuration
 public class FilterConfig {
+	//
+	// private final JwtUtilImpl jwtUtilImpl;
+	//
+	// @Bean
+	// public FilterRegistrationBean<JwtFilter> jwtFilter(){
+	// 	FilterRegistrationBean<JwtFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+	// 	filterRegistrationBean.setFilter(new JwtFilter(jwtUtilImpl));
+	// 	filterRegistrationBean.addUrlPatterns("/*");
+	//
+	// 	return filterRegistrationBean;
 
-	private final JwtUtilImpl jwtUtilImpl;
-
-	@Bean
-	public FilterRegistrationBean<JwtFilter> jwtFilter(){
-		FilterRegistrationBean<JwtFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-		filterRegistrationBean.setFilter(new JwtFilter(jwtUtilImpl));
-		filterRegistrationBean.addUrlPatterns("/*");
-
-		return filterRegistrationBean;
-
-	}
+// }
 }

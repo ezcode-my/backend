@@ -54,7 +54,8 @@ public class AuthService {
 			newUser.getId(),
 			newUser.getEmail(),
 			newUser.getRole(),
-			newUser.getUsername(),newUser.getNickname());
+			newUser.getUsername(),newUser.getNickname(),
+			newUser.getTier());
 
 		return SignupResponse.from(bearToken);
 	}
@@ -77,7 +78,8 @@ public class AuthService {
 			loginUser.getEmail(),
 			loginUser.getRole(),
 			loginUser.getUsername(),
-			loginUser.getNickname());
+			loginUser.getNickname(),
+			loginUser.getTier());
 
 		return SigninResponse.from(bearToken);
 	}

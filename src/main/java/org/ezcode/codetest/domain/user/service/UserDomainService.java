@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.user.service;
 
+import org.ezcode.codetest.common.dto.AuthUser;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
@@ -41,4 +42,5 @@ public class UserDomainService {
 	public String encodePassword(String password) {
 		return passwordEncoder.encode(password);
 	}
+
 }

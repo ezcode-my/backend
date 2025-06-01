@@ -2,8 +2,10 @@ package org.ezcode.codetest.infrastructure.security.jwt;
 
 import java.io.IOException;
 
-import org.ezcode.codetest.common.dto.AuthUser;
+import org.ezcode.codetest.domain.user.model.entity.AuthUser;
+import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
 @Slf4j
+@Order(1)
 public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtUtilImpl jwtUtilImpl;
@@ -60,6 +63,8 @@ public class JwtFilter extends OncePerRequestFilter {
 			}
 
 			UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
+			String tierClaim = claims.get("tier", String.class);
+			Tier tier = tierClaim != null ? Tier.valueOf(tierClaim) : Tier.NEWBIE;
 
 			if (url.startsWith("/admin") && !UserRole.ADMIN.equals(userRole)) {
 					response.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 없습니다");
@@ -71,10 +76,19 @@ public class JwtFilter extends OncePerRequestFilter {
 				(String) claims.get("email"),
 				(String) claims.get("username"),
 				(String) claims.get("nickname"),
-				userRole
+				userRole,
+				tier
 			);
 
+			log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
+
 			request.setAttribute("authUser", authUser);
+			request.setAttribute("userId", Long.parseLong(claims.getSubject()));
+			request.setAttribute("email", claims.get("email"));
+			request.setAttribute("userRole", claims.get("userRole"));
+			request.setAttribute("username", claims.get("username"));
+			request.setAttribute("nickname", claims.get("nickname"));
+
 
 			filterChain.doFilter(request, response);
 		} catch (SecurityException | MalformedJwtException e) {

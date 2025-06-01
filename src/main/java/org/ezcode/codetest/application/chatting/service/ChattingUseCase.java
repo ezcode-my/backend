@@ -34,43 +34,43 @@ public class ChattingUseCase {
 
 	@Transactional
 	public void createChatRoom(ChatRoomSaveRequest request, Long userId) {
-
-		//User user = userDomainService.findOrElseThrow(userId);
-
-		//User 임시 테스트용 생성
-		User user = User.builder()
-			.age(1)
-			.name("아무개")
-			.nickname("테스트계정이에요")
-			.email("chat27@naver.com")
-			.blogUrl("ddd")
-			.authType(AuthType.EMAIL)
-			.password("ddd")
-			.role(UserRole.USER)
-			.build();
-
-		//테이블 연관관계 때문에 임시 테스트용으로 생성, 나중에 없앨거임
-		userRepository.save(user);
-
-		chattingDomainService.createChatRoom(ChatRoom.builder()
-			.title(request.title())
-			.isDeleted(false)
-			.user(user)
-			.build());
-
-		//테스트 채팅룸 용도 나중에 지울 예정
-		chattingDomainService.createChatRoom(ChatRoom.builder()
-			.title("감자방")
-			.isDeleted(false)
-			.user(user)
-			.build());
-
-		//테스트 채팅룸 용도 나중에 지울 예정
-		chattingDomainService.createChatRoom(ChatRoom.builder()
-			.title("공부방")
-			.isDeleted(false)
-			.user(user)
-			.build());
+		//
+		// //User user = userDomainService.findOrElseThrow(userId);
+		//
+		// //User 임시 테스트용 생성
+		// User user = User.builder()
+		// 	.age(1)
+		// 	.username("아무개")
+		// 	.nickname("테스트계정이에요")
+		// 	.email("chat27@naver.com")
+		// 	.blogUrl("ddd")
+		// 	.authType(AuthType.EMAIL)
+		// 	.password("ddd")
+		// 	.role(UserRole.USER)
+		// 	.build();
+		//
+		// //테이블 연관관계 때문에 임시 테스트용으로 생성, 나중에 없앨거임
+		// userRepository.save(user);
+		//
+		// chattingDomainService.createChatRoom(ChatRoom.builder()
+		// 	.title(request.title())
+		// 	.isDeleted(false)
+		// 	.user(user)
+		// 	.build());
+		//
+		// //테스트 채팅룸 용도 나중에 지울 예정
+		// chattingDomainService.createChatRoom(ChatRoom.builder()
+		// 	.title("감자방")
+		// 	.isDeleted(false)
+		// 	.user(user)
+		// 	.build());
+		//
+		// //테스트 채팅룸 용도 나중에 지울 예정
+		// chattingDomainService.createChatRoom(ChatRoom.builder()
+		// 	.title("공부방")
+		// 	.isDeleted(false)
+		// 	.user(user)
+		// 	.build());
 	}
 
 	@Transactional
