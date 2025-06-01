@@ -23,4 +23,8 @@ public class UserRepositoryImpl implements UserRepository {
 		return Optional.ofNullable(userJpaRepository.findUserByEmail(email));
 	}
 
+	public Optional<User> findUserById(Long id) {
+		return userJpaRepository.findById(id);
+	}
+
 }

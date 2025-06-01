@@ -21,7 +21,7 @@ public class UserService {
 	@Transactional
 	public UserInfoResponse getUserInfo(AuthUser authUser) {
 		log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
-		User user = userDomainService.findUser(authUser.getEmail());
+		User user = userDomainService.findUserById(authUser.getId());
 
 		return UserInfoResponse.builder()
 			.username(user.getUsername())
@@ -39,7 +39,7 @@ public class UserService {
 
 	@Transactional
 	public UserInfoResponse updateUserInfo(AuthUser authUser, UpdateUserInfoRequest updateUserInfoRequest) {
-		User user = userDomainService.findUser(authUser.getEmail());
+		User user = userDomainService.findUserById(authUser.getId());
 
 		user.updateUserInfo(
 			updateUserInfoRequest.nickname(),
@@ -47,8 +47,6 @@ public class UserService {
 			updateUserInfoRequest.blogUrl(),
 			updateUserInfoRequest.profileImageUrl(),
 			updateUserInfoRequest.introduction());
-
-
 
 
 		return UserInfoResponse.builder()

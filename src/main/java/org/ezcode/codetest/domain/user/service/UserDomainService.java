@@ -1,6 +1,5 @@
 package org.ezcode.codetest.domain.user.service;
 
-import org.ezcode.codetest.common.dto.AuthUser;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
@@ -28,6 +27,11 @@ public class UserDomainService {
 	public User findUser(String email) {
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new AuthException("사용자를 찾을 수 없습니다."));
+	}
+
+	public User findUserById(Long id) {
+		return userRepository.findUserById(id)
+			.orElseThrow(()->new AuthException("사용자를 찾을 수 없습니다."));
 	}
 
 	public void userPasswordCheck(String email, String password) {
