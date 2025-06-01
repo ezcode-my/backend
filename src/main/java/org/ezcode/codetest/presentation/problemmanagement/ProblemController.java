@@ -1,5 +1,6 @@
 package org.ezcode.codetest.presentation.problemmanagement;
 
+import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.application.problem.service.ProblemService;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
@@ -10,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,5 +34,13 @@ public class ProblemController {
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(problemService.findAllByCategory(pageable, category));
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<ProblemDetailResponse> findByIdProblem(@PathVariable Long id) {
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(problemService.findByIdProblem(id));
 	}
 }

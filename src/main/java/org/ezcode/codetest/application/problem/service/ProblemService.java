@@ -30,7 +30,7 @@ public class ProblemService {
 			.email("이메일")
 			.nickname("닉네임^^")
 			.build();
-		// user.setId(1L); User Entity Setter 필요
+		// user.setId(1L); // User Entity Setter 필요
 
 		Problem savedProblem = problemDomainService.saveProblem(
 			ProblemCreateRequest.toEntity(requestDto, user)
@@ -51,7 +51,11 @@ public class ProblemService {
 		return problems.map(ProblemResponse::from); // Entity → DTO 변환
 	}
 
+	public ProblemDetailResponse findByIdProblem(Long id) {
 
-	// 검증하는 메소드명을 불러와서 쓴다.
+		Problem findProblem = problemDomainService.findByIdOrElseThrow(id);
+
+		return ProblemDetailResponse.from(findProblem);
+	}
 
 }
