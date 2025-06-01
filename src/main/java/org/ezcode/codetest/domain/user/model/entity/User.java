@@ -67,6 +67,11 @@ public class User extends BaseEntity {
 	private boolean isDeleted;
 
 
+	/*
+	처음 유저 생성(가입) 시에는 기본 정보만 받음
+	- 이메일, 비번, 이름, 별명, 나이
+	-> 이후 회원정보 업데이트할 때, 원하는 정보를 입력할 수 있도록 함
+	 */
 	@Builder
 	public User(String email, String password, String username, String nickname, Integer age){
 		this.email = email;
@@ -92,23 +97,6 @@ public class User extends BaseEntity {
 		this.introduction = (introduction == null || introduction.isBlank()) ? this.introduction : introduction;
 	}
 
-	// @Builder
-	// public User(String username, String email, String password, String nickname, Integer age,
-	// 	String githubUrl, String blogUrl, String profileImageUrl, String introduction) {
-	// 	this.username = username;
-	// 	this.email = email;
-	// 	this.password = password;
-	// 	this.nickname = nickname;
-	// 	this.age = age;
-	// 	this.role = UserRole.USER;
-	// 	this.authType = AuthType.EMAIL;
-	// 	this.githubUrl = githubUrl;
-	// 	this.blogUrl = blogUrl;
-	// 	this.profileImageUrl = profileImageUrl;
-	// 	this.introduction = introduction;
-	// 	this.tier = Tier.NEWBIE;
-	// 	this.isDeleted = false;
-	// }
 
 	public void setDeleted() {
 		this.isDeleted = true;
