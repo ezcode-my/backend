@@ -9,6 +9,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
 import org.ezcode.codetest.common.exception.ServerException;
+import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class JwtUtilImpl implements JwtUtil {
 		key = Keys.hmacShaKeyFor(secretKey.getBytes());
 	}
 
-	public String createToken(Long userId, String email, UserRole userRole, String username, String nickname) {
+	public String createToken(Long userId, String email, UserRole userRole, String username, String nickname, Tier tier) {
 		if (userId == null || email == null || username == null || nickname == null) {
 			throw new IllegalArgumentException("토큰에 필요한 필수 매개변수가 null입니다.");
 		}
@@ -51,6 +52,7 @@ public class JwtUtilImpl implements JwtUtil {
 				.claim("username", username)
 				.claim("nickname", nickname)
 				.claim("userRole", userRole == null ? UserRole.USER : userRole)
+				.claim("tier", tier == null ? Tier.NEWBIE : tier)
 				.setExpiration(new Date(date.getTime() + TOKEN_EXPIRATION_TIME * 1000L)) //밀리초 단위
 				.setIssuedAt(date)
 				.signWith(key, signatureAlgorithm)
