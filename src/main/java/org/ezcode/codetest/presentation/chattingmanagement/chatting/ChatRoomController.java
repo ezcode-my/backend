@@ -2,6 +2,8 @@ package org.ezcode.codetest.presentation.chattingmanagement.chatting;
 
 import org.ezcode.codetest.application.chatting.dto.request.ChatRoomSaveRequest;
 import org.ezcode.codetest.application.chatting.service.ChattingUseCase;
+import org.ezcode.codetest.common.annotation.Auth;
+import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,10 +22,11 @@ public class ChatRoomController {
 	private final ChattingUseCase chatUseCase;
 
 	@PostMapping
-	public ResponseEntity<Void> createChatRoom(@RequestBody @Validated ChatRoomSaveRequest request) {
-
-		//나중에 Authentication 에서 받아올수 있게끔 수정예정입니다
-		chatUseCase.createChatRoom(request, "chat27@naver.com");
+	public ResponseEntity<Void> createChatRoom(
+		@Auth AuthUser authUser,
+		@RequestBody @Validated ChatRoomSaveRequest request
+	) {
+		chatUseCase.createChatRoom(request, authUser.getEmail());
 
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}

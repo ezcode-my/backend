@@ -17,31 +17,29 @@ public class EventHandleController {
 	private final ChattingUseCase chatUseCase;
 
 	@MessageMapping("/enter")
-	public void handleEnter(Principal principal) {
-
+	public void handleEnter(
+		Principal principal
+	) {
 		chatUseCase.getChatRoomList(principal.getName());
 	}
 
 	@MessageMapping("/room/{roomId}/enter")
 	public void handleChatRoomEnter(
-		@DestinationVariable Long roomId,
 		Principal principal,
+		@DestinationVariable Long roomId,
 		SimpMessageHeaderAccessor accessor
 	) {
 		String sessionId = accessor.getSessionId();
-
-		//나중에 Authentication 에서 받아올수 있게끔 수정예정입니다
-		chatUseCase.getChattingHistory(sessionId, principal.getName(), "chat27@naver.com", roomId);
+		chatUseCase.getChattingHistory(sessionId, principal.getName(), principal.getName(), roomId);
 	}
 
 	@MessageMapping("/room/{roomId}/left")
 	public void handleChatRoomLeft(
+		Principal principal,
 		@DestinationVariable Long roomId,
 		SimpMessageHeaderAccessor accessor
 	) {
 		String sessionId = accessor.getSessionId();
-
-		//나중에 Authentication 에서 받아올수 있게끔 수정예정입니다
-		chatUseCase.leftChatRoom(sessionId, "chat27@naver.com", roomId);
+		chatUseCase.leftChatRoom(sessionId, principal.getName(), roomId);
 	}
 }
