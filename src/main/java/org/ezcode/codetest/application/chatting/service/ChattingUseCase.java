@@ -35,20 +35,17 @@ public class ChattingUseCase {
 
 		User user = userDomainService.findUser(email);
 
-		ChatRoom newRoom = ChatRoom.builder()
+		chattingDomainService.createChatRoom(ChatRoom
+			.builder()
 			.title(request.title())
 			.isDeleted(false)
 			.user(user)
-			.build();
+			.build());
 
 		List<ChatRoom> roomLists = chattingDomainService.getChatRoomList();
 
-		roomLists.add(newRoom);
-
-		List<ChatRoom> savedRoomLists = chattingDomainService.createChatRoom(roomLists);
-
 		//TODO : 추후 이벤트 방식으로 저장할 예정 (afterCommit)
-		cacheService.replaceChatRoomsCache(savedRoomLists);
+		cacheService.replaceChatRoomsCache(roomLists);
 	}
 
 	@Transactional

@@ -16,9 +16,9 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
 	private final ChatRoomJpaRepository chatRoomRepository;
 
-	public List<ChatRoom> saveAll(List<ChatRoom> roomLists) {
+	public ChatRoom save(ChatRoom room) {
 
-		return chatRoomRepository.saveAll(roomLists);
+		return chatRoomRepository.save(room);
 	}
 
 	public ChatRoom findOrElseThrow(Long id) {
