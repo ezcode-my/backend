@@ -29,7 +29,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private static final String[] WHITE_LIST = {
 		"/signin",
-		"/signup"
+		"/signup",
+		"/chatting",
+		"/ws"
 	};
 
 	@Override
@@ -71,11 +73,12 @@ public class JwtFilter extends OncePerRequestFilter {
 					return;
 			}
 
+			//생성자 순서가 틀려서 다시 정렬해서 넣었습니다
 			AuthUser authUser = new AuthUser(
 				Long.parseLong(claims.getSubject()),
-				(String) claims.get("email"),
 				(String) claims.get("username"),
 				(String) claims.get("nickname"),
+				(String) claims.get("email"),
 				userRole,
 				tier
 			);

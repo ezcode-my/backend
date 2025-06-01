@@ -1,5 +1,6 @@
 package org.ezcode.codetest.infrastructure.message.config;
 
+import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -7,9 +8,14 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+	private final JwtUtilImpl jwtUtil;
 
 	@Value("${spring.message.activemq.address}")
 	private String mqAddress;
@@ -26,7 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		registry
 			.addEndpoint("/ws")
 			.setAllowedOriginPatterns("*")
-			.setHandshakeHandler(new CustomHandShakeHandler())
+			.setHandshakeHandler(new CustomHandShakeHandler(jwtUtil))
 			.withSockJS();
 	}
 

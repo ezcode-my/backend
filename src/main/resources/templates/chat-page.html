@@ -3,38 +3,161 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이벤트 채팅방</title>
-
-    <!-- WebSocket 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-
     <style>
-        body { margin: 0; padding: 0; font-family: Arial, sans-serif; height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            background-color: #f5f5f5; }
-        #app { width: 100%; max-width: 1000px; height: 80vh; display: flex;
-            border: 1px solid #ddd; border-radius: 8px; background-color: #fff;
-            overflow: hidden; }
-        #sidebar { width: 200px; border-right: 1px solid #ddd; padding: 16px; }
-        #sidebar h2 { margin: 0 0 12px; font-size: 1.2em; }
-        #roomList { list-style: none; margin: 0; padding: 0;
-            height: calc(100% - 32px); overflow-y: auto; }
-        #roomList li { padding: 8px 12px; margin-bottom: 6px;
-            border-radius: 4px; cursor: pointer; }
-        #roomList li.active { background-color: #e6f7ff; }
-        #chatContainer { flex: 1; display: flex; flex-direction: column; }
-        #messages { flex: 1; list-style: none; padding: 16px; margin: 0;
-            overflow-y: auto; }
-        #messages li { padding: 6px 10px; margin-bottom: 8px;
-            background-color: #fafafa; border-radius: 4px;
-            font-size: 0.9em; }
-        #inputArea { display: flex; border-top: 1px solid #ddd; }
-        #msg { flex: 1; padding: 12px; border: none; outline: none; }
-        #sendBtn { padding: 0 16px; border: none; background-color: #007bff;
-            color: #fff; cursor: pointer; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+        /* JWT 토큰 입력 폼 개선 */
+        #tokenForm {
+            width: 100%;
+            max-width: 1000px;
+            padding: 24px;
+            box-sizing: border-box;
+            background: #ffffff;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        #tokenForm label {
+            font-size: 1em;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        #tokenInput {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1em;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #tokenSubmitBtn {
+            margin-top: 12px;
+            padding: 12px;
+            font-size: 1.05em;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #tokenSubmitBtn:hover {
+            background: #0056b3;
+        }
+        /* 채팅 인터페이스 숨김 */
+        #app {
+            display: none;
+            width: 100%;
+            max-width: 1000px;
+            height: calc(100% - 100px);
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            margin-top: 8px;
+        }
+        #sidebar {
+            width: 180px;
+            border-right: 1px solid #ddd;
+            padding: 12px;
+            background: #fafafa;
+        }
+        #sidebar h2 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #333;
+        }
+        #roomList {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            height: calc(100% - 28px);
+            overflow-y: auto;
+        }
+        #roomList li {
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            background: #fff;
+            transition: background 0.2s ease;
+        }
+        #roomList li:hover {
+            background: #e6f7ff;
+        }
+        #roomList li.active {
+            background: #bae7ff;
+        }
+        #chatContainer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        #messages {
+            flex: 1;
+            list-style: none;
+            margin: 0;
+            padding: 16px;
+            overflow-y: auto;
+            background: #fefefe;
+        }
+        #messages li {
+            background: #f0f0f0;
+            padding: 6px 10px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            word-break: break-word;
+        }
+        #inputArea {
+            display: flex;
+            border-top: 1px solid #ddd;
+            background: #fafafa;
+            padding: 8px;
+        }
+        #msg {
+            flex: 1;
+            padding: 12px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        #sendBtn {
+            margin-left: 8px;
+            padding: 0 16px;
+            border: none;
+            background: #28a745;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        #sendBtn:hover {
+            background: #218838;
+        }
     </style>
 </head>
 <body>
+<form id="tokenForm">
+    <label for="tokenInput">JWT 토큰을 아래에 입력 후 제출하세요:</label>
+    <input id="tokenInput" type="text" placeholder="예: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required />
+    <button id="tokenSubmitBtn" type="submit">제출</button>
+</form>
+
 <div id="app">
     <div id="sidebar">
         <h2>채팅방 목록</h2>
@@ -50,154 +173,164 @@
 </div>
 
 <script>
-    const socket = new SockJS('/ws');
-    const stomp = Stomp.over(socket);
-    let chatSubscription;
-    let currentRoomId;
+    let token, stompClient, chatSubscription, currentRoomId;
 
-    stomp.connect({}, () => {
-        const messagesEl = document.getElementById('messages');
-        const roomListEl = document.getElementById('roomList');
-        const receiptId = 'sub-1';
+    document.getElementById('tokenForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const v = document.getElementById('tokenInput').value.trim();
+        if (!v) return;
+        token = v;
+        document.getElementById('tokenForm').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        initChat();
+    });
 
-        // 1) 전체 채팅 메시지 구독 (이력 렌더링)
-        stomp.subscribe('/user/queue/chat', msg => {
-            messagesEl.innerHTML = '';
-            let chats;
-            try { chats = JSON.parse(msg.body); } catch { return; }
-            chats.forEach(chat => {
-                const time = new Date(chat.time)
-                    .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const li = document.createElement('li');
-                li.textContent = `[${time}] ${chat.name} (${chat.tier}): ${chat.message}`;
-                messagesEl.appendChild(li);
+    function initChat() {
+        const socket = new SockJS('/ws?token=' + encodeURIComponent(token));
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, () => {
+            const messagesEl = document.getElementById('messages');
+            const roomListEl = document.getElementById('roomList');
+            const receiptId = 'sub-1';
+
+            // 채팅방 목록 초기 구독 및 오름차순 정렬
+            stompClient.subscribe('/user/queue/chatrooms', msg => {
+                let rooms;
+                try { rooms = JSON.parse(msg.body); } catch { return; }
+                // roomId 기준 오름차순 정렬
+                rooms.sort((a, b) => Number(a.roomId) - Number(b.roomId));
+                roomListEl.innerHTML = '';
+                rooms.forEach(r => {
+                    const li = document.createElement('li');
+                    li.textContent = `${r.title} (${r.roomId}) — ${r.headCount}명`;
+                    li.dataset.roomId = r.roomId;
+                    roomListEl.appendChild(li);
+                });
+            }, { receipt: receiptId });
+
+            // onreceipt 처리: 입장 메시지 전송
+            stompClient.onreceipt = frame => {
+                if (frame.headers['receipt-id'] === receiptId) {
+                    stompClient.send('/chat/enter', {}, '경오');
+                }
+            };
+
+            // 채팅 메시지 구독
+            stompClient.subscribe('/user/queue/chat', msg => {
+                messagesEl.innerHTML = '';
+                let chats;
+                try { chats = JSON.parse(msg.body); } catch { return; }
+                chats.forEach(c => {
+                    const time = new Date(c.time)
+                        .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const li = document.createElement('li');
+                    li.textContent = `[${time}] ${c.name} (${c.tier}): ${c.message}`;
+                    messagesEl.appendChild(li);
+                });
+                messagesEl.scrollTop = messagesEl.scrollHeight;
             });
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-        });
 
-        // 2) 채팅방 목록 변경 브로드캐스트 구독
-        stomp.subscribe('/topic/chatrooms', msg => {
-            let updated;
-            try {
-                updated = JSON.parse(msg.body);
-            } catch {
-                return;
-            }
-            const { roomId, title, headCount } = updated;
-            const li = roomListEl.querySelector(`li[data-room-id="${roomId}"]`);
-            if (!li) return;
-            li.textContent = `${title} (${roomId}) — ${headCount}명`;
-        });
-
-        // 3) 채팅방 목록 초기 구독
-        stomp.subscribe('/user/queue/chatrooms', msg => {
-            let rooms;
-            try { rooms = JSON.parse(msg.body); } catch { return; }
-            roomListEl.innerHTML = '';
-            rooms.forEach(room => {
-                const li = document.createElement('li');
-                li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
-                li.dataset.roomId = room.roomId;
-                roomListEl.appendChild(li);
+            // 채팅방 목록 변경 브로드캐스트 구독 (업데이트 시 오름차순 정렬 유지)
+            stompClient.subscribe('/topic/chatrooms', msg => {
+                let u;
+                try { u = JSON.parse(msg.body); } catch { return; }
+                const existing = Array.from(roomListEl.children).map(li => ({
+                    roomId: li.dataset.roomId,
+                    text: li.textContent
+                }));
+                // 업데이트된 headCount만 교체
+                existing.forEach(item => {
+                    if (item.roomId === u.roomId.toString()) {
+                        const li = roomListEl.querySelector(`li[data-room-id="${u.roomId}"]`);
+                        if (li) {
+                            li.textContent = `${u.title} (${u.roomId}) — ${u.headCount}명`;
+                        }
+                    }
+                });
+                // 정렬이 깨질 경우 다시 정렬 (필요 시)
+                const reordered = Array.from(roomListEl.children).sort((a, b) =>
+                    Number(a.dataset.roomId) - Number(b.dataset.roomId)
+                );
+                roomListEl.innerHTML = '';
+                reordered.forEach(li => roomListEl.appendChild(li));
             });
-        }, { receipt: receiptId });
 
-        // 4) onreceipt 로직 유지
-        stomp.onreceipt = frame => {
-            if (frame.headers['receipt-id'] === receiptId) {
-                stomp.send('/chat/enter', {}, '경오');
-            }
-        };
+            // 채팅방 클릭 핸들러
+            roomListEl.addEventListener('click', e => {
+                const li = e.target;
+                const nr = li.dataset.roomId;
+                if (!nr || currentRoomId === nr) return;
+                if (chatSubscription && currentRoomId) {
+                    stompClient.send(`/chat/room/${currentRoomId}/left`, {}, currentRoomId);
+                    chatSubscription.unsubscribe();
+                }
+                currentRoomId = nr;
+                roomListEl.querySelectorAll('li').forEach(el => el.classList.remove('active'));
+                li.classList.add('active');
+                messagesEl.innerHTML = '';
 
-        // 5) 채팅방 클릭 핸들러
-        roomListEl.addEventListener('click', e => {
-            const li = e.target;
-            const newRoomId = li.dataset.roomId;
-            if (!newRoomId || currentRoomId === newRoomId) return;
-
-            // 5-1) 이전 방 나가기 → unsubscribe
-            if (chatSubscription && currentRoomId) {
-                stomp.send(`/chat/room/${currentRoomId}/left`, {}, currentRoomId);
-                chatSubscription.unsubscribe();
-            }
-
-            // 5-2) UI 업데이트
-            currentRoomId = newRoomId;
-            document.querySelectorAll('#roomList li')
-                .forEach(el => el.classList.remove('active'));
-            li.classList.add('active');
-            messagesEl.innerHTML = '';
-
-            // 5-3) 딜레이 후 신규 방 구독
-            setTimeout(() => {
-                chatSubscription = stomp.subscribe(
-                    `/topic/chat/${currentRoomId}`,
-                    m => {
+                setTimeout(() => {
+                    chatSubscription = stompClient.subscribe(`/topic/chat/${nr}`, m => {
                         setTimeout(() => {
-                            let payload;
-                            try {
-                                payload = JSON.parse(m.body);
-                            } catch {
-                                const liFallback = document.createElement('li');
-                                liFallback.textContent = m.body;
-                                messagesEl.appendChild(liFallback);
+                            let p;
+                            try { p = JSON.parse(m.body); } catch {
+                                const lf = document.createElement('li');
+                                lf.textContent = m.body;
+                                messagesEl.appendChild(lf);
                                 messagesEl.scrollTop = messagesEl.scrollHeight;
                                 return;
                             }
-                            const { time, name, tier, message } = payload;
-                            const formattedTime = new Date(time)
+                            const { time, name, tier, message } = p;
+                            const ft = new Date(time)
                                 .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                             const liB = document.createElement('li');
-                            liB.textContent = `[${formattedTime}] ${name} (${tier}): ${message}`;
+                            liB.textContent = `[${ft}] ${name} (${tier}): ${message}`;
                             messagesEl.appendChild(liB);
                             messagesEl.scrollTop = messagesEl.scrollHeight;
                         }, 100);
-                    }
-                );
-
-                // 5-4) 추가 딜레이 후 신규 방 입장 요청
-                setTimeout(() => {
-                    stomp.send(`/chat/room/${currentRoomId}/enter`, {}, currentRoomId);
+                    });
+                    setTimeout(() => {
+                        stompClient.send(`/chat/room/${nr}/enter`, {}, nr);
+                    }, 100);
                 }, 100);
-            }, 100);
-        });
+            });
 
-        // 6) 전송 버튼 클릭 (REST 호출 후 JSON 렌더링)
-        const sendBtn = document.getElementById('sendBtn');
-        const msgInput = document.getElementById('msg');
-
-        msgInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();  // 혹시 폼 전송 방지
-                sendBtn.click();
-            }
-        });
-
-        sendBtn.addEventListener('click', () => {
-            if (!currentRoomId) return;
-            const message = msgInput.value.trim();
-            if (!message) return;
-            fetch(`/room/${currentRoomId}/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message })
-            })
-                .then(res => {
-                    if (!res.ok) throw new Error('메시지 전송 실패');
-                    return res.json();
+            // 전송 버튼 클릭 시 fetch 호출
+            const sendBtn = document.getElementById('sendBtn');
+            const msgInput = document.getElementById('msg');
+            msgInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); sendBtn.click(); }
+            });
+            sendBtn.addEventListener('click', () => {
+                if (!currentRoomId) return;
+                const m = msgInput.value.trim();
+                if (!m) return;
+                fetch(`/room/${currentRoomId}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ message: m })
                 })
-                .then(data => {
-                    const time = new Date(data.time)
-                        .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    const li = document.createElement('li');
-                    li.textContent = `[${time}] ${data.name} (${data.tier}): ${data.message}`;
-                    messagesEl.appendChild(li);
-                    messagesEl.scrollTop = messagesEl.scrollHeight;
-                })
-                .catch(err => console.error(err));
-            msgInput.value = '';
+                    .then(res => {
+                        if (!res.ok) throw new Error('메시지 전송 실패');
+                        return res.json();
+                    })
+                    .then(d => {
+                        const t = new Date(d.time)
+                            .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const li = document.createElement('li');
+                        li.textContent = `[${t}] ${d.name} (${d.tier}): ${d.message}`;
+                        messagesEl.appendChild(li);
+                        messagesEl.scrollTop = messagesEl.scrollHeight;
+                    })
+                    .catch(err => console.error(err));
+                msgInput.value = '';
+            });
         });
-    });
+    }
 </script>
 </body>
 </html>

@@ -44,7 +44,7 @@ public class ChattingUseCase {
 
 		List<ChatRoom> roomLists = chattingDomainService.getChatRoomList();
 
-		//TODO : 추후 이벤트 방식으로 저장할 예정 (afterCommit)
+		//TODO : 추후 이벤트 방식으로 저장할 예정 (afterCommit), 리스트 자료구조 쓰기
 		cacheService.replaceChatRoomsCache(roomLists);
 	}
 
@@ -67,7 +67,6 @@ public class ChattingUseCase {
 			.toList();
 
 		messageService.handleEnter(roomLists, principalName);
-
 	}
 
 	@Transactional
@@ -111,7 +110,6 @@ public class ChattingUseCase {
 			.title(chatRoom.getTitle())
 			.headCount(headCount)
 			.build());
-
 	}
 
 	@Transactional
@@ -130,7 +128,6 @@ public class ChattingUseCase {
 			.title(chatRoom.getTitle())
 			.headCount(roomData.get("headCount"))
 			.build());
-
 	}
 
 }
