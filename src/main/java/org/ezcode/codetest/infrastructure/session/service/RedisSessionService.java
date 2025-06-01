@@ -10,7 +10,7 @@ import java.util.Objects;
 import org.ezcode.codetest.application.chatting.port.session.SessionService;
 import org.ezcode.codetest.domain.chat.exception.ChattingException;
 import org.ezcode.codetest.domain.chat.exception.ChattingExceptionCode;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RedisSessionService implements SessionService {
 
-	private final StringRedisTemplate redisTemplate;
+	private final RedisTemplate<String, Long> redisTemplate;
 	private static final String CHATROOM_KEY_PREFIX = "chatroom:";
 	private static final String SESSION_KEY_PREFIX = "session:";
 	private static final String ROOM_COUNT_KEY_PREFIX = "roomCount:";
@@ -34,14 +34,14 @@ public class RedisSessionService implements SessionService {
 			"  redis.call('INCR', KEYS[3])\n" +
 			"end\n" +
 			"local cnt = redis.call('GET', KEYS[3])\n" +
-			"return tonumber(cnt)\n"
-		, Long.class
+			"return tonumber(cnt)\n",
+		Long.class
 	);
 
 	private final RedisScript<List<Long>> removeSessionScript = new DefaultRedisScript<>(
 		"local roomId = redis.call('GET', KEYS[1])\n" +
 			"if not roomId then\n" +
-			"  return {\"-1\", 0}\n" +
+			"  return {-1, 0}\n" +
 			"end\n" +
 			"local roomKey = 'chatroom:' .. roomId\n" +
 			"local roomCountKey = 'roomCount:' .. roomId\n" +
@@ -54,8 +54,8 @@ public class RedisSessionService implements SessionService {
 			"if not cnt then\n" +
 			"  cnt = \"0\"\n" +
 			"end\n" +
-			"return { tonumber(roomId), tonumber(cnt) }\n"
-		, (Class<List<Long>>)(Class<?>)List.class
+			"return { tonumber(roomId), tonumber(cnt) }\n",
+		(Class<List<Long>>)(Class<?>)List.class
 	);
 
 	@Override
@@ -109,11 +109,9 @@ public class RedisSessionService implements SessionService {
 	public Long viewSession(Long roomId) {
 
 		String roomCountKey = ROOM_COUNT_KEY_PREFIX + roomId;
-		String countStr = redisTemplate.opsForValue().get(roomCountKey);
-		if (countStr == null) {
-			return 0L;
-		}
-		return Long.valueOf(countStr);
+
+		Long count = redisTemplate.opsForValue().get(roomCountKey);
+		return (count != null ? count : 0L);
 	}
 }
 
