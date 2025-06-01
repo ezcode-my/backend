@@ -33,9 +33,7 @@ public record ProblemDetailResponse(
 
 	LocalDateTime createdAt,
 
-	LocalDateTime modifiedAt,
-
-	boolean isDeleted
+	LocalDateTime modifiedAt
 
 ) {
 
