@@ -7,6 +7,7 @@ import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,15 +27,15 @@ public class Discussion extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "problem_id", nullable = false)
 	private Problem problem;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "language_id", nullable = false)
 	private Language language;
 
@@ -55,6 +56,10 @@ public class Discussion extends BaseEntity {
 	public void update(Language language, String content) {
 		this.language = language;
 		this.content = content;
+	}
+
+	public void setDeleted() {
+		this.isDeleted = true;
 	}
 
 }

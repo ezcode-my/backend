@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.usermanagement.user.dto;
 
+import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 
@@ -32,5 +33,20 @@ public class UserInfoResponse {
 		this.introduction = introduction;
 		this.tier = tier;
 		this.userRole = userRole;
+	}
+
+	public static UserInfoResponse fromEntity(User user) {
+		return UserInfoResponse.builder()
+			.username(user.getUsername())
+			.age(user.getAge())
+			.email(user.getEmail())
+			.profileImageUrl(user.getProfileImageUrl())
+			.blogUrl(user.getBlogUrl())
+			.introduction(user.getIntroduction())
+			.nickname(user.getNickname())
+			.githubUrl(user.getGithubUrl())
+			.userRole(user.getRole())
+			.tier(user.getTier())
+			.build();
 	}
 }

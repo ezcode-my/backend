@@ -45,7 +45,8 @@ public class LanguageDomainService {
 		languageRepository.updateLanguage(language, judge0Id);
 	}
 
-	public void removeLanguage(Long languageId) {
+	public void deleteLanguage(Long languageId) {
 		languageRepository.deleteLanguage(languageId);
 	}
+
 }
