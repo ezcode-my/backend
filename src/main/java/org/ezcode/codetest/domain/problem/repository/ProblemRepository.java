@@ -11,13 +11,13 @@ public interface ProblemRepository {
 
 	Problem save(Problem problem);
 
-	Optional<Problem> findById(Long id);
+	Optional<Problem> findById(Long problemId);
 
 	Page<Problem> findByCategory(Category category, Pageable pageable);
 
 	Page<Problem> findAll(Pageable pageable);
 
-	Problem findByIdOrElseThrow(Long id);
+	Problem findByIdOrElseThrow(Long problemId);
 
 	Problem delete(Problem problem);
 

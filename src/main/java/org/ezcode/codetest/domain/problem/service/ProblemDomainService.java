@@ -31,8 +31,8 @@ public class ProblemDomainService {
 		return problemRepository.findAll(pageable);
 	}
 
-	public Problem findByIdOrElseThrow(Long id) {
+	public Problem findByIdOrElseThrow(Long problemId) {
 
-		return problemRepository.findByIdOrElseThrow(id);
+		return problemRepository.findByIdOrElseThrow(problemId);
 	}
 }

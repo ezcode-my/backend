@@ -51,9 +51,9 @@ public class ProblemService {
 		return problems.map(ProblemResponse::from); // Entity → DTO 변환
 	}
 
-	public ProblemDetailResponse findByIdProblem(Long id) {
+	public ProblemDetailResponse findByIdProblem(Long problemId) {
 
-		Problem findProblem = problemDomainService.findByIdOrElseThrow(id);
+		Problem findProblem = problemDomainService.findByIdOrElseThrow(problemId);
 
 		return ProblemDetailResponse.from(findProblem);
 	}

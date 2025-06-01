@@ -23,8 +23,8 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	}
 
 	@Override
-	public Optional<Problem> findById(Long id) {
-		return problemJpaRepository.findById(id);
+	public Optional<Problem> findById(Long problemId) {
+		return problemJpaRepository.findById(problemId);
 	}
 
 	@Override
@@ -38,8 +38,8 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	}
 
 	@Override
-	public Problem findByIdOrElseThrow(Long id) {
-		return problemJpaRepository.findById(id).orElseThrow();
+	public Problem findByIdOrElseThrow(Long problemId) {
+		return problemJpaRepository.findById(problemId).orElseThrow();
 	}
 
 	@Override

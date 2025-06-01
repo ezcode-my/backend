@@ -36,11 +36,11 @@ public class ProblemController {
 				.body(problemService.findAllByCategory(pageable, category));
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<ProblemDetailResponse> findByIdProblem(@PathVariable Long id) {
+	@GetMapping("/{problemId}")
+	public ResponseEntity<ProblemDetailResponse> findByIdProblem(@PathVariable Long problemId) {
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(problemService.findByIdProblem(id));
+				.body(problemService.findByIdProblem(problemId));
 	}
 }
