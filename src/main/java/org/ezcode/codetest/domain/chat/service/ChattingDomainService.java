@@ -17,9 +17,9 @@ public class ChattingDomainService {
 	private final ChatRepository chatRepository;
 	private final ChatRoomRepository chatRoomRepository;
 
-	public void createChatRoom(ChatRoom chatRoom) {
+	public ChatRoom createChatRoom(ChatRoom room) {
 
-		chatRoomRepository.save(chatRoom);
+		return chatRoomRepository.save(room);
 	}
 
 	public List<ChatRoom> getChatRoomList() {

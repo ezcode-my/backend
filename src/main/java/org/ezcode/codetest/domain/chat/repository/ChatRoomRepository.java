@@ -6,7 +6,7 @@ import org.ezcode.codetest.domain.chat.model.ChatRoom;
 
 public interface ChatRoomRepository {
 
-	void save(ChatRoom chatRoom);
+	ChatRoom save(ChatRoom room);
 
 	ChatRoom findOrElseThrow(Long id);
 

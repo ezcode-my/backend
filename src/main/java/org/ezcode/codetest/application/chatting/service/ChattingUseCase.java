@@ -7,6 +7,7 @@ import org.ezcode.codetest.application.chatting.dto.request.ChatRoomSaveRequest;
 import org.ezcode.codetest.application.chatting.dto.request.ChatSaveRequest;
 import org.ezcode.codetest.application.chatting.dto.response.ChatResponse;
 import org.ezcode.codetest.application.chatting.dto.response.ChatRoomResponse;
+import org.ezcode.codetest.application.chatting.port.cache.CacheService;
 import org.ezcode.codetest.application.chatting.port.message.MessageService;
 import org.ezcode.codetest.application.chatting.port.session.SessionService;
 import org.ezcode.codetest.domain.chat.model.Chat;
@@ -27,25 +28,37 @@ public class ChattingUseCase {
 	private final ChattingDomainService chattingDomainService;
 	private final MessageService messageService;
 	private final SessionService sessionService;
+	private final CacheService cacheService;
 
 	@Transactional
 	public void createChatRoom(ChatRoomSaveRequest request, String email) {
 
 		User user = userDomainService.findUser(email);
 
-		chattingDomainService.createChatRoom(ChatRoom.builder()
+		chattingDomainService.createChatRoom(ChatRoom
+			.builder()
 			.title(request.title())
 			.isDeleted(false)
 			.user(user)
 			.build());
+
+		List<ChatRoom> roomLists = chattingDomainService.getChatRoomList();
+
+		//TODO : 추후 이벤트 방식으로 저장할 예정 (afterCommit)
+		cacheService.replaceChatRoomsCache(roomLists);
 	}
 
 	@Transactional
 	public void getChatRoomList(String principalName) {
 
-		List<ChatRoomResponse> roomLists = chattingDomainService
-			.getChatRoomList()
-			.stream()
+		List<ChatRoom> chatRooms = cacheService.getChatRoomsFromCache();
+
+		if (chatRooms == null) {
+			chatRooms = chattingDomainService.getChatRoomList();
+			cacheService.replaceChatRoomsCache(chatRooms);
+		}
+
+		List<ChatRoomResponse> roomLists = chatRooms.stream()
 			.map(room -> ChatRoomResponse.builder()
 				.roomId(room.getId())
 				.title(room.getTitle())

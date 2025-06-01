@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.chat.model;
 
+import static jakarta.persistence.FetchType.*;
+
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
@@ -29,11 +31,11 @@ public class Chat extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@ManyToOne
+	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "room_id", nullable = false)
 	private ChatRoom chatRoom;
 
