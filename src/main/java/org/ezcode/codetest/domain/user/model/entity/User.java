@@ -67,6 +67,11 @@ public class User extends BaseEntity {
 	private boolean isDeleted;
 
 
+	/*
+	처음 유저 생성(가입) 시에는 기본 정보만 받음
+	- 이메일, 비번, 이름, 별명, 나이
+	-> 이후 회원정보 업데이트할 때, 원하는 정보를 입력할 수 있도록 함
+	 */
 	@Builder
 	public User(String email, String password, String username, String nickname, Integer age){
 		this.email = email;
@@ -77,25 +82,21 @@ public class User extends BaseEntity {
 		this.authType = AuthType.EMAIL;
 		this.tier = Tier.NEWBIE;
 		this.role = UserRole.USER;
+		this.isDeleted = false;
 	}
 
-	// @Builder
-	// public User(String username, String email, String password, String nickname, Integer age,
-	// 	String githubUrl, String blogUrl, String profileImageUrl, String introduction) {
-	// 	this.username = username;
-	// 	this.email = email;
-	// 	this.password = password;
-	// 	this.nickname = nickname;
-	// 	this.age = age;
-	// 	this.role = UserRole.USER;
-	// 	this.authType = AuthType.EMAIL;
-	// 	this.githubUrl = githubUrl;
-	// 	this.blogUrl = blogUrl;
-	// 	this.profileImageUrl = profileImageUrl;
-	// 	this.introduction = introduction;
-	// 	this.tier = Tier.NEWBIE;
-	// 	this.isDeleted = false;
-	// }
+	/*
+	유저 정보 업데이트
+	- 만약 입력 값이 없다면, 기존 값 유지
+	 */
+	public void updateUserInfo(String nickname, String githubUrl, String blogUrl, String profileImageUrl, String introduction){
+		this.nickname = (nickname == null || nickname.isBlank()) ? this.nickname : nickname;
+		this.githubUrl = (githubUrl == null || githubUrl.isBlank()) ? this.githubUrl : githubUrl;
+		this.blogUrl = (blogUrl == null || blogUrl.isBlank()) ? this.blogUrl : blogUrl;
+		this.profileImageUrl = (profileImageUrl == null || profileImageUrl.isBlank()) ? this.profileImageUrl : profileImageUrl;
+		this.introduction = (introduction == null || introduction.isBlank()) ? this.introduction : introduction;
+	}
+
 
 	public void setDeleted() {
 		this.isDeleted = true;

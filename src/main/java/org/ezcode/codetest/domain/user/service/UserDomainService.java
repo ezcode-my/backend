@@ -6,7 +6,7 @@ import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.ezcode.codetest.infrastructure.security.jwt.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,6 +29,11 @@ public class UserDomainService {
 			.orElseThrow(() -> new AuthException("사용자를 찾을 수 없습니다."));
 	}
 
+	public User findUserById(Long id) {
+		return userRepository.findUserById(id)
+			.orElseThrow(()->new AuthException("사용자를 찾을 수 없습니다."));
+	}
+
 	public void userPasswordCheck(String email, String password) {
 		User user = userRepository.findByEmail(email)
 			.orElseThrow(() -> new AuthException("사용자를 찾을 수 없습니다."));;
@@ -41,4 +46,5 @@ public class UserDomainService {
 	public String encodePassword(String password) {
 		return passwordEncoder.encode(password);
 	}
+
 }

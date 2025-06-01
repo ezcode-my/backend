@@ -54,6 +54,7 @@ public class ChattingUseCase {
 			.toList();
 
 		messageService.handleEnter(roomLists, principalName);
+
 	}
 
 	@Transactional
@@ -97,6 +98,7 @@ public class ChattingUseCase {
 			.title(chatRoom.getTitle())
 			.headCount(headCount)
 			.build());
+
 	}
 
 	@Transactional
@@ -115,6 +117,7 @@ public class ChattingUseCase {
 			.title(chatRoom.getTitle())
 			.headCount(roomData.get("headCount"))
 			.build());
+
 	}
 
 }
