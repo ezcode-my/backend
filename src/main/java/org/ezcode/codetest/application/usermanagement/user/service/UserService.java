@@ -7,7 +7,7 @@ import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +18,7 @@ public class UserService {
 
 	private final UserDomainService userDomainService;
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(AuthUser authUser) {
 		log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
 		User user = userDomainService.findUserById(authUser.getId());

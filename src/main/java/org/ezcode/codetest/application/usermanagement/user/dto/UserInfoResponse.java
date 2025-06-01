@@ -8,16 +8,16 @@ import lombok.Getter;
 
 @Getter
 public class UserInfoResponse {
-	private String username;
-	private String email;
-	private Integer age;
-	private String nickname;
-	private UserRole userRole;
-	private String githubUrl;
-	private String blogUrl;
-	private String profileImageUrl;
-	private String introduction;
-	private Tier tier;
+	private final String username;
+	private final String email;
+	private final Integer age;
+	private final String nickname;
+	private final UserRole userRole;
+	private final String githubUrl;
+	private final String blogUrl;
+	private final String profileImageUrl;
+	private final String introduction;
+	private final Tier tier;
 
 	@Builder
 	public UserInfoResponse(String username, String email, String nickname, UserRole userRole, Tier tier,

@@ -6,7 +6,7 @@ import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.ezcode.codetest.infrastructure.security.jwt.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
