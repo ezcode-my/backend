@@ -10,20 +10,25 @@ import jakarta.validation.constraints.NotBlank;
 
 public record ProblemCreateRequest(
 
+	@NotBlank(message = "카테고리를 설정해야 합니다.")
 	Category category,
 
-	@NotBlank
+	@NotBlank(message = "문제 제목을 입력하세요.")
 	String title,
 
-	@NotBlank
+	@NotBlank(message = "문제 설명을 입력하세요.")
 	String description,
 
+	@NotBlank(message = "난이도를 설정해야 합니다.")
 	Difficulty difficulty,
 
+	@NotBlank(message = "메모리 제한을 설정해야 합니다.")
 	String memoryLimit,
 
+	@NotBlank(message = "시간 제한을 설정해야 합니다.")
 	int timeLimit,
 
+	@NotBlank(message = "출처를 명시해야 합니다.")
 	Reference reference
 
 
