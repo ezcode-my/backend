@@ -1,6 +1,6 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
-import org.ezcode.codetest.application.usermanagement.user.dto.UpdateUserInfoRequest;
+import org.ezcode.codetest.application.usermanagement.user.dto.ModifyUserInfoRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.UserInfoResponse;
 import org.ezcode.codetest.application.usermanagement.user.service.UserService;
 import org.ezcode.codetest.common.annotation.Auth;
@@ -28,10 +28,10 @@ public class UserController {
 	}
 
 	@PutMapping("/users")
-	public ResponseEntity<UserInfoResponse> updateUserInfo(
+	public ResponseEntity<UserInfoResponse> modifyUserInfo(
 		@Auth AuthUser authUser,
-		@RequestBody UpdateUserInfoRequest updateUserInfoRequest
+		@RequestBody ModifyUserInfoRequest modifyUserInfoRequest
 	){
-		return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserInfo(authUser, updateUserInfoRequest));
+		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserInfo(authUser, modifyUserInfoRequest));
 	}
 }

@@ -67,7 +67,7 @@ public class AuthService {
 	@Transactional
 	public SigninResponse signin(@Valid SigninRequest signinRequest) {
 
-		User loginUser = userDomainService.findUser(signinRequest.getEmail());
+		User loginUser = userDomainService.getUser(signinRequest.getEmail());
 
 		userDomainService.userPasswordCheck(signinRequest.getEmail(), loginUser.getPassword());
 

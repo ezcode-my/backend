@@ -27,12 +27,12 @@ public class UserDomainService {
 		userRepository.createUser(user);
 	}
 
-	public User findUser(String email) {
+	public User getUser(String email) {
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new AuthException(AuthExceptionCode.USER_NOT_FOUND));
 	}
 
-	public User findUserById(Long id) {
+	public User getUserById(Long id) {
 		return userRepository.findUserById(id)
 			.orElseThrow(()->new AuthException(AuthExceptionCode.USER_NOT_FOUND));
 	}
