@@ -53,7 +53,7 @@ public class ChattingUseCase {
 	@Transactional
 	public void removeChatRoom(ChatRoomDeleteRequest request, String email) {
 
-		User user = userDomainService.findUser(email);
+		User user = userDomainService.getUser(email);
 
 		ChatRoom removedRoom = chattingDomainService.getChatRoom(request.roomId());
 
