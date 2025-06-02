@@ -17,4 +17,5 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
 
 	@Query("SELECT p FROM Problem p WHERE p.isDeleted = false AND p.id = :problemId")
 	Optional<Problem> findByIdNotDeleted(Long problemId);
+
 }

@@ -81,7 +81,7 @@ public class ProblemService {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
-		findProblem.softDelete();
+		problemDomainService.removeProblem(findProblem);
 	}
 }
 

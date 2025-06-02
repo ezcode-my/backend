@@ -33,14 +33,13 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	}
 
 	@Override
-	public Optional<Problem> findById(Long problemId) {
+	public Optional<Problem> findByIdNotDeleted(Long problemId) {
 		return problemJpaRepository.findByIdNotDeleted(problemId);
 	}
 
 	@Override
 	public void delete(Problem problem) {
 
-		problemJpaRepository.delete(problem);
-
+		problem.softDelete();
 	}
 }

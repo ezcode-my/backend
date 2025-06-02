@@ -27,9 +27,13 @@ public record ProblemResponse(
 
 	public static ProblemResponse from(Problem problem) {
 
+		if (problem == null) {
+			throw new IllegalArgumentException("문제는 null 값이 아니어야 합니다.");
+		}
+
 		return ProblemResponse.builder()
 			.id(problem.getId())
-			.creator(problem.getCreator().getNickname())
+			.creator(problem.getCreator() != null ? problem.getCreator().getNickname() : "존재하지 않는 이름.")
 			.category(problem.getCategory())
 			.title(problem.getTitle())
 			.score(problem.getScore())

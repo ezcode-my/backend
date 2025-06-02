@@ -15,7 +15,7 @@ public interface ProblemRepository {
 
 	Page<Problem> findByIsDeletedIsFalse(Pageable pageable);
 
-	Optional<Problem> findById(Long problemId);
+	Optional<Problem> findByIdNotDeleted(Long problemId);
 
 	void delete(Problem problem);
 

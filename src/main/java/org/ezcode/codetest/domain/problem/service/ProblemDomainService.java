@@ -21,9 +21,7 @@ public class ProblemDomainService {
 	}
 
 	public Page<Problem> getProblemsByCategoryList(Category category, Pageable pageable) {
-		if (category == null) {
-			return problemRepository.findByIsDeletedIsFalse(pageable); // 전체 조회
-		}
+
 		return problemRepository.findByCategoryAndIsDeletedIsFalse(category, pageable);
 	}
 
@@ -34,12 +32,13 @@ public class ProblemDomainService {
 
 	public Problem getProblem(Long problemId) {
 
-		return problemRepository.findById(problemId)
+		return problemRepository.findByIdNotDeleted(problemId)
 			.orElseThrow(() -> new EntityNotFoundException("문제를 찾을수 없습니다."));
 	}
 
 	public void removeProblem(Problem problem) {
 
 		problemRepository.delete(problem);
+
 	}
 }
