@@ -1,6 +1,6 @@
 package org.ezcode.codetest.application.usermanagement.user.service;
 
-import org.ezcode.codetest.application.usermanagement.user.dto.UpdateUserInfoRequest;
+import org.ezcode.codetest.application.usermanagement.user.dto.ModifyUserInfoRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.UserInfoResponse;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -21,7 +21,7 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(AuthUser authUser) {
 		log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
-		User user = userDomainService.findUserById(authUser.getId());
+		User user = userDomainService.getUserById(authUser.getId());
 
 		return UserInfoResponse.builder()
 			.username(user.getUsername())
@@ -38,15 +38,15 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserInfoResponse updateUserInfo(AuthUser authUser, UpdateUserInfoRequest updateUserInfoRequest) {
-		User user = userDomainService.findUserById(authUser.getId());
+	public UserInfoResponse modifyUserInfo(AuthUser authUser, ModifyUserInfoRequest modifyUserInfoRequest) {
+		User user = userDomainService.getUserById(authUser.getId());
 
-		user.updateUserInfo(
-			updateUserInfoRequest.nickname(),
-			updateUserInfoRequest.githubUrl(),
-			updateUserInfoRequest.blogUrl(),
-			updateUserInfoRequest.profileImageUrl(),
-			updateUserInfoRequest.introduction());
+		user.modifyUserInfo(
+			modifyUserInfoRequest.nickname(),
+			modifyUserInfoRequest.githubUrl(),
+			modifyUserInfoRequest.blogUrl(),
+			modifyUserInfoRequest.profileImageUrl(),
+			modifyUserInfoRequest.introduction());
 
 
 		return UserInfoResponse.builder()

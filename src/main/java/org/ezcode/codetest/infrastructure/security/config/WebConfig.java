@@ -19,7 +19,6 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		log.info("----------------authUserArgumentResolver 등록---------------------");
 		argumentResolvers.add(authUserArgumentResolver);
 	}
 }

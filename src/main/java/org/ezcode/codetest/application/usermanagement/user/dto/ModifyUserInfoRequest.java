@@ -1,7 +1,7 @@
 package org.ezcode.codetest.application.usermanagement.user.dto;
 
 
-public record UpdateUserInfoRequest(
+public record ModifyUserInfoRequest(
 	String nickname,
 
 	String githubUrl,

@@ -33,7 +33,7 @@ public class ChattingUseCase {
 	@Transactional
 	public void createChatRoom(ChatRoomSaveRequest request, String email) {
 
-		User user = userDomainService.findUser(email);
+		User user = userDomainService.getUser(email);
 
 		chattingDomainService.createChatRoom(ChatRoom
 			.builder()
@@ -72,7 +72,7 @@ public class ChattingUseCase {
 	@Transactional
 	public void sendChatting(ChatSaveRequest request, String email, Long roomId) {
 
-		User user = userDomainService.findUser(email);
+		User user = userDomainService.getUser(email);
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomId);
 
@@ -89,7 +89,7 @@ public class ChattingUseCase {
 	@Transactional
 	public void getChattingHistory(String sessionId, String principalName, String email, Long roomId) {
 
-		User user = userDomainService.findUser(email);
+		User user = userDomainService.getUser(email);
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomId);
 
@@ -115,7 +115,7 @@ public class ChattingUseCase {
 	@Transactional
 	public void leftChatRoom(String sessionId, String email, Long roomId) {
 
-		User user = userDomainService.findUser(email);
+		User user = userDomainService.getUser(email);
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomId);
 
