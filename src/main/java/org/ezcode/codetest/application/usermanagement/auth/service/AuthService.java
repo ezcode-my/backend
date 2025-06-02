@@ -67,9 +67,9 @@ public class AuthService {
 	@Transactional
 	public SigninResponse signin(@Valid SigninRequest signinRequest) {
 
-		User loginUser = userDomainService.getUser(signinRequest.getEmail());
+    	User loginUser = userDomainService.getUser(signinRequest.getEmail());
 
-		userDomainService.userPasswordCheck(signinRequest.getEmail(), loginUser.getPassword());
+		userDomainService.userPasswordCheck(signinRequest.getEmail(), signinRequest.getPassword());
 
 		String bearToken = jwtUtil.createToken(
 			loginUser.getId(),

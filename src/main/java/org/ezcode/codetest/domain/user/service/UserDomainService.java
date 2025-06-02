@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -41,7 +43,7 @@ public class UserDomainService {
 		User user = userRepository.findByEmail(email)
 			.orElseThrow(() -> new AuthException(AuthExceptionCode.USER_NOT_FOUND));;
 
-		if (passwordEncoder.matches(password, user.getPassword())) {
+		if (!passwordEncoder.matches(password, user.getPassword())) {
 			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);
 		}
 	}
