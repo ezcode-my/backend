@@ -37,7 +37,7 @@ public class ProblemController {
 	}
 
 	@GetMapping("/{problemId}")
-	public ResponseEntity<ProblemDetailResponse> findByIdProblem(@PathVariable Long problemId) {
+	public ResponseEntity<ProblemDetailResponse> getProblem(@PathVariable Long problemId) {
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
