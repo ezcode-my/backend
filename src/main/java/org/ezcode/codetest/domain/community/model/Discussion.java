@@ -52,4 +52,9 @@ public class Discussion extends BaseEntity {
 		this.content = content;
 	}
 
+	public void update(Language language, String content) {
+		this.language = language;
+		this.content = content;
+	}
+
 }
