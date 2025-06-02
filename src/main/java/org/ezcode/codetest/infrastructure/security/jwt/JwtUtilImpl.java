@@ -43,7 +43,7 @@ public class JwtUtilImpl implements JwtUtil {
 		}
 
 		Date date = new Date();
-		log.info("토큰 생성 시작");
+		log.info("-----------jwtUtil 토큰 생성 시작---------------");
 
 		return BEARER_PREFIX +
 			Jwts.builder()

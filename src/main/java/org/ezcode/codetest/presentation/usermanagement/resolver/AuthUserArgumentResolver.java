@@ -34,6 +34,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 			NativeWebRequest webRequest,
 			 WebDataBinderFactory webDataBinderFactory
 	){
+		log.info("--------------------AuthUserArgumentResolver 진입-----------------");
 		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
 		AuthUser authUser = (AuthUser) request.getAttribute("authUser");

@@ -11,6 +11,7 @@ import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -80,5 +81,10 @@ public class AuthService {
 			loginUser.getTier());
 
 		return SigninResponse.from(bearToken);
+	}
+
+	public String logout(Long userId, HttpServletRequest request) {
+
+		return "로그아웃 성공";
 	}
 }
