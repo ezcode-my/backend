@@ -6,14 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class UserCommunityInfoResponse {
+public class SimpleUserInfoResponse {
 	private final Long userId;
 	private final String nickname;
 	private final Tier tier;
 	private final String profileImageUrl;
 
 	@Builder
-	public UserCommunityInfoResponse(Long userId, String nickname, Tier tier, String profileImageUrl) {
+	public SimpleUserInfoResponse(Long userId, String nickname, Tier tier, String profileImageUrl) {
 		this.userId = userId;
 		this.nickname = nickname;
 		this.tier = tier;

@@ -30,7 +30,7 @@ public class AuthService {
 	 */
 	@Transactional
 	public SignupResponse signup(SignupRequest signupRequest) {
-		userDomainService.alreadyExistUserCheck(signupRequest.getEmail());
+		userDomainService.checkEmailUnique(signupRequest.getEmail());
 
 		if (!signupRequest.getPassword().equals(signupRequest.getPasswordConfirm())){
 			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);

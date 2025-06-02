@@ -19,7 +19,7 @@ public class UserDomainService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
-	public void alreadyExistUserCheck(String email) {
+	public void checkEmailUnique(String email) {
 		if (userRepository.findByEmail(email).isPresent()) {
 			throw new AuthException(AuthExceptionCode.EXIST_USER_EMAIL);
 		}
