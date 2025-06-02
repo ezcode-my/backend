@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record DiscussionUpdateRequest(
+public record DiscussionModifyRequest(
 
 	@NotNull(message = "languageId는 필수값입니다.")
 	Long languageId,

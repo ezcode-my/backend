@@ -1,7 +1,7 @@
 package org.ezcode.codetest.presentation.community;
 
 import org.ezcode.codetest.application.community.dto.request.DiscussionCreateRequest;
-import org.ezcode.codetest.application.community.dto.request.DiscussionUpdateRequest;
+import org.ezcode.codetest.application.community.dto.request.DiscussionModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.DiscussionResponse;
 import org.ezcode.codetest.application.community.service.DiscussionService;
 import org.ezcode.codetest.common.annotation.Auth;
@@ -52,24 +52,24 @@ public class DiscussionController {
 	}
 
 	@PutMapping("/{discussionId}")
-	public ResponseEntity<DiscussionResponse> updateDiscussion(
+	public ResponseEntity<DiscussionResponse> modifyDiscussion(
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
-		@RequestBody @Valid DiscussionUpdateRequest request,
+		@RequestBody @Valid DiscussionModifyRequest request,
 		@Auth AuthUser authUser
 	) {
 		return ResponseEntity
 			.ok()
-			.body(discussionService.updateDiscussion(problemId, discussionId, request, authUser.getId()));
+			.body(discussionService.modifyDiscussion(problemId, discussionId, request, authUser.getId()));
 	}
 
 	@DeleteMapping("/{discussionId}")
-	public ResponseEntity<Void> deleteDiscussion(
+	public ResponseEntity<Void> removeDiscussion(
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
 		@Auth AuthUser authUser
 	) {
-		discussionService.deleteDiscussion(problemId, discussionId, authUser.getId());
+		discussionService.removeDiscussion(problemId, discussionId, authUser.getId());
 		return ResponseEntity.ok().build();
 	}
 }

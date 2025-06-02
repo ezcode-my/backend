@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.community.model;
 
+import java.util.Objects;
+
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.problem.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
@@ -60,6 +62,14 @@ public class Discussion extends BaseEntity {
 
 	public void setDeleted() {
 		this.isDeleted = true;
+	}
+
+	public boolean isProblemMatches(Long problemId) {
+		return Objects.equals(this.problem.getId(), problemId);
+	}
+
+	public boolean isAuthor(Long userId) {
+		return Objects.equals(this.user.getId(), userId);
 	}
 
 }
