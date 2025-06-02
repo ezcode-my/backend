@@ -2,10 +2,10 @@ package org.ezcode.codetest.presentation;
 
 import java.util.List;
 
-import org.ezcode.codetest.application.language.LanguageCreateRequest;
-import org.ezcode.codetest.application.language.LanguageResponse;
-import org.ezcode.codetest.application.language.LanguageService;
-import org.ezcode.codetest.application.language.LanguageUpdateRequest;
+import org.ezcode.codetest.application.problem.dto.request.LanguageCreateRequest;
+import org.ezcode.codetest.application.problem.dto.response.LanguageResponse;
+import org.ezcode.codetest.application.problem.service.LanguageService;
+import org.ezcode.codetest.application.problem.dto.request.LanguageUpdateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
