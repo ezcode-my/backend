@@ -38,7 +38,6 @@ public class ProblemDomainService {
 			.orElseThrow(() -> new EntityNotFoundException("문제를 찾을수 없습니다."));
 	}
 
-	// 하드 삭제
 	public void removeProblem(Problem problem) {
 
 		problemRepository.delete(problem);

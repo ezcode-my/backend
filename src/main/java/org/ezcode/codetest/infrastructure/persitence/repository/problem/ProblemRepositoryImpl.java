@@ -23,11 +23,6 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	}
 
 	@Override
-	public Optional<Problem> findById(Long problemId) {
-		return problemJpaRepository.findById(problemId);
-	}
-
-	@Override
 	public Page<Problem> findByCategoryAndIsDeletedIsFalse(Category category, Pageable pageable) {
 		return problemJpaRepository.findByCategoryAndIsDeletedIsFalse(category, pageable);
 	}
@@ -38,15 +33,14 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	}
 
 	@Override
-	public Problem findByIdOrElseThrow(Long problemId) {
-		return problemJpaRepository.findById(problemId).orElseThrow();
+	public Optional<Problem> findById(Long problemId) {
+		return problemJpaRepository.findByIdNotDeleted(problemId);
 	}
 
 	@Override
-	public Problem delete(Problem problem) {
+	public void delete(Problem problem) {
 
 		problemJpaRepository.delete(problem);
 
-		return problem;
 	}
 }

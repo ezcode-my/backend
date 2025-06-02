@@ -38,6 +38,7 @@ public class ProblemService {
 		return ProblemDetailResponse.from(savedProblem);
 	}
 
+	@Transactional(readOnly = true)
 	public Page<ProblemResponse> getProblemsList(Pageable pageable, Category category) {
 		Page<Problem> problems;
 
@@ -50,13 +51,10 @@ public class ProblemService {
 		return problems.map(ProblemResponse::from); // Entity → DTO 변환
 	}
 
+	@Transactional(readOnly = true)
 	public ProblemDetailResponse getProblem(Long problemId) {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
-
-		if(findProblem.getIsDeleted()) {
-			throw new RuntimeException("삭제된 문제 입니다.");
-		}
 
 		return ProblemDetailResponse.from(findProblem);
 	}
