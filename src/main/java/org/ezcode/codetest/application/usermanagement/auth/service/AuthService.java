@@ -6,6 +6,7 @@ import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequ
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
 import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.stereotype.Service;
@@ -29,13 +30,10 @@ public class AuthService {
 	 */
 	@Transactional
 	public SignupResponse signup(SignupRequest signupRequest) {
-		if (userDomainService.existUser(signupRequest.getEmail())){
-			throw new AuthException("이미 가입된 계정입니다");
-		}
-		log.info("서비스 레이어 진입, 이메일 검증 완료");
+		userDomainService.alreadyExistUserCheck(signupRequest.getEmail());
 
 		if (!signupRequest.getPassword().equals(signupRequest.getPasswordConfirm())){
-			throw new AuthException("비밀번호 입력이 일치하지 않습니다.");
+			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);
 		}
 
 		String encodedPassword = userDomainService.encodePassword(signupRequest.getPassword());

@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.user.service;
 
 import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.ezcode.codetest.infrastructure.security.jwt.PasswordEncoder;
@@ -16,8 +17,10 @@ public class UserDomainService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
-	public boolean existUser(String email) {
-		return userRepository.findByEmail(email).isPresent();
+	public void alreadyExistUserCheck(String email) {
+		if (userRepository.findByEmail(email).isPresent()) {
+			throw new AuthException(AuthExceptionCode.EXIST_USER_EMAIL);
+		}
 	}
 
 	public void createUser(User user) {
@@ -26,20 +29,20 @@ public class UserDomainService {
 
 	public User findUser(String email) {
 		return userRepository.findByEmail(email)
-			.orElseThrow(() -> new AuthException("사용자를 찾을 수 없습니다."));
+			.orElseThrow(() -> new AuthException(AuthExceptionCode.USER_NOT_FOUND));
 	}
 
 	public User findUserById(Long id) {
 		return userRepository.findUserById(id)
-			.orElseThrow(()->new AuthException("사용자를 찾을 수 없습니다."));
+			.orElseThrow(()->new AuthException(AuthExceptionCode.USER_NOT_FOUND));
 	}
 
 	public void userPasswordCheck(String email, String password) {
 		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new AuthException("사용자를 찾을 수 없습니다."));;
+			.orElseThrow(() -> new AuthException(AuthExceptionCode.USER_NOT_FOUND));;
 
 		if (passwordEncoder.matches(password, user.getPassword())) {
-			throw new AuthException("비밀번호가 일치하지 않습니다");
+			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);
 		}
 	}
 
