@@ -40,7 +40,7 @@ public class SecurityConfig {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
-					.requestMatchers("/signin", "/signup", "/actuator/**").permitAll() //로그인, 회원가입은 인증 필요없음
+					.requestMatchers("/signin", "/signup", "/actuator/**", "/chatting", "/ws").permitAll() //로그인, 회원가입은 인증 필요없음
 					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.anyRequest().authenticated() //나머지는 일반 인증
 			)
