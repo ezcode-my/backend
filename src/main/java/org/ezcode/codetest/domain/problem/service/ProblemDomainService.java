@@ -15,23 +15,23 @@ public class ProblemDomainService {
 
 	private final ProblemRepository problemRepository;
 
-	public Problem saveProblem(Problem problem) {
+	public Problem createProblem(Problem problem) {
 		return problemRepository.save(problem);
 	}
 
-	public Page<Problem> findByCategory(Category category, Pageable pageable) {
+	public Page<Problem> getProblemsByCategoryList(Category category, Pageable pageable) {
 		if (category == null) {
 			return problemRepository.findAll(pageable); // 전체 조회
 		}
 		return problemRepository.findByCategory(category, pageable);
 	}
 
-	public Page<Problem> findAll(Pageable pageable) {
+	public Page<Problem> getProblemsList(Pageable pageable) {
 
 		return problemRepository.findAll(pageable);
 	}
 
-	public Problem findByIdOrElseThrow(Long problemId) {
+	public Problem getProblem(Long problemId) {
 
 		return problemRepository.findByIdOrElseThrow(problemId);
 	}

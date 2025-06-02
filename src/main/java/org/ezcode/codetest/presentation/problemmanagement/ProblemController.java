@@ -26,14 +26,14 @@ public class ProblemController {
 	private final ProblemService problemService;
 
 	@GetMapping
-	public ResponseEntity<Page<ProblemResponse>> findAllProblems(
+	public ResponseEntity<Page<ProblemResponse>> getProblemsList(
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
 		@RequestParam(required = false) Category category
 	) {
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(problemService.findAllByCategory(pageable, category));
+				.body(problemService.getProblemsList(pageable, category));
 	}
 
 	@GetMapping("/{problemId}")
@@ -41,6 +41,6 @@ public class ProblemController {
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(problemService.findByIdProblem(problemId));
+				.body(problemService.getProblem(problemId));
 	}
 }

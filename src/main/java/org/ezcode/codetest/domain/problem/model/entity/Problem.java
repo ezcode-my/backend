@@ -92,4 +92,7 @@ public class Problem extends BaseEntity {
 			.reference(reference)
 			.build();
 	}
+
+	// problem id 받아서 problem 반환
+	// problem 받아서 testcase 반환 domainService
 }

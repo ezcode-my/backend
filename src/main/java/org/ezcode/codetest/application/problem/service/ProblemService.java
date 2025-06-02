@@ -1,7 +1,5 @@
 package org.ezcode.codetest.application.problem.service;
 
-import java.util.List;
-
 import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
@@ -32,28 +30,28 @@ public class ProblemService {
 			.build();
 		// user.setId(1L); // User Entity Setter 필요
 
-		Problem savedProblem = problemDomainService.saveProblem(
+		Problem savedProblem = problemDomainService.createProblem(
 			ProblemCreateRequest.toEntity(requestDto, user)
 		);
 
 		return ProblemDetailResponse.from(savedProblem);
 	}
 
-	public Page<ProblemResponse> findAllByCategory(Pageable pageable, Category category) {
+	public Page<ProblemResponse> getProblemsList(Pageable pageable, Category category) {
 		Page<Problem> problems;
 
 		if (category != null) {
-			problems = problemDomainService.findByCategory(category, pageable);
+			problems = problemDomainService.getProblemsByCategoryList(category, pageable);
 		} else {
-			problems = problemDomainService.findAll(pageable);
+			problems = problemDomainService.getProblemsList(pageable);
 		}
 
 		return problems.map(ProblemResponse::from); // Entity → DTO 변환
 	}
 
-	public ProblemDetailResponse findByIdProblem(Long problemId) {
+	public ProblemDetailResponse getProblem(Long problemId) {
 
-		Problem findProblem = problemDomainService.findByIdOrElseThrow(problemId);
+		Problem findProblem = problemDomainService.getProblem(problemId);
 
 		return ProblemDetailResponse.from(findProblem);
 	}
