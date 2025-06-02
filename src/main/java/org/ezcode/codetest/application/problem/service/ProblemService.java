@@ -54,6 +54,10 @@ public class ProblemService {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
+		if(findProblem.getIsDeleted()) {
+			throw new RuntimeException("삭제된 문제 입니다.");
+		}
+
 		return ProblemDetailResponse.from(findProblem);
 	}
 
@@ -67,8 +71,7 @@ public class ProblemService {
 			request.category(),
 			request.title(),
 			request.description(),
-			request.difficulty().getDifficulty(),
-			request.difficulty().getScore(),
+			request.difficulty(),
 			request.memoryLimit(),
 			request.timeLimit(),
 			request.reference()
@@ -76,4 +79,13 @@ public class ProblemService {
 
 		return ProblemDetailResponse.from(findProblem);
 	}
+
+	@Transactional
+	public void removeProblem(Long problemId) {
+
+		Problem findProblem = problemDomainService.getProblem(problemId);
+
+		findProblem.softDelete();
+	}
 }
+

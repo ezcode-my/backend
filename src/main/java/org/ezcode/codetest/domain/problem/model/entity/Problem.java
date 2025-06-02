@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.problem.model.entity;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
+import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
@@ -94,19 +95,23 @@ public class Problem extends BaseEntity {
 	}
 
 	// 문제 수정 로직
-	public void update(User creator, Category category, String title, String description, String difficulty,
-		int score, String memoryLimit, int timeLimit, Reference reference) {
+	public void update(User creator, Category category, String title, String description, Difficulty difficulty,
+		String memoryLimit, Integer timeLimit, Reference reference) {
 
-		this.creator = creator;
-		this.category = category;
-		this.title = title;
-		this.description = description;
-		this.difficulty = difficulty;
-		this.score = score;
-		this.memoryLimit = memoryLimit;
-		this.timeLimit = timeLimit;
-		this.reference = reference;
+		if (creator != null) this.creator = creator;
+		if (category != null) this.category = category;
+		if (title != null) this.title = title;
+		if (description != null) this.description = description;
+		if (difficulty != null) {
+			this.difficulty = difficulty.getDifficulty();
+			this.score = difficulty.getScore();
+		}
+		if (memoryLimit != null)this.memoryLimit = memoryLimit;
+		if (timeLimit != null) this.timeLimit = timeLimit;
+		if (reference != null) this.reference = reference;
 	}
-	// problem id 받아서 problem 반환
-	// problem 받아서 testcase 반환 domainService
+
+	public void softDelete() {
+		this.isDeleted = true;
+	}
 }

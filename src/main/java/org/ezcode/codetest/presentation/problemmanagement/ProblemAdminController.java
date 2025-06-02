@@ -6,6 +6,7 @@ import org.ezcode.codetest.application.problem.dto.response.ProblemDetailRespons
 import org.ezcode.codetest.application.problem.service.ProblemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,11 +20,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/admin/problems")
 @RequiredArgsConstructor
+// @PreAuthorize("hasRole('ADMIN')") // 관리자만 가능
 public class ProblemAdminController {
 
 	private final ProblemService problemService;
 
-	// @PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<ProblemDetailResponse> createProblem(@Valid @RequestBody ProblemCreateRequest request) {
 
@@ -38,6 +39,18 @@ public class ProblemAdminController {
 		@Valid @RequestBody ProblemUpdateRequest request
 	) {
 
-		return ResponseEntity.status(HttpStatus.OK).body(problemService.modifyProblem(problemId, request));
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(problemService.modifyProblem(problemId, request));
+	}
+
+	@DeleteMapping("/{problemId}")
+	public ResponseEntity<Void> removeProblem(@PathVariable Long problemId) {
+
+		problemService.removeProblem(problemId);
+
+		return ResponseEntity
+				.noContent()
+				.build();
 	}
 }

@@ -28,13 +28,13 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	}
 
 	@Override
-	public Page<Problem> findByCategory(Category category, Pageable pageable) {
-		return problemJpaRepository.findByCategory(category, pageable);
+	public Page<Problem> findByCategoryAndIsDeletedIsFalse(Category category, Pageable pageable) {
+		return problemJpaRepository.findByCategoryAndIsDeletedIsFalse(category, pageable);
 	}
 
 	@Override
-	public Page<Problem> findAll(Pageable pageable) {
-		return problemJpaRepository.findAll(pageable);
+	public Page<Problem> findByIsDeletedIsFalse(Pageable pageable) {
+		return problemJpaRepository.findByIsDeletedIsFalse(pageable);
 	}
 
 	@Override

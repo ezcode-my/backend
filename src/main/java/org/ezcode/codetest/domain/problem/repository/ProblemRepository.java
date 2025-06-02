@@ -13,9 +13,9 @@ public interface ProblemRepository {
 
 	Optional<Problem> findById(Long problemId);
 
-	Page<Problem> findByCategory(Category category, Pageable pageable);
+	Page<Problem> findByCategoryAndIsDeletedIsFalse(Category category, Pageable pageable);
 
-	Page<Problem> findAll(Pageable pageable);
+	Page<Problem> findByIsDeletedIsFalse(Pageable pageable);
 
 	Problem findByIdOrElseThrow(Long problemId);
 

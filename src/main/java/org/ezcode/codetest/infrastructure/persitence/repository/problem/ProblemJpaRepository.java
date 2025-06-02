@@ -8,5 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
 
-	Page<Problem> findByCategory(Category category, Pageable pageable);
+	Page<Problem> findByCategoryAndIsDeletedIsFalse(Category category, Pageable pageable);
+
+	Page<Problem> findByIsDeletedIsFalse(Pageable pageable);
 }
