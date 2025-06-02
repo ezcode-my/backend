@@ -5,7 +5,6 @@ import org.ezcode.codetest.application.community.dto.request.DiscussionModifyReq
 import org.ezcode.codetest.application.community.dto.response.DiscussionResponse;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.service.DiscussionDomainService;
-import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.problem.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.service.LanguageDomainService;
