@@ -1,11 +1,11 @@
-package org.ezcode.codetest.infrastructure.message.event;
+package org.ezcode.codetest.infrastructure.event.listener;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.service.ChattingDomainService;
-import org.ezcode.codetest.infrastructure.message.service.StompMessageService;
+import org.ezcode.codetest.infrastructure.event.service.StompMessageService;
 import org.ezcode.codetest.infrastructure.session.service.RedisSessionService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;

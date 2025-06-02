@@ -1,6 +1,6 @@
-package org.ezcode.codetest.application.chatting.port.message;
+package org.ezcode.codetest.application.chatting.port.event;
 
-public interface MessageService {
+public interface ChattingMessageService {
 
 	<T> void handleEnter(T roomData, String principalName);
 

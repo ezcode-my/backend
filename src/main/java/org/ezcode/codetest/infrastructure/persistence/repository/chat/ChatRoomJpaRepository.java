@@ -1,6 +1,7 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.chat;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -12,5 +13,7 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoom, Long> {
 
 	@EntityGraph(attributePaths = "user")
 	@NonNull
-	List<ChatRoom> findAll();
+	List<ChatRoom> findAllByIsDeleted(Boolean isDeleted);
+
+	Optional<ChatRoom> findByIdAndIsDeleted(Long userId, Boolean isDeleted);
 }
