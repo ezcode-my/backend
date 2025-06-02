@@ -11,7 +11,12 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface DiscussionJpaRepository extends JpaRepository<Discussion, Long> {
 
-	@Query("SELECT d FROM Discussion d WHERE d.isDeleted = false")
+	@Query("""
+		SELECT d
+		FROM Discussion d
+		WHERE d.id = :discussionId
+		AND d.isDeleted = false
+		""")
 	Optional<Discussion> findByDiscussionId(Long discussionId);
 
 	@EntityGraph(attributePaths = { "user", "problem", "language" })
@@ -22,6 +27,6 @@ public interface DiscussionJpaRepository extends JpaRepository<Discussion, Long>
 		AND d.isDeleted = false
 		ORDER BY d.createdAt DESC
 		""")
-	Page<Discussion> findAllByProblem(Long problemId, Pageable pageable);
+	Page<Discussion> findAllByProblemId(Long problemId, Pageable pageable);
 
 }
