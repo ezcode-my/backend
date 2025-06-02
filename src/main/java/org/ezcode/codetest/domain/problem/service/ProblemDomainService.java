@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -33,6 +34,7 @@ public class ProblemDomainService {
 
 	public Problem getProblem(Long problemId) {
 
-		return problemRepository.findByIdOrElseThrow(problemId);
+		return problemRepository.findById(problemId)
+			.orElseThrow(() -> new EntityNotFoundException("문제를 찾을수 없습니다."));
 	}
 }

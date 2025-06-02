@@ -93,6 +93,20 @@ public class Problem extends BaseEntity {
 			.build();
 	}
 
+	// 문제 수정 로직
+	public void update(User creator, Category category, String title, String description, String difficulty,
+		int score, String memoryLimit, int timeLimit, Reference reference) {
+
+		this.creator = creator;
+		this.category = category;
+		this.title = title;
+		this.description = description;
+		this.difficulty = difficulty;
+		this.score = score;
+		this.memoryLimit = memoryLimit;
+		this.timeLimit = timeLimit;
+		this.reference = reference;
+	}
 	// problem id 받아서 problem 반환
 	// problem 받아서 testcase 반환 domainService
 }

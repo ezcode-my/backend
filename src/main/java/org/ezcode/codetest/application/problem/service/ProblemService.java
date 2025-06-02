@@ -1,6 +1,7 @@
 package org.ezcode.codetest.application.problem.service;
 
 import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
+import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
@@ -56,4 +57,23 @@ public class ProblemService {
 		return ProblemDetailResponse.from(findProblem);
 	}
 
+	@Transactional
+	public ProblemDetailResponse modifyProblem(Long problemId, ProblemUpdateRequest request) {
+
+		Problem findProblem = problemDomainService.getProblem(problemId);
+
+		findProblem.update(
+			findProblem.getCreator(),
+			request.category(),
+			request.title(),
+			request.description(),
+			request.difficulty().getDifficulty(),
+			request.difficulty().getScore(),
+			request.memoryLimit(),
+			request.timeLimit(),
+			request.reference()
+		);
+
+		return ProblemDetailResponse.from(findProblem);
+	}
 }
