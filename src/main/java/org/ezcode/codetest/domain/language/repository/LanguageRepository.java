@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.language.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.ezcode.codetest.domain.problem.model.entity.Language;
 
@@ -11,7 +12,11 @@ public interface LanguageRepository {
 
 	Language saveLanguage(Language language);
 
-	List<Language> getLanguages();
+	Optional<Language> findLanguageById(Long languageId);
+
+	List<Language> findLanguages();
+
+	void updateLanguage(Language language, Long judge0Id);
 
 	void deleteLanguage(Long languageId);
 }

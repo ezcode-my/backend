@@ -2,6 +2,8 @@ package org.ezcode.codetest.domain.language.service;
 
 import java.util.List;
 
+import org.ezcode.codetest.domain.language.exception.LanguageException;
+import org.ezcode.codetest.domain.language.exception.LanguageExceptionCode;
 import org.ezcode.codetest.domain.language.repository.LanguageRepository;
 import org.ezcode.codetest.domain.problem.model.entity.Language;
 import org.springframework.stereotype.Service;
@@ -14,24 +16,36 @@ public class LanguageDomainService {
 
 	private final LanguageRepository languageRepository;
 
-	public boolean hasLanguage(Long languageId) {
-		return languageRepository.existsById(languageId);
+	public void validateLanguageExists(Long languageId) {
+		if (!languageRepository.existsById(languageId)) {
+			throw new LanguageException(LanguageExceptionCode.LANGUAGE_NOT_FOUND);
+		}
 	}
 
-	public boolean hasLanguage(String name, String version) {
-		return languageRepository.existsByNameAndVersion(name, version);
+	public void validateLanguageNotDuplicated(String name, String version) {
+		if (languageRepository.existsByNameAndVersion(name, version)) {
+			throw new LanguageException(LanguageExceptionCode.LANGUAGE_ALREADY_EXISTS);
+		}
 	}
 
 	public Language createLanguage(Language language) {
 		return languageRepository.saveLanguage(language);
 	}
 
-	public List<Language> getLanguages() {
-		return languageRepository.getLanguages();
+	public Language getLanguage(Long languageId) {
+		return languageRepository.findLanguageById(languageId)
+			.orElseThrow(() -> new LanguageException(LanguageExceptionCode.LANGUAGE_NOT_FOUND));
 	}
 
-	public void deleteLanguage(Long languageId) {
+	public List<Language> getLanguages() {
+		return languageRepository.findLanguages();
+	}
+
+	public void modifyLanguage(Language language, Long judge0Id) {
+		languageRepository.updateLanguage(language, judge0Id);
+	}
+
+	public void removeLanguage(Long languageId) {
 		languageRepository.deleteLanguage(languageId);
 	}
-
 }

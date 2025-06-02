@@ -2,15 +2,17 @@ package org.ezcode.codetest.presentation;
 
 import java.util.List;
 
-import org.ezcode.codetest.application.language.LanguageRequest;
+import org.ezcode.codetest.application.language.LanguageCreateRequest;
 import org.ezcode.codetest.application.language.LanguageResponse;
 import org.ezcode.codetest.application.language.LanguageService;
+import org.ezcode.codetest.application.language.LanguageUpdateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/language")
+@RequestMapping("/languages")
 public class LanguageController {
 
 	private final LanguageService languageService;
 
 	@PostMapping
-	public ResponseEntity<LanguageResponse> createLanguage(@RequestBody @Valid LanguageRequest request) {
+	public ResponseEntity<LanguageResponse> createLanguage(@RequestBody @Valid LanguageCreateRequest request) {
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(languageService.createLanguage(request));
@@ -39,9 +41,18 @@ public class LanguageController {
 			.body(languageService.getLanguages());
 	}
 
+	@PutMapping("/{languageId}")
+	public ResponseEntity<LanguageResponse> modifyLanguage(
+		@PathVariable Long languageId,
+		@RequestBody @Valid LanguageUpdateRequest request) {
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(languageService.modifyLanguage(languageId, request));
+	}
+
 	@DeleteMapping("/{languageId}")
-	public ResponseEntity<Void> deleteLanguage(@PathVariable Long languageId) {
-		languageService.deleteLanguage(languageId);
+	public ResponseEntity<Void> removeLanguage(@PathVariable Long languageId) {
+		languageService.removeLanguage(languageId);
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
 			.build();

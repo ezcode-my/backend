@@ -11,7 +11,9 @@ public record LanguageResponse (
 
 	String name,
 
-	String version
+	String version,
+
+	Long judge0Id
 
 ){
 	public static LanguageResponse from(Language language) {
@@ -19,6 +21,7 @@ public record LanguageResponse (
 			.id(language.getId())
 			.name(language.getName())
 			.version(language.getVersion())
+			.judge0Id(language.getJudge0Id())
 			.build();
 	}
 }
