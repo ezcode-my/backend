@@ -38,3 +38,6 @@ out/
 
 # Spring Boot 환경 설정
 src/main/resources/application.properties
+
+# 로컬 개발 설정
+docker-compose.dev.yml

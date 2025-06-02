@@ -48,4 +48,5 @@ public class LanguageDomainService {
 	public void removeLanguage(Long languageId) {
 		languageRepository.deleteLanguage(languageId);
 	}
+
 }
