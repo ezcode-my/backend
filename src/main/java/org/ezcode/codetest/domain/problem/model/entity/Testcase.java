@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,5 +30,13 @@ public class Testcase {
 
 	@Column(nullable = false)
 	private String output;
+
+	@Builder
+	public Testcase(Long id, Problem problem, String input, String output) {
+		this.id = id;
+		this.problem = problem;
+		this.input = input;
+		this.output = output;
+	}
 
 }
