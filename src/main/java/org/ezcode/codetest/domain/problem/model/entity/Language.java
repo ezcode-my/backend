@@ -25,9 +25,16 @@ public class Language {
 	@Column(nullable = false)
 	private String version;
 
+	@Column(name = "judge0_id", nullable = false)
+	private Long judge0Id;
+
 	@Builder
 	public Language(String name, String version) {
 		this.name = name;
 		this.version = version;
+	}
+
+	public void updateJudge0Id(Long judge0Id) {
+		this.judge0Id = judge0Id;
 	}
 }

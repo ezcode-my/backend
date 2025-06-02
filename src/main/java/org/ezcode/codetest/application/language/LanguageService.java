@@ -2,11 +2,10 @@ package org.ezcode.codetest.application.language;
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.language.exception.LanguageException;
-import org.ezcode.codetest.domain.language.exception.LanguageExceptionCode;
 import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.problem.model.entity.Language;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,17 +15,17 @@ public class LanguageService {
 
 	private final LanguageDomainService languageDomainService;
 
-	public LanguageResponse createLanguage(LanguageRequest request) {
+	@Transactional
+	public LanguageResponse createLanguage(LanguageCreateRequest request) {
 
-		if (languageDomainService.hasLanguage(request.name(), request.version())) {
-			throw new LanguageException(LanguageExceptionCode.LANGUAGE_ALREADY_EXISTS);
-		}
+		languageDomainService.validateLanguageNotDuplicated(request.name(), request.version());
 
-		Language language = languageDomainService.createLanguage(LanguageRequest.toEntity(request));
+		Language language = languageDomainService.createLanguage(LanguageCreateRequest.toEntity(request));
 
 		return LanguageResponse.from(language);
 	}
 
+	@Transactional(readOnly = true)
 	public List<LanguageResponse> getLanguages() {
 		return languageDomainService.getLanguages()
 			.stream()
@@ -34,12 +33,18 @@ public class LanguageService {
 			.toList();
 	}
 
-	public void deleteLanguage(Long languageId) {
+	@Transactional
+	public LanguageResponse modifyLanguage(Long languageId, LanguageUpdateRequest request) {
+		Language language = languageDomainService.getLanguage(languageId);
+		languageDomainService.modifyLanguage(language, request.judge0Id());
 
-		if (!languageDomainService.hasLanguage(languageId)) {
-			throw new LanguageException(LanguageExceptionCode.LANGUAGE_NOT_FOUND);
-		}
+		return LanguageResponse.from(language);
+	}
 
-		languageDomainService.deleteLanguage(languageId);
+	@Transactional
+	public void removeLanguage(Long languageId) {
+
+		languageDomainService.validateLanguageExists(languageId);
+		languageDomainService.removeLanguage(languageId);
 	}
 }

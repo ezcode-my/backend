@@ -1,6 +1,7 @@
 package org.ezcode.codetest.infrastructure.persitence.repository.problem;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.ezcode.codetest.domain.language.repository.LanguageRepository;
 import org.ezcode.codetest.domain.problem.model.entity.Language;
@@ -30,8 +31,18 @@ public class LanguageRepositoryImpl implements LanguageRepository {
 	}
 
 	@Override
-	public List<Language> getLanguages() {
+	public Optional<Language> findLanguageById(Long languageId) {
+		return languageJpaRepository.findById(languageId);
+	}
+
+	@Override
+	public List<Language> findLanguages() {
 		return languageJpaRepository.findAll();
+	}
+
+	@Override
+	public void updateLanguage(Language language, Long judge0Id) {
+		language.updateJudge0Id(judge0Id);
 	}
 
 	@Override

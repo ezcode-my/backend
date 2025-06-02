@@ -4,7 +4,7 @@ import org.ezcode.codetest.domain.problem.model.entity.Language;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record LanguageRequest (
+public record LanguageCreateRequest(
 
 	@NotBlank(message = "언어는 필수 입력 값입니다.")
 	String name,
@@ -13,7 +13,7 @@ public record LanguageRequest (
 	String version
 
 ){
-	public static Language toEntity(LanguageRequest request) {
+	public static Language toEntity(LanguageCreateRequest request) {
 		return Language.builder()
 			.name(request.name())
 			.version(request.version())
