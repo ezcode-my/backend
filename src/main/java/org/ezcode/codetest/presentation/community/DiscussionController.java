@@ -55,7 +55,7 @@ public class DiscussionController {
 	public ResponseEntity<DiscussionResponse> updateDiscussion(
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
-		@RequestBody DiscussionUpdateRequest request,
+		@RequestBody @Valid DiscussionUpdateRequest request,
 		@Auth AuthUser authUser
 	) {
 		return ResponseEntity
