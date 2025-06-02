@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.usermanagement.user.dto;
 
+import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 
 import lombok.Builder;
@@ -18,5 +19,14 @@ public class SimpleUserInfoResponse {
 		this.nickname = nickname;
 		this.tier = tier;
 		this.profileImageUrl = profileImageUrl;
+	}
+
+	public static SimpleUserInfoResponse fromEntity(User user) {
+		return SimpleUserInfoResponse.builder()
+			.userId(user.getId())
+			.nickname(user.getNickname())
+			.tier(user.getTier())
+			.profileImageUrl(user.getProfileImageUrl())
+			.build();
 	}
 }
