@@ -1,4 +1,4 @@
-package org.ezcode.codetest.presentation.problemmanagement;
+package org.ezcode.codetest.presentation.problemmanagement.problem;
 
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
