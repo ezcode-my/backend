@@ -1,42 +1,39 @@
 package org.ezcode.codetest.domain.community.model;
 
-import java.time.LocalDateTime;
-
 import org.ezcode.codetest.domain.user.model.entity.User;
-import org.springframework.data.annotation.CreatedDate;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "post_like")
+@Table(name = "discussion_vote",
+	uniqueConstraints = {
+		@UniqueConstraint(
+			name = "unique_user_discussion",
+			columnNames = {
+				"user_id",
+				"discussion_id"
+			}
+		)
+	})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DiscussionVote {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+public class DiscussionVote extends BaseVote {
 
 	@ManyToOne
 	@JoinColumn(name = "discussion_id", nullable = false)
 	private Discussion discussion;
 
-	@CreatedDate
-	@Column(name = "created_at", nullable = false, updatable = false)
-	protected LocalDateTime createdAt;
-
+	@Builder
+	public DiscussionVote(User voter, Discussion discussion) {
+		this.voter = voter;
+		this.discussion = discussion;
+	}
 }
