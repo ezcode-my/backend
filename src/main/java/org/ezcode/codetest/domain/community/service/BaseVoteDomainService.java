@@ -24,7 +24,7 @@ public abstract class BaseVoteDomainService<T extends BaseVote, R extends BaseVo
 
 	public boolean getVoteStatus(Long voterId, Long targetId) {
 
-		return repository.existByVoterIdAndTargetId(voterId, targetId);
+		return repository.existsByVoterIdAndTargetId(voterId, targetId);
 	}
 
 	public void removeVoteEntity(T entity) {

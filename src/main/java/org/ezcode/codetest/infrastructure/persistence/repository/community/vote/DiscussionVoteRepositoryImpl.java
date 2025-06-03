@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DiscussionVoteRepositoryImpl implements DiscussionVoteRepository {
 
-	private final DiscussionVoteJpaJpaRepository repository;
+	private final DiscussionVoteJpaRepository repository;
 
 	@Override
 	public DiscussionVote save(DiscussionVote voteEntity) {
@@ -27,7 +27,7 @@ public class DiscussionVoteRepositoryImpl implements DiscussionVoteRepository {
 	}
 
 	@Override
-	public boolean existByVoterIdAndTargetId(Long voterId, Long targetId) {
+	public boolean existsByVoterIdAndTargetId(Long voterId, Long targetId) {
 
 		return repository.existsByVoterIdAndDiscussionId(voterId, targetId);
 	}

@@ -43,7 +43,7 @@ public class ReplyVoteController {
 		@PathVariable Long replyId,
 		@AuthenticationPrincipal AuthUser authUser
 	) {
-		VoteResponse response = replyVoteService.getVoteStatus(authUser.getId(), discussionId);
+		VoteResponse response = replyVoteService.getVoteStatus(authUser.getId(), replyId);
 		return ResponseEntity
 			.ok()
 			.body(response);

@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.ezcode.codetest.domain.community.model.DiscussionVote;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface DiscussionVoteJpaJpaRepository extends JpaRepository<DiscussionVote, Long> {
+public interface DiscussionVoteJpaRepository extends JpaRepository<DiscussionVote, Long> {
 
 	Optional<DiscussionVote> findByVoterIdAndDiscussionId(Long voterId, Long discussionId);
 

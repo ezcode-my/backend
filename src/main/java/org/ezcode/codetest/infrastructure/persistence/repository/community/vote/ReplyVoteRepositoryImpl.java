@@ -27,7 +27,7 @@ public class ReplyVoteRepositoryImpl implements ReplyVoteRepository {
 	}
 
 	@Override
-	public boolean existByVoterIdAndTargetId(Long voterId, Long targetId) {
+	public boolean existsByVoterIdAndTargetId(Long voterId, Long targetId) {
 
 		return repository.existsByVoterIdAndReplyId(voterId, targetId);
 	}
