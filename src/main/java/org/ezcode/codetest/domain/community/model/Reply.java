@@ -43,10 +43,6 @@ public class Reply extends BaseEntity {
 	@JoinColumn(name = "parent_reply_id")
 	private Reply parent;
 
-	// 자식(대댓글) 목록
-	@OneToMany(mappedBy = "parent")
-	private List<Reply> replies = new ArrayList<>();
-
 	@Column(nullable = false)
 	private String content;
 
