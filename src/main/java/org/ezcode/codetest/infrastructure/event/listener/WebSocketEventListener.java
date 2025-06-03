@@ -6,7 +6,7 @@ import java.util.Map;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.service.ChattingDomainService;
 import org.ezcode.codetest.infrastructure.event.service.StompMessageService;
-import org.ezcode.codetest.infrastructure.session.service.RedisSessionService;
+import org.ezcode.codetest.infrastructure.session.service.RedisSessionCountService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class WebSocketEventListener implements ApplicationListener<SessionDisconnectEvent> {
 
 	private final StompMessageService messageService;
-	private final RedisSessionService sessionService;
+	private final RedisSessionCountService sessionService;
 	private final ChattingDomainService chattingDomainService;
 
 	@Override

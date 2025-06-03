@@ -1,9 +1,9 @@
-package org.ezcode.codetest.application.chatting.port.event;
+package org.ezcode.codetest.application.chatting.port.session;
 
 import lombok.Builder;
 
 @Builder
-public record ChatRoomChange(
+public record SessionChangedEvent(
 
 	Long roomId,
 
