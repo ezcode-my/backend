@@ -5,8 +5,6 @@ import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 
 public record TestcaseCreateRequest(
 
-	Problem problem,
-
 	String input,
 
 	String output
@@ -14,10 +12,10 @@ public record TestcaseCreateRequest(
 ) {
 
 	// dto -> entity 변환
-	public static Testcase toEntity(TestcaseCreateRequest request) {
+	public static Testcase toEntity(Problem problem, TestcaseCreateRequest request) {
 
 		return Testcase.builder()
-			.problem(request.problem)
+			.problem(problem)
 			.input(request.input)
 			.output(request.output)
 			.build();
