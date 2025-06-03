@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "discussion_vote",
 	uniqueConstraints = {
 		@UniqueConstraint(
-			name = "unique_user_discussion",
+			name = "unique_voter_discussion",
 			columnNames = {
-				"user_id",
+				"voter_id",
 				"discussion_id"
 			}
 		)
