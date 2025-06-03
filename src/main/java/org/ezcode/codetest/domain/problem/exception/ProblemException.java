@@ -2,21 +2,21 @@ package org.ezcode.codetest.domain.problem.exception;
 
 import org.ezcode.codetest.common.base.exception.BaseException;
 import org.ezcode.codetest.common.base.exception.ResponseCode;
-import org.ezcode.codetest.domain.problem.exception.code.TestcaseExceptionCode;
+import org.ezcode.codetest.domain.problem.exception.code.ProblemExceptionCode;
 import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
 
 @Getter
-public class TestcaseException extends BaseException {
+public class ProblemException extends BaseException {
 
-  private final ResponseCode responseCode;
+    private final ResponseCode responseCode;
 
-  private final HttpStatus httpStatus;
+    private final HttpStatus httpStatus;
 
-  private final String message;
+    private final String message;
 
-	public TestcaseException(TestcaseExceptionCode responseCode) {
+	public ProblemException(ProblemExceptionCode responseCode) {
 		this.responseCode = responseCode;
 		this.httpStatus = responseCode.getStatus();
 		this.message = responseCode.getMessage();
