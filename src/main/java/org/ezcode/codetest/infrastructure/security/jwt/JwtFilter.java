@@ -60,12 +60,6 @@ public class JwtFilter extends OncePerRequestFilter {
 			String tierClaim = claims.get("tier", String.class);
 			Tier tier = tierClaim != null ? Tier.valueOf(tierClaim) : Tier.NEWBIE;
 
-			if (url.startsWith("/admin") && !UserRole.ADMIN.equals(userRole)) {
-					response.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 없습니다");
-					return;
-			}
-
-			//생성자 순서가 틀려서 다시 정렬해서 넣었습니다
 			AuthUser authUser = new AuthUser(
 				Long.parseLong(claims.getSubject()),
 				(String) claims.get("username"),
@@ -75,16 +69,9 @@ public class JwtFilter extends OncePerRequestFilter {
 				tier
 			);
 
-			request.setAttribute("authUser", authUser);
-			request.setAttribute("userId", Long.parseLong(claims.getSubject()));
-			request.setAttribute("email", claims.get("email"));
-			request.setAttribute("userRole", claims.get("userRole"));
-			request.setAttribute("username", claims.get("username"));
-			request.setAttribute("nickname", claims.get("nickname"));
-
 			// 인가를 위한 권한 정보 저장
 			Collection<? extends GrantedAuthority> authorities =
-				List.of(new SimpleGrantedAuthority(authUser.getRole().toString()));
+				List.of(new SimpleGrantedAuthority("ROLE_" + authUser.getRole().name()));
 
 			// Spring Security 인증 토큰 생성
 			Authentication authToken = new UsernamePasswordAuthenticationToken(authUser,

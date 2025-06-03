@@ -37,7 +37,6 @@ public class SecurityConfig {
 			)
 
 			//인증 URL 범위 설정
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers("/signin", "/signup", "/actuator/**", "/chatting", "/ws").permitAll() //로그인, 회원가입은 인증 필요없음
