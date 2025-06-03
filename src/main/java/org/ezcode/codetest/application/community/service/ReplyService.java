@@ -38,9 +38,12 @@ public class ReplyService {
 
 		discussionDomainService.validateProblemMatches(discussion, problemId);
 
-		Reply parent = request.parentReplyId() == null
-			? null
-			: replyDomainService.getReplyById(request.parentReplyId());
+		Reply parent = null;
+		if (request.parentReplyId() != null) {
+			parent = replyDomainService.getReplyById(request.parentReplyId());
+			replyDomainService.validateDiscussionMatches(parent, discussion);
+		}
+
 		Reply replyEntity = ReplyCreateRequest.toEntity(discussion, user, parent, request);
 
 		return ReplyResponse.fromEntity(replyDomainService.createReply(replyEntity));
@@ -66,6 +69,9 @@ public class ReplyService {
 
 		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
 		discussionDomainService.validateProblemMatches(discussion, problemId);
+
+		Reply parent = replyDomainService.getReplyById(parentReplyId);
+		replyDomainService.validateDiscussionMatches(parent, discussion);
 
 		Page<Reply> replies = replyDomainService.getRepliesByParentReplyId(parentReplyId, pageable);
 		return replies.map(ReplyResponse::fromEntity);
