@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.message.config;
+package org.ezcode.codetest.infrastructure.event.config;
 
 import java.net.URI;
 import java.security.Principal;

@@ -12,7 +12,8 @@ public enum ChattingExceptionCode implements ResponseCode {
 
 	CHATTING_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당채팅이 조회되지 않습니다."),
 	CHATTING_ROOM_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 채팅방이 조회되지 않습니다."),
-	INVALID_CHATTING_SESSION(false, HttpStatus.NOT_FOUND, "해당 채팅 세션이 조회되지 않습니다.");
+	INVALID_CHATTING_SESSION(false, HttpStatus.NOT_FOUND, "해당 채팅 세션이 조회되지 않습니다."),
+	CHATROOM_NOT_OWNER(false, HttpStatus.BAD_REQUEST, "해당 채팅방의 주인이 아닙니다.");
 
 	private final boolean success;
 	private final HttpStatus status;

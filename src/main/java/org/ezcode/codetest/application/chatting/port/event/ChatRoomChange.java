@@ -1,9 +1,9 @@
-package org.ezcode.codetest.application.chatting.dto.response;
+package org.ezcode.codetest.application.chatting.port.event;
 
 import lombok.Builder;
 
 @Builder
-public record ChatRoomResponse(
+public record ChatRoomChange(
 
 	Long roomId,
 
@@ -12,4 +12,5 @@ public record ChatRoomResponse(
 	Long headCount,
 
 	String eventType
-) { }
+) {
+}

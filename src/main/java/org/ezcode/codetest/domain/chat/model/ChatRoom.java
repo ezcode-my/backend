@@ -41,6 +41,16 @@ public class ChatRoom extends BaseEntity {
 		this.user = user;
 		this.title = title;
 		this.isDeleted = isDeleted;
-
 	}
+
+	public boolean isOwner(Long userId) {
+
+		return user.getId().equals(userId);
+	}
+
+	public void deleteChatRoom() {
+
+		isDeleted = true;
+	}
+
 }

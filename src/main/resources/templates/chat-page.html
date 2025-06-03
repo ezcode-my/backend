@@ -233,27 +233,57 @@
 
             // 채팅방 목록 변경 브로드캐스트 구독 (업데이트 시 오름차순 정렬 유지)
             stompClient.subscribe('/topic/chatrooms', msg => {
-                let u;
-                try { u = JSON.parse(msg.body); } catch { return; }
-                const existing = Array.from(roomListEl.children).map(li => ({
-                    roomId: li.dataset.roomId,
-                    text: li.textContent
-                }));
-                // 업데이트된 headCount만 교체
-                existing.forEach(item => {
-                    if (item.roomId === u.roomId.toString()) {
-                        const li = roomListEl.querySelector(`li[data-room-id="${u.roomId}"]`);
-                        if (li) {
-                            li.textContent = `${u.title} (${u.roomId}) — ${u.headCount}명`;
-                        }
+                let room;
+                try { room = JSON.parse(msg.body); } catch { return; }
+
+                if (room.eventType === 'CREATE') {
+                    // 신규 방 append (중복 방지)
+                    if (!roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`)) {
+                        const li = document.createElement('li');
+                        li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
+                        li.dataset.roomId = room.roomId;
+                        roomListEl.appendChild(li);
                     }
-                });
-                // 정렬이 깨질 경우 다시 정렬 (필요 시)
-                const reordered = Array.from(roomListEl.children).sort((a, b) =>
-                    Number(a.dataset.roomId) - Number(b.dataset.roomId)
-                );
-                roomListEl.innerHTML = '';
-                reordered.forEach(li => roomListEl.appendChild(li));
+                    // 오름차순 정렬
+                    const reordered = Array.from(roomListEl.children).sort((a, b) =>
+                        Number(a.dataset.roomId) - Number(b.dataset.roomId)
+                    );
+                    roomListEl.innerHTML = '';
+                    reordered.forEach(li => roomListEl.appendChild(li));
+                } else if (room.eventType === 'UPDATE') {
+                    // 방 정보 변경, 없으면 추가
+                    let li = roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`);
+                    if (li) {
+                        li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
+                    } else {
+                        li = document.createElement('li');
+                        li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
+                        li.dataset.roomId = room.roomId;
+                        roomListEl.appendChild(li);
+                    }
+                    // 오름차순 정렬
+                    const reordered = Array.from(roomListEl.children).sort((a, b) =>
+                        Number(a.dataset.roomId) - Number(b.dataset.roomId)
+                    );
+                    roomListEl.innerHTML = '';
+                    reordered.forEach(li => roomListEl.appendChild(li));
+                } else if (room.eventType === 'DELETE') {
+                    // 삭제
+                    const li = roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`);
+                    if (li) li.remove();
+                } else if (room.eventType === 'GET') {
+                    // 전체 교체 (room.rooms는 방 목록 배열)
+                    if (!Array.isArray(room.rooms)) return;
+                    roomListEl.innerHTML = '';
+                    room.rooms
+                        .sort((a, b) => Number(a.roomId) - Number(b.roomId))
+                        .forEach(r => {
+                            const li = document.createElement('li');
+                            li.textContent = `${r.title} (${r.roomId}) — ${r.headCount}명`;
+                            li.dataset.roomId = r.roomId;
+                            roomListEl.appendChild(li);
+                        });
+                }
             });
 
             // 채팅방 클릭 핸들러

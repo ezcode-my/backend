@@ -1,8 +1,6 @@
 package org.ezcode.codetest.infrastructure.cache.config;
 
-import java.util.List;
-
-import org.ezcode.codetest.domain.chat.model.ChatRoom;
+import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -16,11 +14,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class CacheRedisConfig {
 
 	@Bean
-	public RedisTemplate<String, List<ChatRoom>> cacheRedisTemplate(
+	public RedisTemplate<String, ChatRoomCache> cacheRedisTemplate(
 		RedisConnectionFactory factory,
 		ObjectMapper objectMapper
 	) {
-		RedisTemplate<String, List<ChatRoom>> template = new RedisTemplate<>();
+		RedisTemplate<String, ChatRoomCache> template = new RedisTemplate<>();
 		template.setConnectionFactory(factory);
 
 		GenericToStringSerializer<String> keySerializer =
@@ -29,9 +27,9 @@ public class CacheRedisConfig {
 		template.setKeySerializer(keySerializer);
 
 		JavaType eventType = objectMapper.getTypeFactory()
-			.constructCollectionType(List.class, ChatRoom.class);
+			.constructType(ChatRoomCache.class);
 
-		Jackson2JsonRedisSerializer<List<ChatRoom>> valueSerializer =
+		Jackson2JsonRedisSerializer<ChatRoomCache> valueSerializer =
 			new Jackson2JsonRedisSerializer<>(objectMapper, eventType);
 
 		template.setValueSerializer(valueSerializer);

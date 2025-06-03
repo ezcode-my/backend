@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ChatJpaRepository extends JpaRepository<Chat, Long> {
 
-	List<Chat> findAllByChatRoomId(Long id);
-
 	List<Chat> findByChatRoomIdAndCreatedAtAfterOrderByCreatedAtAsc(
 		Long chatRoomId,
 		LocalDateTime cutoff

@@ -1,5 +1,8 @@
 package org.ezcode.codetest.application.chatting.dto.request;
 
+import org.ezcode.codetest.domain.chat.model.ChatRoom;
+import org.ezcode.codetest.domain.user.model.entity.User;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -9,4 +12,13 @@ public record ChatRoomSaveRequest(
 	@Size(message = "채팅방 이름 길이는 1~8자 사이로 작성해주세요", min = 1, max = 8)
 	String title
 ) {
+
+	public ChatRoom toEntity(User user) {
+
+		return ChatRoom.builder()
+			.title(title)
+			.isDeleted(false)
+			.user(user)
+			.build();
+	}
 }

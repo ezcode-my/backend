@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.message.config;
+package org.ezcode.codetest.infrastructure.event.config;
 
 import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
 import org.springframework.beans.factory.annotation.Value;

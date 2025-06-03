@@ -22,6 +22,5 @@ public record ChatResponse(
 			chat.getUser().getTier().toString(),
 			chat.getMessage()
 		);
-
 	}
 }
