@@ -49,7 +49,7 @@ public class SecurityConfig {
 						"/signup",
 						"/logout",
 						"/actuator/**",
-						"/chatting/**",
+						"/chatting",
 						"/ws/**",
 						"/swagger-ui/**",
 						"/swagger-resources/**",
