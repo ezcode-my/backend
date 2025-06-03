@@ -55,13 +55,13 @@ public class SecurityConfig {
 						"/swagger-resources/**",
 						"/v2/**",
 						"/v3/**",
-						"/webjars/**").permitAll() //로그인, 회원가입은 인증 필요없음
+						"/webjars/**").permitAll()
 					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.anyRequest().authenticated() //나머지는 일반 인증
 			)
-			.addFilterBefore(exceptionFilter, JwtFilter.class)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(exceptionFilter, JwtFilter.class)
+
 			.build();
 	}
 }
