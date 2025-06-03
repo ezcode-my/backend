@@ -55,6 +55,7 @@ public class ChatLimitInterceptor implements HandlerInterceptor {
 
 	private Long extractRoomId(HttpServletRequest request) {
 
+		//TODO : Pathvariable Long 타입 변환 실패시 예외처리 필요
 		@SuppressWarnings("unchecked")
 		Map<String, String> pathVars =
 			(Map<String, String>)request.getAttribute(
