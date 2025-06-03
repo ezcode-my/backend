@@ -10,7 +10,7 @@ public record TestcaseResponse(
 
 	Long id,
 
-	Problem problem,
+	Long problemId,
 
 	String input,
 
@@ -21,7 +21,7 @@ public record TestcaseResponse(
 
 		return TestcaseResponse.builder()
 			.id(testcase.getId())
-			.problem(testcase.getProblem())
+			.problemId(testcase.getProblem().getId())
 			.input(testcase.getInput())
 			.output(testcase.getOutput())
 			.build();
