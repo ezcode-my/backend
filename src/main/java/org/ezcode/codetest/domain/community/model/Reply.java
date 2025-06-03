@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.community.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -16,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -51,4 +53,27 @@ public class Reply extends BaseEntity {
 	@Column(nullable = false)
 	private boolean isDeleted;
 
+	@Builder
+	public Reply(Discussion discussion, User user, Reply parent, List<Reply> replies, String content) {
+		this.discussion = discussion;
+		this.user = user;
+		this.parent = parent;
+		this.content = content;
+	}
+
+	public void update(String content) {
+		this.content = content;
+	}
+
+	public void setDeleted() {
+		this.isDeleted = true;
+	}
+
+	public boolean isDiscussionMatches(Long discussionId) {
+		return Objects.equals(this.discussion.getId(), discussionId);
+	}
+
+	public boolean isAuthor(Long userId) {
+		return Objects.equals(this.user.getId(), userId);
+	}
 }
