@@ -6,7 +6,7 @@ import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import lombok.Builder;
 
 @Builder
-public record TestCaseResponse(
+public record TestcaseResponse(
 
 	Long id,
 
@@ -17,9 +17,9 @@ public record TestCaseResponse(
 	String output
 ) {
 
-	public static TestCaseResponse from(Testcase testcase) {
+	public static TestcaseResponse from(Testcase testcase) {
 
-		return TestCaseResponse.builder()
+		return TestcaseResponse.builder()
 			.id(testcase.getId())
 			.problem(testcase.getProblem())
 			.input(testcase.getInput())
