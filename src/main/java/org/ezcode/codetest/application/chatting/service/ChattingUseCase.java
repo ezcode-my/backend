@@ -156,5 +156,4 @@ public class ChattingUseCase {
 			.headCount(roomData.get("headCount"))
 			.build());
 	}
-
 }

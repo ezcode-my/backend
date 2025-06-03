@@ -1,9 +1,9 @@
-package org.ezcode.codetest.presentation.chattingmanagement.chatting;
+package org.ezcode.codetest.presentation.chattingmanagement.chatting.controller;
 
 import org.ezcode.codetest.application.chatting.dto.request.ChatSaveRequest;
 import org.ezcode.codetest.application.chatting.service.ChattingUseCase;
-import org.ezcode.codetest.common.annotation.Auth;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +23,7 @@ public class ChatController {
 	@PostMapping
 	@ResponseBody
 	public void createChat(
-		@Auth AuthUser authUser,
+		@AuthenticationPrincipal AuthUser authUser,
 		@PathVariable Long roomId,
 		@RequestBody ChatSaveRequest request
 	) {
