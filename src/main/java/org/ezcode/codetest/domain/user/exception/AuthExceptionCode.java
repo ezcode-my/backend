@@ -13,6 +13,7 @@ public enum AuthExceptionCode implements ResponseCode {
 	EXIST_USER_EMAIL(false, HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
 	USER_NOT_FOUND(false, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
 	PASSWORD_NOT_MATCH(false, HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다"),
+	LOGOUT_USER(false, HttpStatus.BAD_REQUEST, "이미 로그아웃한 유저입니다.")
 	;
 
 	private final boolean success;

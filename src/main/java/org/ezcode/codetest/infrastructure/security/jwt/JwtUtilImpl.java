@@ -37,6 +37,9 @@ public class JwtUtilImpl implements JwtUtil {
 		key = Keys.hmacShaKeyFor(secretKey.getBytes());
 	}
 
+	/*
+	토큰 발급
+	 */
 	public String createToken(Long userId, String email, UserRole userRole, String username, String nickname, Tier tier) {
 		if (userId == null || email == null || username == null || nickname == null) {
 			throw new IllegalArgumentException("토큰에 필요한 필수 매개변수가 null입니다.");
@@ -58,6 +61,9 @@ public class JwtUtilImpl implements JwtUtil {
 				.compact();
 	}
 
+	/*
+	토큰 추출
+	 */
 	public String substringToken(String token) {
 		if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
 			return token.substring(BEARER_PREFIX.length());
@@ -79,5 +85,33 @@ public class JwtUtilImpl implements JwtUtil {
 			log.error("JWT 토큰 파싱 실패: {}", e.getMessage());
 			throw new ServerException("유효한 토큰이 아닙니다");
 		}
+	}
+
+	//토큰 유효시간 계산
+	public Long getExpiration(String token) {
+		Claims claims = extractClaims(token);
+		Date expiration = claims.getExpiration();
+		return expiration.getTime() - System.currentTimeMillis(); // 남은시간을 ms 단위로 계산해서 반환
+	}
+
+	@Override
+	public Long getRemainingTime(String token) {
+		Date expiration = extractClaims(token).getExpiration();
+		return expiration.getTime() - System.currentTimeMillis();
+	}
+
+	/*
+	토큰 갱신
+	 */
+	public String createRefreshToken(String userId) {
+		Date now = new Date();
+		Date expirationDate = new Date(now.getTime() + TOKEN_EXPIRATION_TIME * 1000L); //만료 시간
+
+		return Jwts.builder()
+			.setSubject(String.valueOf(userId)) // 주제설정, string 으로만 주입 가능
+			.setIssuedAt(now) // 발급날짜
+			.setExpiration(expirationDate) // 만료날짜
+			.signWith(key, signatureAlgorithm) // 암호화 알고리즘
+			.compact();
 	}
 }

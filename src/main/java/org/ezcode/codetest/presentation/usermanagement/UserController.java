@@ -30,7 +30,7 @@ public class UserController {
 
 	@PutMapping("/users")
 	public ResponseEntity<UserInfoResponse> modifyUserInfo(
-		@Auth AuthUser authUser,
+		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody ModifyUserInfoRequest modifyUserInfoRequest
 	){
 		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserInfo(authUser, modifyUserInfoRequest));

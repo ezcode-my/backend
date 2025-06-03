@@ -1,12 +1,17 @@
 package org.ezcode.codetest.domain.user.model.entity;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.Getter;
 
 @Getter
-public class AuthUser {
+public class AuthUser implements UserDetails {
 	private final Long id;
 	private final String email;
 	private final String username;
@@ -22,4 +27,11 @@ public class AuthUser {
 		this.role = role;
 		this.tier = tier;
 	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() { return List.of(() -> "ROLE_" + role.name()); }
+
+	@Override
+	public String getPassword() { return ""; }
+
 }

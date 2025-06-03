@@ -5,10 +5,12 @@ import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninResp
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.auth.service.AuthService;
+import org.ezcode.codetest.application.usermanagement.user.dto.LogoutResponse;
 import org.ezcode.codetest.common.annotation.Auth;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,8 +37,8 @@ public class AuthController {
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<String> logout(
-			@Auth AuthUser authUser,
+	public ResponseEntity<LogoutResponse> logout(
+			@AuthenticationPrincipal AuthUser authUser,
 			HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.logout(authUser.getId(), request));
 	}

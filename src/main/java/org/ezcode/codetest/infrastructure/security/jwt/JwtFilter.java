@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,14 +32,17 @@ import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
 @Slf4j
-@Order(1)
 public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtUtilImpl jwtUtilImpl;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 									FilterChain filterChain) throws ServletException, IOException {
+
+		// JwtAuthenticationFilter.java
+		log.info("Authorization 헤더: {}", request.getHeader("Authorization"));
 
 		String bearerToken = request.getHeader("Authorization");
 
@@ -46,6 +52,11 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 
 		String jwt = jwtUtilImpl.substringToken(bearerToken);
+
+		if (redisTemplate.opsForValue().get("LOGOUT:" + jwt) != null) {
+			throw new AuthException(AuthExceptionCode.NO_AUTH_INFO);
+		}
+
 		Claims claims = jwtUtilImpl.extractClaims(jwt);
 
 		if (claims == null) {
@@ -76,6 +87,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		// SecurityContextHolder(세션)에 토큰 담기
 		SecurityContextHolder.getContext().setAuthentication(authToken);
+
+		log.info("Authentication 등록됨: {}", SecurityContextHolder.getContext().getAuthentication());
+		log.info("Principal: {}", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
 
 		filterChain.doFilter(request, response);
 		}
