@@ -12,4 +12,8 @@ public interface JwtUtil {
 	String substringToken(String token);
 
 	Claims extractClaims(String token);
+
+	Long getExpiration(String token);
+
+	Long getRemainingTime(String token);
 }
