@@ -22,16 +22,16 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (SecurityException | MalformedJwtException e) {
-			log.error("Invalid JWT signature", e);
+			log.info("Invalid JWT signature", e);
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 JWT 서명입니다.");
 		} catch (ExpiredJwtException e) {
-			log.error("Expired JWT token", e);
+			log.info("Expired JWT token", e);
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
 		} catch (UnsupportedJwtException e) {
-			log.error("Unsupported JWT token", e);
+			log.info("Unsupported JWT token", e);
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
 		} catch (Exception e) {
-			log.error("Unexpected error in filter chain", e);
+			log.info("Unexpected error in filter chain", e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
 		}
 
