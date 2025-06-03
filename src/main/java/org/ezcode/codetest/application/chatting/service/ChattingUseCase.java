@@ -41,7 +41,7 @@ public class ChattingUseCase {
 
 		cacheService.addChatRoomToCache(ChatRoomCache.from(savedRoom));
 
-		eventService.handleRoomChangeEvent(RoomChangedResponse.from(savedRoom, "CREATE"));
+		eventService.publishRoomChangeEvent(RoomChangedResponse.from(savedRoom, "CREATE"));
 	}
 
 	@Transactional
@@ -59,7 +59,7 @@ public class ChattingUseCase {
 
 		sessionService.removeRoomSession(request.roomId());
 
-		eventService.handleRoomChangeEvent(RoomChangedResponse.from(removedRoom, "DELETE"));
+		eventService.publishRoomChangeEvent(RoomChangedResponse.from(removedRoom, "DELETE"));
 	}
 
 	@Transactional
@@ -86,7 +86,7 @@ public class ChattingUseCase {
 			)
 			.toList();
 
-		eventService.handleEnter(roomLists, principalName);
+		eventService.publishEnterEvent(roomLists, principalName);
 	}
 
 	@Transactional
@@ -98,7 +98,7 @@ public class ChattingUseCase {
 
 		Chat chat = chattingDomainService.createChatting(request.toEntity(user, chatRoom));
 
-		eventService.handleBroadCastChat(ChatResponse.from(chat), roomId);
+		eventService.publishBroadCastChatEvent(ChatResponse.from(chat), roomId);
 	}
 
 	@Transactional
@@ -116,11 +116,11 @@ public class ChattingUseCase {
 
 		Long headCount = sessionService.addSessionCount(sessionId, roomId);
 
-		eventService.handleRoomEnter(chatLists, principalName);
+		eventService.publishRoomEnterEvent(chatLists, principalName);
 
-		eventService.handleRoomEnterAndLeftEvent(user.getNickname() + " 님이 입장했어요~!", roomId);
+		eventService.publishRoomEnterAndLeftEvent(user.getNickname() + " 님이 입장했어요~!", roomId);
 
-		eventService.handleRoomChangeEvent(RoomChangedResponse.from(
+		eventService.publishRoomChangeEvent(RoomChangedResponse.from(
 				chatRoom,
 				"UPDATE",
 				headCount
@@ -137,9 +137,9 @@ public class ChattingUseCase {
 
 		Map<String, Long> roomData = sessionService.removeSessionCount(sessionId);
 
-		eventService.handleRoomEnterAndLeftEvent(user.getNickname() + " 님이 나가셨습니다~", roomId);
+		eventService.publishRoomEnterAndLeftEvent(user.getNickname() + " 님이 나가셨습니다~", roomId);
 
-		eventService.handleRoomChangeEvent(RoomChangedResponse.from(
+		eventService.publishRoomChangeEvent(RoomChangedResponse.from(
 				chatRoom,
 				"UPDATE",
 				roomData.get("headCount")

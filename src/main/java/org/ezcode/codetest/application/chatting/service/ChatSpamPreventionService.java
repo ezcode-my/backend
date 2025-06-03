@@ -22,7 +22,7 @@ public class ChatSpamPreventionService {
 
 		limitService.applyChatBlock(email);
 
-		eventService.handleBroadCastChat(nickName + " 님께서 지나친 도배로 30초 동안 차단되었습니다.", roomId);
+		eventService.publishBroadCastChatEvent(nickName + " 님께서 지나친 도배로 30초 동안 차단되었습니다.", roomId);
 	}
 
 	public Long countChatsInLast10Seconds(String email) {
