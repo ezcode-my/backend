@@ -102,22 +102,26 @@ public class AuthService {
 		String bearerToken = request.getHeader("Authorization");
 
 		if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-			throw new IllegalArgumentException("유효하지 않은 Authorization 헤더");
+			throw new AuthException(AuthExceptionCode.INVALID_AUTHORIZATION_HEADER);
 		}
 
 		String token = jwtUtil.substringToken(bearerToken);
 
 		Long expiration = jwtUtil.getRemainingTime(token);
 
-		//블랙리스트로 등록하기
-		redisTemplate.opsForValue().set(
-			"LOGOUT:" + token,
-			"blacklisted",
-			expiration,
-			TimeUnit.MILLISECONDS
-		);
+		// Redis 실패 시에도 로그아웃 성공으로 처리 (보안상 사용자에게 노출하지 않음)
+		try {
+			//블랙리스트로 등록하기
+			redisTemplate.opsForValue().set(
+				"LOGOUT:" + token,
+				"blacklisted",
+				expiration,
+				TimeUnit.MILLISECONDS
+			);
 
-		redisTemplate.delete("LOGIN:" + userId);
+			redisTemplate.delete("LOGIN:" + userId);
+			} catch (Exception e) {
+				log.error("Redis 오류로 인한 로그아웃 처리 실패", e);}
 
 		return new LogoutResponse("success");
 	}

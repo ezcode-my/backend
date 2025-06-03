@@ -6,7 +6,6 @@ import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequ
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.auth.service.AuthService;
 import org.ezcode.codetest.application.usermanagement.user.dto.LogoutResponse;
-import org.ezcode.codetest.common.annotation.Auth;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
