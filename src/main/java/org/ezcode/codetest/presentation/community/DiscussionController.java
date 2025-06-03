@@ -4,13 +4,13 @@ import org.ezcode.codetest.application.community.dto.request.DiscussionCreateReq
 import org.ezcode.codetest.application.community.dto.request.DiscussionModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.DiscussionResponse;
 import org.ezcode.codetest.application.community.service.DiscussionService;
-import org.ezcode.codetest.common.annotation.Auth;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +34,7 @@ public class DiscussionController {
 	public ResponseEntity<DiscussionResponse> createDiscussion(
 		@PathVariable Long problemId,
 		@RequestBody @Valid DiscussionCreateRequest request,
-		@Auth AuthUser authUser
+		@AuthenticationPrincipal AuthUser authUser
 	) {
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
@@ -56,7 +56,7 @@ public class DiscussionController {
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
 		@RequestBody @Valid DiscussionModifyRequest request,
-		@Auth AuthUser authUser
+		@AuthenticationPrincipal AuthUser authUser
 	) {
 		return ResponseEntity
 			.ok()
@@ -67,7 +67,7 @@ public class DiscussionController {
 	public ResponseEntity<Void> removeDiscussion(
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
-		@Auth AuthUser authUser
+		@AuthenticationPrincipal AuthUser authUser
 	) {
 		discussionService.removeDiscussion(problemId, discussionId, authUser.getId());
 		return ResponseEntity.ok().build();
