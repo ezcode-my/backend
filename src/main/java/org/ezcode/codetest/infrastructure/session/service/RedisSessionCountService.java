@@ -24,7 +24,8 @@ public class RedisSessionCountService implements ChattingSessionService {
 
 	private final RedisTemplate<String, Long> redisTemplate;
 
-	private final RedisScript<Long> addSessionScript = new DefaultRedisScript<>(
+	private final RedisScript<Long> addSessionScript =
+		new DefaultRedisScript<>(
 		"local roomId = ARGV[2]\n" +
 			"redis.call('SET', KEYS[2], roomId)\n" +
 			"local added = redis.call('SADD', KEYS[1], ARGV[1])\n" +
@@ -36,7 +37,8 @@ public class RedisSessionCountService implements ChattingSessionService {
 		Long.class
 	);
 
-	private final RedisScript<List<Long>> removeSessionScript = new DefaultRedisScript<>(
+	private final RedisScript<List<Long>> removeSessionScript =
+		new DefaultRedisScript<>(
 		"local roomId = redis.call('GET', KEYS[1])\n" +
 			"if not roomId then\n" +
 			"  return {-1, 0}\n" +
@@ -56,14 +58,15 @@ public class RedisSessionCountService implements ChattingSessionService {
 		(Class<List<Long>>)(Class<?>)List.class
 	);
 
-	private final RedisScript<Long> removeRoomScript = new DefaultRedisScript<>(
+	private final RedisScript<Long> removeRoomScript =
+		new DefaultRedisScript<>(
 		"local sessions = redis.call('SMEMBERS', KEYS[1])\n" +
 			"for i=1,#sessions do\n" +
 			"  local sessionKey = 'session:' .. sessions[i]\n" +
 			"  redis.call('DEL', sessionKey)\n" +
 			"end\n" +
-			"redis.call('DEL', KEYS[1])\n" + // chatroom:<roomId>
-			"redis.call('DEL', KEYS[2])\n" + // roomCount:<roomId>
+			"redis.call('DEL', KEYS[1])\n" +
+			"redis.call('DEL', KEYS[2])\n" +
 			"return #sessions\n",
 		Long.class
 	);
