@@ -1,6 +1,6 @@
 package org.ezcode.codetest.infrastructure.event.service;
 
-import org.ezcode.codetest.application.chatting.port.event.ChattingMessageService;
+import org.ezcode.codetest.application.chatting.port.event.ChatEventService;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class StompMessageService implements ChattingMessageService {
+public class StompMessageService implements ChatEventService {
 
 	private final SimpMessagingTemplate messagingTemplate;
 

@@ -1,7 +1,7 @@
 package org.ezcode.codetest.application.chatting.service;
 
-import org.ezcode.codetest.application.chatting.port.event.ChattingMessageService;
-import org.ezcode.codetest.application.chatting.port.session.ChattingLimitService;
+import org.ezcode.codetest.application.chatting.port.event.ChatEventService;
+import org.ezcode.codetest.application.chatting.port.session.ChatLimitService;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChatSpamPreventionService {
 
-	private final ChattingLimitService limitService;
-	private final ChattingMessageService messageService;
+	private final ChatLimitService limitService;
+	private final ChatEventService eventService;
 
 	public Boolean isChatBlocked(String email) {
 
@@ -22,7 +22,7 @@ public class ChatSpamPreventionService {
 
 		limitService.applyChatBlock(email);
 
-		messageService.handleBroadCastChat(nickName + " 님께서 지나친 도배로 30초 동안 차단되었습니다.", roomId);
+		eventService.handleBroadCastChat(nickName + " 님께서 지나친 도배로 30초 동안 차단되었습니다.", roomId);
 	}
 
 	public Long countChatsInLast10Seconds(String email) {

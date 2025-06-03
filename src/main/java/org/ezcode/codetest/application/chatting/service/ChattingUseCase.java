@@ -7,11 +7,10 @@ import org.ezcode.codetest.application.chatting.dto.request.ChatRoomDeleteReques
 import org.ezcode.codetest.application.chatting.dto.request.ChatRoomSaveRequest;
 import org.ezcode.codetest.application.chatting.dto.request.ChatSaveRequest;
 import org.ezcode.codetest.application.chatting.dto.response.ChatResponse;
-import org.ezcode.codetest.application.chatting.dto.response.ChatRoomResponse;
+import org.ezcode.codetest.application.chatting.dto.response.RoomChangedResponse;
 import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCacheService;
-import org.ezcode.codetest.application.chatting.port.event.ChattingMessageService;
-import org.ezcode.codetest.application.chatting.port.session.ChattingSessionService;
-import org.ezcode.codetest.application.chatting.port.session.SessionChangedEvent;
+import org.ezcode.codetest.application.chatting.port.event.ChatEventService;
+import org.ezcode.codetest.application.chatting.port.session.ChatSessionService;
 import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCache;
 import org.ezcode.codetest.domain.chat.model.Chat;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
@@ -29,8 +28,8 @@ public class ChattingUseCase {
 
 	private final UserDomainService userDomainService;
 	private final ChattingDomainService chattingDomainService;
-	private final ChattingMessageService messageService;
-	private final ChattingSessionService sessionService;
+	private final ChatEventService eventService;
+	private final ChatSessionService sessionService;
 	private final ChatRoomCacheService cacheService;
 
 	@Transactional
@@ -42,12 +41,7 @@ public class ChattingUseCase {
 
 		cacheService.addChatRoomToCache(ChatRoomCache.from(savedRoom));
 
-		messageService.handleRoomChangeEvent(SessionChangedEvent.builder()
-			.roomId(savedRoom.getId())
-			.headCount(0L)
-			.title(savedRoom.getTitle())
-			.eventType("CREATE")
-			.build());
+		eventService.handleRoomChangeEvent(RoomChangedResponse.from(savedRoom, "CREATE"));
 	}
 
 	@Transactional
@@ -63,14 +57,9 @@ public class ChattingUseCase {
 
 		cacheService.removeChatRoomFromCache(ChatRoomCache.from(removedRoom));
 
-		sessionService.removeRoom(request.roomId());
+		sessionService.removeRoomSession(request.roomId());
 
-		messageService.handleRoomChangeEvent(SessionChangedEvent.builder()
-			.roomId(removedRoom.getId())
-			.title(removedRoom.getTitle())
-			.headCount(0L)
-			.eventType("DELETE")
-			.build());
+		eventService.handleRoomChangeEvent(RoomChangedResponse.from(removedRoom, "DELETE"));
 	}
 
 	@Transactional
@@ -87,16 +76,17 @@ public class ChattingUseCase {
 			cacheService.addChatRoomsToCache(chatRooms);
 		}
 
-		List<ChatRoomResponse> roomLists = chatRooms.stream()
-			.map(room -> ChatRoomResponse.builder()
-				.roomId(room.roomId())
-				.title(room.title())
-				.headCount(sessionService.viewSession(room.roomId()))
-				.eventType("GET")
-				.build())
+		List<RoomChangedResponse> roomLists = chatRooms.stream()
+			.map(room ->
+				RoomChangedResponse.from(
+					room,
+					"GET",
+					sessionService.viewSessionCount(room.roomId())
+				)
+			)
 			.toList();
 
-		messageService.handleEnter(roomLists, principalName);
+		eventService.handleEnter(roomLists, principalName);
 	}
 
 	@Transactional
@@ -108,7 +98,7 @@ public class ChattingUseCase {
 
 		Chat chat = chattingDomainService.createChatting(request.toEntity(user, chatRoom));
 
-		messageService.handleBroadCastChat(ChatResponse.from(chat), roomId);
+		eventService.handleBroadCastChat(ChatResponse.from(chat), roomId);
 	}
 
 	@Transactional
@@ -124,18 +114,18 @@ public class ChattingUseCase {
 			.map(ChatResponse::from)
 			.toList();
 
-		Long headCount = sessionService.addSession(sessionId, roomId);
+		Long headCount = sessionService.addSessionCount(sessionId, roomId);
 
-		messageService.handleRoomEnter(chatLists, principalName);
+		eventService.handleRoomEnter(chatLists, principalName);
 
-		messageService.handleRoomEnterAndLeftEvent(user.getNickname() + " 님이 입장했어요~!", roomId);
+		eventService.handleRoomEnterAndLeftEvent(user.getNickname() + " 님이 입장했어요~!", roomId);
 
-		messageService.handleRoomChangeEvent(ChatRoomResponse.builder()
-			.roomId(chatRoom.getId())
-			.title(chatRoom.getTitle())
-			.eventType("UPDATE")
-			.headCount(headCount)
-			.build());
+		eventService.handleRoomChangeEvent(RoomChangedResponse.from(
+				chatRoom,
+				"UPDATE",
+				headCount
+			)
+		);
 	}
 
 	@Transactional
@@ -145,15 +135,15 @@ public class ChattingUseCase {
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomId);
 
-		Map<String, Long> roomData = sessionService.removeSession(sessionId);
+		Map<String, Long> roomData = sessionService.removeSessionCount(sessionId);
 
-		messageService.handleRoomEnterAndLeftEvent(user.getNickname() + " 님이 나가셨습니다~", roomId);
+		eventService.handleRoomEnterAndLeftEvent(user.getNickname() + " 님이 나가셨습니다~", roomId);
 
-		messageService.handleRoomChangeEvent(ChatRoomResponse.builder()
-			.roomId(chatRoom.getId())
-			.title(chatRoom.getTitle())
-			.eventType("UPDATE")
-			.headCount(roomData.get("headCount"))
-			.build());
+		eventService.handleRoomChangeEvent(RoomChangedResponse.from(
+				chatRoom,
+				"UPDATE",
+				roomData.get("headCount")
+			)
+		);
 	}
 }

@@ -3,7 +3,7 @@ package org.ezcode.codetest.infrastructure.session.service;
 import java.time.Duration;
 import java.util.Collections;
 
-import org.ezcode.codetest.application.chatting.port.session.ChattingLimitService;
+import org.ezcode.codetest.application.chatting.port.session.ChatLimitService;
 import org.ezcode.codetest.infrastructure.session.constant.RedisKeyConstants;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class RedisChatLimitService implements ChattingLimitService {
+public class RedisChatLimitService implements ChatLimitService {
 
 	private final RedisTemplate<String, Long> redisTemplate;
 

@@ -3,7 +3,7 @@ package org.ezcode.codetest.presentation.chattingmanagement.chatting.controller;
 import org.ezcode.codetest.application.chatting.dto.request.ChatRoomDeleteRequest;
 import org.ezcode.codetest.application.chatting.dto.request.ChatRoomSaveRequest;
 import org.ezcode.codetest.application.chatting.service.ChattingUseCase;
-import org.ezcode.codetest.common.annotation.ResponseMessage;
+import org.ezcode.codetest.presentation.advice.ResponseMessage;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

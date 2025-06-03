@@ -1,6 +1,6 @@
 package org.ezcode.codetest.application.chatting.port.session;
 
-public interface ChattingLimitService {
+public interface ChatLimitService {
 
 	Long increaseChatCount(String email);
 

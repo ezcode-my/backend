@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.ezcode.codetest.application.chatting.port.session.ChattingSessionService;
+import org.ezcode.codetest.application.chatting.port.session.ChatSessionService;
 import org.ezcode.codetest.domain.chat.exception.ChattingException;
 import org.ezcode.codetest.domain.chat.exception.ChattingExceptionCode;
 import org.ezcode.codetest.infrastructure.session.constant.RedisKeyConstants;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class RedisSessionCountService implements ChattingSessionService {
+public class RedisSessionCountService implements ChatSessionService {
 
 	private final RedisTemplate<String, Long> redisTemplate;
 
@@ -72,7 +72,7 @@ public class RedisSessionCountService implements ChattingSessionService {
 	);
 
 	@Override
-	public Long addSession(String sessionId, Long roomId) {
+	public Long addSessionCount(String sessionId, Long roomId) {
 
 		String roomKey = RedisKeyConstants.CHATROOM_KEY_PREFIX + roomId;
 		String sessionKey = RedisKeyConstants.SESSION_KEY_PREFIX + sessionId;
@@ -89,22 +89,21 @@ public class RedisSessionCountService implements ChattingSessionService {
 		return (headCount != null ? headCount : 0L);
 	}
 
-	public Long removeRoom(Long roomId) {
+	public void removeRoomSession(Long roomId) {
 
 		String roomKey = RedisKeyConstants.CHATROOM_KEY_PREFIX + roomId;
 		String roomCountKey = RedisKeyConstants.ROOM_COUNT_KEY_PREFIX + roomId;
 		List<String> keys = Arrays.asList(roomKey, roomCountKey);
 
-		Long deletedSessionCount = redisTemplate.execute(
+		redisTemplate.execute(
 			removeRoomScript,
 			keys,
 			new Object[]{}
 		);
-		return deletedSessionCount != null ? deletedSessionCount : 0L;
 	}
 
 	@Override
-	public Map<String, Long> removeSession(String sessionId) {
+	public Map<String, Long> removeSessionCount(String sessionId) {
 
 		String sessionKey = RedisKeyConstants.SESSION_KEY_PREFIX + sessionId;
 
@@ -133,7 +132,7 @@ public class RedisSessionCountService implements ChattingSessionService {
 	}
 
 	@Override
-	public Long viewSession(Long roomId) {
+	public Long viewSessionCount(Long roomId) {
 
 		String roomCountKey = RedisKeyConstants.ROOM_COUNT_KEY_PREFIX + roomId;
 
