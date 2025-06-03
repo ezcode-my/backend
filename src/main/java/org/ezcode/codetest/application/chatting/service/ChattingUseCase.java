@@ -11,7 +11,7 @@ import org.ezcode.codetest.application.chatting.dto.response.ChatRoomResponse;
 import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCacheService;
 import org.ezcode.codetest.application.chatting.port.event.ChattingMessageService;
 import org.ezcode.codetest.application.chatting.port.session.ChattingSessionService;
-import org.ezcode.codetest.application.chatting.port.event.ChatRoomChange;
+import org.ezcode.codetest.application.chatting.port.session.SessionChangedEvent;
 import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCache;
 import org.ezcode.codetest.domain.chat.model.Chat;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
@@ -42,7 +42,7 @@ public class ChattingUseCase {
 
 		cacheService.addChatRoomToCache(ChatRoomCache.from(savedRoom));
 
-		messageService.handleRoomChangeEvent(ChatRoomChange.builder()
+		messageService.handleRoomChangeEvent(SessionChangedEvent.builder()
 			.roomId(savedRoom.getId())
 			.headCount(0L)
 			.title(savedRoom.getTitle())
@@ -65,7 +65,7 @@ public class ChattingUseCase {
 
 		sessionService.removeRoom(request.roomId());
 
-		messageService.handleRoomChangeEvent(ChatRoomChange.builder()
+		messageService.handleRoomChangeEvent(SessionChangedEvent.builder()
 			.roomId(removedRoom.getId())
 			.title(removedRoom.getTitle())
 			.headCount(0L)
@@ -118,13 +118,13 @@ public class ChattingUseCase {
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomId);
 
-		Long headCount = sessionService.addSession(sessionId, roomId);
-
 		List<ChatResponse> chatLists = chattingDomainService
 			.getRoomChatting(roomId)
 			.stream()
 			.map(ChatResponse::from)
 			.toList();
+
+		Long headCount = sessionService.addSession(sessionId, roomId);
 
 		messageService.handleRoomEnter(chatLists, principalName);
 
