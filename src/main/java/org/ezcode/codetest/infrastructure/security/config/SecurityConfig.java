@@ -1,6 +1,7 @@
 package org.ezcode.codetest.infrastructure.security.config;
 
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
+import org.ezcode.codetest.infrastructure.security.jwt.ExceptionHandlingFilter;
 import org.ezcode.codetest.infrastructure.security.jwt.JwtFilter;
 import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		JwtFilter jwtFilter = new JwtFilter(jwtUtil);
+		ExceptionHandlingFilter exceptionFilter = new ExceptionHandlingFilter();
 
 		return http
 			// CSRF, Form 로그인, HTTP Basic 인증 비활성화
@@ -43,6 +45,7 @@ public class SecurityConfig {
 					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.anyRequest().authenticated() //나머지는 일반 인증
 			)
+			.addFilterBefore(exceptionFilter, JwtFilter.class)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			.build();
 	}
