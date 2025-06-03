@@ -5,16 +5,20 @@ import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninResp
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.auth.service.AuthService;
+import org.ezcode.codetest.common.annotation.Auth;
+import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -28,5 +32,12 @@ public class AuthController {
 	@PostMapping("/signin")
 	public ResponseEntity<SigninResponse> signin(@Valid @RequestBody SigninRequest signinRequest) {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.signin(signinRequest));
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(
+			@Auth AuthUser authUser,
+			HttpServletRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(authService.logout(authUser.getId(), request));
 	}
 }

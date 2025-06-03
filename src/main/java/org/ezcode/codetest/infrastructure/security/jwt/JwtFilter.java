@@ -1,11 +1,18 @@
 package org.ezcode.codetest.infrastructure.security.jwt;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,13 +34,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtUtilImpl jwtUtilImpl;
 
-	private static final String[] WHITE_LIST = {
-		"/signin",
-		"/signup",
-		"/chatting",
-		"/ws"
-	};
-
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 									FilterChain filterChain) throws ServletException, IOException {
@@ -41,15 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		String bearerToken = request.getHeader("Authorization");
 		String url = request.getRequestURI();
 
-		if(isWhiteList(url)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-
 		if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-			if (request.getRequestURI().startsWith("/admin")){
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "관리자 기능은 인증이 필요합니다");
-			}
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -83,14 +75,23 @@ public class JwtFilter extends OncePerRequestFilter {
 				tier
 			);
 
-			log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
-
 			request.setAttribute("authUser", authUser);
 			request.setAttribute("userId", Long.parseLong(claims.getSubject()));
 			request.setAttribute("email", claims.get("email"));
 			request.setAttribute("userRole", claims.get("userRole"));
 			request.setAttribute("username", claims.get("username"));
 			request.setAttribute("nickname", claims.get("nickname"));
+
+			// 인가를 위한 권한 정보 저장
+			Collection<? extends GrantedAuthority> authorities =
+				List.of(new SimpleGrantedAuthority(authUser.getRole().toString()));
+
+			// Spring Security 인증 토큰 생성
+			Authentication authToken = new UsernamePasswordAuthenticationToken(authUser,
+				null, authorities);
+
+			// SecurityContextHolder(세션)에 토큰 담기
+			SecurityContextHolder.getContext().setAuthentication(authToken);
 
 
 			filterChain.doFilter(request, response);
@@ -109,7 +110,4 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 	}
 
-	private boolean isWhiteList(String requestURI) {
-		return PatternMatchUtils.simpleMatch(WHITE_LIST, requestURI);
-	}
 }

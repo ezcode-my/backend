@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    //implementation 'org.springframework.boot:spring-boot-starter-security'  <--- 스프링 시큐리티가 자동으로 인증 활성화 상태라 주석처리했습니다
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -57,7 +57,7 @@ dependencies {
 
     //Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // bcrypt
@@ -69,9 +69,14 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
     //Mac에서 빌드시 필요한 의존성
-    //implementation 'io.netty:netty-resolver-dns-native-macos:4.1.121.Final:osx-aarch_64'
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.121.Final:osx-aarch_64'
+
+    // actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 
+    //activemq
+    implementation 'org.apache.activemq:activemq-broker:6.1.6'
 }
 
 tasks.named('test') {
