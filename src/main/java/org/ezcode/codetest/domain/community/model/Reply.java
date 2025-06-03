@@ -54,7 +54,7 @@ public class Reply extends BaseEntity {
 	private boolean isDeleted;
 
 	@Builder
-	public Reply(Discussion discussion, User user, Reply parent, List<Reply> replies, String content) {
+	public Reply(Discussion discussion, User user, Reply parent, String content) {
 		this.discussion = discussion;
 		this.user = user;
 		this.parent = parent;
