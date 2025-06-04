@@ -45,4 +45,8 @@ public class Testcase {
 		this.input = input;
 		this.output = output;
 	}
+
+	public boolean problemIdMatched(Long problemId) {
+		return this.getProblem().getId().equals(problemId);
+	}
 }

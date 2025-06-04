@@ -26,6 +26,7 @@ public class TestcaseDomainService {
 
 	public List<Testcase> getTestcaseList(Problem problem) {
 
+		// 삭제되었거나, 문제가 존재하지 않는 예외처리
 		if (problem == null || problem.getIsDeleted()) {
 			throw new ProblemException(ProblemExceptionCode.PROBLEM_NOT_FOUND);
 		}
@@ -45,7 +46,8 @@ public class TestcaseDomainService {
 
 		Testcase findTestcase = testcaseRepository.findByTestcase(testcaseId);
 
-		if(!findTestcase.getProblem().getId().equals(problem.getId())) {
+		// 테스트 케이스 문제와 요청한 값의 문제 id 일치한가 여부
+		if(!findTestcase.problemIdMatched(problem.getId())) {
 			throw new TestcaseException(TestcaseExceptionCode.TESTCASE_NOT_FOUND);
 		}
 
