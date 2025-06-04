@@ -1,11 +1,15 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +19,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,6 +66,9 @@ public class Problem extends BaseEntity {
 
 	@Column(nullable = false)
 	private Boolean isDeleted;
+
+	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Testcase> testcases = new ArrayList<>();
 
 	@Builder
 	public Problem(User creator, Category category, String title, String description, int score, String difficulty,
