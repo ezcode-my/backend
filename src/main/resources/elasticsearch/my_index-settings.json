@@ -1,12 +1,12 @@
 {
   "settings": {
-    "index.max_ngram_diff": 3,
+    "index.max_ngram_diff": 10,
     "analysis": {
       "tokenizer": {
         "ngram_tokenizer": {
           "type": "ngram",
           "min_gram": 2,
-          "max_gram": 5,
+          "max_gram": 12,
           "token_chars": [
             "letter",
             "digit"

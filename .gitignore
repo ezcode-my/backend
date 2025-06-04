@@ -41,3 +41,4 @@ src/main/resources/application.properties
 
 # 로컬 개발 설정
 docker-compose.dev.yml
+/src/main/resources/.env
