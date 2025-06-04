@@ -25,7 +25,8 @@ public class ReplyRepositoryImpl implements ReplyRepository {
 	@Override
 	public Optional<Reply> findReplyById(Long replyId) {
 
-		return replyJpaRepository.findByReplyId(replyId);
+		return replyJpaRepository.findById(replyId)
+			.filter(r -> !r.isDeleted());
 	}
 
 	@Override
