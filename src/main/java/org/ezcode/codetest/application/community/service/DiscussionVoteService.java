@@ -28,16 +28,6 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 		this.discussionDomainService = discussionDomainService;
 	}
 
-	@Override
-	protected DiscussionVote buildVoteEntity(User voter, Long targetId) {
-		Discussion discussion = discussionDomainService.getDiscussionById(targetId);
-
-		return DiscussionVote.builder()
-			.voter(voter)
-			.discussion(discussion)
-			.build();
-	}
-
 	@Transactional
 	public VoteResponse validateAndToggleVote(Long problemId, Long discussionId, Long userId) {
 
@@ -49,5 +39,15 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 
 		Optional<DiscussionVote> discussionVote = toggleVote(voter, discussionId);
 		return new VoteResponse(discussionVote.isPresent());
+	}
+
+	@Override
+	protected DiscussionVote buildVoteEntity(User voter, Long targetId) {
+		Discussion discussion = discussionDomainService.getDiscussionById(targetId);
+
+		return DiscussionVote.builder()
+			.voter(voter)
+			.discussion(discussion)
+			.build();
 	}
 }

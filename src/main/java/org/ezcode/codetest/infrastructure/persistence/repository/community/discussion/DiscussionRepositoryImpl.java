@@ -19,26 +19,32 @@ public class DiscussionRepositoryImpl implements DiscussionRepository {
 
 	@Override
 	public Discussion save(Discussion discussion) {
+
 		return discussionJpaRepository.save(discussion);
 	}
 
 	@Override
 	public Optional<Discussion> findById(Long discussionId) {
-		return discussionJpaRepository.findByDiscussionId(discussionId);
+
+		return discussionJpaRepository.findById(discussionId)
+			.filter(d -> !d.isDeleted());
 	}
 
 	@Override
 	public Page<Discussion> findAllByProblemId(Long problemId, Pageable pageable) {
+
 		return discussionJpaRepository.findAllByProblemId(problemId, pageable);
 	}
 
 	@Override
 	public void updateDiscussion(Discussion discussion, Language language, String content) {
+
 		discussion.update(language, content);
 	}
 
 	@Override
 	public void deleteDiscussion(Discussion discussion) {
+
 		discussion.setDeleted();
 	}
 }
