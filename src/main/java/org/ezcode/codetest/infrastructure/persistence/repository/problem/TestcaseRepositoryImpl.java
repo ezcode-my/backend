@@ -2,6 +2,8 @@ package org.ezcode.codetest.infrastructure.persistence.repository.problem;
 
 import java.util.List;
 
+import org.ezcode.codetest.domain.problem.exception.TestcaseException;
+import org.ezcode.codetest.domain.problem.exception.code.TestcaseExceptionCode;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.problem.repository.TestcaseRepository;
@@ -24,4 +26,12 @@ public class TestcaseRepositoryImpl implements TestcaseRepository {
 	public List<Testcase> findAllByProblem(Problem problem) {
 		return testcaseJpaRepository.findAllByProblem(problem);
 	}
+
+	@Override
+	public Testcase findByTestcase(Long testcaseId) {
+
+		return testcaseJpaRepository.findById(testcaseId)
+			.orElseThrow(() -> new TestcaseException(TestcaseExceptionCode.TESTCASE_NOT_FOUND));
+	}
+
 }
