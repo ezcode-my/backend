@@ -5,8 +5,6 @@ import java.util.List;
 import org.ezcode.codetest.application.problem.dto.request.TestcaseCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.TestcaseUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.TestcaseResponse;
-import org.ezcode.codetest.domain.problem.exception.ProblemException;
-import org.ezcode.codetest.domain.problem.exception.code.ProblemExceptionCode;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
@@ -60,5 +58,13 @@ public class TestcaseService {
 		findtestcase.update(request.input(), request.output());
 
 		return TestcaseResponse.from(findtestcase);
+	}
+
+	@Transactional
+	public void removeTestcase(Long problemId, Long testcaseId) {
+
+		Problem findProblem = problemDomainService.getProblem(problemId);
+
+		testcaseDomainService.removeTestcase(findProblem, testcaseId);
 	}
 }

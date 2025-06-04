@@ -8,6 +8,7 @@ import org.ezcode.codetest.application.problem.dto.response.TestcaseResponse;
 import org.ezcode.codetest.application.problem.service.TestcaseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +47,6 @@ public class TestcaseAdminController {
 				.body(testcaseService.getTestcaseList(problemId));
 	}
 
-
 	@PutMapping("/{testcaseId}")
 	public ResponseEntity<TestcaseResponse> modifyTestcase(
 		@PathVariable Long problemId,
@@ -57,5 +57,18 @@ public class TestcaseAdminController {
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(testcaseService.modifyTestcase(problemId, testcaseId, request));
+	}
+
+	@DeleteMapping("/{testcaseId}")
+	public ResponseEntity<Void> removeTestcase(
+		@PathVariable Long problemId,
+		@PathVariable Long testcaseId
+	) {
+
+		testcaseService.removeTestcase(problemId, testcaseId);
+
+		return ResponseEntity
+				.status(HttpStatus.NO_CONTENT)
+				.build();
 	}
 }
