@@ -25,9 +25,9 @@ public record ProblemDetailResponse(
 
 	String difficulty,
 
-	String memoryLimit,
+	Long memoryLimit,
 
-	int timeLimit,
+	String timeLimit,
 
 	Reference reference,
 
