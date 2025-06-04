@@ -11,9 +11,9 @@ public class Judge0ResponseMapper {
 		String output = extractActualOutput(compileResponse);
 		boolean success = isSuccessful(compileResponse);
 		return JudgeResult.builder()
-			.output(output)
-			.time(compileResponse.time())
-			.memory(compileResponse.memory())
+			.actualOutput(output)
+			.executionTime(compileResponse.time())
+			.memoryUsage(compileResponse.memory())
 			.success(success)
 			.message(compileResponse.status().description())
 			.build();
