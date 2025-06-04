@@ -40,4 +40,9 @@ public class Testcase {
 		this.output = output;
 	}
 
+	// 테스트 케이스 수정 로직
+	public void update(String input, String output) {
+		this.input = input;
+		this.output = output;
+	}
 }
