@@ -26,6 +26,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Value("${spring.message.activemq.password}")
 	private String mqPassword;
 
+	@Value("${spring.message.activemq.port}")
+	private Integer mqPort;
+
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 
@@ -42,7 +45,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		registry
 			.enableStompBrokerRelay("/topic", "/queue")
 			.setRelayHost(mqAddress)
-			.setRelayPort(61613)
+			.setRelayPort(mqPort)
 			.setClientLogin(mqUsername)
 			.setClientPasscode(mqPassword)
 			.setSystemLogin(mqUsername)

@@ -1,6 +1,5 @@
-package org.ezcode.codetest.common.advice;
+package org.ezcode.codetest.common.base.exception;
 
-import org.ezcode.codetest.common.base.exception.BaseException;
 import org.ezcode.codetest.common.dto.CommonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

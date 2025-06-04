@@ -31,7 +31,7 @@ public class CustomHandShakeHandler extends DefaultHandshakeHandler {
 		if (query != null && query.startsWith("token=")) {
 			tokenParam = query.substring(6);
 		}
-		//토큰의 대한 예외처리 아직 구현 x
+		//TODO : 토큰의 대한 예외처리 아직 구현 x
 
 		Claims claims = jwtUtilImpl.extractClaims(tokenParam);
 		String email = claims.get("email", String.class);

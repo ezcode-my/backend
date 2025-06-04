@@ -1,4 +1,4 @@
-package org.ezcode.codetest.common.annotation;
+package org.ezcode.codetest.presentation.advice;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

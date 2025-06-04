@@ -1,6 +1,5 @@
-package org.ezcode.codetest.common.advice;
+package org.ezcode.codetest.presentation.advice;
 
-import org.ezcode.codetest.common.annotation.ResponseMessage;
 import org.ezcode.codetest.common.dto.CommonResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

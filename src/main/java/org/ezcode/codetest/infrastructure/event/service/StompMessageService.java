@@ -1,6 +1,5 @@
 package org.ezcode.codetest.infrastructure.event.service;
 
-import org.ezcode.codetest.application.chatting.port.event.ChattingMessageService;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class StompMessageService implements ChattingMessageService {
+public class StompMessageService {
 
 	private final SimpMessagingTemplate messagingTemplate;
 
@@ -35,9 +34,9 @@ public class StompMessageService implements ChattingMessageService {
 		messagingTemplate.convertAndSend("/topic/chat/" + roomId, data);
 	}
 
-	public <T> void handleRoomEnterAndLeftEvent(T MessageData, Long roomId) {
+	public <T> void handleRoomEnterAndLeftEvent(T messageData, Long roomId) {
 
-		messagingTemplate.convertAndSend("/topic/chat/" + roomId, MessageData);
+		messagingTemplate.convertAndSend("/topic/chat/" + roomId, messageData);
 	}
 
 	public <T> void handleRoomChangeEvent(T roomData) {
