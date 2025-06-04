@@ -2,7 +2,7 @@ package org.ezcode.codetest.domain.user.model.entity;
 
 import java.time.LocalDateTime;
 
-import org.ezcode.codetest.domain.problem.model.entity.UserProblemStatus;
+import org.ezcode.codetest.domain.problem.model.entity.UserProblemResult;
 import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.persistence.Column;
@@ -29,7 +29,7 @@ public class RankPoint {
 
 	@ManyToOne
 	@JoinColumn(name = "user_problem_status_id", nullable = false)
-	private UserProblemStatus userProblemStatus;
+	private UserProblemResult userProblemResult;
 
 	@Column(nullable = false)
 	private Integer point;
@@ -39,8 +39,8 @@ public class RankPoint {
 	protected LocalDateTime createdAt;
 
 	@Builder
-	public RankPoint(UserProblemStatus userProblemStatus, Integer point) {
-		this.userProblemStatus = userProblemStatus;
+	public RankPoint(UserProblemResult userProblemResult, Integer point) {
+		this.userProblemResult = userProblemResult;
 		this.point = point;
 		this.createdAt = LocalDateTime.now();
 	}
