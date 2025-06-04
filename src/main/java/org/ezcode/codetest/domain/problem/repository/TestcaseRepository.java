@@ -10,4 +10,6 @@ public interface TestcaseRepository {
 	Testcase save(Testcase testcase);
 
 	List<Testcase> findAllByProblem(Problem problem);
+
+	Testcase findByTestcase(Long testcaseId);
 }
