@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.persistence.repository.community;
+package org.ezcode.codetest.infrastructure.persistence.repository.community.reply;
 
 import java.util.Optional;
 
