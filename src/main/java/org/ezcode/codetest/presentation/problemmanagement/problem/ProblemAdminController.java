@@ -35,7 +35,7 @@ public class ProblemAdminController {
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
-				.body(problemService.createProblem(request,user));
+				.body(problemService.createProblem(request, user));
 	}
 
 	@PutMapping("/{problemId}")
@@ -55,7 +55,7 @@ public class ProblemAdminController {
 		problemService.removeProblem(problemId);
 
 		return ResponseEntity
-				.noContent()
+				.status(HttpStatus.NO_CONTENT)
 				.build();
 	}
 }
