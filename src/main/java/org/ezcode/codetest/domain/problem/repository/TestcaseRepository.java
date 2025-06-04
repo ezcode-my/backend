@@ -12,4 +12,6 @@ public interface TestcaseRepository {
 	List<Testcase> findAllByProblem(Problem problem);
 
 	Testcase findByTestcase(Long testcaseId);
+
+	void delete(Testcase testcase);
 }

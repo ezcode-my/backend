@@ -34,4 +34,10 @@ public class TestcaseRepositoryImpl implements TestcaseRepository {
 			.orElseThrow(() -> new TestcaseException(TestcaseExceptionCode.TESTCASE_NOT_FOUND));
 	}
 
+	@Override
+	public void delete(Testcase testcase) {
+
+		testcaseJpaRepository.delete(testcase);
+	}
+
 }
