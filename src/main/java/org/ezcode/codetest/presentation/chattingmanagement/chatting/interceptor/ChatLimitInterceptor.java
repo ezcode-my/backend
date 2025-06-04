@@ -4,10 +4,10 @@ import java.util.Map;
 
 import org.ezcode.codetest.application.chatting.service.ChatSpamPreventionService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -15,12 +15,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ChatLimitInterceptor implements HandlerInterceptor {
 
 	private final ChatSpamPreventionService spamPreventionService;
+	private final static Long MAX_CHAT_COUNT_PER_10SEC = 11L;
 
 	@Override
 	public boolean preHandle(
@@ -30,7 +33,8 @@ public class ChatLimitInterceptor implements HandlerInterceptor {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		if (authentication == null) return false;
+		if (authentication == null)
+			return false;
 
 		Long roomId = extractRoomId(request);
 
@@ -45,7 +49,7 @@ public class ChatLimitInterceptor implements HandlerInterceptor {
 
 		Long count = spamPreventionService.countChatsInLast10Seconds(email);
 
-		if (count >= 11L) {
+		if (count >= MAX_CHAT_COUNT_PER_10SEC) {
 			spamPreventionService.applyChatBlock(email, nickName, roomId);
 			return false;
 		}
@@ -55,13 +59,18 @@ public class ChatLimitInterceptor implements HandlerInterceptor {
 
 	private Long extractRoomId(HttpServletRequest request) {
 
-		@SuppressWarnings("unchecked")
-		Map<String, String> pathVars =
-			(Map<String, String>)request.getAttribute(
-				HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, String> pathVars =
+				(Map<String, String>)request.getAttribute(
+					HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
-		String roomIdStr = pathVars.get("roomId");
+			String roomIdStr = pathVars.get("roomId");
 
-		return Long.parseLong(roomIdStr);
+			return Long.parseLong(roomIdStr);
+		} catch (Exception e) {
+			log.warn("Pathvariable 입력 값 검증 실패");
+			throw new NumberFormatException(e.getMessage());
+		}
 	}
 }

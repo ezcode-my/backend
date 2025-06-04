@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.ezcode.codetest.application.chatting.port.session.ChattingSessionService;
+import org.ezcode.codetest.application.chatting.port.session.ChatSessionService;
 import org.ezcode.codetest.domain.chat.exception.ChattingException;
 import org.ezcode.codetest.domain.chat.exception.ChattingExceptionCode;
 import org.ezcode.codetest.infrastructure.session.constant.RedisKeyConstants;
@@ -20,11 +20,12 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class RedisSessionCountService implements ChattingSessionService {
+public class RedisSessionCountService implements ChatSessionService {
 
 	private final RedisTemplate<String, Long> redisTemplate;
 
-	private final RedisScript<Long> addSessionScript = new DefaultRedisScript<>(
+	private final RedisScript<Long> addSessionScript =
+		new DefaultRedisScript<>(
 		"local roomId = ARGV[2]\n" +
 			"redis.call('SET', KEYS[2], roomId)\n" +
 			"local added = redis.call('SADD', KEYS[1], ARGV[1])\n" +
@@ -36,7 +37,8 @@ public class RedisSessionCountService implements ChattingSessionService {
 		Long.class
 	);
 
-	private final RedisScript<List<Long>> removeSessionScript = new DefaultRedisScript<>(
+	private final RedisScript<List<Long>> removeSessionScript =
+		new DefaultRedisScript<>(
 		"local roomId = redis.call('GET', KEYS[1])\n" +
 			"if not roomId then\n" +
 			"  return {-1, 0}\n" +
@@ -56,20 +58,21 @@ public class RedisSessionCountService implements ChattingSessionService {
 		(Class<List<Long>>)(Class<?>)List.class
 	);
 
-	private final RedisScript<Long> removeRoomScript = new DefaultRedisScript<>(
+	private final RedisScript<Long> removeRoomScript =
+		new DefaultRedisScript<>(
 		"local sessions = redis.call('SMEMBERS', KEYS[1])\n" +
 			"for i=1,#sessions do\n" +
 			"  local sessionKey = 'session:' .. sessions[i]\n" +
 			"  redis.call('DEL', sessionKey)\n" +
 			"end\n" +
-			"redis.call('DEL', KEYS[1])\n" + // chatroom:<roomId>
-			"redis.call('DEL', KEYS[2])\n" + // roomCount:<roomId>
+			"redis.call('DEL', KEYS[1])\n" +
+			"redis.call('DEL', KEYS[2])\n" +
 			"return #sessions\n",
 		Long.class
 	);
 
 	@Override
-	public Long addSession(String sessionId, Long roomId) {
+	public Long addSessionCount(String sessionId, Long roomId) {
 
 		String roomKey = RedisKeyConstants.CHATROOM_KEY_PREFIX + roomId;
 		String sessionKey = RedisKeyConstants.SESSION_KEY_PREFIX + sessionId;
@@ -86,22 +89,21 @@ public class RedisSessionCountService implements ChattingSessionService {
 		return (headCount != null ? headCount : 0L);
 	}
 
-	public Long removeRoom(Long roomId) {
+	public void removeRoomSession(Long roomId) {
 
 		String roomKey = RedisKeyConstants.CHATROOM_KEY_PREFIX + roomId;
 		String roomCountKey = RedisKeyConstants.ROOM_COUNT_KEY_PREFIX + roomId;
 		List<String> keys = Arrays.asList(roomKey, roomCountKey);
 
-		Long deletedSessionCount = redisTemplate.execute(
+		redisTemplate.execute(
 			removeRoomScript,
 			keys,
 			new Object[]{}
 		);
-		return deletedSessionCount != null ? deletedSessionCount : 0L;
 	}
 
 	@Override
-	public Map<String, Long> removeSession(String sessionId) {
+	public Map<String, Long> removeSessionCount(String sessionId) {
 
 		String sessionKey = RedisKeyConstants.SESSION_KEY_PREFIX + sessionId;
 
@@ -130,7 +132,7 @@ public class RedisSessionCountService implements ChattingSessionService {
 	}
 
 	@Override
-	public Long viewSession(Long roomId) {
+	public Long viewSessionCount(Long roomId) {
 
 		String roomCountKey = RedisKeyConstants.ROOM_COUNT_KEY_PREFIX + roomId;
 
