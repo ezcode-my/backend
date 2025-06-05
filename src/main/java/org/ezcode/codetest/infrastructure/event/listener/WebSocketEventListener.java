@@ -28,7 +28,7 @@ public class WebSocketEventListener implements ApplicationListener<SessionDiscon
 		StompHeaderAccessor h = StompHeaderAccessor.wrap(event.getMessage());
 		String sessionId = h.getSessionId();
 
-		Map<String, Long> roomData = sessionService.removeSession(sessionId);
+		Map<String, Long> roomData = sessionService.removeSessionCount(sessionId);
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomData.get("roomId"));
 

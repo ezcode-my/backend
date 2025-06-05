@@ -1,16 +1,10 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
-import java.time.LocalDateTime;
-
 import org.ezcode.codetest.common.base.entity.BaseEntity;
-import org.ezcode.codetest.domain.problem.model.enums.SubmitStatus;
-import org.springframework.data.annotation.CreatedDate;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -45,9 +39,8 @@ public class Submission extends BaseEntity {
 	@Column(nullable = false, columnDefinition = "longtext")
 	private String code;
 
-	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private SubmitStatus status;
+	private String message;
 
 	@Column(name = "testcase_passed_count", nullable = false)
 	private int testCasePassedCount;
@@ -56,28 +49,26 @@ public class Submission extends BaseEntity {
 	private int testCaseTotalCount;
 
 	@Column(name = "execution_time", nullable = false)
-	private int executionTime;
+	private String executionTime;
 
 	@Column(name = "memory_usage", nullable = false)
-	private int memoryUsage;
-
-	@CreatedDate
-	@Column(name = "submitted_at", nullable = false)
-	private LocalDateTime submittedAt;
+	private Long memoryUsage;
 
 	@Builder
-	public Submission(User user, Problem problem, Language language, String code, SubmitStatus status,
-		int testCasePassedCount, int testCaseTotalCount, int executionTime, int memoryUsage, LocalDateTime submittedAt
-		) {
+	public Submission(User user, Problem problem, Language language, String code, String message,
+		int testCasePassedCount, int testCaseTotalCount, String executionTime, Long memoryUsage) {
 		this.user = user;
 		this.problem = problem;
 		this.language = language;
 		this.code = code;
-		this.status = status;
+		this.message = message;
 		this.testCasePassedCount = testCasePassedCount;
 		this.testCaseTotalCount = testCaseTotalCount;
 		this.executionTime = executionTime;
 		this.memoryUsage = memoryUsage;
-		this.submittedAt = submittedAt;
+	}
+
+	public Long getUserId() {
+		return this.user.getId();
 	}
 }

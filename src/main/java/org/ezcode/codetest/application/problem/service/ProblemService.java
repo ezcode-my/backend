@@ -24,6 +24,7 @@ public class ProblemService {
 	private final ProblemDomainService problemDomainService;
 	private final UserDomainService userDomainService;
 
+	// 문제 생성 ( 관리자 )
 	@Transactional
 	public ProblemDetailResponse createProblem(ProblemCreateRequest requestDto, AuthUser authUser) {
 
@@ -36,6 +37,7 @@ public class ProblemService {
 		return ProblemDetailResponse.from(savedProblem);
 	}
 
+	// 문제 전체 조회
 	@Transactional(readOnly = true)
 	public Page<ProblemResponse> getProblemsList(Pageable pageable, Category category) {
 		Page<Problem> problems;
@@ -49,6 +51,7 @@ public class ProblemService {
 		return problems.map(ProblemResponse::from); // Entity → DTO 변환
 	}
 
+	// 문제 상세 조회
 	@Transactional(readOnly = true)
 	public ProblemDetailResponse getProblem(Long problemId) {
 
@@ -57,6 +60,7 @@ public class ProblemService {
 		return ProblemDetailResponse.from(findProblem);
 	}
 
+	// 문제 수정 ( 관리자 )
 	@Transactional
 	public ProblemDetailResponse modifyProblem(Long problemId, ProblemUpdateRequest request) {
 
@@ -76,6 +80,7 @@ public class ProblemService {
 		return ProblemDetailResponse.from(findProblem);
 	}
 
+	// 문제 삭제 ( 관리자 )
 	@Transactional
 	public void removeProblem(Long problemId) {
 
