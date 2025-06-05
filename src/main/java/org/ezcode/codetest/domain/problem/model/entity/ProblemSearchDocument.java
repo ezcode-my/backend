@@ -26,28 +26,28 @@ public class ProblemSearchDocument {
 	@Field(
 		type = FieldType.Text,
 		analyzer = "ngram_analyzer",
-		searchAnalyzer = "ngram_search_analyzer"
+		searchAnalyzer = "ngram_analyzer"
 	)
 	private String title;
 
 	@Field(
 		type = FieldType.Text,
 		analyzer = "ngram_analyzer",
-		searchAnalyzer = "ngram_search_analyzer"
+		searchAnalyzer = "ngram_analyzer"
 	)
 	private Category category;
 
 	@Field(
 		type = FieldType.Text,
 		analyzer = "ngram_analyzer",
-		searchAnalyzer = "ngram_search_analyzer"
+		searchAnalyzer = "ngram_analyzer"
 	)
 	private String difficulty;
 
 	@Field(
 		type = FieldType.Text,
 		analyzer = "ngram_analyzer",
-		searchAnalyzer = "ngram_search_analyzer"
+		searchAnalyzer = "ngram_analyzer"
 	)
 	private Reference reference;
 

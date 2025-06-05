@@ -75,8 +75,9 @@ dependencies {
     // actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    // elasticsearch
+    // elasticsearch + elasticsearch 쿼리빌더 dsl
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'co.elastic.clients:elasticsearch-java:8.18.2'
 
     //activemq
     implementation 'org.apache.activemq:activemq-broker:6.1.6'

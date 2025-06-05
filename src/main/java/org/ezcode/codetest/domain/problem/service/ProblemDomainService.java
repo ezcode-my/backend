@@ -2,8 +2,6 @@ package org.ezcode.codetest.domain.problem.service;
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.problem.exception.ProblemException;
-import org.ezcode.codetest.domain.problem.exception.code.ProblemExceptionCode;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
@@ -25,7 +23,7 @@ public class ProblemDomainService {
 	private final ProblemRepository problemRepository;
 	private final ProblemDocumentRepository searchRepository;
 
-	//저장시 DB 뿐만 아니라 ElasticCache 에도 같이 저장합니다!
+	//저장시 DB 뿐만 아니라 ElasticSearch 에도 같이 저장합니다!
 	public Problem createProblem(Problem problem) {
 
 		Problem savedProblem = problemRepository.save(problem);

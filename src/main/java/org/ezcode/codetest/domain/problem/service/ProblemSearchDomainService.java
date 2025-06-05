@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.problem.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
 import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
@@ -17,13 +18,13 @@ public class ProblemSearchDomainService {
 
 	private final ProblemDocumentRepository searchRepository;
 
-	public List<ProblemSearchDocument> getProblemByTitle(String keyword) {
+	public Set<ProblemSearchDocument> getSuggestionsByKeyword(String keyword) {
 
-		return searchRepository.findAllProblemByTitle(keyword);
+		return searchRepository.findDocumentContainingKeyword(keyword);
 	}
 
-	public List<ProblemSearchDocument> getProblemByDescription(String keyword) {
+	public List<ProblemSearchDocument> getProblemByKeyword(String keyword) {
 
-		return searchRepository.findAllProblemByDescription(keyword);
+		return searchRepository.findAllProblemByKeyword(keyword);
 	}
 }

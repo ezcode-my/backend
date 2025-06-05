@@ -1,16 +1,13 @@
 {
   "settings": {
-    "index.max_ngram_diff": 10,
+    "index.max_ngram_diff": 3,
     "analysis": {
       "tokenizer": {
         "ngram_tokenizer": {
           "type": "ngram",
           "min_gram": 2,
-          "max_gram": 12,
-          "token_chars": [
-            "letter",
-            "digit"
-          ]
+          "max_gram": 5,
+          "token_chars": ["letter", "digit"]
         }
       },
       "filter": {
@@ -22,9 +19,7 @@
         "ngram_analyzer": {
           "type": "custom",
           "tokenizer": "ngram_tokenizer",
-          "filter": [
-            "lowercase_filter"
-          ]
+          "filter": ["lowercase_filter"]
         }
       }
     }
@@ -34,14 +29,32 @@
       "title": {
         "type": "text",
         "analyzer": "ngram_analyzer",
-        "search_analyzer": "standard"
+        "search_analyzer": "ngram_analyzer"
       },
       "description": {
         "type": "text",
         "analyzer": "standard"
       },
+      "category": {
+        "type": "text",
+        "analyzer": "ngram_analyzer",
+        "search_analyzer": "ngram_analyzer"
+      },
+      "difficulty": {
+        "type": "text",
+        "analyzer": "ngram_analyzer",
+        "search_analyzer": "ngram_analyzer"
+      },
+      "reference": {
+        "type": "text",
+        "analyzer": "ngram_analyzer",
+        "search_analyzer": "ngram_analyzer"
+      },
       "isDeleted": {
         "type": "boolean"
+      },
+      "score": {
+        "type": "keyword"
       },
       "id": {
         "type": "keyword"

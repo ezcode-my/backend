@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.ezcode.codetest.application.problem.service.ProblemSearchService;
+import org.ezcode.codetest.application.problem.dto.response.ProblemSearchResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ public class ProblemSearchController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Long>> getProblemSearchResult(@RequestParam String keyword) {
+	public ResponseEntity<List<ProblemSearchResponse>> getProblemSearchResult(@RequestParam String keyword) {
 
 		return ResponseEntity.status(HttpStatus.OK).body(searchService.getProblemSearchResult(keyword));
 	}

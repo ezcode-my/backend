@@ -2,9 +2,12 @@ package org.ezcode.codetest.infrastructure.elasticsearch.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
 import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,9 +28,42 @@ public class ProblemElasticsearchAdapter implements ProblemDocumentRepository {
 		return searchRepository.save(problemSearch);
 	}
 
-	public List<ProblemSearchDocument> findAllProblemByDescription(String description) {
+	public Set<ProblemSearchDocument> findDocumentContainingKeyword(String keyword) {
 
-		return searchRepository.findAllByDescriptionAndIsDeleted(description, false);
+		SearchHits<ProblemSearchDocument> hits = searchRepository.findFieldsContainingKeyword(keyword);
+
+		return hits.getSearchHits().stream()
+			.map(hit -> {
+
+				List<String> descHighlights = hit.getHighlightField("description");
+
+				String rawHighlight = !descHighlights.isEmpty()
+					? descHighlights.get(0)
+					: null;
+
+				String highlightedDesc = null;
+				if (rawHighlight != null) {
+					highlightedDesc = rawHighlight
+						.replaceAll("(?i)<em>", "")
+						.replaceAll("(?i)</em>", "");
+				}
+
+				ProblemSearchDocument hitResult = hit.getContent();
+
+				return ProblemSearchDocument.builder()
+					.title(hitResult.getTitle())
+					.category(hitResult.getCategory())
+					.reference(hitResult.getReference())
+					.difficulty(hitResult.getDifficulty())
+					.description(highlightedDesc)
+					.build();
+			})
+			.collect(Collectors.toSet());
+	}
+
+	public List<ProblemSearchDocument> findAllProblemByKeyword(String keyword) {
+
+		return searchRepository.findAllByKeyword(keyword);
 	}
 
 	public Optional<ProblemSearchDocument> findById(Long id) {
@@ -39,6 +75,6 @@ public class ProblemElasticsearchAdapter implements ProblemDocumentRepository {
 
 		document.softDelete();
 
-		save(document); //es 는 더티체킹이 안됨
+		save(document);
 	}
 }
