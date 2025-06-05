@@ -16,4 +16,6 @@ public interface JwtUtil {
 	Long getExpiration(String token);
 
 	Long getRemainingTime(String token);
+
+	String createRefreshToken(Long userId);
 }

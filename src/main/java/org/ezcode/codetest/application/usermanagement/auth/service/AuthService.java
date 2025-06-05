@@ -33,7 +33,7 @@ public class AuthService {
 
 
 	/*
-	이메일 로그인
+	이메일 회원가입
 	- 이미 가입된 이메일 거절
 	- 비밀번호 암호화
 	 */
@@ -76,9 +76,12 @@ public class AuthService {
 	@Transactional
 	public SigninResponse signin(@Valid SigninRequest signinRequest) {
 
+		log.info("service 진입");
     	User loginUser = userDomainService.getUser(signinRequest.getEmail());
 
 		userDomainService.userPasswordCheck(signinRequest.getEmail(), signinRequest.getPassword());
+
+		log.info("비밀번호 체크 완료");
 
 		String bearToken = jwtUtil.createToken(
 			loginUser.getId(),
@@ -88,12 +91,19 @@ public class AuthService {
 			loginUser.getNickname(),
 			loginUser.getTier());
 
-		String redisToken = jwtUtil.substringToken(bearToken);
+		log.info("토큰 발급 완료");
+
+		//refresh 토큰 발급
+		String refreshToken = jwtUtil.createRefreshToken(loginUser.getId());
+		log.info("refresh token 발급 완료");
+
+		//redis에 LOGIN : {redisToken} 형식으로 저장
 		redisTemplate.opsForValue().set(
-			"LOGIN:" + loginUser.getId(),
-			redisToken,
-			jwtUtil.getExpiration(redisToken),
+			"RefreshToken:" + loginUser.getId(),
+			refreshToken,
+			jwtUtil.getExpiration(refreshToken),
 			TimeUnit.MILLISECONDS);
+		log.info("레디스에 저장완료");
 
 		return SigninResponse.from(bearToken);
 	}
@@ -119,7 +129,7 @@ public class AuthService {
 				TimeUnit.MILLISECONDS
 			);
 
-			redisTemplate.delete("LOGIN:" + userId);
+			redisTemplate.delete("RefreshToken:" + userId);
 			} catch (Exception e) {
 				log.error("Redis 오류로 인한 로그아웃 처리 실패", e);}
 

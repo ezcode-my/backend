@@ -103,7 +103,8 @@ public class JwtUtilImpl implements JwtUtil {
 	/*
 	토큰 갱신
 	 */
-	public String createRefreshToken(String userId) {
+	@Override
+	public String createRefreshToken(Long userId) {
 		Date now = new Date();
 		Date expirationDate = new Date(now.getTime() + TOKEN_EXPIRATION_TIME * 1000L); //만료 시간
 
