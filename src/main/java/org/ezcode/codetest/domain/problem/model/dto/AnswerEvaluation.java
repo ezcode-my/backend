@@ -1,4 +1,4 @@
-package org.ezcode.codetest.domain.problem.model;
+package org.ezcode.codetest.domain.problem.model.dto;
 
 import lombok.Builder;
 

@@ -5,11 +5,11 @@ import lombok.Builder;
 @Builder
 public record JudgeResult(
 
-	String output,
+	String actualOutput,
 
-	String time,
+	String executionTime,
 
-	Long memory,
+	Long memoryUsage,
 
 	boolean success,
 
