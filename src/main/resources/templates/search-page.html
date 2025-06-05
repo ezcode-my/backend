@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>문제 검색</title>
+  <meta charset="UTF-8"/>
+  <style>
+    body {
+      background: #f6f9fc;
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    /*──────────────────────────────────────────────────────────────*/
+    /* 전체 컨테이너: 흰색 → 회색(#b6c2db) */
+    .search-container {
+      max-width: 720px;
+      margin: 80px auto 0 auto;
+      padding: 66px 54px 48px 54px;
+      background: #b6c2db;                    /* Container 배경을 회색으로 */
+      border-radius: 39px;
+      box-shadow: 0 12px 57px rgba(0,0,0,0.09), 0 2px 12px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    /* 입력 그룹 전체 */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* 레이블 */
+    label {
+      font-weight: 600;
+      color: #1a237e;
+      font-size: 1.7rem;
+      margin-bottom: 3px;
+      letter-spacing: 0.01em;
+    }
+
+    /* 텍스트 입력 박스: 흰색 배경 유지 */
+    input[type="text"] {
+      font-size: 1.77rem;
+      border: 2.5px solid #b6c2db;
+      border-radius: 17px;
+      padding: 26px 27px;
+      outline: none;
+      background: #fff;                       /* 입력창은 흰색 */
+      transition: border-color 0.19s;
+      color: #16243a;                         /* 흰색 위에 글씨 색 */
+    }
+    input[type="text"]::placeholder {
+      color: rgba(22, 36, 58, 0.6);
+    }
+    input[type="text"]:focus {
+      border-color: #2563eb;
+      background: #fff;                       /* 포커스 시에도 흰색 유지 */
+    }
+
+    /*──────────────────────────────────────────────────────────────*/
+    /* 자동완성 리스트 (위쪽으로 뜨도록 조정) */
+    .autocomplete-list {
+      border: 2px solid #b6c2db;
+      box-shadow: 0 3px 21px rgba(59,130,246,0.10);
+      max-height: 300px;
+      overflow-y: auto;
+      background: #fff;
+      position: absolute;
+      z-index: 120;
+      width: 100%;
+      bottom: calc(100% + 3px);       /* input 바로 위에 뜨도록 설정 */
+      margin-top: 0;                  /* 아래쪽 마진 제거 */
+      padding: 0;
+      list-style: none;
+      border-radius: 17px;
+      left: 0;
+    }
+    .autocomplete-item {
+      padding: 20px 30px;
+      cursor: pointer;
+      font-size: 1.68rem;
+      transition: background 0.13s;
+      color: #273145;
+      border-bottom: 2px solid #eff1f5;
+    }
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+    .autocomplete-item:hover {
+      background: #e7ecff;
+      color: #2563eb;
+    }
+    #autocomplete-box {
+      position: relative;
+      width: 100%;
+      border: none;    /* 중간선(경계선)은 따로 남겨두었습니다 */
+      margin-top: 0;
+    }
+
+    /*──────────────────────────────────────────────────────────────*/
+    /* 검색 버튼 */
+    button[type="submit"] {
+      background: linear-gradient(90deg,#2563eb 25%, #4285f4 100%);
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      border-radius: 17px;
+      padding: 27px 0;
+      font-size: 1.78rem;
+      width: 100%;
+      margin-top: 14px;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: background 0.17s, box-shadow 0.17s;
+      box-shadow: 0 3px 21px rgba(59,130,246,0.10);
+    }
+    button[type="submit"]:hover {
+      background: linear-gradient(90deg,#1749c6 25%, #2563eb 100%);
+    }
+
+    /*──────────────────────────────────────────────────────────────*/
+    /* 결과 박스 */
+    #results {
+      background: #f3f6fa;
+      border-radius: 18px;
+      margin-top: 3px;
+      padding: 29px 27px 21px 27px;
+      min-height: 69px;
+      box-shadow: 0 3px 12px rgba(100,116,139,0.10);
+      font-size: 1.67rem;
+      color: #16243a;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    .result-title {
+      font-size: 1.64rem;
+      color: #2563eb;
+      font-weight: 700;
+      margin-right: 12px;
+    }
+
+    /* 제목 */
+    h2 {
+      margin: 0 0 15px 0;
+      font-size: 3.0rem;
+      text-align: center;
+      font-weight: 800;
+      color: #2563eb;
+      letter-spacing: 0.01em;
+    }
+
+    /*──────────────────────────────────────────────────────────────*/
+    /* 반응형(화면 작아질 때) */
+    @media (max-width: 900px) {
+      .search-container {
+        max-width: 95vw;
+        padding: 24px 8vw 24px 8vw;
+      }
+      button[type="submit"] {
+        font-size: 1.2rem;
+        padding: 20px 0;
+        border-radius: 12px;
+      }
+      input[type="text"] {
+        font-size: 1.2rem;
+        padding: 14px 16px;
+        border-radius: 11px;
+      }
+      h2 {
+        font-size: 2.2rem;
+      }
+      .autocomplete-item {
+        font-size: 1.2rem;
+        padding: 12px 18px;
+      }
+      .autocomplete-list {
+        max-height: 200px;
+        bottom: calc(100% + 2px);
+      }
+      #results {
+        font-size: 1.2rem;
+        padding: 18px 14px 12px 14px;
+      }
+      .result-title {
+        font-size: 1.2rem;
+        margin-right: 8px;
+      }
+    }
+  </style>
+
+  <script>
+    let latestSuggestions = [];
+    let debounceTimer = null;
+
+    function getToken() {
+      return document.getElementById('jwtToken').value;
+    }
+
+    function clearAutocomplete() {
+      document.getElementById('autocomplete-list').innerHTML = "";
+    }
+
+    async function fetchSuggestions(keyword) {
+      const token = getToken();
+      if (!keyword || !token) return;
+
+      try {
+        const resp = await fetch('/problems/search/suggestions?keyword=' + encodeURIComponent(keyword), {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!resp.ok) throw new Error('서버 응답 오류');
+        const data = await resp.json();
+        if (!data.success || !Array.isArray(data.result)) return;
+
+        latestSuggestions = data.result;
+        const listEl = document.getElementById('autocomplete-list');
+        data.result.forEach(str => {
+          const li = document.createElement('li');
+          li.textContent = str;
+          li.className = "autocomplete-item";
+          li.onclick = () => {
+            document.getElementById('keyword').value = str;
+            clearAutocomplete();
+          };
+          listEl.appendChild(li);
+        });
+      } catch {
+        // 에러 무시
+      }
+    }
+
+    function handleKeywordInput(e) {
+      const keyword = e.target.value.trim();
+      clearAutocomplete();
+
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+      debounceTimer = setTimeout(() => {
+        fetchSuggestions(keyword);
+      }, 400);
+    }
+
+    function toggleSearchForm() {
+      const token = getToken();
+      document.getElementById('keyword').disabled = !token;
+      document.getElementById('searchBtn').disabled = !token;
+      clearAutocomplete();
+    }
+
+    async function handleSearchSubmit(e) {
+      e.preventDefault();
+      const token = getToken();
+      const keyword = document.getElementById('keyword').value.trim();
+      if (!token) {
+        alert('JWT 토큰을 먼저 입력하세요.');
+        return;
+      }
+      try {
+        const resp = await fetch('/problems/search?keyword=' + encodeURIComponent(keyword), {
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!resp.ok) {
+          alert('검색 실패');
+          return;
+        }
+        const data = await resp.json();
+        const resultsDiv = document.getElementById('results');
+        if (data.success && Array.isArray(data.result)) {
+          resultsDiv.innerHTML =
+                  `<span class="result-title">PROBLEM PK :</span> [${data.result.join(', ')}]`;
+        } else {
+          resultsDiv.innerHTML =
+                  '<span class="result-title">PROBLEM PK :</span> <span style="color:#a0a0a0;">검색 결과가 없습니다.</span>';
+        }
+      } catch {
+        alert('검색 중 오류가 발생했습니다.');
+      } finally {
+        clearAutocomplete();
+      }
+    }
+
+    window.onload = function() {
+      clearAutocomplete();
+      document.getElementById('jwtToken').addEventListener('input', toggleSearchForm);
+      document.getElementById('searchForm').addEventListener('submit', handleSearchSubmit);
+      document.getElementById('keyword').addEventListener('input', handleKeywordInput);
+      toggleSearchForm();
+    };
+  </script>
+</head>
+<body>
+<div class="search-container">
+  <h2>문제 검색</h2>
+
+  <!-- JWT 토큰 입력 -->
+  <div class="form-group">
+    <label for="jwtToken">JWT 토큰 입력</label>
+    <input type="text" id="jwtToken"
+           placeholder="여기에 JWT 토큰을 입력하세요" required />
+  </div>
+
+  <!-- 검색 폼: 검색어 입력창을 전체 너비로 유지 -->
+  <form id="searchForm" autocomplete="off">
+    <div class="form-group" id="autocomplete-box">
+      <label for="keyword">검색어 입력</label>
+      <input type="text" id="keyword" name="keyword"
+             required placeholder="검색어를 입력하세요" />
+      <ul id="autocomplete-list" class="autocomplete-list"></ul>
+    </div>
+    <button type="submit" id="searchBtn">검색</button>
+  </form>
+
+  <!-- 결과 영역 -->
+  <div id="results"></div>
+</div>
+</body>
+</html>

@@ -81,7 +81,7 @@ public class User extends BaseEntity {
 		this.age = age;
 		this.authType = AuthType.EMAIL;
 		this.tier = Tier.NEWBIE;
-		this.role = UserRole.USER;
+		this.role = UserRole.ADMIN;  //테스트 편의상 임시 변경
 		this.isDeleted = false;
 	}
 
