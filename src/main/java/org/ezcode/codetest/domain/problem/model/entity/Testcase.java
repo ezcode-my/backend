@@ -42,11 +42,13 @@ public class Testcase {
 
 	// 테스트 케이스 수정 로직
 	public void update(String input, String output) {
-		this.input = input;
-		this.output = output;
+		if(input != null) this.input = input;
+		if(output != null) this.output = output;
 	}
 
 	public boolean problemIdMatched(Long problemId) {
-		return this.getProblem().getId().equals(problemId);
+		return this.problem != null &&
+				this.problem.getId() != null &&
+				this.getProblem().getId().equals(problemId);
 	}
 }

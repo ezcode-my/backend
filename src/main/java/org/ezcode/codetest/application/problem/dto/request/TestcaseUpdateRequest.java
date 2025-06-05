@@ -10,7 +10,7 @@ public record TestcaseUpdateRequest(
 	String output
 ) {
 
-	public static Testcase from (Problem problem, TestcaseUpdateRequest request) {
+	public static Testcase from (TestcaseUpdateRequest request, Problem problem) {
 
 		return Testcase.builder()
 			.problem(problem)

@@ -51,7 +51,7 @@ public class TestcaseAdminController {
 	public ResponseEntity<TestcaseResponse> modifyTestcase(
 		@PathVariable Long problemId,
 		@PathVariable Long testcaseId,
-		@RequestBody TestcaseUpdateRequest request
+		@Valid @RequestBody TestcaseUpdateRequest request
 	) {
 
 		return ResponseEntity

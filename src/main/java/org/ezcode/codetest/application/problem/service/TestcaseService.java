@@ -5,6 +5,8 @@ import java.util.List;
 import org.ezcode.codetest.application.problem.dto.request.TestcaseCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.TestcaseUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.TestcaseResponse;
+import org.ezcode.codetest.domain.problem.exception.TestcaseException;
+import org.ezcode.codetest.domain.problem.exception.code.TestcaseExceptionCode;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
@@ -52,8 +54,12 @@ public class TestcaseService {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
-		// index 값이라서 -1을 해준다.
-		Testcase findtestcase = testcaseDomainService.getTestcaseList(findProblem).get(testcaseId.intValue() - 1);
+		Testcase findtestcase = testcaseDomainService.getTestcase(testcaseId);
+
+		// 테스트케이스가 해당 문제에 속하는지 검증
+		if(!findtestcase.problemIdMatched(findProblem.getId())) {
+			throw new TestcaseException(TestcaseExceptionCode.TESTCASE_NOT_FOUND);
+		}
 
 		findtestcase.update(request.input(), request.output());
 
