@@ -1,6 +1,7 @@
 package org.ezcode.codetest.application.problem.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,22 +23,24 @@ public class ProblemSearchService {
 
 		Set<ProblemSearchDocument> result = searchDomainService.getSuggestionsByKeyword(keyword);
 
-		return result.stream().flatMap(document -> Stream.of(
-			document.getTitle(),
-			document.getDescription(),
-			document.getReference().toString(),
-			document.getDifficulty(),
-			document.getCategory().toString()
-		)).filter(value -> {
-			if (value == null || value.isEmpty()) return false;
-			return value.toLowerCase().contains(keyword);
-		}).collect(Collectors.toSet());
+		return result.stream()
+			.flatMap(doc -> Stream.of(
+				Optional.ofNullable(doc.getTitle()),
+				Optional.ofNullable(doc.getReference()).map(Enum::toString),
+				Optional.ofNullable(doc.getDifficulty()),
+				Optional.ofNullable(doc.getCategory()).map(Enum::toString),
+				Optional.ofNullable(doc.getDescription())
+			))
+			.flatMap(Optional::stream)
+			.map(String::toUpperCase)
+			.collect(Collectors.toSet());
+
 	}
 
 	public List<ProblemSearchResponse> getProblemSearchResult(String keyword) {
 
-		List<ProblemSearchDocument> result = searchDomainService.getProblemByKeyword(keyword);
+		List<ProblemSearchDocument> results = searchDomainService.searchByKeywordMatch(keyword);
 
-		return result.stream().map(ProblemSearchResponse::from).toList();
+		return results.stream().map(ProblemSearchResponse::from).toList();
 	}
 }

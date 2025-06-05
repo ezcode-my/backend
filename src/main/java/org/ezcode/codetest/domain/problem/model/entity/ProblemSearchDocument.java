@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.InnerField;
+import org.springframework.data.elasticsearch.annotations.MultiField;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 import lombok.AccessLevel;
@@ -23,31 +25,67 @@ public class ProblemSearchDocument {
 	@Field(type = FieldType.Keyword)
 	private Long id;
 
-	@Field(
-		type = FieldType.Text,
-		analyzer = "ngram_analyzer",
-		searchAnalyzer = "ngram_analyzer"
+	@MultiField(
+		mainField = @Field(
+			type = FieldType.Text,
+			analyzer = "lowercase_analyzer",
+			searchAnalyzer = "lowercase_standard"
+		),
+		otherFields = {
+			@InnerField(
+				suffix = "keyword",
+				type = FieldType.Keyword,
+				normalizer = "lowercase_normalizer"
+			)
+		}
 	)
 	private String title;
 
-	@Field(
-		type = FieldType.Text,
-		analyzer = "ngram_analyzer",
-		searchAnalyzer = "ngram_analyzer"
+	@MultiField(
+		mainField = @Field(
+			type = FieldType.Text,
+			analyzer = "uppercase_analyzer",
+			searchAnalyzer = "uppercase_standard"
+		),
+		otherFields = {
+			@InnerField(
+				suffix = "keyword",
+				type = FieldType.Keyword,
+				normalizer = "uppercase_normalizer"
+			)
+		}
 	)
 	private Category category;
 
-	@Field(
-		type = FieldType.Text,
-		analyzer = "ngram_analyzer",
-		searchAnalyzer = "ngram_analyzer"
+	@MultiField(
+		mainField = @Field(
+			type = FieldType.Text,
+			analyzer = "uppercase_analyzer",
+			searchAnalyzer = "uppercase_standard"
+		),
+		otherFields = {
+			@InnerField(
+				suffix = "keyword",
+				type = FieldType.Keyword,
+				normalizer = "uppercase_normalizer"
+			)
+		}
 	)
 	private String difficulty;
 
-	@Field(
-		type = FieldType.Text,
-		analyzer = "ngram_analyzer",
-		searchAnalyzer = "ngram_analyzer"
+	@MultiField(
+		mainField = @Field(
+			type = FieldType.Text,
+			analyzer = "uppercase_analyzer",
+			searchAnalyzer = "uppercase_standard"
+		),
+		otherFields = {
+			@InnerField(
+				suffix = "keyword",
+				type = FieldType.Keyword,
+				normalizer = "uppercase_normalizer"
+			)
+		}
 	)
 	private Reference reference;
 
@@ -99,8 +137,7 @@ public class ProblemSearchDocument {
 	}
 
 	public void update(Problem problem) {
-
-		if(problem.getId().equals(this.id)) {
+		if (problem.getId().equals(this.id)) {
 			this.title = problem.getTitle();
 			this.category = problem.getCategory();
 			this.difficulty = problem.getDifficulty();

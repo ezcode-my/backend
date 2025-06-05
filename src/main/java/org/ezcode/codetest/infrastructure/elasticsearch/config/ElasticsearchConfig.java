@@ -28,7 +28,6 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
 	@Value("${spring.datasource.elasticsearch.password}")
 	private String elasticsearchPassword;
 
-	//엘라스틱서치 설정 컨피그입니다.
 	@Override
 	public ClientConfiguration clientConfiguration() {
 
@@ -41,8 +40,6 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
 			.build();
 	}
 
-	//엘라스틱서치에서 제공하는 인증서가 인증서가 사설 인증서(Self Signed)라서 스프링 앱에서 해당 인증서를 신뢰할 수 없어서 오류가뜨는데
-	//해당 설정으로 어떤 인증서든 검증하지 않고 신뢰하게끔 처리하는 설정을 넣었습니다.
 	private SSLContext trustAllSslContext() {
 		try {
 			TrustManager[] trustAllCerts = new TrustManager[]{

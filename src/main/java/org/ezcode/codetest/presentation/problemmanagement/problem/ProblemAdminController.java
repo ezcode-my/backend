@@ -4,10 +4,10 @@ import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.service.ProblemService;
-import org.ezcode.codetest.common.annotation.Auth;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,12 +23,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/admin/problems")
 @RequiredArgsConstructor
-// @PreAuthorize("hasRole('ADMIN')") // 관리자만 가능
+@PreAuthorize("hasRole('ADMIN')")
 public class ProblemAdminController {
 
 	private final ProblemService problemService;
 
-	//@Auth 유저는 이제 안쓰는것 같아 @AuthenticationPrincipal 로 변경했습니다~
 	@PostMapping
 	public ResponseEntity<ProblemDetailResponse> createProblem(
 		@Valid @RequestBody ProblemCreateRequest request,

@@ -6,15 +6,11 @@ import java.util.Set;
 
 import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
 
-// ELASTICSEARCH REPOSITORY 입니다~
-
 public interface ProblemDocumentRepository {
-
-	List<ProblemSearchDocument> findAllProblemByTitle(String title);
 
 	ProblemSearchDocument save(ProblemSearchDocument problemSearch);
 
-	List<ProblemSearchDocument> findAllProblemByKeyword(String keyword);
+	List<ProblemSearchDocument> findAllByKeyword(String keyword);
 
 	Optional<ProblemSearchDocument> findById(Long id);
 
