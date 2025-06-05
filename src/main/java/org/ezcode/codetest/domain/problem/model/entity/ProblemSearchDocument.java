@@ -54,4 +54,8 @@ public class ProblemSearchDocument {
 			.isDeleted(problem.getIsDeleted())
 			.build();
 	}
+
+	public void softDelete() {
+		this.isDeleted = true;
+	}
 }
