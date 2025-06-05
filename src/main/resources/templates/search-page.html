@@ -141,6 +141,27 @@
       font-weight: 700;
       margin-right: 12px;
     }
+    .result-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .result-item {
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .result-item > div {
+      margin-bottom: 4px;
+      font-size: 1.5rem;
+    }
+    .result-item > div span {
+      font-weight: 600;
+      color: #2563eb;
+    }
 
     /* 제목 */
     h2 {
@@ -184,9 +205,8 @@
         font-size: 1.2rem;
         padding: 18px 14px 12px 14px;
       }
-      .result-title {
+      .result-item > div {
         font-size: 1.2rem;
-        margin-right: 8px;
       }
     }
   </style>
@@ -270,12 +290,34 @@
         }
         const data = await resp.json();
         const resultsDiv = document.getElementById('results');
+
         if (data.success && Array.isArray(data.result)) {
-          resultsDiv.innerHTML =
-                  `<span class="result-title">PROBLEM PK :</span> [${data.result.join(', ')}]`;
+          const results = data.result;
+          if (results.length === 0) {
+            resultsDiv.innerHTML =
+                    '<span class="result-title">PROBLEM LIST :</span> <span style="color:#a0a0a0;">검색 결과가 없습니다.</span>';
+          } else {
+            let html = '<span class="result-title">PROBLEM LIST :</span>';
+            html += '<ul class="result-list">';
+            results.forEach(item => {
+              html += `
+                <li class="result-item">
+                  <div><span>ID:</span> ${item.id}</div>
+                  <div><span>Title:</span> ${item.title}</div>
+                  <div><span>Category:</span> ${item.category}</div>
+                  <div><span>Difficulty:</span> ${item.difficulty}</div>
+                  <div><span>Reference:</span> ${item.reference}</div>
+                  <div><span>Description:</span> ${item.description}</div>
+                  <div><span>Score:</span> ${item.score}</div>
+                </li>
+              `;
+            });
+            html += '</ul>';
+            resultsDiv.innerHTML = html;
+          }
         } else {
           resultsDiv.innerHTML =
-                  '<span class="result-title">PROBLEM PK :</span> <span style="color:#a0a0a0;">검색 결과가 없습니다.</span>';
+                  '<span class="result-title">PROBLEM LIST :</span> <span style="color:#a0a0a0;">검색 결과가 없습니다.</span>';
         }
       } catch {
         alert('검색 중 오류가 발생했습니다.');
