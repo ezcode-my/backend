@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
+import org.ezcode.codetest.domain.problem.model.enums.Category;
+import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -10,10 +12,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-// ELASTICSEARCH 엔티티입니다.
-// DB의 PK, title, description, 삭제여부만 저장합니다.
-// 검색엔진에서 PK만 빠르게 검색해온다음 PK 로 다시 DB 조회를 합니다.
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,21 +26,58 @@ public class ProblemSearchDocument {
 	@Field(
 		type = FieldType.Text,
 		analyzer = "ngram_analyzer",
-		searchAnalyzer = "standard"
+		searchAnalyzer = "ngram_search_analyzer"
 	)
 	private String title;
 
+	@Field(
+		type = FieldType.Text,
+		analyzer = "ngram_analyzer",
+		searchAnalyzer = "ngram_search_analyzer"
+	)
+	private Category category;
+
+	@Field(
+		type = FieldType.Text,
+		analyzer = "ngram_analyzer",
+		searchAnalyzer = "ngram_search_analyzer"
+	)
+	private String difficulty;
+
+	@Field(
+		type = FieldType.Text,
+		analyzer = "ngram_analyzer",
+		searchAnalyzer = "ngram_search_analyzer"
+	)
+	private Reference reference;
+
 	@Field(type = FieldType.Text, analyzer = "standard")
 	private String description;
+
+	@Field(type = FieldType.Keyword)
+	private int score;
 
 	@Field(type = FieldType.Boolean)
 	private Boolean isDeleted;
 
 	@Builder
-	public ProblemSearchDocument(Long id, String title, String description, Boolean isDeleted) {
+	public ProblemSearchDocument(
+		Long id,
+		String title,
+		Category category,
+		String difficulty,
+		Reference reference,
+		String description,
+		int score,
+		Boolean isDeleted
+	) {
 		this.id = id;
 		this.title = title;
+		this.category = category;
+		this.difficulty = difficulty;
+		this.reference = reference;
 		this.description = description;
+		this.score = score;
 		this.isDeleted = isDeleted;
 	}
 
@@ -50,12 +85,28 @@ public class ProblemSearchDocument {
 		return ProblemSearchDocument.builder()
 			.id(problem.getId())
 			.title(problem.getTitle())
+			.category(problem.getCategory())
+			.difficulty(problem.getDifficulty())
+			.reference(problem.getReference())
 			.description(problem.getDescription())
+			.score(problem.getScore())
 			.isDeleted(problem.getIsDeleted())
 			.build();
 	}
 
 	public void softDelete() {
 		this.isDeleted = true;
+	}
+
+	public void update(Problem problem) {
+
+		if(problem.getId().equals(this.id)) {
+			this.title = problem.getTitle();
+			this.category = problem.getCategory();
+			this.difficulty = problem.getDifficulty();
+			this.reference = problem.getReference();
+			this.description = problem.getDescription();
+			this.score = problem.getScore();
+		}
 	}
 }
