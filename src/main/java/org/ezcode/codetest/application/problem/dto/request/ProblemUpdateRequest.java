@@ -16,9 +16,9 @@ public record ProblemUpdateRequest(
 
 	Difficulty difficulty,
 
-	String memoryLimit,
+	Long memoryLimit,
 
-	Integer timeLimit,
+	String timeLimit,
 
 	Reference reference
 

@@ -1,11 +1,15 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +19,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,10 +55,10 @@ public class Problem extends BaseEntity {
 	private String difficulty;
 
 	@Column(nullable = false)
-	private String memoryLimit;
+	private Long memoryLimit;
 
 	@Column(nullable = false)
-	private int timeLimit;
+	private String timeLimit;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -62,9 +67,12 @@ public class Problem extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean isDeleted;
 
+	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Testcase> testcases = new ArrayList<>();
+
 	@Builder
 	public Problem(User creator, Category category, String title, String description, int score, String difficulty,
-		String memoryLimit, int timeLimit, Reference reference) {
+		Long memoryLimit, String timeLimit, Reference reference) {
 		this.creator = creator;
 		this.category = category;
 		this.title = title;
@@ -79,7 +87,7 @@ public class Problem extends BaseEntity {
 
 	// 여러개를 하나의 객체로 만드는 것
 	public static Problem of(User creator, Category category, String title, String description, int score, String difficulty,
-		String memoryLimit, int timeLimit, Reference reference) {
+		Long memoryLimit, String timeLimit, Reference reference) {
 
 		return Problem.builder()
 			.creator(creator)
@@ -96,7 +104,7 @@ public class Problem extends BaseEntity {
 
 	// 문제 수정 로직
 	public void update(User creator, Category category, String title, String description, Difficulty difficulty,
-		String memoryLimit, Integer timeLimit, Reference reference) {
+		Long memoryLimit, String timeLimit, Reference reference) {
 
 		if (creator != null) this.creator = creator;
 		if (category != null) this.category = category;
