@@ -13,12 +13,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user_problem_status")
+@Getter
+@Table(name = "user_problem_result")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserProblemStatus extends BaseEntity {
+public class UserProblemResult extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,12 +35,16 @@ public class UserProblemStatus extends BaseEntity {
 	private Problem problem;
 
 	@Column(nullable = false)
-	private boolean status;
+	private boolean isCorrect;
 
 	@Builder
-	public UserProblemStatus(User user, Problem problem, boolean status) {
+	public UserProblemResult(User user, Problem problem, boolean isCorrect) {
 		this.user = user;
 		this.problem = problem;
-		this.status = status;
+		this.isCorrect = isCorrect;
+	}
+
+	public void updateResult(boolean isCorrect) {
+		this.isCorrect = isCorrect;
 	}
 }
