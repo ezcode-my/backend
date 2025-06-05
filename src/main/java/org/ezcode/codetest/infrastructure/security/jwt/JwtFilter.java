@@ -45,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		String jwt = jwtUtilImpl.substringToken(bearerToken);
 
 		if (redisTemplate.opsForValue().get("LOGOUT:" + jwt) != null) {
-			throw new AuthException(AuthExceptionCode.NO_AUTH_INFO);
+			throw new AuthException(AuthExceptionCode.LOGOUT_USER);
 		}
 
 		Claims claims = jwtUtilImpl.extractClaims(jwt);
