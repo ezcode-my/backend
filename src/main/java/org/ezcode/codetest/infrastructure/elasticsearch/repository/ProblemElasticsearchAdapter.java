@@ -1,6 +1,7 @@
 package org.ezcode.codetest.infrastructure.elasticsearch.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
 import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
@@ -27,5 +28,17 @@ public class ProblemElasticsearchAdapter implements ProblemDocumentRepository {
 	public List<ProblemSearchDocument> findAllProblemByDescription(String description) {
 
 		return searchRepository.findAllByDescriptionAndIsDeleted(description, false);
+	}
+
+	public Optional<ProblemSearchDocument> findById(Long id) {
+
+		return searchRepository.findById(id);
+	}
+
+	public void delete(ProblemSearchDocument document) {
+
+		document.softDelete();
+
+		save(document); //es 는 더티체킹이 안됨
 	}
 }

@@ -49,5 +49,9 @@ public class ProblemDomainService {
 
 		problemRepository.delete(problem);
 
+		ProblemSearchDocument document = searchRepository.findById(problem.getId())
+			.orElseThrow(() -> new EntityNotFoundException("문제를 찾을수 없습니다."));
+
+		searchRepository.delete(document);
 	}
 }
