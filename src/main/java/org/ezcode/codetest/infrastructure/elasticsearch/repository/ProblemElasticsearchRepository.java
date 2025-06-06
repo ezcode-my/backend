@@ -10,8 +10,6 @@ public interface ProblemElasticsearchRepository extends
 	ElasticsearchRepository<ProblemSearchDocument, Long>,
 	ProblemElasticsearchRepositoryDsl {
 
-	List<ProblemSearchDocument> findAllByTitleAndIsDeleted(String title, Boolean isDeleted);
-
 	@Query("""
 		{
 		  "bool": {
@@ -19,11 +17,16 @@ public interface ProblemElasticsearchRepository extends
 		      { "term": { "isDeleted": false } }
 		    ],
 		    "should": [
-		      { "match": { "title":       { "query": "?0", "boost": 12 } } },
-		      { "match": { "description": { "query": "?0", "boost": 5 } } },
-		      { "match": { "category":    { "query": "?0", "boost": 5 } } },
-		      { "match": { "difficulty":  { "query": "?0", "boost": 3 } } },
-		      { "match": { "reference":   { "query": "?0", "boost": 5 } } }
+		      { "match":       { "title":             { "query": "?0", "boost": 12 } } },
+		      { "match":       { "description":       { "query": "?0", "boost": 5  } } },
+		      { "match":       { "category":          { "query": "?0", "boost": 5  } } },
+		      { "match":       { "difficulty":        { "query": "?0", "boost": 3  } } },
+		      { "match":       { "reference":         { "query": "?0", "boost": 5  } } },
+		      { "term":        { "title.keyword":     { "value": "?0", "boost": 40 } } },
+		      { "term":        { "description.keyword": { "value": "?0", "boost": 40 } } },
+		      { "term":        { "category.keyword":  { "value": "?0", "boost": 35  } } },
+		      { "term":        { "difficulty.keyword": { "value": "?0", "boost": 28  } } },
+		      { "term":        { "reference.keyword":  { "value": "?0", "boost": 32  } } }
 		    ],
 		    "minimum_should_match": 1
 		  }
