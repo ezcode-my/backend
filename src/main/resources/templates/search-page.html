@@ -17,7 +17,7 @@
       max-width: 720px;
       margin: 80px auto 0 auto;
       padding: 66px 54px 48px 54px;
-      background: #b6c2db;                    /* Container 배경을 회색으로 */
+      background: #b6c2db;
       border-radius: 39px;
       box-shadow: 0 12px 57px rgba(0,0,0,0.09), 0 2px 12px rgba(0,0,0,0.05);
       display: flex;
@@ -41,27 +41,27 @@
       letter-spacing: 0.01em;
     }
 
-    /* 텍스트 입력 박스: 흰색 배경 유지 */
+    /* 텍스트 입력 박스 */
     input[type="text"] {
       font-size: 1.77rem;
       border: 2.5px solid #b6c2db;
       border-radius: 17px;
       padding: 26px 27px;
       outline: none;
-      background: #fff;                       /* 입력창은 흰색 */
+      background: #fff;
       transition: border-color 0.19s;
-      color: #16243a;                         /* 흰색 위에 글씨 색 */
+      color: #16243a;
     }
     input[type="text"]::placeholder {
       color: rgba(22, 36, 58, 0.6);
     }
     input[type="text"]:focus {
       border-color: #2563eb;
-      background: #fff;                       /* 포커스 시에도 흰색 유지 */
+      background: #fff;
     }
 
     /*──────────────────────────────────────────────────────────────*/
-    /* 자동완성 리스트 (위쪽으로 뜨도록 조정) */
+    /* 자동완성 리스트 */
     .autocomplete-list {
       border: 2px solid #b6c2db;
       box-shadow: 0 3px 21px rgba(59,130,246,0.10);
@@ -71,8 +71,8 @@
       position: absolute;
       z-index: 120;
       width: 100%;
-      bottom: calc(100% + 3px);       /* input 바로 위에 뜨도록 설정 */
-      margin-top: 0;                  /* 아래쪽 마진 제거 */
+      bottom: calc(100% + 3px);
+      margin-top: 0;
       padding: 0;
       list-style: none;
       border-radius: 17px;
@@ -89,14 +89,15 @@
     .autocomplete-item:last-child {
       border-bottom: none;
     }
-    .autocomplete-item:hover {
+    .autocomplete-item:hover,
+    .autocomplete-item.active {
       background: #e7ecff;
       color: #2563eb;
     }
     #autocomplete-box {
       position: relative;
       width: 100%;
-      border: none;    /* 중간선(경계선)은 따로 남겨두었습니다 */
+      border: none;
       margin-top: 0;
     }
 
@@ -134,6 +135,13 @@
       color: #16243a;
       font-weight: 500;
       letter-spacing: 0.01em;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    }
+    #results.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
     .result-title {
       font-size: 1.64rem;
@@ -174,7 +182,7 @@
     }
 
     /*──────────────────────────────────────────────────────────────*/
-    /* 반응형(화면 작아질 때) */
+    /* 반응형 */
     @media (max-width: 900px) {
       .search-container {
         max-width: 95vw;
@@ -214,13 +222,16 @@
   <script>
     let latestSuggestions = [];
     let debounceTimer = null;
+    let focusIndex = -1; // 현재 선택된 autocomplete 항목 인덱스
 
     function getToken() {
       return document.getElementById('jwtToken').value;
     }
 
     function clearAutocomplete() {
-      document.getElementById('autocomplete-list').innerHTML = "";
+      const listEl = document.getElementById('autocomplete-list');
+      listEl.innerHTML = "";
+      focusIndex = -1;
     }
 
     async function fetchSuggestions(keyword) {
@@ -237,10 +248,12 @@
 
         latestSuggestions = data.result;
         const listEl = document.getElementById('autocomplete-list');
-        data.result.forEach(str => {
+        listEl.innerHTML = "";
+        data.result.forEach((str, idx) => {
           const li = document.createElement('li');
           li.textContent = str;
           li.className = "autocomplete-item";
+          li.dataset.index = idx;
           li.onclick = () => {
             document.getElementById('keyword').value = str;
             clearAutocomplete();
@@ -256,12 +269,51 @@
       const keyword = e.target.value.trim();
       clearAutocomplete();
 
+      // 글자 수가 2자 미만이면 요청하지 않음
+      if (keyword.length < 2) {
+        return;
+      }
+
+      // 디바운스 로직
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
       debounceTimer = setTimeout(() => {
         fetchSuggestions(keyword);
-      }, 400);
+      }, 250);
+    }
+
+    function handleKeyDown(e) {
+      const listEl = document.getElementById('autocomplete-list');
+      const items = listEl.querySelectorAll('.autocomplete-item');
+      if (!items.length) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        focusIndex = (focusIndex + 1) % items.length;
+        updateFocus(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        focusIndex = (focusIndex - 1 + items.length) % items.length;
+        updateFocus(items);
+      } else if (e.key === 'Enter') {
+        if (focusIndex >= 0 && focusIndex < items.length) {
+          e.preventDefault();
+          const selectedText = items[focusIndex].textContent;
+          document.getElementById('keyword').value = selectedText;
+          clearAutocomplete();
+        }
+      }
+    }
+
+    function updateFocus(items) {
+      items.forEach((it, idx) => {
+        if (idx === focusIndex) {
+          it.classList.add('active');
+        } else {
+          it.classList.remove('active');
+        }
+      });
     }
 
     function toggleSearchForm() {
@@ -275,6 +327,12 @@
       e.preventDefault();
       const token = getToken();
       const keyword = document.getElementById('keyword').value.trim();
+
+      // 키워드 길이가 2자 미만이면 요청 안 함
+      if (keyword.length < 2) {
+        return;
+      }
+
       if (!token) {
         alert('JWT 토큰을 먼저 입력하세요.');
         return;
@@ -290,6 +348,9 @@
         }
         const data = await resp.json();
         const resultsDiv = document.getElementById('results');
+
+        // 이전 애니메이션 제거
+        resultsDiv.classList.remove('visible');
 
         if (data.success && Array.isArray(data.result)) {
           const results = data.result;
@@ -309,8 +370,7 @@
                   <div><span>Reference:</span> ${item.reference}</div>
                   <div><span>Description:</span> ${item.description}</div>
                   <div><span>Score:</span> ${item.score}</div>
-                </li>
-              `;
+                </li>`;
             });
             html += '</ul>';
             resultsDiv.innerHTML = html;
@@ -319,6 +379,10 @@
           resultsDiv.innerHTML =
                   '<span class="result-title">PROBLEM LIST :</span> <span style="color:#a0a0a0;">검색 결과가 없습니다.</span>';
         }
+
+        // 애니메이션 적용
+        void resultsDiv.offsetWidth;
+        resultsDiv.classList.add('visible');
       } catch {
         alert('검색 중 오류가 발생했습니다.');
       } finally {
@@ -328,9 +392,11 @@
 
     window.onload = function() {
       clearAutocomplete();
+      const keywordInput = document.getElementById('keyword');
       document.getElementById('jwtToken').addEventListener('input', toggleSearchForm);
       document.getElementById('searchForm').addEventListener('submit', handleSearchSubmit);
-      document.getElementById('keyword').addEventListener('input', handleKeywordInput);
+      keywordInput.addEventListener('input', handleKeywordInput);
+      keywordInput.addEventListener('keydown', handleKeyDown);
       toggleSearchForm();
     };
   </script>
@@ -346,7 +412,7 @@
            placeholder="여기에 JWT 토큰을 입력하세요" required />
   </div>
 
-  <!-- 검색 폼: 검색어 입력창을 전체 너비로 유지 -->
+  <!-- 검색 폼 -->
   <form id="searchForm" autocomplete="off">
     <div class="form-group" id="autocomplete-box">
       <label for="keyword">검색어 입력</label>

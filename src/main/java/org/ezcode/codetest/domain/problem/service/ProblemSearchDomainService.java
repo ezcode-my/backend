@@ -9,9 +9,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-// ELASTICSEARCH 도메인서비스입니다. 요거는 상황보고 다른 도메인 서비스하고 합쳐도 될 것 같습니다.
-// 일단 충돌날까봐 따로 빼두었습니다.
-
 @Service
 @RequiredArgsConstructor
 public class ProblemSearchDomainService {
@@ -23,8 +20,8 @@ public class ProblemSearchDomainService {
 		return searchRepository.findDocumentContainingKeyword(keyword);
 	}
 
-	public List<ProblemSearchDocument> getProblemByKeyword(String keyword) {
+	public List<ProblemSearchDocument> searchByKeywordMatch(String keyword) {
 
-		return searchRepository.findAllProblemByKeyword(keyword);
+		return searchRepository.findAllByKeyword(keyword);
 	}
 }

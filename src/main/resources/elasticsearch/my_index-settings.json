@@ -1,25 +1,101 @@
 {
   "settings": {
-    "index.max_ngram_diff": 3,
+    "index.max_ngram_diff": 15,
     "analysis": {
       "tokenizer": {
-        "ngram_tokenizer": {
-          "type": "ngram",
+        "edge_tokenizer": {
+          "type": "edge_ngram",
           "min_gram": 2,
-          "max_gram": 5,
-          "token_chars": ["letter", "digit"]
+          "max_gram": 10,
+          "token_chars": [
+            "letter",
+            "digit",
+            "symbol",
+            "punctuation"
+          ]
+        },
+        "nori_tokenizer": {
+          "type": "nori_tokenizer"
         }
       },
       "filter": {
         "lowercase_filter": {
           "type": "lowercase"
+        },
+        "uppercase_filter": {
+          "type": "uppercase"
+        },
+        "nori_pos_filter": {
+          "type": "nori_part_of_speech",
+          "stoptags": [
+            "IC",
+            "MAG",
+            "MAJ",
+            "MM",
+            "VA",
+            "VX",
+            "VCP",
+            "VSV",
+            "SF",
+            "SP",
+            "SE",
+            "XPN",
+            "XSN",
+            "XSV",
+            "XSA",
+            "NA",
+            "UNA"
+          ]
         }
       },
       "analyzer": {
-        "ngram_analyzer": {
+        "uppercase_analyzer": {
           "type": "custom",
-          "tokenizer": "ngram_tokenizer",
-          "filter": ["lowercase_filter"]
+          "tokenizer": "edge_tokenizer",
+          "filter": [
+            "uppercase_filter"
+          ]
+        },
+        "lowercase_analyzer": {
+          "type": "custom",
+          "tokenizer": "edge_tokenizer",
+          "filter": [
+            "lowercase_filter"
+          ]
+        },
+        "lowercase_standard": {
+          "tokenizer": "uax_url_email",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "uppercase_standard": {
+          "tokenizer": "uax_url_email",
+          "filter": [
+            "uppercase"
+          ]
+        },
+        "nori_ko_with_en": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer",
+          "filter": [
+            "lowercase_filter",
+            "nori_pos_filter"
+          ]
+        }
+      },
+      "normalizer": {
+        "lowercase_normalizer": {
+          "type": "custom",
+          "filter": [
+            "lowercase_filter"
+          ]
+        },
+        "uppercase_normalizer": {
+          "type": "custom",
+          "filter": [
+            "uppercase_filter"
+          ]
         }
       }
     }
@@ -28,27 +104,52 @@
     "properties": {
       "title": {
         "type": "text",
-        "analyzer": "ngram_analyzer",
-        "search_analyzer": "ngram_analyzer"
+        "analyzer": "lowercase_analyzer",
+        "search_analyzer": "lowercase_standard",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "normalizer": "lowercase_normalizer"
+          }
+        }
       },
       "description": {
         "type": "text",
-        "analyzer": "standard"
+        "analyzer": "nori_ko_with_en",
+        "search_analyzer": "nori_ko_with_en"
       },
       "category": {
         "type": "text",
-        "analyzer": "ngram_analyzer",
-        "search_analyzer": "ngram_analyzer"
+        "analyzer": "uppercase_analyzer",
+        "search_analyzer": "uppercase_standard",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "normalizer": "uppercase_normalizer"
+          }
+        }
       },
       "difficulty": {
         "type": "text",
-        "analyzer": "ngram_analyzer",
-        "search_analyzer": "ngram_analyzer"
+        "analyzer": "uppercase_analyzer",
+        "search_analyzer": "uppercase_standard",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "normalizer": "uppercase_normalizer"
+          }
+        }
       },
       "reference": {
         "type": "text",
-        "analyzer": "ngram_analyzer",
-        "search_analyzer": "ngram_analyzer"
+        "analyzer": "uppercase_analyzer",
+        "search_analyzer": "uppercase_standard",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "normalizer": "uppercase_normalizer"
+          }
+        }
       },
       "isDeleted": {
         "type": "boolean"
@@ -62,3 +163,4 @@
     }
   }
 }
+
