@@ -63,4 +63,42 @@ public class ProblemElasticsearchRepositoryDslImpl implements ProblemElasticsear
 
 		return elasticsearchOperations.search(searchQuery, ProblemSearchDocument.class);
 	}
+
+	public SearchHits<ProblemSearchDocument> findProblemsByKeyword(String keyword) {
+		Query searchQuery = NativeQuery.builder()
+			.withQuery(q -> q.bool(b -> b
+				.filter(f -> f.term(t -> t.field("isDeleted").value(false)))
+
+				.should(s -> s.term(t -> t.field("title.keyword").value(keyword).boost(40f)))
+				.should(s -> s.term(t -> t.field("description.keyword").value(keyword).boost(40f)))
+				.should(s -> s.term(t -> t.field("category.keyword").value(keyword).boost(35f)))
+				.should(s -> s.term(t -> t.field("difficulty.keyword").value(keyword).boost(28f)))
+				.should(s -> s.term(t -> t.field("reference.keyword").value(keyword).boost(32f)))
+
+				.should(s -> s.bool(bs -> bs
+					.should(ss -> ss.match(m -> m.field("title").query(keyword).boost(12f)))
+					.should(ss -> ss.match(m -> m.field("description").query(keyword).boost(5f)))
+					.should(ss -> ss.match(m -> m.field("category").query(keyword).boost(5f)))
+					.should(ss -> ss.match(m -> m.field("difficulty").query(keyword).boost(3f)))
+					.should(ss -> ss.match(m -> m.field("reference").query(keyword).boost(5f)))
+					.minimumShouldMatch("1")
+
+					.mustNot(mn -> mn.term(t -> t.field("title.keyword").value(keyword)))
+					.mustNot(mn -> mn.term(t -> t.field("description.keyword").value(keyword)))
+					.mustNot(mn -> mn.term(t -> t.field("category.keyword").value(keyword)))
+					.mustNot(mn -> mn.term(t -> t.field("difficulty.keyword").value(keyword)))
+					.mustNot(mn -> mn.term(t -> t.field("reference.keyword").value(keyword)))
+				))
+
+				.minimumShouldMatch("1")
+			))
+			.withSourceFilter(
+				new FetchSourceFilterBuilder()
+					.withIncludes("title", "description", "category", "difficulty", "reference")
+					.build()
+			)
+			.build();
+
+		return elasticsearchOperations.search(searchQuery, ProblemSearchDocument.class);
+	}
 }

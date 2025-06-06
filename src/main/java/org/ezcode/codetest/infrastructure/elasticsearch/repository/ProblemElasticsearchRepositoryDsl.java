@@ -6,4 +6,6 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 public interface ProblemElasticsearchRepositoryDsl {
 
 	SearchHits<ProblemSearchDocument> findFieldsContainingKeyword(String keyword);
+
+	SearchHits<ProblemSearchDocument> findProblemsByKeyword(String keyword);
 }

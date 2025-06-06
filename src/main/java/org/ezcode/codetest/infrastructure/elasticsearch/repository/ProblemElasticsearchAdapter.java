@@ -10,6 +10,7 @@ import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Repository;
 
@@ -62,6 +63,13 @@ public class ProblemElasticsearchAdapter implements ProblemDocumentRepository {
 	public List<ProblemSearchDocument> findAllByKeyword(String keyword) {
 
 		return searchRepository.findAllByKeyword(keyword);
+	}
+
+	public List<ProblemSearchDocument> findProblemsByKeyword(String keyword) {
+
+		SearchHits<ProblemSearchDocument> hits = searchRepository.findProblemsByKeyword(keyword);
+
+		return hits.getSearchHits().stream().map(SearchHit::getContent).toList();
 	}
 
 	public Optional<ProblemSearchDocument> findById(Long id) {

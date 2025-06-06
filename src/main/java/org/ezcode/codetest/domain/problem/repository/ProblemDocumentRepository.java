@@ -12,6 +12,8 @@ public interface ProblemDocumentRepository {
 
 	List<ProblemSearchDocument> findAllByKeyword(String keyword);
 
+	List<ProblemSearchDocument> findProblemsByKeyword(String keyword);
+
 	Optional<ProblemSearchDocument> findById(Long id);
 
 	void delete(ProblemSearchDocument document);
