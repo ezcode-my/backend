@@ -4,6 +4,7 @@ import java.security.Key;
 import java.util.Date;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -114,5 +115,26 @@ public class JwtUtilImpl implements JwtUtil {
 			.setExpiration(expirationDate) // 만료날짜
 			.signWith(key, signatureAlgorithm) // 암호화 알고리즘
 			.compact();
+	}
+
+	@Override
+	public Long getUserId(String token) {
+		Claims claims = Jwts.parserBuilder()
+			.setSigningKey(secretKey)
+			.build()
+			.parseClaimsJws(token)
+			.getBody();
+
+		return claims.get("id", Long.class);
+	}
+
+	@Override
+	public boolean validateToken(String refreshToken) {
+		try {
+			Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(refreshToken);
+			return true;
+		} catch (JwtException | IllegalArgumentException e) {
+			return false;
+		}
 	}
 }

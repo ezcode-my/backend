@@ -18,4 +18,8 @@ public interface JwtUtil {
 	Long getRemainingTime(String token);
 
 	String createRefreshToken(Long userId);
+
+	Long getUserId(String token);
+
+	boolean validateToken(String refreshToken);
 }

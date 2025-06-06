@@ -12,16 +12,16 @@
     <div class="login-section">
         <div class="login-main">
             <div class="login-header">LOGIN</div>
-            <form th:action="@{/login}" method="post">
+            <form onsubmit="return false;">
                 <div class="input-group">
                     <div class="input-field email">
-                        <input type="text" name="email" placeholder="이메일을 입력해주세요">
+                        <input id="email" type="text" name="email" placeholder="이메일을 입력해주세요">
                     </div>
                     <div class="input-field password">
-                        <input type="password" name="password" placeholder="비밀번호를 입력해주세요">
+                        <input id="password" type="password" name="password" placeholder="비밀번호를 입력해주세요">
                     </div>
                 </div>
-                <button class="login-button default" type="submit">로그인</button>
+                <button id="login-btn" class="login-button default" type="button">로그인</button>
             </form>
             <button class="signup-email-button" th:onclick="|location.href='@{/signup}'|">이메일 회원가입</button>
             <div class="find-account">
@@ -52,3 +52,35 @@
 </div>
 </body>
 </html>
+<script>
+    document.getElementById("login-btn").addEventListener("click", async function () {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            const response = await fetch("/signin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert("로그인 실패: " + (errorData.message || response.status));
+                return;
+            }
+
+            const data = await response.json();
+            console.log("로그인 성공:", data);
+
+            // 로그인 성공 시 리디렉션
+            window.location.href = "https://ezcode.my/";
+        } catch (error) {
+            console.error("로그인 에러:", error);
+            alert("로그인 중 오류가 발생했습니다.");
+        }
+    });
+</script>
+

@@ -2,6 +2,7 @@ package org.ezcode.codetest.application.usermanagement.auth.service;
 
 import java.util.concurrent.TimeUnit;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.signin.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequest;
@@ -11,7 +12,9 @@ import org.ezcode.codetest.application.usermanagement.user.dto.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
+import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -47,13 +50,14 @@ public class AuthService {
 
 		String encodedPassword = userDomainService.encodePassword(signupRequest.getPassword());
 
-		User newUser = User.builder()
-			.email(signupRequest.getEmail())
-			.password(encodedPassword)
-			.username(signupRequest.getUsername())
-			.nickname(signupRequest.getNickname())
-			.age(signupRequest.getAge())
-			.build();
+
+		User newUser = User.emailUser(
+			signupRequest.getEmail(),
+			encodedPassword,
+			signupRequest.getUsername(),
+			signupRequest.getNickname(),
+			signupRequest.getAge()
+		);
 
 		userDomainService.createUser(newUser);
 
@@ -78,6 +82,11 @@ public class AuthService {
 
 		log.info("service 진입");
     	User loginUser = userDomainService.getUser(signinRequest.getEmail());
+
+		//OAuth 가입 유저는 일반 로그인 불가능(향후 이메일과 소셜 모두 가입되어있는 회원은 로그인 가능할 수 있도록 리팩토링)
+		if (!loginUser.getAuthType().equals(AuthType.EMAIL)) {
+			throw new AuthException(AuthExceptionCode.AUTH_TYPE_MISMATCH);
+		}
 
 		userDomainService.userPasswordCheck(signinRequest.getEmail(), signinRequest.getPassword());
 
@@ -134,5 +143,40 @@ public class AuthService {
 				log.error("Redis 오류로 인한 로그아웃 처리 실패", e);}
 
 		return new LogoutResponse("success");
+	}
+
+	//토큰 재발급
+	public RefreshTokenResponse refreshToken(HttpServletRequest request) {
+		String bearToken = request.getHeader("Authorization");
+
+		if (bearToken == null || !bearToken.startsWith("Bearer ")) {
+			throw new AuthException(AuthExceptionCode.INVALID_AUTHORIZATION_HEADER);
+		}
+		String refreshToken = jwtUtil.substringToken(bearToken);
+
+		if (!jwtUtil.validateToken(refreshToken)){
+			throw new AuthException(AuthExceptionCode.INVALID_REFRESH_TOKEN);
+		}
+
+		Long userId = jwtUtil.getUserId(refreshToken);
+
+		String savedToken = redisTemplate.opsForValue().get("RefreshToken:" + userId);
+
+		if (savedToken==null || !savedToken.equals(refreshToken)){
+			throw new AuthException(AuthExceptionCode.INVALID_REFRESH_TOKEN);
+		}
+
+		User user = userDomainService.getUserById(userId);
+
+		String newAccessToken = jwtUtil.createToken(
+			user.getId(),
+			user.getEmail(),
+			user.getRole(),
+			user.getUsername(),
+			user.getNickname(),
+			user.getTier()
+		);
+
+		return RefreshTokenResponse.from(newAccessToken);
 	}
 }
