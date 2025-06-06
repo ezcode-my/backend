@@ -80,6 +80,9 @@ dependencies {
 
     //activemq
     implementation 'org.apache.activemq:activemq-broker:6.1.6'
+
+    //oauth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
