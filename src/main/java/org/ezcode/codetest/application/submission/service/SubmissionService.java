@@ -47,6 +47,8 @@ public class SubmissionService {
 	private final LanguageDomainService languageDomainService;
 	private final SubmissionDomainService submissionDomainService;
 
+	private static final String COMPILE_MESSAGE = "Accepted";
+
 	public SseEmitter submitCodeStream(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
 
 		SseEmitter emitter = new SseEmitter();
@@ -59,7 +61,7 @@ public class SubmissionService {
 				ProblemInfo problemInfo = problemDomainService.getProblemInfo(problemId);
 
 				int passedCount = 0;
-				String message = "Accepted";
+				String message = COMPILE_MESSAGE;
 
 				for (Testcase tc : problemInfo.testcaseList()) {
 
