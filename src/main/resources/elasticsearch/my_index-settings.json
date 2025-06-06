@@ -13,6 +13,9 @@
             "symbol",
             "punctuation"
           ]
+        },
+        "nori_tokenizer": {
+          "type": "nori_tokenizer"
         }
       },
       "filter": {
@@ -21,6 +24,28 @@
         },
         "uppercase_filter": {
           "type": "uppercase"
+        },
+        "nori_pos_filter": {
+          "type": "nori_part_of_speech",
+          "stoptags": [
+            "IC",
+            "MAG",
+            "MAJ",
+            "MM",
+            "VA",
+            "VX",
+            "VCP",
+            "VSV",
+            "SF",
+            "SP",
+            "SE",
+            "XPN",
+            "XSN",
+            "XSV",
+            "XSA",
+            "NA",
+            "UNA"
+          ]
         }
       },
       "analyzer": {
@@ -40,11 +65,23 @@
         },
         "lowercase_standard": {
           "tokenizer": "uax_url_email",
-          "filter": ["lowercase"]
+          "filter": [
+            "lowercase"
+          ]
         },
         "uppercase_standard": {
           "tokenizer": "uax_url_email",
-          "filter": ["uppercase"]
+          "filter": [
+            "uppercase"
+          ]
+        },
+        "nori_ko_with_en": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer",
+          "filter": [
+            "lowercase_filter",
+            "nori_pos_filter"
+          ]
         }
       },
       "normalizer": {
@@ -78,7 +115,8 @@
       },
       "description": {
         "type": "text",
-        "analyzer": "standard"
+        "analyzer": "nori_ko_with_en",
+        "search_analyzer": "nori_ko_with_en"
       },
       "category": {
         "type": "text",
@@ -125,3 +163,4 @@
     }
   }
 }
+

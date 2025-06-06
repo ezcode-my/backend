@@ -22,16 +22,15 @@ public interface ProblemElasticsearchRepository extends
 		      { "match":       { "category":          { "query": "?0", "boost": 5  } } },
 		      { "match":       { "difficulty":        { "query": "?0", "boost": 3  } } },
 		      { "match":       { "reference":         { "query": "?0", "boost": 5  } } },
-		      { "term":        { "title.keyword":     { "value": "?0", "boost": 20 } } },
-		      { "term":        { "description.keyword": { "value": "?0", "boost": 16  } } },
-		      { "term":        { "category.keyword":  { "value": "?0", "boost": 14  } } },
-		      { "term":        { "difficulty.keyword": { "value": "?0", "boost": 13  } } },
-		      { "term":        { "reference.keyword":  { "value": "?0", "boost": 12  } } }
+		      { "term":        { "title.keyword":     { "value": "?0", "boost": 40 } } },
+		      { "term":        { "description.keyword": { "value": "?0", "boost": 40 } } },
+		      { "term":        { "category.keyword":  { "value": "?0", "boost": 35  } } },
+		      { "term":        { "difficulty.keyword": { "value": "?0", "boost": 28  } } },
+		      { "term":        { "reference.keyword":  { "value": "?0", "boost": 32  } } }
 		    ],
 		    "minimum_should_match": 1
 		  }
 		}
 		""")
 	List<ProblemSearchDocument> findAllByKeyword(String keyword);
-
 }

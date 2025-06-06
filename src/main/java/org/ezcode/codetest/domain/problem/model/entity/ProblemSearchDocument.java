@@ -89,7 +89,11 @@ public class ProblemSearchDocument {
 	)
 	private Reference reference;
 
-	@Field(type = FieldType.Text, analyzer = "standard")
+	@Field(
+		type = FieldType.Text,
+		analyzer = "nori_ko_with_en",
+		searchAnalyzer = "uppercase_standard"
+	)
 	private String description;
 
 	@Field(type = FieldType.Keyword)
