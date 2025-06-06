@@ -50,6 +50,8 @@ public class SecurityConfig {
 						"/logout",
 						"/actuator/**",
 						"/chatting",
+						"/submit-test",
+						"/problems/**",
 						"/ws/**",
 						"/swagger-ui/**",
 						"/swagger-resources/**",
