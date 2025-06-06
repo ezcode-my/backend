@@ -27,7 +27,7 @@ public record ProblemDetailResponse(
 
 	Long memoryLimit,
 
-	String timeLimit,
+	Double timeLimit,
 
 	Reference reference,
 
