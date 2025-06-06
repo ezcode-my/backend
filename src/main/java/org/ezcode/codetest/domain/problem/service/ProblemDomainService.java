@@ -1,11 +1,10 @@
 package org.ezcode.codetest.domain.problem.service;
 
-import java.util.List;
-
+import org.ezcode.codetest.domain.problem.exception.ProblemException;
+import org.ezcode.codetest.domain.problem.exception.code.ProblemExceptionCode;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
-import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.repository.ProblemRepository;
 import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
@@ -23,7 +22,7 @@ public class ProblemDomainService {
 	private final ProblemRepository problemRepository;
 	private final ProblemDocumentRepository searchRepository;
 
-	//저장시 DB 뿐만 아니라 ElasticSearch 에도 같이 저장합니다!
+	//저장시 DB 뿐만 아니라 ElasticCache 에도 같이 저장합니다!
 	public Problem createProblem(Problem problem) {
 
 		Problem savedProblem = problemRepository.save(problem);
@@ -60,10 +59,9 @@ public class ProblemDomainService {
 	}
 
 	public ProblemInfo getProblemInfo(Long problemId) {
-		Problem findProblem = getProblem(problemId);
+		Problem problem = problemRepository.findProblemWithTestcasesById(problemId)
+			.orElseThrow(() -> new ProblemException(ProblemExceptionCode.PROBLEM_NOT_FOUND));
 
-		List<Testcase> testcaseList = findProblem.getTestcases();
-
-		return new ProblemInfo(findProblem, testcaseList);
+		return new ProblemInfo(problem, problem.getTestcases());
 	}
 }

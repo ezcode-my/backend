@@ -42,4 +42,10 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 
 		problem.softDelete();
 	}
+
+	@Override
+	public Optional<Problem> findProblemWithTestcasesById(Long problemId) {
+		return problemJpaRepository.findProblemWithTestcasesById(problemId);
+	}
+
 }

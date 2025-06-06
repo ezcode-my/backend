@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
 
@@ -18,4 +19,11 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
 	@Query("SELECT p FROM Problem p WHERE p.isDeleted = false AND p.id = :problemId")
 	Optional<Problem> findByIdNotDeleted(Long problemId);
 
+	@Query("""
+		select distinct p
+		from Problem p
+		left join fetch p.testcases
+		where p.id = :problemId
+		""")
+	Optional<Problem> findProblemWithTestcasesById(@Param("problemId") Long problemId);
 }

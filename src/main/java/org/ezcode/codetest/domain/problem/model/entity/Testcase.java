@@ -51,4 +51,12 @@ public class Testcase {
 				this.problem.getId() != null &&
 				this.getProblem().getId().equals(problemId);
 	}
+
+	public String getInput() {
+		return this.input.replace("\\n", "\n");
+	}
+
+	public String getOutput() {
+		return this.output.replace("\\n", "\n");
+	}
 }
