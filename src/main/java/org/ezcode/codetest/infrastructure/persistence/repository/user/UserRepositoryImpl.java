@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;

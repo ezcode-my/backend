@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "oauth_users")
 public class OAuth2EzCodeUser {
+	//spring security에서 기본으로 제공하는 OAuth2User라는 클래스가 있어서 구별하기 위해 OAuth2EzCodeUser 사용
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,7 +75,6 @@ public class OAuth2EzCodeUser {
 	public OAuth2EzCodeUser(String email, String username, AuthType authType){
 		this.email = email;
 		this.username = username;
-		this.nickname = email;
 		this.authType = authType;
 		this.tier = Tier.NEWBIE;
 		this.role = UserRole.USER;
