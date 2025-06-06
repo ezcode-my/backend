@@ -32,7 +32,6 @@ public class AuthController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<SigninResponse> signin(@Valid @RequestBody SigninRequest signinRequest) {
-		log.info("--------컨트롤러 진입 signin");
 		return ResponseEntity.status(HttpStatus.OK).body(authService.signin(signinRequest));
 	}
 
