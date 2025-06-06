@@ -1,6 +1,6 @@
 package org.ezcode.codetest.application.submission.dto.request.review;
 
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 
 public record ReviewPayload(

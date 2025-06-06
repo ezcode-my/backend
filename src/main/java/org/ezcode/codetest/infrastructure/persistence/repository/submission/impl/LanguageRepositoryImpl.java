@@ -3,8 +3,8 @@ package org.ezcode.codetest.infrastructure.persistence.repository.submission.imp
 import java.util.List;
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.submission.repository.LanguageRepository;
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.repository.LanguageRepository;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.infrastructure.persistence.repository.submission.jpa.LanguageJpaRepository;
 import org.springframework.stereotype.Repository;
 

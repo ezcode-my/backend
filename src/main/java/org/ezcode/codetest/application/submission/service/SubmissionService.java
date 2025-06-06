@@ -20,11 +20,11 @@ import org.ezcode.codetest.application.submission.dto.request.submission.CodeSub
 import org.ezcode.codetest.application.submission.model.JudgeResult;
 import org.ezcode.codetest.application.submission.dto.response.submission.JudgeResultResponse;
 import org.ezcode.codetest.application.submission.port.JudgeClient;
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.submission.model.entity.Submission;
-import org.ezcode.codetest.domain.submission.service.LanguageDomainService;
+import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
 import org.ezcode.codetest.domain.submission.service.SubmissionDomainService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;

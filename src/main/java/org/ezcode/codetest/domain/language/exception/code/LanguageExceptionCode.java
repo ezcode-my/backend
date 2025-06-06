@@ -1,4 +1,4 @@
-package org.ezcode.codetest.domain.submission.exception.code;
+package org.ezcode.codetest.domain.language.exception.code;
 
 import org.ezcode.codetest.common.base.exception.ResponseCode;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package org.ezcode.codetest.domain.submission.model.entity;
+package org.ezcode.codetest.domain.language.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

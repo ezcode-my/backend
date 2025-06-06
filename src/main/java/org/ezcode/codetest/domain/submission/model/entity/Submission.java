@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.submission.model.entity;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.user.model.entity.User;
 

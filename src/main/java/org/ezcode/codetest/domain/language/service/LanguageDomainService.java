@@ -1,11 +1,11 @@
-package org.ezcode.codetest.domain.submission.service;
+package org.ezcode.codetest.domain.language.service;
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.submission.exception.LanguageException;
-import org.ezcode.codetest.domain.submission.exception.code.LanguageExceptionCode;
-import org.ezcode.codetest.domain.submission.repository.LanguageRepository;
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.exception.LanguageException;
+import org.ezcode.codetest.domain.language.exception.code.LanguageExceptionCode;
+import org.ezcode.codetest.domain.language.repository.LanguageRepository;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

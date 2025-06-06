@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.submission.model.entity.Submission;
 import org.ezcode.codetest.domain.problem.model.entity.Testcase;

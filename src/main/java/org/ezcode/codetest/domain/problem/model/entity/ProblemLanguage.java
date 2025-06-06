@@ -1,6 +1,6 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

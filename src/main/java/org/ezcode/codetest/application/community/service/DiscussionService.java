@@ -5,9 +5,9 @@ import org.ezcode.codetest.application.community.dto.request.DiscussionModifyReq
 import org.ezcode.codetest.application.community.dto.response.DiscussionResponse;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.service.DiscussionDomainService;
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
-import org.ezcode.codetest.domain.submission.service.LanguageDomainService;
+import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;

@@ -1,8 +1,8 @@
-package org.ezcode.codetest.domain.submission.exception;
+package org.ezcode.codetest.domain.language.exception;
 
 import org.ezcode.codetest.common.base.exception.BaseException;
 import org.ezcode.codetest.common.base.exception.ResponseCode;
-import org.ezcode.codetest.domain.submission.exception.code.LanguageExceptionCode;
+import org.ezcode.codetest.domain.language.exception.code.LanguageExceptionCode;
 import org.springframework.http.HttpStatus;
 
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package org.ezcode.codetest.application.submission.dto.request.language;
 
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

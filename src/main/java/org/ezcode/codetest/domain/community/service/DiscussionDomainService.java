@@ -4,7 +4,7 @@ import org.ezcode.codetest.domain.community.exception.CommunityException;
 import org.ezcode.codetest.domain.community.exception.CommunityExceptionCode;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.repository.DiscussionRepository;
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

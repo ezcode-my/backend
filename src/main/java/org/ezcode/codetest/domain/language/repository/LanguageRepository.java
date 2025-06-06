@@ -1,9 +1,9 @@
-package org.ezcode.codetest.domain.submission.repository;
+package org.ezcode.codetest.domain.language.repository;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 
 public interface LanguageRepository {
 	boolean existsById(Long languageId);

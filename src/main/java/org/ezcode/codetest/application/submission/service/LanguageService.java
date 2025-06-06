@@ -5,8 +5,8 @@ import java.util.List;
 import org.ezcode.codetest.application.submission.dto.request.language.LanguageCreateRequest;
 import org.ezcode.codetest.application.submission.dto.request.language.LanguageUpdateRequest;
 import org.ezcode.codetest.application.submission.dto.response.language.LanguageResponse;
-import org.ezcode.codetest.domain.submission.service.LanguageDomainService;
-import org.ezcode.codetest.domain.submission.model.entity.Language;
+import org.ezcode.codetest.domain.language.service.LanguageDomainService;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,4 +1,4 @@
-package org.ezcode.codetest.presentation.submission;
+package org.ezcode.codetest.presentation.language;
 
 import java.util.List;
 
