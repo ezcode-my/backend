@@ -10,6 +10,8 @@ public record ModifyUserInfoRequest(
 
 	String profileImageUrl,
 
-	String introduction
+	String introduction,
+
+	Integer age
 ) {
 }

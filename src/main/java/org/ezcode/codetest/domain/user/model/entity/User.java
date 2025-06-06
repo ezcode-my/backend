@@ -99,6 +99,7 @@ public class User extends BaseEntity {
 			.tier(Tier.NEWBIE)
 			.role(UserRole.USER)
 			.isDeleted(false)
+			.password(UUID.randomUUID().toString())
 			.build();
 	}
 

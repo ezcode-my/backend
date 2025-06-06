@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.ezcode.codetest.application.usermanagement.user.dto.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.OAuth2Response;
+import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.OAuth2EzCodeUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -49,16 +50,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			return null;
 		}
 
-		String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
+		String username = oAuth2Response.getName();
 
-		//다른 방식으로 이미 가입한 사람에 대해 어떻게 처리할 것인지 생각해야함
-		User newUser = User.builder()
-			.email(oAuth2Response.getEmail())
-			.username(username)
-			.build();
+		Optional<User> findUser = userRepository.findByEmail(oAuth2Response.getEmail());
+
+		//다른 방식으로 이미 가입한 사람에 대해 어떻게 처리할 것인지 논의 필요
+		User newUser = User.googleUser(oAuth2Response.getEmail(), username);
 
 		userRepository.createUser(newUser);
-
 
 
 		return new CustomOAuth2User(oAuth2Response, UserRole.USER); //기본적으로 역할은 USER로 설정

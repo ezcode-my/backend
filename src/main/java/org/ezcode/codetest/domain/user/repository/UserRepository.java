@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository {
 	void createUser(User user);
 
-	void createOAuth2User(OAuth2User oAuth2User);
-
 	Optional<User> findByEmail(String email);
 
 	Optional<User> findUserById(Long id);
