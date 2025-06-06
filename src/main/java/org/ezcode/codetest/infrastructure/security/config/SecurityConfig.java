@@ -55,7 +55,13 @@ public class SecurityConfig {
 						"/signin",
 						"/signup",
 						"/logout",
-						"/login/**", //OAuth로그인 접근
+						"/login",
+						"/ezlogin",
+						"/oauth/**",
+						"/css/**",
+						"/images/**",
+						"/login/oauth",
+						"/login/oauth2/**", //OAuth로그인 접근
 						"/actuator/**",
 						"/chatting",
 						"/ws/**",
