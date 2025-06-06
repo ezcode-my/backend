@@ -60,6 +60,7 @@ public class ProblemElasticsearchAdapter implements ProblemDocumentRepository {
 			.collect(Collectors.toSet());
 	}
 
+	@Deprecated
 	public List<ProblemSearchDocument> findAllByKeyword(String keyword) {
 
 		return searchRepository.findAllByKeyword(keyword);
