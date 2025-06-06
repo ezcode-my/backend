@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
+import org.ezcode.codetest.domain.submission.model.entity.Language;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.Column;

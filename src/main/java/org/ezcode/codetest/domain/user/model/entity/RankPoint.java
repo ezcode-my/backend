@@ -2,7 +2,7 @@ package org.ezcode.codetest.domain.user.model.entity;
 
 import java.time.LocalDateTime;
 
-import org.ezcode.codetest.domain.problem.model.entity.UserProblemResult;
+import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
 import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.persistence.Column;
@@ -28,7 +28,7 @@ public class RankPoint {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "user_problem_status_id", nullable = false)
+	@JoinColumn(name = "user_problem_result_id", nullable = false)
 	private UserProblemResult userProblemResult;
 
 	@Column(nullable = false)

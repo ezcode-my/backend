@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.repository.DiscussionRepository;
-import org.ezcode.codetest.domain.problem.model.entity.Language;
+import org.ezcode.codetest.domain.submission.model.entity.Language;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
