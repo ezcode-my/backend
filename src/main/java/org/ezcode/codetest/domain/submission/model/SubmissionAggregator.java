@@ -15,10 +15,10 @@ public class SubmissionAggregator {
 	}
 
 	public double averageExecutionTime() {
-		return count == 0 ? 0 : Math.round(totalExecutionTime / count * 1000.0) / 1000.0;
+		return count == 0 ? 0.0 : Math.round(totalExecutionTime / count * 1000.0) / 1000.0;
 	}
 
 	public long averageMemoryUsage() {
-		return count == 0 ? 0 : totalMemoryUsage / count;
+		return count == 0 ? 0L : totalMemoryUsage / count;
 	}
 }
