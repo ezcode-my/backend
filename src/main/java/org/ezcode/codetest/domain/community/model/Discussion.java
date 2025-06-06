@@ -3,7 +3,7 @@ package org.ezcode.codetest.domain.community.model;
 import java.util.Objects;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
-import org.ezcode.codetest.domain.problem.model.entity.Language;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.user.model.entity.User;
 

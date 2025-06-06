@@ -1,7 +1,7 @@
 package org.ezcode.codetest.infrastructure.judge0;
 
-import org.ezcode.codetest.application.submission.dto.request.CompileRequest;
-import org.ezcode.codetest.application.submission.dto.response.CompileResponse;
+import org.ezcode.codetest.application.submission.dto.request.compile.CodeCompileRequest;
+import org.ezcode.codetest.application.submission.dto.response.compile.ExecutionResultResponse;
 import org.ezcode.codetest.application.submission.model.JudgeResult;
 import org.ezcode.codetest.application.submission.port.JudgeClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,15 +26,15 @@ public class Judge0Client implements JudgeClient {
 		this.webClient = WebClient.create(judge0ApiUrl);
 	}
 
-	public JudgeResult execute(CompileRequest request) {
-		CompileResponse compileResponse = webClient.post()
+	public JudgeResult execute(CodeCompileRequest request) {
+		ExecutionResultResponse executionResultResponse = webClient.post()
 			.uri("/submissions?base64_encoded=false&wait=true")
 			.contentType(MediaType.APPLICATION_JSON)
 			.bodyValue(request)
 			.retrieve()
-			.bodyToMono(CompileResponse.class)
+			.bodyToMono(ExecutionResultResponse.class)
 			.block();
 
-		return interpreter.toJudgeResult(compileResponse);
+		return interpreter.toJudgeResult(executionResultResponse);
 	}
 }
