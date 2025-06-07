@@ -10,6 +10,7 @@ public interface ProblemDocumentRepository {
 
 	ProblemSearchDocument save(ProblemSearchDocument problemSearch);
 
+	@Deprecated
 	List<ProblemSearchDocument> findAllByKeyword(String keyword);
 
 	List<ProblemSearchDocument> findProblemsByKeyword(String keyword);
