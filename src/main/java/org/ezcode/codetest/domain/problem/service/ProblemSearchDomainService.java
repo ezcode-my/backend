@@ -22,6 +22,6 @@ public class ProblemSearchDomainService {
 
 	public List<ProblemSearchDocument> searchByKeywordMatch(String keyword) {
 
-		return searchRepository.findAllByKeyword(keyword);
+		return searchRepository.findProblemsByKeyword(keyword);
 	}
 }

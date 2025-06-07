@@ -112,7 +112,7 @@
       padding: 27px 0;
       font-size: 1.78rem;
       width: 100%;
-      margin-top: 14px;
+      margin-top: 14px;  /* 버튼을 조금 더 아래로 내림 */
       letter-spacing: 0.01em;
       cursor: pointer;
       transition: background 0.17s, box-shadow 0.17s;
@@ -338,6 +338,10 @@
         return;
       }
       try {
+        const resultsDiv = document.getElementById('results');
+        // 이전 애니메이션 제거
+        resultsDiv.classList.remove('visible');
+
         const resp = await fetch('/problems/search?keyword=' + encodeURIComponent(keyword), {
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + token }
@@ -347,10 +351,6 @@
           return;
         }
         const data = await resp.json();
-        const resultsDiv = document.getElementById('results');
-
-        // 이전 애니메이션 제거
-        resultsDiv.classList.remove('visible');
 
         if (data.success && Array.isArray(data.result)) {
           const results = data.result;

@@ -10,6 +10,7 @@ public interface ProblemElasticsearchRepository extends
 	ElasticsearchRepository<ProblemSearchDocument, Long>,
 	ProblemElasticsearchRepositoryDsl {
 
+	@Deprecated
 	@Query("""
 		{
 		  "bool": {

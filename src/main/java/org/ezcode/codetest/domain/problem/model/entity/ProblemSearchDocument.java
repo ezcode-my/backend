@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
 import org.ezcode.codetest.domain.problem.model.enums.Category;
+import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -60,6 +61,21 @@ public class ProblemSearchDocument {
 	@MultiField(
 		mainField = @Field(
 			type = FieldType.Text,
+			analyzer = "nori_ko_with_en",
+			searchAnalyzer = "nori_ko_with_en"
+		),
+		otherFields = {
+			@InnerField(
+				suffix = "keyword",
+				type = FieldType.Keyword
+			)
+		}
+	)
+	private String categoryKor;
+
+	@MultiField(
+		mainField = @Field(
+			type = FieldType.Text,
 			analyzer = "uppercase_analyzer",
 			searchAnalyzer = "uppercase_standard"
 		),
@@ -87,16 +103,47 @@ public class ProblemSearchDocument {
 			)
 		}
 	)
+	private Difficulty difficultyEn;
+
+	@MultiField(
+		mainField = @Field(
+			type = FieldType.Text,
+			analyzer = "uppercase_analyzer",
+			searchAnalyzer = "uppercase_standard"
+		),
+		otherFields = {
+			@InnerField(
+				suffix = "keyword",
+				type = FieldType.Keyword,
+				normalizer = "uppercase_normalizer"
+			)
+		}
+	)
 	private Reference reference;
+
+	@MultiField(
+		mainField = @Field(
+			type = FieldType.Text,
+			analyzer = "nori_ko_with_en",
+			searchAnalyzer = "nori_ko_with_en"
+		),
+		otherFields = {
+			@InnerField(
+				suffix = "keyword",
+				type = FieldType.Keyword
+			)
+		}
+	)
+	private String referenceKor;
 
 	@Field(
 		type = FieldType.Text,
 		analyzer = "nori_ko_with_en",
-		searchAnalyzer = "uppercase_standard"
+		searchAnalyzer = "nori_ko_with_en"
 	)
 	private String description;
 
-	@Field(type = FieldType.Keyword)
+	@Field(type = FieldType.Integer)
 	private int score;
 
 	@Field(type = FieldType.Boolean)
@@ -110,6 +157,9 @@ public class ProblemSearchDocument {
 		String difficulty,
 		Reference reference,
 		String description,
+		String categoryKor,
+		Difficulty difficultyEn,
+		String referenceKor,
 		int score,
 		Boolean isDeleted
 	) {
@@ -119,6 +169,9 @@ public class ProblemSearchDocument {
 		this.difficulty = difficulty;
 		this.reference = reference;
 		this.description = description;
+		this.categoryKor = categoryKor;
+		this.difficultyEn = difficultyEn;
+		this.referenceKor = referenceKor;
 		this.score = score;
 		this.isDeleted = isDeleted;
 	}
@@ -132,6 +185,9 @@ public class ProblemSearchDocument {
 			.reference(problem.getReference())
 			.description(problem.getDescription())
 			.score(problem.getScore())
+			.categoryKor(problem.getCategory().getDescription())
+			.difficultyEn(Difficulty.getDifficultyFromKor(problem.getDifficulty()))
+			.referenceKor(problem.getReference().getDescription())
 			.isDeleted(problem.getIsDeleted())
 			.build();
 	}

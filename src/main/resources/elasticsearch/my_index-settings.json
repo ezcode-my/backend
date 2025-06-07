@@ -28,23 +28,8 @@
         "nori_pos_filter": {
           "type": "nori_part_of_speech",
           "stoptags": [
-            "IC",
-            "MAG",
-            "MAJ",
-            "MM",
-            "VA",
-            "VX",
-            "VCP",
-            "VSV",
-            "SF",
-            "SP",
-            "SE",
-            "XPN",
-            "XSN",
-            "XSV",
-            "XSA",
-            "NA",
-            "UNA"
+            "IC","MAG","MAJ","MM","VA","VX","VCP","VSV",
+            "SF","SP","SE","XPN","XSN","XSV","XSA","NA","UNA"
           ]
         }
       },
@@ -66,13 +51,13 @@
         "lowercase_standard": {
           "tokenizer": "uax_url_email",
           "filter": [
-            "lowercase"
+            "lowercase_filter"
           ]
         },
         "uppercase_standard": {
           "tokenizer": "uax_url_email",
           "filter": [
-            "uppercase"
+            "uppercase_filter"
           ]
         },
         "nori_ko_with_en": {
@@ -129,7 +114,28 @@
           }
         }
       },
+      "categoryKor": {
+        "type": "text",
+        "analyzer": "nori_ko_with_en",
+        "search_analyzer": "nori_ko_with_en",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
       "difficulty": {
+        "type": "text",
+        "analyzer": "uppercase_analyzer",
+        "search_analyzer": "uppercase_standard",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "normalizer": "uppercase_normalizer"
+          }
+        }
+      },
+      "difficultyEn": {
         "type": "text",
         "analyzer": "uppercase_analyzer",
         "search_analyzer": "uppercase_standard",
@@ -151,11 +157,21 @@
           }
         }
       },
+      "referenceKor": {
+        "type": "text",
+        "analyzer": "nori_ko_with_en",
+        "search_analyzer": "nori_ko_with_en",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
       "isDeleted": {
         "type": "boolean"
       },
       "score": {
-        "type": "keyword"
+        "type": "integer"
       },
       "id": {
         "type": "keyword"
@@ -163,4 +179,3 @@
     }
   }
 }
-
