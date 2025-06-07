@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
+import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -44,12 +45,18 @@ public class ProblemElasticsearchAdapter implements ProblemDocumentRepository {
 				String referenceStr = getElement(hitHighlightFields.get("reference"));
 				String difficulty = getElement(hitHighlightFields.get("difficulty"));
 				String descHighlight = getElement(hitHighlightFields.get("description"));
+				String categoryKorStr = getElement(hitHighlightFields.get("categoryKor"));
+				String referenceKorStr = getElement(hitHighlightFields.get("referenceKor"));
+				String difficultyEn = getElement(hitHighlightFields.get("difficultyEn"));
 
 				ProblemSearchDocument.ProblemSearchDocumentBuilder builder = ProblemSearchDocument.builder()
 					.title(titleStr)
 					.category(categoryStr != null ? Category.valueOf(categoryStr) : null)
 					.reference(referenceStr != null ? Reference.valueOf(referenceStr) : null)
-					.difficulty(difficulty);
+					.difficulty(difficulty)
+					.categoryKor(categoryKorStr)
+					.referenceKor(referenceKorStr)
+					.difficultyEn(difficultyEn != null ? Difficulty.valueOf(difficultyEn) : null);
 
 				if (descHighlight != null) {
 					builder.description(keyword);

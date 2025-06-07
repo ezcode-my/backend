@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ProblemExceptionCode implements ResponseCode {
 
-	PROBLEM_NOT_FOUND(false, HttpStatus.NOT_FOUND, "삭제 되었거나, 문제를 찾을수 없습니다.");
+	PROBLEM_NOT_FOUND(false, HttpStatus.NOT_FOUND, "삭제 되었거나, 문제를 찾을수 없습니다."),
+	DIFFICULTY_NOT_FOUND(false, HttpStatus.NOT_FOUND, "삭제 되었거나, 난이도를 찾을수 없습니다.");
 
 	private final boolean success;
 

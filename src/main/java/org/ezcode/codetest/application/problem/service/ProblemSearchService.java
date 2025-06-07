@@ -29,12 +29,14 @@ public class ProblemSearchService {
 				Optional.ofNullable(doc.getReference()).map(Enum::toString),
 				Optional.ofNullable(doc.getDifficulty()),
 				Optional.ofNullable(doc.getCategory()).map(Enum::toString),
-				Optional.ofNullable(doc.getDescription())
+				Optional.ofNullable(doc.getDescription()),
+				Optional.ofNullable(doc.getCategoryKor()),
+				Optional.ofNullable(doc.getDifficultyEn()).map(Enum::toString),
+				Optional.ofNullable(doc.getReferenceKor())
 			))
 			.flatMap(Optional::stream)
 			.map(String::toUpperCase)
 			.collect(Collectors.toSet());
-
 	}
 
 	public List<ProblemSearchResponse> getProblemSearchResult(String keyword) {
