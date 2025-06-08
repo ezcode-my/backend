@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.ezcode.codetest.application.usermanagement.user.dto.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.OAuth2Response;
 import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.OAuth2EzCodeUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -17,6 +18,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +30,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	private final UserRepository userRepository;
 
 	@Override
+	@Transactional
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		//부모 클래스에 존재하는 loadUser 메서드에 userRequest인자를 넣어 유저 정보를 가져온다
 		OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -52,14 +55,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 		String username = oAuth2Response.getName();
 
-		Optional<User> findUser = userRepository.findByEmail(oAuth2Response.getEmail());
+		User findUser = userRepository.getUserByEmail(oAuth2Response.getEmail());
+		log.info("findUser: 유저 여부 --------------------{}", findUser);
 
-		//다른 방식으로 이미 가입한 사람에 대해 어떻게 처리할 것인지 논의 필요
-		User newUser = User.googleUser(oAuth2Response.getEmail(), username);
+		if (findUser == null) {
+			log.info("--------------------유저 없음");
+			User newUSer = User.googleUser(oAuth2Response.getEmail(), username);
+			log.info("newUser: {} 새로운 유저", newUSer);
+			userRepository.createUser(newUSer);
+			log.info("유저 저장함 ------------------");
+		} else {
+			log.info("유저 이미 있음--------------");
+			findUser.setModified();
+		}
 
-		userRepository.createUser(newUser);
-
-
-		return new CustomOAuth2User(oAuth2Response, UserRole.USER); //기본적으로 역할은 USER로 설정
+		return new CustomOAuth2User(oAuth2Response, "USER"); //기본적으로 역할은 USER로 설정
 	}
 }

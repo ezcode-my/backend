@@ -52,4 +52,7 @@ public class UserDomainService {
 		return passwordEncoder.encode(password);
 	}
 
+	public User getOAuthUser(String email, String provider) {
+		return userRepository.findByEmailAndProvider(email, provider);
+	}
 }

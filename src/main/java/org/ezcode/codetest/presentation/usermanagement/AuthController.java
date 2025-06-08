@@ -33,7 +33,6 @@ public class AuthController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<SigninResponse> signin(@Valid @RequestBody SigninRequest signinRequest) {
-		log.info("signin에 정보전달");
 		return ResponseEntity.status(HttpStatus.OK).body(authService.signin(signinRequest));
 	}
 

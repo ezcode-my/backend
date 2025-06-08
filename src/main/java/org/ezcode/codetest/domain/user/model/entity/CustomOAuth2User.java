@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomOAuth2User implements OAuth2User {
 	private final OAuth2Response oAuth2Response;
-	private final UserRole userRole;
+	private final String userRole;
 
 	@Override
 	public Map<String, Object> getAttributes() {
@@ -28,7 +28,7 @@ public class CustomOAuth2User implements OAuth2User {
 		authorities.add(new GrantedAuthority() {
 			@Override
 			public String getAuthority() {
-				return UserRole.USER.toString();
+				return userRole;
 			}
 		});
 		return authorities;
@@ -37,6 +37,18 @@ public class CustomOAuth2User implements OAuth2User {
 	@Override
 	public String getName() {
 		return oAuth2Response.getName();
+	}
+
+	public String getEmail() {
+		return oAuth2Response.getEmail();
+	}
+
+	public String getProvider(){
+		return oAuth2Response.getProvider();
+	}
+
+	public UserRole getUserRole() {
+		return UserRole.from(userRole);
 	}
 
 	public String getUsername() {

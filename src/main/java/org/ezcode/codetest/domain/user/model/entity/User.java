@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.user.model.entity;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
@@ -145,6 +146,10 @@ public class User extends BaseEntity {
 
 	public void setDeleted() {
 		this.isDeleted = true;
+	}
+
+	public void setModified() {
+		this.modifiedAt = LocalDateTime.now();
 	}
 
 
