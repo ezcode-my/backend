@@ -10,9 +10,6 @@
       margin: 0;
       min-height: 100vh;
     }
-
-    /*──────────────────────────────────────────────────────────────*/
-    /* 전체 컨테이너: 흰색 → 회색(#b6c2db) */
     .search-container {
       max-width: 720px;
       margin: 80px auto 0 auto;
@@ -24,235 +21,129 @@
       flex-direction: column;
       gap: 40px;
     }
-
-    /* 입력 그룹 전체 */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    /* 레이블 */
+    .form-group { display: flex; flex-direction: column; gap: 14px; }
     label {
-      font-weight: 600;
-      color: #1a237e;
-      font-size: 1.7rem;
-      margin-bottom: 3px;
-      letter-spacing: 0.01em;
+      font-weight: 600; color: #1a237e; font-size: 1.7rem;
+      margin-bottom: 3px; letter-spacing: 0.01em;
     }
-
-    /* 텍스트 입력 박스 */
     input[type="text"] {
-      font-size: 1.77rem;
-      border: 2.5px solid #b6c2db;
-      border-radius: 17px;
-      padding: 26px 27px;
-      outline: none;
-      background: #fff;
-      transition: border-color 0.19s;
-      color: #16243a;
+      font-size: 1.77rem; border: 2.5px solid #b6c2db;
+      border-radius: 17px; padding: 26px 27px;
+      outline: none; background: #fff;
+      transition: border-color 0.19s; color: #16243a;
     }
-    input[type="text"]::placeholder {
-      color: rgba(22, 36, 58, 0.6);
-    }
-    input[type="text"]:focus {
-      border-color: #2563eb;
-      background: #fff;
-    }
-
-    /*──────────────────────────────────────────────────────────────*/
-    /* 자동완성 리스트 */
+    input[type="text"]::placeholder { color: rgba(22,36,58,0.6); }
+    input[type="text"]:focus { border-color: #2563eb; }
     .autocomplete-list {
-      border: 2px solid #b6c2db;
-      box-shadow: 0 3px 21px rgba(59,130,246,0.10);
-      max-height: 300px;
-      overflow-y: auto;
-      background: #fff;
-      position: absolute;
-      z-index: 120;
-      width: 100%;
-      bottom: calc(100% + 3px);
-      margin-top: 0;
-      padding: 0;
-      list-style: none;
-      border-radius: 17px;
-      left: 0;
+      border: 2px solid #b6c2db; box-shadow: 0 3px 21px rgba(59,130,246,0.10);
+      max-height: 300px; overflow-y: auto; background: #fff;
+      position: absolute; z-index: 120; width: 100%;
+      bottom: calc(100% + 3px); padding: 0; list-style: none;
+      border-radius: 17px; left: 0;
     }
     .autocomplete-item {
-      padding: 20px 30px;
-      cursor: pointer;
-      font-size: 1.68rem;
-      transition: background 0.13s;
-      color: #273145;
+      padding: 20px 30px; cursor: pointer; font-size: 1.68rem;
+      transition: background 0.13s; color: #273145;
       border-bottom: 2px solid #eff1f5;
     }
-    .autocomplete-item:last-child {
-      border-bottom: none;
-    }
+    .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:hover,
-    .autocomplete-item.active {
-      background: #e7ecff;
-      color: #2563eb;
-    }
-    #autocomplete-box {
-      position: relative;
-      width: 100%;
-      border: none;
-      margin-top: 0;
-    }
+    .autocomplete-item.active { background: #e7ecff; color: #2563eb; }
+    #autocomplete-box { position: relative; width: 100%; }
 
-    /*──────────────────────────────────────────────────────────────*/
-    /* 검색 버튼 */
     button[type="submit"] {
-      background: linear-gradient(90deg,#2563eb 25%, #4285f4 100%);
-      color: #fff;
-      font-weight: 700;
-      border: none;
-      border-radius: 17px;
-      padding: 27px 0;
-      font-size: 1.78rem;
-      width: 100%;
-      margin-top: 14px;  /* 버튼을 조금 더 아래로 내림 */
-      letter-spacing: 0.01em;
-      cursor: pointer;
-      transition: background 0.17s, box-shadow 0.17s;
+      background: linear-gradient(90deg,#2563eb 25%,#4285f4 100%);
+      color: #fff; font-weight: 700; border: none;
+      border-radius: 17px; padding: 27px 0;
+      font-size: 1.78rem; width: 100%; margin-top: 14px;
+      cursor: pointer; transition: background 0.17s, box-shadow 0.17s;
       box-shadow: 0 3px 21px rgba(59,130,246,0.10);
     }
     button[type="submit"]:hover {
-      background: linear-gradient(90deg,#1749c6 25%, #2563eb 100%);
+      background: linear-gradient(90deg,#1749c6 25%,#2563eb 100%);
     }
 
-    /*──────────────────────────────────────────────────────────────*/
-    /* 결과 박스 */
+    /* 로더 (모래시계) */
+    .loader {
+      font-size: 4rem; text-align: center; color: #2563eb;
+      padding: 60px 0;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     #results {
-      background: #f3f6fa;
-      border-radius: 18px;
-      margin-top: 3px;
-      padding: 29px 27px 21px 27px;
-      min-height: 69px;
-      box-shadow: 0 3px 12px rgba(100,116,139,0.10);
-      font-size: 1.67rem;
-      color: #16243a;
-      font-weight: 500;
+      background: #f3f6fa; border-radius: 18px; margin-top: 3px;
+      padding: 29px 27px 21px 27px; min-height: 180px; max-height: 400px;
+      overflow-y: auto; box-shadow: 0 6px 30px rgba(100,116,139,0.15);
+      font-size: 1.67rem; color: #16243a; font-weight: 500;
       letter-spacing: 0.01em;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+      opacity: 0; transform: translateY(-40px) scale(0.92);
+      transition:
+              opacity 1.5s ease-out,
+              transform 1.5s cubic-bezier(0.68,-0.55,0.27,1.55);
     }
     #results.visible {
-      opacity: 1;
-      transform: translateY(0);
+      opacity: 1; transform: translateY(0) scale(1);
     }
     .result-title {
-      font-size: 1.64rem;
-      color: #2563eb;
-      font-weight: 700;
+      font-size: 1.64rem; color: #2563eb; font-weight: 700;
       margin-right: 12px;
     }
-    .result-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+    .result-list { list-style: none; padding: 0; margin: 0; }
     .result-item {
-      background: #fff;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
+      background: #fff; border: 1px solid #d1d5db;
+      border-radius: 12px; padding: 16px; margin-bottom: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    .result-item > div {
-      margin-bottom: 4px;
-      font-size: 1.5rem;
-    }
-    .result-item > div span {
-      font-weight: 600;
-      color: #2563eb;
-    }
+    .result-item > div { margin-bottom: 4px; font-size: 1.5rem; }
+    .result-item > div span { font-weight: 600; color: #2563eb; }
 
-    /* 제목 */
     h2 {
-      margin: 0 0 15px 0;
-      font-size: 3.0rem;
-      text-align: center;
-      font-weight: 800;
-      color: #2563eb;
-      letter-spacing: 0.01em;
+      margin: 0 0 15px 0; font-size: 3.0rem; text-align: center;
+      font-weight: 800; color: #2563eb; letter-spacing: 0.01em;
     }
 
-    /*──────────────────────────────────────────────────────────────*/
-    /* 반응형 */
     @media (max-width: 900px) {
-      .search-container {
-        max-width: 95vw;
-        padding: 24px 8vw 24px 8vw;
-      }
-      button[type="submit"] {
-        font-size: 1.2rem;
-        padding: 20px 0;
-        border-radius: 12px;
-      }
-      input[type="text"] {
-        font-size: 1.2rem;
-        padding: 14px 16px;
-        border-radius: 11px;
-      }
-      h2 {
-        font-size: 2.2rem;
-      }
-      .autocomplete-item {
-        font-size: 1.2rem;
-        padding: 12px 18px;
-      }
-      .autocomplete-list {
-        max-height: 200px;
-        bottom: calc(100% + 2px);
-      }
-      #results {
-        font-size: 1.2rem;
-        padding: 18px 14px 12px 14px;
-      }
-      .result-item > div {
-        font-size: 1.2rem;
-      }
+      .search-container { max-width: 95vw; padding: 24px 8vw; }
+      button[type="submit"] { font-size: 1.2rem; padding: 20px 0; }
+      input[type="text"] { font-size: 1.2rem; padding: 14px 16px; }
+      h2 { font-size: 2.2rem; }
+      .autocomplete-item { font-size: 1.2rem; padding: 12px 18px; }
+      .autocomplete-list { max-height: 200px; bottom: calc(100%+2px); }
+      #results { font-size: 1.2rem; padding: 18px 14px; }
+      .result-item > div { font-size: 1.2rem; }
     }
   </style>
 
   <script>
-    let latestSuggestions = [];
-    let debounceTimer = null;
-    let focusIndex = -1; // 현재 선택된 autocomplete 항목 인덱스
+    let debounceTimer = null, focusIndex = -1;
 
     function getToken() {
       return document.getElementById('jwtToken').value;
     }
-
     function clearAutocomplete() {
-      const listEl = document.getElementById('autocomplete-list');
-      listEl.innerHTML = "";
+      document.getElementById('autocomplete-list').innerHTML = "";
       focusIndex = -1;
     }
 
     async function fetchSuggestions(keyword) {
       const token = getToken();
       if (!keyword || !token) return;
-
       try {
         const resp = await fetch('/problems/search/suggestions?keyword=' + encodeURIComponent(keyword), {
           headers: { 'Authorization': 'Bearer ' + token }
         });
-        if (!resp.ok) throw new Error('서버 응답 오류');
+        if (!resp.ok) throw new Error();
         const data = await resp.json();
         if (!data.success || !Array.isArray(data.result)) return;
-
-        latestSuggestions = data.result;
         const listEl = document.getElementById('autocomplete-list');
         listEl.innerHTML = "";
         data.result.forEach((str, idx) => {
           const li = document.createElement('li');
-          li.textContent = str;
-          li.className = "autocomplete-item";
+          li.textContent = str; li.className = "autocomplete-item";
           li.dataset.index = idx;
           li.onclick = () => {
             document.getElementById('keyword').value = str;
@@ -260,34 +151,20 @@
           };
           listEl.appendChild(li);
         });
-      } catch {
-        // 에러 무시
-      }
+      } catch {}
     }
 
     function handleKeywordInput(e) {
-      const keyword = e.target.value.trim();
+      const kw = e.target.value.trim();
       clearAutocomplete();
-
-      // 글자 수가 2자 미만이면 요청하지 않음
-      if (keyword.length < 2) {
-        return;
-      }
-
-      // 디바운스 로직
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
-      }
-      debounceTimer = setTimeout(() => {
-        fetchSuggestions(keyword);
-      }, 250);
+      if (kw.length < 2) return;
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => fetchSuggestions(kw), 250);
     }
 
     function handleKeyDown(e) {
-      const listEl = document.getElementById('autocomplete-list');
-      const items = listEl.querySelectorAll('.autocomplete-item');
+      const items = document.querySelectorAll('.autocomplete-item');
       if (!items.length) return;
-
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         focusIndex = (focusIndex + 1) % items.length;
@@ -296,24 +173,15 @@
         e.preventDefault();
         focusIndex = (focusIndex - 1 + items.length) % items.length;
         updateFocus(items);
-      } else if (e.key === 'Enter') {
-        if (focusIndex >= 0 && focusIndex < items.length) {
-          e.preventDefault();
-          const selectedText = items[focusIndex].textContent;
-          document.getElementById('keyword').value = selectedText;
-          clearAutocomplete();
-        }
+      } else if (e.key === 'Enter' && focusIndex >= 0) {
+        e.preventDefault();
+        document.getElementById('keyword').value = items[focusIndex].textContent;
+        clearAutocomplete();
       }
     }
 
     function updateFocus(items) {
-      items.forEach((it, idx) => {
-        if (idx === focusIndex) {
-          it.classList.add('active');
-        } else {
-          it.classList.remove('active');
-        }
-      });
+      items.forEach((it, idx) => it.classList.toggle('active', idx === focusIndex));
     }
 
     function toggleSearchForm() {
@@ -326,65 +194,48 @@
     async function handleSearchSubmit(e) {
       e.preventDefault();
       const token = getToken();
-      const keyword = document.getElementById('keyword').value.trim();
+      const kw = document.getElementById('keyword').value.trim();
+      if (kw.length < 2) return;
+      if (!token) { alert('JWT 토큰을 먼저 입력하세요.'); return; }
 
-      // 키워드 길이가 2자 미만이면 요청 안 함
-      if (keyword.length < 2) {
-        return;
-      }
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.classList.remove('visible');
+      // 1초 딜레이 및 로더 표시
+      resultsDiv.innerHTML = '<div class="loader">⏳</div>';
+      await new Promise(r => setTimeout(r, 1000));
 
-      if (!token) {
-        alert('JWT 토큰을 먼저 입력하세요.');
-        return;
-      }
       try {
-        const resultsDiv = document.getElementById('results');
-        // 이전 애니메이션 제거
-        resultsDiv.classList.remove('visible');
-
-        const resp = await fetch('/problems/search?keyword=' + encodeURIComponent(keyword), {
+        const resp = await fetch('/problems/search?keyword=' + encodeURIComponent(kw), {
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + token }
         });
-        if (!resp.ok) {
-          alert('검색 실패');
-          return;
-        }
+        if (!resp.ok) { throw new Error(); }
         const data = await resp.json();
 
-        if (data.success && Array.isArray(data.result)) {
-          const results = data.result;
-          if (results.length === 0) {
-            resultsDiv.innerHTML =
-                    '<span class="result-title">PROBLEM LIST :</span> <span style="color:#a0a0a0;">검색 결과가 없습니다.</span>';
-          } else {
-            let html = '<span class="result-title">PROBLEM LIST :</span>';
-            html += '<ul class="result-list">';
-            results.forEach(item => {
-              html += `
-                <li class="result-item">
-                  <div><span>ID:</span> ${item.id}</div>
-                  <div><span>Title:</span> ${item.title}</div>
-                  <div><span>Category:</span> ${item.category}</div>
-                  <div><span>Difficulty:</span> ${item.difficulty}</div>
-                  <div><span>Reference:</span> ${item.reference}</div>
-                  <div><span>Description:</span> ${item.description}</div>
-                  <div><span>Score:</span> ${item.score}</div>
-                </li>`;
-            });
-            html += '</ul>';
-            resultsDiv.innerHTML = html;
-          }
+        let html = '<span class="result-title">PROBLEM LIST :</span>';
+        if (data.success && Array.isArray(data.result) && data.result.length) {
+          html += '<ul class="result-list">';
+          data.result.forEach(item => {
+            html += `
+              <li class="result-item">
+                <div><span>ID:</span> ${item.id}</div>
+                <div><span>Title:</span> ${item.title}</div>
+                <div><span>Category:</span> ${item.category}</div>
+                <div><span>Difficulty:</span> ${item.difficulty}</div>
+                <div><span>Reference:</span> ${item.reference}</div>
+                <div><span>Description:</span> ${item.description}</div>
+                <div><span>Score:</span> ${item.score}</div>
+              </li>`;
+          });
+          html += '</ul>';
         } else {
-          resultsDiv.innerHTML =
-                  '<span class="result-title">PROBLEM LIST :</span> <span style="color:#a0a0a0;">검색 결과가 없습니다.</span>';
+          html += ' <span style="color:#a0a0a0;">검색 결과가 없습니다.</span>';
         }
-
-        // 애니메이션 적용
+        resultsDiv.innerHTML = html;
         void resultsDiv.offsetWidth;
         resultsDiv.classList.add('visible');
       } catch {
-        alert('검색 중 오류가 발생했습니다.');
+        resultsDiv.innerHTML = '<span style="color:red;">검색 중 오류가 발생했습니다.</span>';
       } finally {
         clearAutocomplete();
       }
@@ -392,11 +243,11 @@
 
     window.onload = function() {
       clearAutocomplete();
-      const keywordInput = document.getElementById('keyword');
       document.getElementById('jwtToken').addEventListener('input', toggleSearchForm);
       document.getElementById('searchForm').addEventListener('submit', handleSearchSubmit);
-      keywordInput.addEventListener('input', handleKeywordInput);
-      keywordInput.addEventListener('keydown', handleKeyDown);
+      const ki = document.getElementById('keyword');
+      ki.addEventListener('input', handleKeywordInput);
+      ki.addEventListener('keydown', handleKeyDown);
       toggleSearchForm();
     };
   </script>
@@ -404,26 +255,18 @@
 <body>
 <div class="search-container">
   <h2>문제 검색</h2>
-
-  <!-- JWT 토큰 입력 -->
   <div class="form-group">
     <label for="jwtToken">JWT 토큰 입력</label>
-    <input type="text" id="jwtToken"
-           placeholder="여기에 JWT 토큰을 입력하세요" required />
+    <input type="text" id="jwtToken" placeholder="여기에 JWT 토큰을 입력하세요" required />
   </div>
-
-  <!-- 검색 폼 -->
   <form id="searchForm" autocomplete="off">
     <div class="form-group" id="autocomplete-box">
       <label for="keyword">검색어 입력</label>
-      <input type="text" id="keyword" name="keyword"
-             required placeholder="검색어를 입력하세요" />
+      <input type="text" id="keyword" name="keyword" required placeholder="검색어를 입력하세요" />
       <ul id="autocomplete-list" class="autocomplete-list"></ul>
     </div>
     <button type="submit" id="searchBtn">검색</button>
   </form>
-
-  <!-- 결과 영역 -->
   <div id="results"></div>
 </div>
 </body>
