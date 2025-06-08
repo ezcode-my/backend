@@ -194,6 +194,14 @@
             const roomListEl = document.getElementById('roomList');
             const receiptId = 'sub-1';
 
+            stompClient.subscribe('/user/queue/notification', msg => {
+                console.log(msg);
+            });
+
+            stompClient.subscribe('/user/queue/notifications', msg => {
+                console.log(msg);
+            });
+
             // 채팅방 목록 초기 구독 및 오름차순 정렬
             stompClient.subscribe('/user/queue/chatrooms', msg => {
                 let rooms;

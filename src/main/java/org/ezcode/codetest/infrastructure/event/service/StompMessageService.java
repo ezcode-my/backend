@@ -1,5 +1,8 @@
 package org.ezcode.codetest.infrastructure.event.service;
 
+import java.util.List;
+
+import org.ezcode.codetest.infrastructure.event.dto.NotificationResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +29,24 @@ public class StompMessageService {
 			principalName,
 			"/queue/chat",
 			chatData
+		);
+	}
+
+	public void handleNotification(NotificationResponse data, String principalName) {
+
+		messagingTemplate.convertAndSendToUser(
+			principalName,
+			"/queue/notification",
+			data
+		);
+	}
+
+	public void handleNotificationList(List<NotificationResponse> dataList, String principalName) {
+
+		messagingTemplate.convertAndSendToUser(
+			principalName,
+			"/queue/notifications",
+			dataList
 		);
 	}
 
