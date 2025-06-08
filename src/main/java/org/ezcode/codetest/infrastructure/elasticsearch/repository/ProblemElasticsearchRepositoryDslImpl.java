@@ -2,6 +2,7 @@ package org.ezcode.codetest.infrastructure.elasticsearch.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -38,6 +39,7 @@ public class ProblemElasticsearchRepositoryDslImpl implements ProblemElasticsear
 				.should(s -> s.match(m -> m.field("difficultyEn").query(keyword).boost(5f)))
 				.minimumShouldMatch("1")
 			))
+			.withPageable(PageRequest.of(0, 25))
 			.withHighlightQuery(
 				new HighlightQuery(
 					new Highlight(
@@ -70,45 +72,55 @@ public class ProblemElasticsearchRepositoryDslImpl implements ProblemElasticsear
 	}
 
 	public SearchHits<ProblemSearchDocument> findProblemsByKeyword(String keyword) {
-		Query searchQuery = NativeQuery.builder()
+
+		Query exactQuery = NativeQuery.builder()
 			.withQuery(q -> q.bool(b -> b
 				.filter(f -> f.term(t -> t.field("isDeleted").value(false)))
-				.should(s -> s.term(t -> t.field("title.keyword").value(keyword).boost(40f)))
-				.should(s -> s.term(t -> t.field("description.keyword").value(keyword).boost(40f)))
-				.should(s -> s.term(t -> t.field("category.keyword").value(keyword).boost(35f)))
-				.should(s -> s.term(t -> t.field("difficulty.keyword").value(keyword).boost(28f)))
-				.should(s -> s.term(t -> t.field("reference.keyword").value(keyword).boost(32f)))
-				.should(s -> s.term(t -> t.field("difficultyEn.keyword").value(keyword).boost(35f)))
-				.should(s -> s.term(t -> t.field("categoryKor.keyword").value(keyword).boost(28f)))
-				.should(s -> s.term(t -> t.field("referenceKor.keyword").value(keyword).boost(32f)))
-				.should(s -> s.bool(bs -> bs
-					.should(ss -> ss.match(m -> m.field("title").query(keyword).boost(12f)))
-					.should(ss -> ss.match(m -> m.field("description").query(keyword).boost(5f)))
-					.should(ss -> ss.match(m -> m.field("category").query(keyword).boost(5f)))
-					.should(ss -> ss.match(m -> m.field("difficulty").query(keyword).boost(3f)))
-					.should(ss -> ss.match(m -> m.field("reference").query(keyword).boost(5f)))
-					.should(ss -> ss.match(m -> m.field("categoryKor").query(keyword).boost(5f)))
-					.should(ss -> ss.match(m -> m.field("difficultyEn").query(keyword).boost(3f)))
-					.should(ss -> ss.match(m -> m.field("referenceKor").query(keyword).boost(5f)))
+				.filter(f2 -> f2.bool(bs -> bs
+					.should(s -> s.term(t -> t.field("title.keyword").value(keyword)))
+					.should(s -> s.term(t -> t.field("category.keyword").value(keyword)))
+					.should(s -> s.term(t -> t.field("difficulty.keyword").value(keyword)))
+					.should(s -> s.term(t -> t.field("reference.keyword").value(keyword)))
+					.should(s -> s.term(t -> t.field("difficultyEn.keyword").value(keyword)))
+					.should(s -> s.term(t -> t.field("categoryKor.keyword").value(keyword)))
+					.should(s -> s.term(t -> t.field("referenceKor.keyword").value(keyword)))
 					.minimumShouldMatch("1")
-					.mustNot(mn -> mn.term(t -> t.field("title.keyword").value(keyword)))
-					.mustNot(mn -> mn.term(t -> t.field("description.keyword").value(keyword)))
-					.mustNot(mn -> mn.term(t -> t.field("category.keyword").value(keyword)))
-					.mustNot(mn -> mn.term(t -> t.field("difficulty.keyword").value(keyword)))
-					.mustNot(mn -> mn.term(t -> t.field("reference.keyword").value(keyword)))
-					.mustNot(mn -> mn.term(t -> t.field("difficultyEn.keyword").value(keyword)))
-					.mustNot(mn -> mn.term(t -> t.field("categoryKor.keyword").value(keyword)))
-					.mustNot(mn -> mn.term(t -> t.field("referenceKor.keyword").value(keyword)))
 				))
-				.minimumShouldMatch("1")
 			))
-			.withSourceFilter(
-				new FetchSourceFilterBuilder()
-					.withIncludes("title", "description", "category", "difficulty", "reference")
-					.build()
+			.withPageable(PageRequest.of(0, 30))
+			.withSourceFilter(new FetchSourceFilterBuilder()
+				.withIncludes("title", "description", "category", "difficulty", "reference")
+				.build()
 			)
 			.build();
 
-		return elasticsearchOperations.search(searchQuery, ProblemSearchDocument.class);
+		SearchHits<ProblemSearchDocument> exactHits =
+			elasticsearchOperations.search(exactQuery, ProblemSearchDocument.class);
+
+		if (!exactHits.isEmpty()) {
+			return exactHits;
+		}
+
+		Query fuzzyQuery = NativeQuery.builder()
+			.withQuery(q -> q.bool(b -> b
+				.filter(f -> f.term(t -> t.field("isDeleted").value(false)))
+				.should(s -> s.match(m -> m.field("title").query(keyword).boost(12f)))
+				.should(s -> s.match(m -> m.field("description").query(keyword).boost(4f)))
+				.should(s -> s.match(m -> m.field("category").query(keyword).boost(5f)))
+				.should(s -> s.match(m -> m.field("difficulty").query(keyword).boost(3f)))
+				.should(s -> s.match(m -> m.field("reference").query(keyword).boost(5f)))
+				.should(s -> s.match(m -> m.field("categoryKor").query(keyword).boost(5f)))
+				.should(s -> s.match(m -> m.field("difficultyEn").query(keyword).boost(3f)))
+				.should(s -> s.match(m -> m.field("referenceKor").query(keyword).boost(5f)))
+				.minimumShouldMatch("1")
+			))
+			.withPageable(PageRequest.of(0, 40))
+			.withSourceFilter(new FetchSourceFilterBuilder()
+				.withIncludes("title", "description", "category", "difficulty", "reference")
+				.build()
+			)
+			.build();
+
+		return elasticsearchOperations.search(fuzzyQuery, ProblemSearchDocument.class);
 	}
 }
