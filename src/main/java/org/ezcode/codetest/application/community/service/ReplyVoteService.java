@@ -1,8 +1,11 @@
 package org.ezcode.codetest.application.community.service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
+import org.ezcode.codetest.application.notification.port.NotificationEventDtoFactory;
+import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.model.Reply;
 import org.ezcode.codetest.domain.community.model.ReplyVote;
@@ -21,16 +24,20 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	private final ReplyDomainService replyDomainService;
 	private final DiscussionDomainService discussionDomainService;
 
+	private final NotificationEventService notificationEventService;
+
 	public ReplyVoteService(
 		ReplyVoteDomainService domainService,
 		UserDomainService userDomainService,
 		ReplyDomainService replyDomainService,
-		DiscussionDomainService discussionDomainService
+		DiscussionDomainService discussionDomainService,
+		NotificationEventService notificationEventService
 	) {
 		super(domainService);
 		this.userDomainService = userDomainService;
 		this.replyDomainService = replyDomainService;
 		this.discussionDomainService = discussionDomainService;
+		this.notificationEventService = notificationEventService;
 	}
 
 	@Transactional
@@ -56,5 +63,20 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 			.voter(voter)
 			.reply(reply)
 			.build();
+	}
+
+	@Override
+	protected void afterVote(User voter, Long targetId) {
+
+		Reply reply = replyDomainService.getReplyById(targetId);
+		if (!Objects.equals(voter.getId(), reply.getUser().getId())) {
+			notificationEventService.saveAndNotify(
+				NotificationEventDtoFactory.forReplyVoteCreated(
+					reply.getUser().getEmail(),
+					reply.getId(),
+					voter.getNickname()
+				)
+			);
+		}
 	}
 }
