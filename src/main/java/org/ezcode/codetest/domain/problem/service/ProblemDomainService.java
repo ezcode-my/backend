@@ -45,7 +45,7 @@ public class ProblemDomainService {
 	public Problem getProblem(Long problemId) {
 
 		return problemRepository.findByIdNotDeleted(problemId)
-			.orElseThrow(() -> new EntityNotFoundException("문제를 찾을수 없습니다."));
+			.orElseThrow(() -> new ProblemException(ProblemExceptionCode.PROBLEM_NOT_FOUND));
 	}
 
 	public void removeProblem(Problem problem) {
@@ -53,7 +53,7 @@ public class ProblemDomainService {
 		problemRepository.delete(problem);
 
 		ProblemSearchDocument document = searchRepository.findById(problem.getId())
-			.orElseThrow(() -> new EntityNotFoundException("문제를 찾을수 없습니다."));
+			.orElseThrow(() -> new ProblemException(ProblemExceptionCode.PROBLEM_NOT_FOUND));
 
 		searchRepository.delete(document);
 	}
