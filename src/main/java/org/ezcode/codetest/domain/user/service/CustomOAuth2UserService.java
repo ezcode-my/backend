@@ -56,16 +56,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		String username = oAuth2Response.getName();
 
 		User findUser = userRepository.getUserByEmail(oAuth2Response.getEmail());
-		log.info("findUser: 유저 여부 --------------------{}", findUser);
+		log.info("findUser: 유저 여부 -> {}", findUser);
 
 		if (findUser == null) {
-			log.info("--------------------유저 없음");
+			log.info("db에 유저 없음");
 			User newUSer = User.googleUser(oAuth2Response.getEmail(), username);
 			log.info("newUser: {} 새로운 유저", newUSer);
 			userRepository.createUser(newUSer);
-			log.info("유저 저장함 ------------------");
+			log.info("유저 저장함");
 		} else {
-			log.info("유저 이미 있음--------------");
+			log.info("유저 이미 있음");
 			findUser.setModified();
 		}
 

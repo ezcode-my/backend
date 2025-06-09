@@ -11,8 +11,8 @@ public class AuthViewController {
 		return "login-page.html";
 	}
 
-	// @GetMapping("/login/oauth")
-	// public String OAuthLogin(){
-	// 	return "/login";
-	// }
+	@GetMapping("/login/oauth")
+	public String OAuthLogin(){
+		return "/login";
+	}
 }

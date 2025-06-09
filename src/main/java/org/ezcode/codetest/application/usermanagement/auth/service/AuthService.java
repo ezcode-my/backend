@@ -80,7 +80,6 @@ public class AuthService {
 	@Transactional
 	public SigninResponse signin(@Valid SigninRequest signinRequest) {
 
-		log.info("service 진입");
     	User loginUser = userDomainService.getUser(signinRequest.getEmail());
 
 		//OAuth 가입 유저는 일반 로그인 불가능(향후 이메일과 소셜 모두 가입되어있는 회원은 로그인 가능할 수 있도록 리팩토링)
@@ -106,13 +105,12 @@ public class AuthService {
 		String refreshToken = jwtUtil.createRefreshToken(loginUser.getId());
 		log.info("refresh token 발급 완료");
 
-		//redis에 LOGIN : {redisToken} 형식으로 저장
+		//redis에 RefreshToken : {} 형식으로 저장
 		redisTemplate.opsForValue().set(
 			"RefreshToken:" + loginUser.getId(),
 			refreshToken,
 			jwtUtil.getExpiration(refreshToken),
 			TimeUnit.MILLISECONDS);
-		log.info("레디스에 저장완료");
 
 		return SigninResponse.from(bearToken);
 	}
