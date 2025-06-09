@@ -3,6 +3,8 @@ package org.ezcode.codetest.application.community.service;
 import org.ezcode.codetest.application.community.dto.request.ReplyCreateRequest;
 import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
+import org.ezcode.codetest.application.notification.dto.domain.ReplyCreatedEvent;
+import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.model.Reply;
 import org.ezcode.codetest.domain.community.service.DiscussionDomainService;
@@ -25,6 +27,8 @@ public class ReplyService {
 	private final DiscussionDomainService discussionDomainService;
 	private final UserDomainService userDomainService;
 
+	private final NotificationEventService notificationEventService;
+
 	@Transactional
 	public ReplyResponse createReply(
 		Long problemId,
@@ -44,9 +48,17 @@ public class ReplyService {
 			replyDomainService.validateDiscussionMatches(parent, discussion);
 		}
 
-		Reply replyEntity = ReplyCreateRequest.toEntity(discussion, user, parent, request);
+		Reply reply = replyDomainService.createReply(
+			ReplyCreateRequest.toEntity(discussion, user, parent, request)
+		);
 
-		return ReplyResponse.fromEntity(replyDomainService.createReply(replyEntity));
+		User discussionAuthor = reply.getDiscussion().getUser();	// TODO: get depth 하나로 줄이기
+		User parentAuthor = reply.getParent() != null ? reply.getParent().getUser() : null;
+
+		notify(user, discussionAuthor, reply);
+		notify(user, parentAuthor, reply);
+
+		return ReplyResponse.fromEntity(reply);
 	}
 
 	@Transactional(readOnly = true)
@@ -110,5 +122,21 @@ public class ReplyService {
 		replyDomainService.validateIsAuthor(reply, userId);
 
 		replyDomainService.remove(reply);
+	}
+
+	private void notify(User sender, User recipient, Reply reply) {
+
+		if (!sender.isSameUser(recipient)) {
+			return;
+		}
+
+		notificationEventService.saveAndNotify(
+			new ReplyCreatedEvent(
+				recipient.getEmail(),
+				reply.getId(),
+				reply.getDiscussion().getId(),
+				reply.getContent()
+			).toNotification()
+		);
 	}
 }
