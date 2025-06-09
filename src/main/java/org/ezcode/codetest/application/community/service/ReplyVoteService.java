@@ -68,7 +68,7 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	protected void afterVote(User voter, Long targetId) {
 
 		Reply reply = replyDomainService.getReplyById(targetId);
-		if (voter.isSameUser(reply.getUser())) {
+		if (!voter.isSameUser(reply.getUser())) {
 			notificationEventService.saveAndNotify(
 				NotificationEventDtoFactory.forReplyVoteCreated(
 					reply.getUser().getEmail(),

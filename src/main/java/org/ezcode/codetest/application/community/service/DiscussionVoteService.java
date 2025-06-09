@@ -61,7 +61,7 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 	protected void afterVote(User voter, Long targetId) {
 
 		Discussion discussion = discussionDomainService.getDiscussionById(targetId);
-		if (voter.isSameUser(discussion.getUser())) {
+		if (!voter.isSameUser(discussion.getUser())) {
 			notificationEventService.saveAndNotify(
 				NotificationEventDtoFactory.forDiscussionVoteCreated(
 					discussion.getUser().getEmail(),
