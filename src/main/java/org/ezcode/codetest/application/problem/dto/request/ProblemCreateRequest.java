@@ -26,8 +26,8 @@ public record ProblemCreateRequest(
 	@NotNull(message = "메모리 제한을 설정해야 합니다.")
 	Long memoryLimit,
 
-	@NotBlank(message = "시간 제한을 설정해야 합니다.")
-	String timeLimit,
+	@NotNull(message = "시간 제한을 설정해야 합니다.")
+	Double timeLimit,
 
 	@NotNull(message = "출처를 명시해야 합니다.")
 	Reference reference

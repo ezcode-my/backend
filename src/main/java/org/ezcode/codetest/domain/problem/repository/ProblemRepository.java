@@ -19,4 +19,5 @@ public interface ProblemRepository {
 
 	void delete(Problem problem);
 
+	Optional<Problem> findProblemWithTestcasesById(Long problemId);
 }

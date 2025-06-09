@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>코드 제출 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8f9fa;
+            padding: 30px;
+        }
+        h2, h3 {
+            color: #343a40;
+        }
+        label {
+            font-weight: bold;
+        }
+        textarea, input[type="number"], input[type="text"] {
+            margin-top: 5px;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result-box {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+            white-space: pre-line;
+            font-family: monospace;
+        }
+        .section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="section">
+    <h2>소스코드 제출</h2>
+
+    <label>JWT 토큰:</label>
+    <input type="text" id="jwtToken" placeholder="Bearer 토큰 입력" />
+
+    <label>소스코드:</label>
+    <textarea id="sourceCode" rows="10" placeholder="// 여기에 소스코드를 작성하세요"></textarea>
+
+    <label>언어 ID:</label>
+    <input type="number" id="languageId" placeholder="언어 ID" />
+
+    <label>문제 ID:</label>
+    <input type="number" id="problemId" placeholder="문제 ID" />
+
+    <button type="button" onclick="submitCode()">코드 제출</button>
+    <button type="button" onclick="requestCodeReview()">코드 리뷰</button>
+</div>
+
+<div class="section">
+    <h3>채점 결과</h3>
+    <div id="judgeResult" class="result-box"></div>
+</div>
+
+<div class="section">
+    <h3>코드 리뷰 결과</h3>
+    <div id="reviewResult" class="result-box"></div>
+</div>
+
+<script>
+    function getAuthHeaders() {
+        const token = document.getElementById('jwtToken').value.trim();
+        return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    function submitCode() {
+        const sourceCode = document.getElementById('sourceCode').value;
+        const languageId = Number(document.getElementById('languageId').value);
+        const problemId = Number(document.getElementById('problemId').value);
+        const resultBox = document.getElementById('judgeResult');
+        resultBox.textContent = '';
+
+        fetch(`/problems/${problemId}/submit-stream`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
+            body: JSON.stringify({ sourceCode, languageId })
+        })
+            .then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let isCorrectForReview = false;
+
+                function read() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) return;
+                        const chunk = decoder.decode(value, { stream: true });
+                        resultBox.textContent += chunk + '\n';
+                        read();
+                    });
+                }
+                read();
+            });
+    }
+
+    function requestCodeReview() {
+        const sourceCode = document.getElementById('sourceCode').value;
+        const languageId = Number(document.getElementById('languageId').value);
+        const problemId = Number(document.getElementById('problemId').value);
+        const reviewBox = document.getElementById('reviewResult');
+        reviewBox.textContent = '';
+
+        const isCorrect = false; // 필요 시 동적으로 설정하세요
+
+        fetch(`/problems/${problemId}/review`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
+            body: JSON.stringify({ sourceCode, languageId, isCorrect })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('응답 데이터:', data);
+                reviewBox.textContent = data.result.reviewContent;
+            });
+    }
+</script>
+</body>
+</html>

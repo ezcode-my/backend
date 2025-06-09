@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import lombok.RequiredArgsConstructor;
 
-//임시 뷰 컨트롤러입니다.
-
 @RequiredArgsConstructor
 @Controller
 public class SearchViewController {

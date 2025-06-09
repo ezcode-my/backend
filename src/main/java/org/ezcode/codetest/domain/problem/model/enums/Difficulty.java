@@ -1,5 +1,10 @@
 package org.ezcode.codetest.domain.problem.model.enums;
 
+import java.util.Arrays;
+
+import org.ezcode.codetest.domain.problem.exception.ProblemException;
+import org.ezcode.codetest.domain.problem.exception.code.ProblemExceptionCode;
+
 import lombok.Getter;
 
 @Getter
@@ -17,6 +22,15 @@ public enum Difficulty {
 	Difficulty(String difficulty, int score) {
 		this.difficulty = difficulty;
 		this.score = score;
+	}
+
+	public static Difficulty getDifficultyFromKor(String difficulty) {
+
+		return Arrays
+			.stream(values())
+			.filter(en -> en.getDifficulty().equals(difficulty))
+			.findFirst()
+			.orElseThrow(() -> new ProblemException(ProblemExceptionCode.DIFFICULTY_NOT_FOUND));
 	}
 
 }

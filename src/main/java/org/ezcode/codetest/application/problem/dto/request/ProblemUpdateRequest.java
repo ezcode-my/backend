@@ -18,7 +18,7 @@ public record ProblemUpdateRequest(
 
 	Long memoryLimit,
 
-	String timeLimit,
+	Double timeLimit,
 
 	Reference reference
 

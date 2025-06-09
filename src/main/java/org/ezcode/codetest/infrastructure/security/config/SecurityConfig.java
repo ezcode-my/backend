@@ -67,6 +67,8 @@ public class SecurityConfig {
 						"/login/oauth2/**", //OAuth로그인 접근
 						"/actuator/**",
 						"/chatting",
+						"/submit-test",
+						"/problems/**",
 						"/ws/**",
 						"/swagger-ui/**",
 						"/swagger-resources/**",

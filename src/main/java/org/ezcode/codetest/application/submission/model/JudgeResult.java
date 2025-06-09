@@ -7,9 +7,9 @@ public record JudgeResult(
 
 	String actualOutput,
 
-	String executionTime,
+	double executionTime,
 
-	Long memoryUsage,
+	long memoryUsage,
 
 	boolean success,
 

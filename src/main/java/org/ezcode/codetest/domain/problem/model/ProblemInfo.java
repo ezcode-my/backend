@@ -12,5 +12,15 @@ public record ProblemInfo(
 	List<Testcase> testcaseList
 
 ) {
+	public double getTimeLimit() {
+		return this.problem.getTimeLimit();
+	}
 
+	public long getMemoryLimit() {
+		return this.problem.getMemoryLimit();
+	}
+
+	public int getTestcaseCount() {
+		return this.testcaseList.size();
+	}
 }
