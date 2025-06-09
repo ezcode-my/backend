@@ -1,6 +1,5 @@
 package org.ezcode.codetest.application.community.service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
@@ -69,7 +68,7 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	protected void afterVote(User voter, Long targetId) {
 
 		Reply reply = replyDomainService.getReplyById(targetId);
-		if (!Objects.equals(voter.getId(), reply.getUser().getId())) {
+		if (voter.isSameUser(reply.getUser())) {
 			notificationEventService.saveAndNotify(
 				NotificationEventDtoFactory.forReplyVoteCreated(
 					reply.getUser().getEmail(),

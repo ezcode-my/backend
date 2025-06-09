@@ -126,9 +126,10 @@ public class ReplyService {
 
 	private void notify(User sender, User recipient, Reply reply) {
 
-		if (recipient == null || sender.getId().equals(recipient.getId())) {
+		if (sender.isSameUser(recipient)) {
 			return;
 		}
+
 		notificationEventService.saveAndNotify(
 			NotificationEventDtoFactory.forReplyCreated(
 				recipient.getEmail(),

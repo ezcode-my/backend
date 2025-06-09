@@ -5,9 +5,6 @@ import java.util.Map;
 
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 
-import lombok.Builder;
-
-@Builder
 public record NotificationResponse(
 
 	String id,
@@ -27,15 +24,14 @@ public record NotificationResponse(
 ) {
 
 	public static NotificationResponse from(NotificationRecord record) {
-		return NotificationResponse
-			.builder()
-			.id(record.getId())
-			.type(record.getType())
-			.message(record.getMessage())
-			.redirectUrl(record.getRedirectUrl())
-			.payload(record.getPayload())
-			.isRead(record.isRead())
-			.createdAt(record.getCreatedAt())
-			.build();
+		return new NotificationResponse(
+			record.getId(),
+			record.getType(),
+			record.getMessage(),
+			record.getRedirectUrl(),
+			record.getPayload(),
+			record.isRead(),
+			record.getCreatedAt()
+		);
 	}
 }

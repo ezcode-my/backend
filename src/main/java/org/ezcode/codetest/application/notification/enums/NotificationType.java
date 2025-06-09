@@ -1,7 +1,5 @@
 package org.ezcode.codetest.application.notification.enums;
 
-import java.util.Arrays;
-
 import lombok.Getter;
 
 @Getter
@@ -20,12 +18,5 @@ public enum NotificationType {
 
 	NotificationType(String description) {
 		this.description = description;
-	}
-
-	public static NotificationType from(String notificationType) {
-		return Arrays.stream(NotificationType.values())
-			.filter(n -> n.name().equalsIgnoreCase(notificationType))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("Invalid input : " + notificationType));
 	}
 }

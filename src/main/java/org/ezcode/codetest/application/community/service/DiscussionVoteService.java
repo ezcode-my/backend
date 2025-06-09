@@ -1,6 +1,5 @@
 package org.ezcode.codetest.application.community.service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
@@ -62,7 +61,7 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 	protected void afterVote(User voter, Long targetId) {
 
 		Discussion discussion = discussionDomainService.getDiscussionById(targetId);
-		if (!Objects.equals(voter.getId(), discussion.getUser().getId())) {
+		if (voter.isSameUser(discussion.getUser())) {
 			notificationEventService.saveAndNotify(
 				NotificationEventDtoFactory.forDiscussionVoteCreated(
 					discussion.getUser().getEmail(),
