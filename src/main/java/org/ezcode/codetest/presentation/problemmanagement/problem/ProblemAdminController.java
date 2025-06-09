@@ -7,7 +7,6 @@ import org.ezcode.codetest.application.problem.service.ProblemService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/admin/problems")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 public class ProblemAdminController {
 
 	private final ProblemService problemService;
