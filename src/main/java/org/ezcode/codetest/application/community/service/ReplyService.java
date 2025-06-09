@@ -3,7 +3,7 @@ package org.ezcode.codetest.application.community.service;
 import org.ezcode.codetest.application.community.dto.request.ReplyCreateRequest;
 import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
-import org.ezcode.codetest.application.notification.dto.domain.ReplyCreatedEvent;
+import org.ezcode.codetest.application.notification.port.NotificationEventDtoFactory;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.model.Reply;
@@ -131,12 +131,12 @@ public class ReplyService {
 		}
 
 		notificationEventService.saveAndNotify(
-			new ReplyCreatedEvent(
+			NotificationEventDtoFactory.forReplyCreated(
 				recipient.getEmail(),
 				reply.getId(),
 				reply.getDiscussion().getId(),
 				reply.getContent()
-			).toNotification()
+			)
 		);
 	}
 }
