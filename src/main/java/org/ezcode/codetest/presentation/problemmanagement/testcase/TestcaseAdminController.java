@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/admin/problems/{problemId}/testcases")
 @RequiredArgsConstructor
-// @PreAuthorize("hasRole('ADMIN')") // 관리자만 가능
 public class TestcaseAdminController {
 
 	private final TestcaseService testcaseService;
