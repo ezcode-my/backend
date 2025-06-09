@@ -102,5 +102,9 @@ public class User extends BaseEntity {
 		this.isDeleted = true;
 	}
 
+	public boolean isSameUser(User recipient) {
+
+		return recipient == null || this.getId().equals(recipient.getId());
+	}
 
 }

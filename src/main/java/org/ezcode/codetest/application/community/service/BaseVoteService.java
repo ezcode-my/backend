@@ -23,6 +23,7 @@ public abstract class BaseVoteService<T extends BaseVote, D extends BaseVoteDoma
 			return Optional.empty();
 		} else {
 			T voteEntity = buildVoteEntity(voter, targetId);
+			afterVote(voter, targetId);
 			return Optional.of(domainService.createVoteEntity(voteEntity));
 		}
 	}
@@ -35,5 +36,7 @@ public abstract class BaseVoteService<T extends BaseVote, D extends BaseVoteDoma
 	}
 
 	protected abstract T buildVoteEntity(User voter, Long targetId);
+
+	protected abstract void afterVote(User voter, Long targetId);
 
 }
