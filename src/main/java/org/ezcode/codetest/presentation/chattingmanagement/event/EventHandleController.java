@@ -18,9 +18,11 @@ public class EventHandleController {
 
 	@MessageMapping("/enter")
 	public void handleEnter(
-		Principal principal
+		Principal principal,
+		SimpMessageHeaderAccessor accessor
 	) {
-		chatUseCase.getChatRoomList(principal.getName());
+		String sessionId = accessor.getSessionId();
+		chatUseCase.getChatRoomList(principal.getName(), sessionId);
 	}
 
 	@MessageMapping("/room/{roomId}/enter")

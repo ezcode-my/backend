@@ -17,14 +17,14 @@ public class ChatEventPublisher implements ChatEventService {
 
 	private final ApplicationEventPublisher publisher;
 
-	public <T> void publishEnterEvent(T roomData, String principalName) {
+	public <T> void publishEnterEvent(T roomData, String principalName, String sessionId) {
 
-		publisher.publishEvent(new EnterEvent<>(roomData, principalName));
+		publisher.publishEvent(new EnterEvent<>(roomData, principalName, sessionId));
 	}
 
-	public <T> void publishRoomEnterEvent(T chatData, String principalName) {
+	public <T> void publishRoomEnterEvent(T chatData, String principalName, String sessionId) {
 
-		publisher.publishEvent(new RoomEnterEvent<>(chatData, principalName));
+		publisher.publishEvent(new RoomEnterEvent<>(chatData, principalName, sessionId));
 	}
 
 	public <T> void publishBroadCastChatEvent(T chatData, Long roomId) {

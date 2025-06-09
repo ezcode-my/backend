@@ -63,7 +63,7 @@ public class ChattingUseCase {
 	}
 
 	@Transactional
-	public void getChatRoomList(String principalName) {
+	public void getChatRoomList(String principalName, String sessionId) {
 
 		List<ChatRoomCache> chatRooms = cacheService.getChatRoomsFromCache();
 
@@ -86,7 +86,7 @@ public class ChattingUseCase {
 			)
 			.toList();
 
-		eventService.publishEnterEvent(roomLists, principalName);
+		eventService.publishEnterEvent(roomLists, principalName, sessionId);
 	}
 
 	@Transactional
@@ -116,7 +116,7 @@ public class ChattingUseCase {
 
 		Long headCount = sessionService.addSessionCount(sessionId, roomId);
 
-		eventService.publishRoomEnterEvent(chatLists, principalName);
+		eventService.publishRoomEnterEvent(chatLists, principalName, sessionId);
 
 		eventService.publishRoomEnterAndLeftEvent(user.getNickname() + " 님이 입장했어요~!", roomId);
 

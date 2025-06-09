@@ -1,16 +1,17 @@
-package org.ezcode.codetest.domain.chat.model;
+package org.ezcode.codetest.domain.studygroup.model;
 
 import static jakarta.persistence.FetchType.*;
 
-import org.ezcode.codetest.common.base.entity.BaseEntity;
+import java.time.LocalDateTime;
+
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -20,13 +21,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "study_group_user")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(
-	name = "chat",
-	indexes = @Index(name = "idx_chat_roomid_createdat", columnList = "room_id, created_at")
-)
-public class Chat extends BaseEntity {
+public class StudyGroupUser {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,16 +35,20 @@ public class Chat extends BaseEntity {
 	private User user;
 
 	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "room_id", nullable = false)
-	private ChatRoom chatRoom;
+	@JoinColumn(name = "study_group_id", nullable = false)
+	private StudyGroup studyGroup;
 
 	@Column(nullable = false)
-	private String message;
+	private Boolean isOwner;
+
+	@CreationTimestamp
+	@Column(name = "joined_at", nullable = false)
+	private LocalDateTime joinedAt;
 
 	@Builder
-	public Chat(User user, ChatRoom chatRoom, String message) {
+	public StudyGroupUser(User user, StudyGroup studyGroup, Boolean isOwner) {
 		this.user = user;
-		this.chatRoom = chatRoom;
-		this.message = message;
+		this.studyGroup = studyGroup;
+		this.isOwner = isOwner;
 	}
 }
