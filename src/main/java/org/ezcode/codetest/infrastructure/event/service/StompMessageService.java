@@ -1,5 +1,7 @@
 package org.ezcode.codetest.infrastructure.event.service;
 
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -11,21 +13,35 @@ public class StompMessageService {
 
 	private final SimpMessagingTemplate messagingTemplate;
 
-	public <T> void handleEnter(T roomData, String principalName) {
+	public <T> void handleEnter(T roomData, String principalName, String sessionId) {
+
+		SimpMessageHeaderAccessor accessor =
+			SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+
+		accessor.setLeaveMutable(true);
+		accessor.setSessionId(sessionId);
 
 		messagingTemplate.convertAndSendToUser(
 			principalName,
 			"/queue/chatrooms",
-			roomData
+			roomData,
+			accessor.getMessageHeaders()
 		);
 	}
 
-	public <T> void handleRoomEnter(T chatData, String principalName) {
+	public <T> void handleRoomEnter(T chatData, String principalName, String sessionId) {
+
+		SimpMessageHeaderAccessor accessor =
+			SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+
+		accessor.setLeaveMutable(true);
+		accessor.setSessionId(sessionId);
 
 		messagingTemplate.convertAndSendToUser(
 			principalName,
 			"/queue/chat",
-			chatData
+			chatData,
+			accessor.getMessageHeaders()
 		);
 	}
 

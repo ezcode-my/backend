@@ -24,7 +24,7 @@ public class ChatEventListener {
 	public void handleEnterEvent(EnterEvent<?> event) {
 
 		try {
-			messageService.handleEnter(event.roomData(), event.principalName());
+			messageService.handleEnter(event.roomData(), event.principalName(), event.sessionId());
 		} catch (Exception e) {
 			log.warn("사용자 입장 후, 채팅룸 전달 중 오류 발생", e);
 		}
@@ -34,7 +34,7 @@ public class ChatEventListener {
 	public void handleRoomEnterEvent(RoomEnterEvent<?> event) {
 
 		try {
-			messageService.handleRoomEnter(event.chatData(), event.principalName());
+			messageService.handleRoomEnter(event.chatData(), event.principalName(), event.sessionId());
 		} catch (Exception e) {
 			log.warn("사용자 채팅방 입장 후, 채팅내역 전달 중 오류 발생", e);
 		}

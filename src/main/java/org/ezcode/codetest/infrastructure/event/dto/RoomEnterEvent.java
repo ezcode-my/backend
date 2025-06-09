@@ -4,6 +4,8 @@ public record RoomEnterEvent<T>(
 
 	T chatData,
 
-	String principalName
+	String principalName,
+
+	String sessionId
 ) {
 }

@@ -5,6 +5,7 @@ import static jakarta.persistence.FetchType.*;
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,8 +32,10 @@ public class ChatRoom extends BaseEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
+	@Column(nullable = false)
 	private String title;
 
+	@Column(nullable = false)
 	private Boolean isDeleted;
 
 	@Builder
