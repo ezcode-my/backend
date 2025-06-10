@@ -31,6 +31,10 @@
             "IC","MAG","MAJ","MM","VA","VX","VCP","VSV",
             "SF","SP","SE","XPN","XSN","XSV","XSA","NA","UNA"
           ]
+        },
+        "min2_filter": {
+          "type": "length",
+          "min": 2
         }
       },
       "analyzer": {
@@ -65,7 +69,8 @@
           "tokenizer": "nori_tokenizer",
           "filter": [
             "lowercase_filter",
-            "nori_pos_filter"
+            "nori_pos_filter",
+            "min2_filter"
           ]
         }
       },
