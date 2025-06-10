@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.notification.dto.mapper;
+package org.ezcode.codetest.application.notification.event.mapper;
 
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 

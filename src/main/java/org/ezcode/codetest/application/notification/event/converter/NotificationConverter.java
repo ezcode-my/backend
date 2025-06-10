@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.notification.dto.converter;
+package org.ezcode.codetest.application.notification.event.converter;
 
 import java.util.List;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.dto.mapper.NotificationMapper;
+import org.ezcode.codetest.application.notification.event.mapper.NotificationMapper;
 import org.springframework.stereotype.Component;
 
 @Component

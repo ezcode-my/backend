@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.dto.converter.NotificationConverter;
+import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
 import org.ezcode.codetest.application.notification.dto.event.DiscussionVoteEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Discussion;

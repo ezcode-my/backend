@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.dto.payload.NotificationPayload;
+import org.ezcode.codetest.application.notification.event.payload.NotificationPayload;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 
 import lombok.Builder;

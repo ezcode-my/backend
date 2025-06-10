@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.notification.dto.payload;
+package org.ezcode.codetest.application.notification.event.payload;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

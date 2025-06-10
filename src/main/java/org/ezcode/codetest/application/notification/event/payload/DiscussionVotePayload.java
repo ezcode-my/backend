@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.notification.dto.payload;
+package org.ezcode.codetest.application.notification.event.payload;
 
 public record DiscussionVotePayload(
 	Long discussionId,

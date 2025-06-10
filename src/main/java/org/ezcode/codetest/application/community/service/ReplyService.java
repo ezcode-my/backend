@@ -4,7 +4,7 @@ import org.ezcode.codetest.application.community.dto.request.ReplyCreateRequest;
 import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.dto.converter.NotificationConverter;
+import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
 import org.ezcode.codetest.application.notification.dto.event.ReplyCreateEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Discussion;

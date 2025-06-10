@@ -1,10 +1,10 @@
-package org.ezcode.codetest.application.notification.dto.mapper;
+package org.ezcode.codetest.application.notification.event.mapper;
 
 import java.time.LocalDateTime;
 
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.dto.event.ReplyCreateEvent;
-import org.ezcode.codetest.application.notification.dto.payload.ReplyCreatePayload;
+import org.ezcode.codetest.application.notification.event.payload.ReplyCreatePayload;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 import org.springframework.stereotype.Component;
 
