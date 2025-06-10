@@ -153,9 +153,8 @@ public class User extends BaseEntity {
 		this.modifiedAt = LocalDateTime.now();
 	}
 
-	public boolean isSameUser(User recipient) {
+	public boolean shouldSkipNotification(User recipient) {
 
 		return recipient == null || this.getId().equals(recipient.getId());
 	}
-
 }

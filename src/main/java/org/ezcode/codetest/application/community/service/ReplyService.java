@@ -126,7 +126,7 @@ public class ReplyService {
 
 	private void notify(User sender, User recipient, Reply reply) {
 
-		if (!sender.isSameUser(recipient)) {
+		if (sender.shouldSkipNotification(recipient)) {
 			return;
 		}
 
