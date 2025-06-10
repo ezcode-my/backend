@@ -10,6 +10,7 @@ import org.ezcode.codetest.application.notification.enums.NotificationType;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 /*
  * 인프라 구현체(Redis, Mongo 등)들이
@@ -24,7 +25,10 @@ public class NotificationRecord implements Serializable {
 	private final String message;
 	private final String redirectUrl;
 	private final NotificationPayload payload;
+
+	@Setter
 	private boolean isRead;
+
 	private final LocalDateTime createdAt;
 
 	@Builder
@@ -60,9 +64,5 @@ public class NotificationRecord implements Serializable {
 			.isRead(dto.isRead())
 			.createdAt(dto.createdAt())
 			.build();
-	}
-
-	public void setRead() {
-		this.isRead = true;
 	}
 }

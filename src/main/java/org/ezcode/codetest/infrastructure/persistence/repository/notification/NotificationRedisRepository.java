@@ -64,7 +64,7 @@ public class NotificationRedisRepository implements NotificationRepository {
 
 				// 기존 데이터 삭제 및 수정한 데이터 삽입
 				zSetOps.remove(key, rec);
-				rec.setRead();
+				rec.setRead(true);
 				zSetOps.add(key, rec, score);
 
 				break;
