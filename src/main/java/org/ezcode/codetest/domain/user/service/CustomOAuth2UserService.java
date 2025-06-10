@@ -1,16 +1,9 @@
 package org.ezcode.codetest.domain.user.service;
 
-import java.util.Optional;
-
 import org.ezcode.codetest.application.usermanagement.user.dto.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.OAuth2Response;
-import org.ezcode.codetest.domain.user.exception.AuthException;
-import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
-import org.ezcode.codetest.domain.user.model.entity.OAuth2EzCodeUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
-import org.ezcode.codetest.domain.user.model.enums.AuthType;
-import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -56,17 +49,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		String username = oAuth2Response.getName();
 
 		User findUser = userRepository.getUserByEmail(oAuth2Response.getEmail());
-		log.info("findUser: 유저 여부 -> {}", findUser);
 
 		if (findUser == null) {
-			log.info("db에 유저 없음");
 			User newUSer = User.googleUser(oAuth2Response.getEmail(), username);
 			log.info("newUser: {} 새로운 유저", newUSer);
 			userRepository.createUser(newUSer);
-			log.info("유저 저장함");
 		} else {
-			log.info("유저 이미 있음");
-			findUser.setModified();
+			log.info("이미 가입된 유저");
 		}
 
 		return new CustomOAuth2User(oAuth2Response, "USER"); //기본적으로 역할은 USER로 설정

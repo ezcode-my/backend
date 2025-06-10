@@ -1,6 +1,5 @@
 package org.ezcode.codetest.infrastructure.security.config;
 
-import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.ezcode.codetest.domain.user.service.CustomOAuth2UserService;
 import org.ezcode.codetest.infrastructure.security.hander.CustomSuccessHandler;
 import org.ezcode.codetest.infrastructure.security.jwt.ExceptionHandlingFilter;
@@ -9,7 +8,6 @@ import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
