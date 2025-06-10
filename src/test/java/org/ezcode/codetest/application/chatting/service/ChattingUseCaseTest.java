@@ -39,19 +39,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 @DisplayName("채팅 서비스 테스트")
 class ChattingUseCaseTest {
 
-	private static final String TEST_EMAIL      = "test@unknow.com";
-	private static final String TEST_PRINCIPAL  = "익명 Principal";
-	private static final String TEST_SESSION_ID = "임시 세션 ID";
-	private static final Long   TEST_ROOM_ID    = 1L;
-	private static final String TEMP_TITLE_1    = "임시 방 제목1";
-	private static final String TEMP_TITLE_2    = "임시 방 제목2";
-	private static final String TEMP_MESSAGE_1  = "임시 채팅 메시지";
-	private static final String TEMP_MESSAGE_2  = "임시 채팅 메시지2";
-	private static final String EVENT_CREATE    = "CREATE";
-	private static final String EVENT_DELETE    = "DELETE";
-	private static final String EVENT_GET       = "GET";
-	private static final String EVENT_UPDATE    = "UPDATE";
-
 	@InjectMocks
 	private ChattingUseCase chattingUseCase;
 
@@ -72,6 +59,19 @@ class ChattingUseCaseTest {
 	private List<ChatRoomCache> cacheChatRooms;
 	private List<ChatRoom>      chatRooms;
 	private List<Chat>          chats;
+
+	private static final String TEST_EMAIL      = "test@unknow.com";
+	private static final String TEST_PRINCIPAL  = "익명 Principal";
+	private static final String TEST_SESSION_ID = "임시 세션 ID";
+	private static final Long   TEST_ROOM_ID    = 1L;
+	private static final String TEMP_TITLE_1    = "임시 방 제목1";
+	private static final String TEMP_TITLE_2    = "임시 방 제목2";
+	private static final String TEMP_MESSAGE_1  = "임시 채팅 메시지";
+	private static final String TEMP_MESSAGE_2  = "임시 채팅 메시지2";
+	private static final String EVENT_CREATE    = "CREATE";
+	private static final String EVENT_DELETE    = "DELETE";
+	private static final String EVENT_GET       = "GET";
+	private static final String EVENT_UPDATE    = "UPDATE";
 
 	@BeforeEach
 	void setUp() {
