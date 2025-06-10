@@ -1,7 +1,7 @@
 package org.ezcode.codetest.application.notification.service;
 
-import org.ezcode.codetest.application.notification.dto.NotificationListRequestEvent;
-import org.ezcode.codetest.application.notification.dto.NotificationReadEvent;
+import org.ezcode.codetest.application.notification.event.NotificationListRequestEvent;
+import org.ezcode.codetest.application.notification.event.NotificationReadEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
