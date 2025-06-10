@@ -15,7 +15,6 @@ public class SigninRequest {
 
 	@NotBlank
 	@Email(message = "이메일은 공백일 수 없습니다")
-	@Size(max = 20, message = "이메일은 20자 이하로 입력해야 합니다")
 	private String email;
 
 	@NotBlank(message = "비밀번호는 공백일 수 없습니다.")

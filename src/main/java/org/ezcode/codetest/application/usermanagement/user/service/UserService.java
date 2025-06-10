@@ -46,7 +46,8 @@ public class UserService {
 			modifyUserInfoRequest.githubUrl(),
 			modifyUserInfoRequest.blogUrl(),
 			modifyUserInfoRequest.profileImageUrl(),
-			modifyUserInfoRequest.introduction());
+			modifyUserInfoRequest.introduction(),
+			modifyUserInfoRequest.age());
 
 
 		return UserInfoResponse.builder()

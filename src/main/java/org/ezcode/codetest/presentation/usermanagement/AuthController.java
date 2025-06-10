@@ -1,5 +1,6 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.signin.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequest;
@@ -40,5 +41,10 @@ public class AuthController {
 			@AuthenticationPrincipal AuthUser authUser,
 			HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.logout(authUser.getId(), request));
+	}
+
+	@PostMapping("/refresh")
+	public ResponseEntity<RefreshTokenResponse> refresh(HttpServletRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(authService.refreshToken(request));
 	}
 }

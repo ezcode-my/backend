@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ezcode Login</title>
+    <link rel="stylesheet" th:href="@{/css/ez.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="login-section">
+        <div class="login-main">
+            <div class="login-header">LOGIN</div>
+            <form onsubmit="return false;">
+                <div class="input-group">
+                    <div class="input-field email">
+                        <input id="email" type="text" name="email" placeholder="이메일을 입력해주세요">
+                    </div>
+                    <div class="input-field password">
+                        <input id="password" type="password" name="password" placeholder="비밀번호를 입력해주세요">
+                    </div>
+                </div>
+                <button id="login-btn" class="login-button default" type="button">로그인</button>
+            </form>
+            <button class="signup-email-button" th:onclick="|location.href='@{/signup}'|">이메일 회원가입</button>
+            <div class="find-account">
+                <a th:href="@{/find/id}" style="color:inherit;">아이디</a> |
+                <a th:href="@{/find/password}" style="color:inherit;">비밀번호 찾기</a>
+            </div>
+            <div class="social-login-divider">
+                <span class="social-login-text">소셜 로그인</span>
+            </div>
+            <div class="social-icons">
+                <a th:href="@{/login}" class="social-icon google">
+                    <img th:src="@{/images/googleIcon.png}" alt="Google">
+                </a>
+                <a th:href="@{/oauth2/authorization/github}" class="social-icon github">
+                    <img th:src="@{/images/githubIcon.png}" alt="GitHub">
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="welcome-section">
+        <div class="welcome-text">
+            어서오세요,<br>당신의 코딩을 돕는 EzCode입니다
+        </div>
+        <div class="logo-image">
+            <img th:src="@{/images/logo.png}" alt="EzCode Logo">
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    document.getElementById("login-btn").addEventListener("click", async function () {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            const response = await fetch("/signin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert("로그인 실패: " + (errorData.message || response.status));
+                return;
+            }
+
+            const data = await response.json();
+            console.log("로그인 성공:", data);
+
+            // 로그인 성공 시 리디렉션
+            window.location.href = "https://ezcode.my/";
+        } catch (error) {
+            console.error("로그인 에러:", error);
+            alert("로그인 중 오류가 발생했습니다.");
+        }
+    });
+</script>
+

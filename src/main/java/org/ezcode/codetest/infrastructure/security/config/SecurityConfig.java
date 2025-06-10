@@ -1,6 +1,7 @@
 package org.ezcode.codetest.infrastructure.security.config;
 
-import org.ezcode.codetest.domain.user.model.enums.UserRole;
+import org.ezcode.codetest.domain.user.service.CustomOAuth2UserService;
+import org.ezcode.codetest.infrastructure.security.hander.CustomSuccessHandler;
 import org.ezcode.codetest.infrastructure.security.jwt.ExceptionHandlingFilter;
 import org.ezcode.codetest.infrastructure.security.jwt.JwtFilter;
 import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
@@ -24,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 	private final JwtUtilImpl jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final CustomOAuth2UserService customOAuth2UserService; //OAuth2.0 서비스
+	private final CustomSuccessHandler customSuccessHandler;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,6 +39,10 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.logout(AbstractHttpConfigurer::disable)
+			.oauth2Login((outh2)-> outh2
+				.userInfoEndpoint((userInfoEndpointConfig ->
+					userInfoEndpointConfig.userService(customOAuth2UserService)))
+				.successHandler(customSuccessHandler))
 			// JWT 사용을 위해 세션을 STATELESS로 설정 (세션 정보 저장 x)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -45,9 +52,16 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers(
+						"/",
 						"/signin",
 						"/signup",
 						"/logout",
+						"/login",
+						"/ezlogin",
+						"/login/**",
+						"/oauth2/**",
+						"/login/oauth",
+						"/login/oauth2/**", //OAuth로그인 접근
 						"/actuator/**",
 						"/chatting",
 						"/submit-test",
@@ -58,7 +72,9 @@ public class SecurityConfig {
 						"/v2/**",
 						"/v3/**",
 						"/webjars/**",
-						"/searching").permitAll()
+						"/searching",
+						"/css/**", //html 화면 구성 접근
+						"/images/**").permitAll()
 					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.anyRequest().authenticated() //나머지는 일반 인증
 			)
