@@ -56,7 +56,6 @@ public class SecurityConfig {
 						"/signin",
 						"/signup",
 						"/logout",
-						"/refresh",
 						"/login",
 						"/ezlogin",
 						"/login/**",

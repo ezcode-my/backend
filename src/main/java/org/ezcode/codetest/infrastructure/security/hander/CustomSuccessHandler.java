@@ -3,15 +3,19 @@ package org.ezcode.codetest.infrastructure.security.hander;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -26,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-	private final JwtUtilImpl jwtUtil;
+	private final JwtUtil jwtUtil;
 	private final UserDomainService userDomainService;
 	private final RedisTemplate<String, String> redisTemplate;
 
@@ -68,8 +72,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		log.info("레디스에 저장완료");
 
 
+		//CSRF 공격 방어용
 		String encodedToken = URLEncoder.encode(token, StandardCharsets.UTF_8);
-		response.addCookie(createCookie("Authorization", encodedToken));
+		ResponseCookie cookie = ResponseCookie.from("Authorization", encodedToken)
+			.maxAge(Duration.ofHours(1))
+			.path("/")
+			.httpOnly(true)
+			.sameSite("Lax")
+			.build();
+		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
 		response.sendRedirect("https://ezcode.my/");
 		log.info("------------- token : {} ------------", token);

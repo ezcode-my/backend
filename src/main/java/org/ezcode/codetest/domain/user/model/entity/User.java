@@ -112,6 +112,7 @@ public class User extends BaseEntity {
 			.nickname("user_" + UUID.randomUUID().toString().split("-")[0])//닉네임은 자동으로 생성해주고, 나중에 수정할 수 있도록 함
 			.tier(Tier.NEWBIE)
 			.role(UserRole.USER)
+			.password(UUID.randomUUID().toString())
 			.isDeleted(false)
 			.build();
 	}

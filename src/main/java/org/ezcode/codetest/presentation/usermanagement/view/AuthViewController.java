@@ -12,7 +12,7 @@ public class AuthViewController {
 	}
 
 	@GetMapping("/login/oauth")
-	public String OAuthLogin(){
+	public String oAuthLogin(){
 		return "/login";
 	}
 }
