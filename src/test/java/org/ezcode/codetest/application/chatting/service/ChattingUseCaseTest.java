@@ -22,6 +22,7 @@ import org.ezcode.codetest.domain.chat.model.Chat;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.service.ChattingDomainService;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -80,6 +81,7 @@ class ChattingUseCaseTest {
 			.username("익명")
 			.password("P@ssw0rd1225")
 			.nickname("익명 닉네임")
+			.tier(Tier.NEWBIE)
 			.age(22)
 			.build();
 		ReflectionTestUtils.setField(user, "id", TEST_ROOM_ID);
