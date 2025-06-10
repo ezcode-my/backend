@@ -32,6 +32,11 @@ public class ChattingUseCase {
 	private final ChatSessionService sessionService;
 	private final ChatRoomCacheService cacheService;
 
+	private static final String EVENT_TYPE_CREATE = "CREATE";
+	private static final String EVENT_TYPE_UPDATE = "UPDATE";
+	private static final String EVENT_TYPE_DELETE = "DELETE";
+	private static final String EVENT_TYPE_GET = "GET";
+
 	@Transactional
 	public void createChatRoom(ChatRoomSaveRequest request, String email) {
 
@@ -41,7 +46,7 @@ public class ChattingUseCase {
 
 		cacheService.addChatRoomToCache(ChatRoomCache.from(savedRoom));
 
-		eventService.publishRoomChangeEvent(RoomChangedResponse.from(savedRoom, "CREATE"));
+		eventService.publishRoomChangeEvent(RoomChangedResponse.from(savedRoom, EVENT_TYPE_CREATE));
 	}
 
 	@Transactional
@@ -59,7 +64,7 @@ public class ChattingUseCase {
 
 		sessionService.removeRoomSession(request.roomId());
 
-		eventService.publishRoomChangeEvent(RoomChangedResponse.from(removedRoom, "DELETE"));
+		eventService.publishRoomChangeEvent(RoomChangedResponse.from(removedRoom, EVENT_TYPE_DELETE));
 	}
 
 	@Transactional
@@ -80,7 +85,7 @@ public class ChattingUseCase {
 			.map(room ->
 				RoomChangedResponse.from(
 					room,
-					"GET",
+					EVENT_TYPE_GET,
 					sessionService.viewSessionCount(room.roomId())
 				)
 			)
@@ -122,7 +127,7 @@ public class ChattingUseCase {
 
 		eventService.publishRoomChangeEvent(RoomChangedResponse.from(
 				chatRoom,
-				"UPDATE",
+				EVENT_TYPE_UPDATE,
 				headCount
 			)
 		);
@@ -141,7 +146,7 @@ public class ChattingUseCase {
 
 		eventService.publishRoomChangeEvent(RoomChangedResponse.from(
 				chatRoom,
-				"UPDATE",
+				EVENT_TYPE_UPDATE,
 				roomData.get("headCount")
 			)
 		);
