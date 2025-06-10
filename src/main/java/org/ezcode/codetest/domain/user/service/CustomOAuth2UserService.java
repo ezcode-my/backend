@@ -51,9 +51,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		User findUser = userRepository.getUserByEmail(oAuth2Response.getEmail());
 
 		if (findUser == null) {
-			User newUSer = User.googleUser(oAuth2Response.getEmail(), username);
-			log.info("newUser: {} 새로운 유저", newUSer);
-			userRepository.createUser(newUSer);
+			User newUser = User.googleUser(oAuth2Response.getEmail(), username);
+			log.info("newUser: {} 새로운 유저", newUser);
+			try {
+				userRepository.createUser(newUser);
+			} catch (Exception e) {
+				log.error("OAuth 사용자 생성 실패 : {}", e.getMessage());
+				throw new OAuth2AuthenticationException("사용자 생성 실패입니다");
+			}
+
 		} else {
 			log.info("이미 가입된 유저");
 		}

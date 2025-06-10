@@ -120,18 +120,18 @@ public class JwtUtilImpl implements JwtUtil {
 	@Override
 	public Long getUserId(String token) {
 		Claims claims = Jwts.parserBuilder()
-			.setSigningKey(secretKey)
+			.setSigningKey(key)
 			.build()
 			.parseClaimsJws(token)
 			.getBody();
 
-		return claims.get("id", Long.class);
+		return Long.parseLong(claims.getSubject());
 	}
 
 	@Override
 	public boolean validateToken(String refreshToken) {
 		try {
-			Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(refreshToken);
+			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken);
 			return true;
 		} catch (JwtException | IllegalArgumentException e) {
 			return false;
