@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.event.mapper.NotificationMapper;
+import org.ezcode.codetest.application.notification.exception.NotificationException;
+import org.ezcode.codetest.application.notification.exception.NotificationExceptionCode;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,7 +28,7 @@ public class NotificationConverter {
 	public NotificationCreateEvent convert(Object event) {
 		NotificationMapper mapper = mapperMap.get(event.getClass());
 		if (mapper == null) {
-			throw new IllegalArgumentException("No mapper found for event type: " + event.getClass());
+			throw new NotificationException(NotificationExceptionCode.NOTIFICATION_CANNOT_FIND_EVENT_TYPE, "No mapper found for event type: " + event.getClass());
 		}
 
 		return mapper.map(event);
