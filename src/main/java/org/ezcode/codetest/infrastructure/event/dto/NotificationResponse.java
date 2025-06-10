@@ -1,8 +1,8 @@
 package org.ezcode.codetest.infrastructure.event.dto;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
+import org.ezcode.codetest.application.notification.dto.payload.NotificationPayload;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 
 public record NotificationResponse(
@@ -15,7 +15,7 @@ public record NotificationResponse(
 
 	String redirectUrl,
 
-	Map<String, Object> payload,
+	NotificationPayload payload,
 
 	boolean isRead,
 

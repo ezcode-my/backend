@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.notification.dto;
+package org.ezcode.codetest.application.notification.event;
 
 public record NotificationListRequestEvent(
 

@@ -1,13 +1,10 @@
-package org.ezcode.codetest.application.notification.dto;
+package org.ezcode.codetest.application.notification.event;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
+import org.ezcode.codetest.application.notification.dto.payload.NotificationPayload;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 
-import lombok.Builder;
-
-@Builder
 public record NotificationCreateEvent(
 
 	String principalName,
@@ -16,7 +13,7 @@ public record NotificationCreateEvent(
 
 	String message,
 
-	Map<String, Object> payload,
+	NotificationPayload payload,
 
 	String redirectUrl,
 
