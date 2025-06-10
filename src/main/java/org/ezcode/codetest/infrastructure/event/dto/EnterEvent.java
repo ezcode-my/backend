@@ -4,6 +4,8 @@ public record EnterEvent<T>(
 
 	T roomData,
 
-	String principalName
+	String principalName,
+
+	String sessionId
 ) {
 }
