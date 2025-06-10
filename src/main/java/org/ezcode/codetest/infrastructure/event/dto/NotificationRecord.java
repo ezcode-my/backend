@@ -2,15 +2,14 @@ package org.ezcode.codetest.infrastructure.event.dto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
-import org.ezcode.codetest.application.notification.dto.NotificationCreateEvent;
+import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
+import org.ezcode.codetest.application.notification.event.payload.NotificationPayload;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 
 import lombok.Builder;
 import lombok.Getter;
-
 
 /*
  * 인프라 구현체(Redis, Mongo 등)들이
@@ -24,7 +23,7 @@ public class NotificationRecord implements Serializable {
 	private final NotificationType type;
 	private final String message;
 	private final String redirectUrl;
-	private final Map<String, Object> payload;
+	private final NotificationPayload payload;
 	private boolean isRead;
 	private final LocalDateTime createdAt;
 
@@ -35,7 +34,7 @@ public class NotificationRecord implements Serializable {
 		NotificationType type,
 		String message,
 		String redirectUrl,
-		Map<String, Object> payload,
+		NotificationPayload payload,
 		boolean isRead,
 		LocalDateTime createdAt
 	) {

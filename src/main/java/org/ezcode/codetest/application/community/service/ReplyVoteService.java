@@ -3,7 +3,9 @@ package org.ezcode.codetest.application.community.service;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
-import org.ezcode.codetest.application.notification.port.NotificationEventDtoFactory;
+import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
+import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
+import org.ezcode.codetest.application.notification.dto.event.ReplyVoteEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.model.Reply;
@@ -24,19 +26,22 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	private final DiscussionDomainService discussionDomainService;
 
 	private final NotificationEventService notificationEventService;
+	private final NotificationConverter notificationConverter;
 
 	public ReplyVoteService(
 		ReplyVoteDomainService domainService,
 		UserDomainService userDomainService,
 		ReplyDomainService replyDomainService,
 		DiscussionDomainService discussionDomainService,
-		NotificationEventService notificationEventService
+		NotificationEventService notificationEventService,
+		NotificationConverter notificationConverter
 	) {
 		super(domainService);
 		this.userDomainService = userDomainService;
 		this.replyDomainService = replyDomainService;
 		this.discussionDomainService = discussionDomainService;
 		this.notificationEventService = notificationEventService;
+		this.notificationConverter = notificationConverter;
 	}
 
 	@Transactional
@@ -68,14 +73,17 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	protected void afterVote(User voter, Long targetId) {
 
 		Reply reply = replyDomainService.getReplyById(targetId);
-		if (!voter.isSameUser(reply.getUser())) {
-			notificationEventService.saveAndNotify(
-				NotificationEventDtoFactory.forReplyVoteCreated(
-					reply.getUser().getEmail(),
-					reply.getId(),
-					voter.getNickname()
-				)
-			);
+		if (voter.shouldSkipNotification(reply.getUser())) {
+			return;
 		}
+
+		NotificationCreateEvent event = notificationConverter.convert(
+			new ReplyVoteEvent(
+				reply.getUser().getEmail(),
+				reply.getId(),
+				voter.getNickname()
+			)
+		);
+		notificationEventService.saveAndNotify(event);
 	}
 }

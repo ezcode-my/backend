@@ -3,7 +3,9 @@ package org.ezcode.codetest.application.community.service;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
-import org.ezcode.codetest.application.notification.port.NotificationEventDtoFactory;
+import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
+import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
+import org.ezcode.codetest.application.notification.dto.event.DiscussionVoteEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.model.DiscussionVote;
@@ -21,17 +23,20 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 	private final DiscussionDomainService discussionDomainService;
 
 	private final NotificationEventService notificationEventService;
+	private final NotificationConverter notificationConverter;
 
 	public DiscussionVoteService(
 		DiscussionVoteDomainService domainService,
 		UserDomainService userDomainService,
 		DiscussionDomainService discussionDomainService,
-		NotificationEventService notificationEventService
+		NotificationEventService notificationEventService,
+		NotificationConverter notificationConverter
 	) {
 		super(domainService);
 		this.userDomainService = userDomainService;
 		this.discussionDomainService = discussionDomainService;
 		this.notificationEventService = notificationEventService;
+		this.notificationConverter = notificationConverter;
 	}
 
 	@Transactional
@@ -61,14 +66,17 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 	protected void afterVote(User voter, Long targetId) {
 
 		Discussion discussion = discussionDomainService.getDiscussionById(targetId);
-		if (!voter.isSameUser(discussion.getUser())) {
-			notificationEventService.saveAndNotify(
-				NotificationEventDtoFactory.forDiscussionVoteCreated(
-					discussion.getUser().getEmail(),
-					discussion.getId(),
-					voter.getNickname()
-				)
-			);
+		if (voter.shouldSkipNotification(discussion.getUser())) {
+			return;
 		}
+
+		NotificationCreateEvent event = notificationConverter.convert(
+			new DiscussionVoteEvent(
+				discussion.getUser().getEmail(),
+				discussion.getId(),
+				voter.getNickname()
+			)
+		);
+		notificationEventService.saveAndNotify(event);
 	}
 }

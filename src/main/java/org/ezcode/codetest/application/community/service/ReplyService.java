@@ -3,7 +3,9 @@ package org.ezcode.codetest.application.community.service;
 import org.ezcode.codetest.application.community.dto.request.ReplyCreateRequest;
 import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
-import org.ezcode.codetest.application.notification.port.NotificationEventDtoFactory;
+import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
+import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
+import org.ezcode.codetest.application.notification.dto.event.ReplyCreateEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.model.Reply;
@@ -28,6 +30,7 @@ public class ReplyService {
 	private final UserDomainService userDomainService;
 
 	private final NotificationEventService notificationEventService;
+	private final NotificationConverter notificationConverter;
 
 	@Transactional
 	public ReplyResponse createReply(
@@ -52,7 +55,7 @@ public class ReplyService {
 			ReplyCreateRequest.toEntity(discussion, user, parent, request)
 		);
 
-		User discussionAuthor = reply.getDiscussion().getUser();	// TODO: get depth 하나로 줄이기
+		User discussionAuthor = discussion.getUser();	// TODO: get depth 하나로 줄이기
 		User parentAuthor = reply.getParent() != null ? reply.getParent().getUser() : null;
 
 		notify(user, discussionAuthor, reply);
@@ -126,17 +129,18 @@ public class ReplyService {
 
 	private void notify(User sender, User recipient, Reply reply) {
 
-		if (!sender.isSameUser(recipient)) {
+		if (sender.shouldSkipNotification(recipient)) {
 			return;
 		}
 
-		notificationEventService.saveAndNotify(
-			NotificationEventDtoFactory.forReplyCreated(
+		NotificationCreateEvent event = notificationConverter.convert(
+			new ReplyCreateEvent(
 				recipient.getEmail(),
 				reply.getId(),
 				reply.getDiscussion().getId(),
 				reply.getContent()
 			)
 		);
+		notificationEventService.saveAndNotify(event);
 	}
 }

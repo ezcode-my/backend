@@ -2,9 +2,9 @@ package org.ezcode.codetest.infrastructure.event.listener;
 
 import java.util.List;
 
-import org.ezcode.codetest.application.notification.dto.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.dto.NotificationListRequestEvent;
-import org.ezcode.codetest.application.notification.dto.NotificationReadEvent;
+import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
+import org.ezcode.codetest.application.notification.event.NotificationListRequestEvent;
+import org.ezcode.codetest.application.notification.event.NotificationReadEvent;
 import org.ezcode.codetest.infrastructure.event.dto.NotificationRecord;
 import org.ezcode.codetest.infrastructure.event.dto.NotificationResponse;
 import org.ezcode.codetest.infrastructure.event.service.StompMessageService;
