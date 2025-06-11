@@ -21,7 +21,7 @@ public class UserDomainService {
 
 	public void checkEmailUnique(String email) {
 		if (userRepository.findByEmail(email).isPresent()) {
-			throw new AuthException(AuthExceptionCode.EXIST_USER_EMAIL);
+			throw new AuthException(AuthExceptionCode.ALREADY_EXIST_USER);
 		}
 	}
 
@@ -54,5 +54,17 @@ public class UserDomainService {
 
 	public User getOAuthUser(String email, String provider) {
 		return userRepository.findByEmailAndProvider(email, provider);
+	}
+
+	public void passwordComparison(String newPassword, String oldPassword) {
+		if (passwordEncoder.matches(newPassword, oldPassword)) {
+			throw new AuthException(AuthExceptionCode.PASSWORD_IS_SAME);
+		}
+	}
+
+	public void isDeletedUser(User user) {
+		if (user.isDeleted()) {
+			throw new AuthException(AuthExceptionCode.ALREADY_WITHDRAW_USER);
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.usermanagement.user.dto;
+package org.ezcode.codetest.application.usermanagement.user.dto.response;
 
 public interface OAuth2Response {
 	//제공자가 누군지

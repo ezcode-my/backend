@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.usermanagement.user.dto;
+package org.ezcode.codetest.application.usermanagement.user.dto.response;
 
 import lombok.Getter;
 

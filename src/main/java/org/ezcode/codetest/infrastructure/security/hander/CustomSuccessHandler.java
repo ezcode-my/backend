@@ -1,27 +1,21 @@
 package org.ezcode.codetest.infrastructure.security.hander;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.signin.OAuthResponse;
 import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import jakarta.servlet.http.Cookie;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +27,14 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private final JwtUtil jwtUtil;
 	private final UserDomainService userDomainService;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final ObjectMapper objectMapper; //json직렬화
 
 	public CustomSuccessHandler(JwtUtilImpl jwtUtil, UserDomainService userDomainService,
-		RedisTemplate<String, String> redisTemplate) {
+		RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper) {
 		this.jwtUtil = jwtUtil;
 		this.userDomainService = userDomainService;
 		this.redisTemplate = redisTemplate;
+		this.objectMapper = objectMapper;
 	}
 
 	@Override
@@ -48,12 +44,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		//OAuth2User
 		CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-
 		User loginUser = userDomainService.getOAuthUser(customUserDetails.getEmail(), customUserDetails.getProvider());
 
-		String token = jwtUtil.createToken(
+		String accessToken = jwtUtil.createToken(
 			loginUser.getId(),
 			loginUser.getEmail(),
 			loginUser.getRole(),
@@ -62,7 +55,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 			loginUser.getTier()
 		);
 		String refreshToken = jwtUtil.createRefreshToken(loginUser.getId());
+
 		log.info("refresh token 발급 완료");
+
 		//redis에 LOGIN : {redisToken} 형식으로 저장
 		redisTemplate.opsForValue().set(
 			"RefreshToken:" + loginUser.getId(),
@@ -71,30 +66,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 			TimeUnit.MILLISECONDS);
 		log.info("레디스에 저장완료");
 
-
-		//CSRF 공격 방어용
-		String encodedToken = URLEncoder.encode(token, StandardCharsets.UTF_8);
-		ResponseCookie cookie = ResponseCookie.from("Authorization", encodedToken)
-			.maxAge(Duration.ofHours(1))
-			.path("/")
-			.httpOnly(true)
-			.sameSite("Lax")
-			.build();
-		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
-		response.sendRedirect("https://ezcode.my/");
-		log.info("------------- token : {} ------------", token);
-	}
-
-
-	private Cookie createCookie(String key, String value) {
-		Cookie cookie = new Cookie(key, value);
-		cookie.setMaxAge(60*60*60);
-		//cookie.setSecure(true);
-		cookie.setPath("/");
-		cookie.setHttpOnly(true);
-
-		return cookie;
+		//JSON 문자열로 바꿔서 클라이언트에게 응답 본문으로 전달
+		OAuthResponse oAuthResponse = new OAuthResponse(accessToken, refreshToken);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(objectMapper.writeValueAsString(oAuthResponse));
+		log.info("------------- accessToken : {}, refreshToken : {} ------------", accessToken, refreshToken);
 	}
 
 }

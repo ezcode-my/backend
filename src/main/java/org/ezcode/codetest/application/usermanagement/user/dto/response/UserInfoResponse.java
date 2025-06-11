@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.usermanagement.user.dto;
+package org.ezcode.codetest.application.usermanagement.user.dto.response;
 
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.Tier;

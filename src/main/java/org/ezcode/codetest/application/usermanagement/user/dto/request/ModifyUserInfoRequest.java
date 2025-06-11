@@ -1,5 +1,4 @@
-package org.ezcode.codetest.application.usermanagement.user.dto;
-
+package org.ezcode.codetest.application.usermanagement.user.dto.request;
 
 public record ModifyUserInfoRequest(
 	String nickname,
