@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import org.ezcode.codetest.domain.submission.model.entity.Submission;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 
 @Schema(description = "개별 제출 결과 응답")
 public record SubmissionDetailResponse(
