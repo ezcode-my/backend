@@ -83,6 +83,8 @@ public class UserService {
 			throw new AuthException(AuthExceptionCode.NOT_EMAIL_USER);
 		}
 
+		userDomainService.userPasswordCheck(authUser.getEmail(), changeUserPasswordRequest.oldPassword());
+
 		//기존 비밀번호와 새로운 비밀번호가 같은지 확인 -> 기존과 같으면 변경 불가
 		userDomainService.passwordComparison(changeUserPasswordRequest.newPassword(), user.getPassword());
 
@@ -97,6 +99,8 @@ public class UserService {
 	@Transactional
 	public WithdrawUserResponse withdrawUser(AuthUser authUser) {
 		User user = userDomainService.getUserById(authUser.getId());
+
+		userDomainService.isDeletedUser(user);
 
 		user.setDeleted();
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +43,7 @@ public class UserController {
 	@PutMapping("/users/password")
 	public ResponseEntity<ChangeUserPasswordResponse> modifyUserPassword(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody ChangeUserPasswordRequest changeUserPasswordRequest
+		@Valid @RequestBody ChangeUserPasswordRequest changeUserPasswordRequest
 	){
 		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserPassword(authUser, changeUserPasswordRequest));
 	}
