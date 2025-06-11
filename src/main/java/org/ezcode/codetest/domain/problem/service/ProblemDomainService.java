@@ -25,7 +25,7 @@ public class ProblemDomainService {
 	public Problem createProblem(Problem problem) {
 
 		// 중복된 문제 체크
-		if(problemRepository.existByTitle(problem.getTitle())) {
+		if(problemRepository.existsByTitleAndIsDeletedIsFalse(problem.getTitle())) {
 			throw new ProblemException(ProblemExceptionCode.DUPLICATE_PROBLEM);
 		}
 

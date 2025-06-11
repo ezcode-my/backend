@@ -27,5 +27,5 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
 		""")
 	Optional<Problem> findProblemWithTestcasesById(@Param("problemId") Long problemId);
 
-	boolean existsByTitle(String title);
+	boolean existsByTitleAndIsDeletedIsFalse(String title);
 }

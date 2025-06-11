@@ -49,8 +49,8 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	}
 
 	@Override
-	public boolean existByTitle(String title) {
-		return problemJpaRepository.existsByTitle(title);
+	public boolean existsByTitleAndIsDeletedIsFalse(String title) {
+		return problemJpaRepository.existsByTitleAndIsDeletedIsFalse(title);
 	}
 
 }

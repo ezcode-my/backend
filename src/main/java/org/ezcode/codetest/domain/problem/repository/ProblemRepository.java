@@ -21,5 +21,5 @@ public interface ProblemRepository {
 
 	Optional<Problem> findProblemWithTestcasesById(Long problemId);
 
-	boolean existByTitle(String title);
+	boolean existsByTitleAndIsDeletedIsFalse(String title);
 }
