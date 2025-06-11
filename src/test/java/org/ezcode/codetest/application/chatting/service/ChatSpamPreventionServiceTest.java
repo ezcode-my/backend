@@ -62,8 +62,9 @@ class ChatSpamPreventionServiceTest {
 			chatSpamPreventionService.applyChatBlock(TEMP_TEST_EMAIL, TEMP_TEST_NICKNAME, TEMP_ROOM_ID);
 
 			//then
-			verify(limitService).applyChatBlock(TEMP_TEST_EMAIL);
-			verify(eventService).publishBroadCastChatEvent(TEMP_TEST_NICKNAME + " 님께서 지나친 도배로 30초 동안 차단되었습니다.",
+			verify(limitService).applyChatSpamPenalty(TEMP_TEST_EMAIL);
+			verify(eventService).publishChatMessageBroadcastEvent(
+				ChatMessageTemplate.SPAM_BLOCK.format(TEMP_TEST_NICKNAME, 30),
 				TEMP_ROOM_ID);
 		}
 
@@ -78,8 +79,6 @@ class ChatSpamPreventionServiceTest {
 			verify(limitService).increaseChatCount(TEMP_TEST_EMAIL);
 		}
 
-
 	}
-
 
 }

@@ -18,6 +18,7 @@ import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCache;
 import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCacheService;
 import org.ezcode.codetest.application.chatting.port.event.ChatEventService;
 import org.ezcode.codetest.application.chatting.port.session.ChatSessionService;
+import org.ezcode.codetest.application.chatting.port.session.RoomSessionInfo;
 import org.ezcode.codetest.domain.chat.model.Chat;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.service.ChattingDomainService;
@@ -43,35 +44,35 @@ class ChattingUseCaseTest {
 	private ChattingUseCase chattingUseCase;
 
 	@Mock
-	private UserDomainService     userDomainService;
+	private UserDomainService userDomainService;
 	@Mock
 	private ChattingDomainService chattingDomainService;
 	@Mock
-	private ChatEventService      eventService;
+	private ChatEventService eventService;
 	@Mock
-	private ChatSessionService    sessionService;
+	private ChatSessionService sessionService;
 	@Mock
-	private ChatRoomCacheService  cacheService;
+	private ChatRoomCacheService cacheService;
 
-	private User                user;
-	private Chat                chat1;
-	private ChatRoom            chatRoom1;
+	private User user;
+	private Chat chat1;
+	private ChatRoom chatRoom1;
 	private List<ChatRoomCache> cacheChatRooms;
-	private List<ChatRoom>      chatRooms;
-	private List<Chat>          chats;
+	private List<ChatRoom> chatRooms;
+	private List<Chat> chats;
 
-	private static final String TEST_EMAIL      = "test@unknow.com";
-	private static final String TEST_PRINCIPAL  = "익명 Principal";
+	private static final String TEST_EMAIL = "test@unknow.com";
+	private static final String TEST_PRINCIPAL = "익명 Principal";
 	private static final String TEST_SESSION_ID = "임시 세션 ID";
-	private static final Long   TEST_ROOM_ID    = 1L;
-	private static final String TEMP_TITLE_1    = "임시 방 제목1";
-	private static final String TEMP_TITLE_2    = "임시 방 제목2";
-	private static final String TEMP_MESSAGE_1  = "임시 채팅 메시지";
-	private static final String TEMP_MESSAGE_2  = "임시 채팅 메시지2";
-	private static final String EVENT_CREATE    = "CREATE";
-	private static final String EVENT_DELETE    = "DELETE";
-	private static final String EVENT_GET       = "GET";
-	private static final String EVENT_UPDATE    = "UPDATE";
+	private static final Long TEST_ROOM_ID = 1L;
+	private static final String TEMP_TITLE_1 = "임시 방 제목1";
+	private static final String TEMP_TITLE_2 = "임시 방 제목2";
+	private static final String TEMP_MESSAGE_1 = "임시 채팅 메시지";
+	private static final String TEMP_MESSAGE_2 = "임시 채팅 메시지2";
+	private static final String EVENT_CREATE = "CREATE";
+	private static final String EVENT_DELETE = "DELETE";
+	private static final String EVENT_GET = "GET";
+	private static final String EVENT_UPDATE = "UPDATE";
 
 	@BeforeEach
 	void setUp() {
@@ -146,7 +147,7 @@ class ChattingUseCaseTest {
 			);
 
 			verify(cacheService).addChatRoomToCache(ChatRoomCache.from(chatRoom1));
-			verify(eventService).publishRoomChangeEvent(
+			verify(eventService).publishChatRoomParticipantCountChangeEvent(
 				RoomChangedResponse.from(chatRoom1, EVENT_CREATE)
 			);
 		}
@@ -181,7 +182,7 @@ class ChattingUseCaseTest {
 			verify(sessionService).removeRoomSession(TEST_ROOM_ID);
 
 			ArgumentCaptor<RoomChangedResponse> responseCaptor = ArgumentCaptor.forClass(RoomChangedResponse.class);
-			verify(eventService).publishRoomChangeEvent(responseCaptor.capture());
+			verify(eventService).publishChatRoomParticipantCountChangeEvent(responseCaptor.capture());
 			RoomChangedResponse response = responseCaptor.getValue();
 			assertAll(
 				() -> assertEquals(TEST_ROOM_ID, response.roomId()),
@@ -210,7 +211,8 @@ class ChattingUseCaseTest {
 			ArgumentCaptor<List<RoomChangedResponse>> captor =
 				(ArgumentCaptor<List<RoomChangedResponse>>)(Object)
 					ArgumentCaptor.forClass(List.class);
-			verify(eventService).publishEnterEvent(captor.capture(), eq(TEST_PRINCIPAL), eq(TEST_SESSION_ID));
+			verify(eventService).publishChatRoomListLoadEvent(captor.capture(), eq(TEST_PRINCIPAL),
+				eq(TEST_SESSION_ID));
 
 			List<RoomChangedResponse> published = captor.getValue();
 			assertEquals(cacheChatRooms.size(), published.size());
@@ -251,7 +253,8 @@ class ChattingUseCaseTest {
 			ArgumentCaptor<List<RoomChangedResponse>> responseCaptor =
 				(ArgumentCaptor<List<RoomChangedResponse>>)(Object)
 					ArgumentCaptor.forClass(List.class);
-			verify(eventService).publishEnterEvent(responseCaptor.capture(), eq(TEST_PRINCIPAL), eq(TEST_SESSION_ID));
+			verify(eventService).publishChatRoomListLoadEvent(responseCaptor.capture(), eq(TEST_PRINCIPAL),
+				eq(TEST_SESSION_ID));
 
 			List<RoomChangedResponse> published = responseCaptor.getValue();
 			assertEquals(capturedRooms.size(), published.size());
@@ -289,7 +292,7 @@ class ChattingUseCaseTest {
 			);
 
 			ArgumentCaptor<ChatResponse> responseCaptor = ArgumentCaptor.forClass(ChatResponse.class);
-			verify(eventService).publishBroadCastChatEvent(responseCaptor.capture(), eq(TEST_ROOM_ID));
+			verify(eventService).publishChatMessageBroadcastEvent(responseCaptor.capture(), eq(TEST_ROOM_ID));
 			ChatResponse passedResponse = responseCaptor.getValue();
 			assertAll(
 				() -> assertEquals(passedResponse.message(), passedChat.getMessage()),
@@ -320,17 +323,20 @@ class ChattingUseCaseTest {
 			ArgumentCaptor<List<ChatResponse>> chatResponseCaptor =
 				(ArgumentCaptor<List<ChatResponse>>)(Object)
 					ArgumentCaptor.forClass(List.class);
-			verify(eventService).publishRoomEnterEvent(chatResponseCaptor.capture(), eq(TEST_PRINCIPAL), eq(TEST_SESSION_ID));
+			verify(eventService).publishChatRoomHistoryLoadEvent(chatResponseCaptor.capture(), eq(TEST_PRINCIPAL),
+				eq(TEST_SESSION_ID));
 
 			List<ChatResponse> passedChatResponse = chatResponseCaptor.getValue();
 			passedChatResponse.forEach(chatResponse ->
 				assertEquals(chatResponse.name(), user.getNickname())
 			);
 
-			verify(eventService).publishRoomEnterAndLeftEvent(user.getNickname() + " 님이 입장했어요~!", TEST_ROOM_ID);
+			verify(eventService).publishChatRoomEntryExitMessageEvent(
+				ChatMessageTemplate.CHAT_ROOM_ENTER.format(user.getNickname()), TEST_ROOM_ID);
 
-			ArgumentCaptor<RoomChangedResponse> roomChangedResponseCaptor = ArgumentCaptor.forClass(RoomChangedResponse.class);
-			verify(eventService).publishRoomChangeEvent(roomChangedResponseCaptor.capture());
+			ArgumentCaptor<RoomChangedResponse> roomChangedResponseCaptor = ArgumentCaptor.forClass(
+				RoomChangedResponse.class);
+			verify(eventService).publishChatRoomParticipantCountChangeEvent(roomChangedResponseCaptor.capture());
 			RoomChangedResponse passedRoomChangedResponse = roomChangedResponseCaptor.getValue();
 			assertAll(
 				() -> assertEquals(EVENT_UPDATE, passedRoomChangedResponse.eventType()),
@@ -348,7 +354,10 @@ class ChattingUseCaseTest {
 			given(userDomainService.getUser(anyString())).willReturn(user);
 			given(chattingDomainService.getChatRoom(anyLong())).willReturn(chatRoom1);
 			given(sessionService.removeSessionCount(TEST_SESSION_ID))
-				.willReturn(Map.of("roomId", TEST_ROOM_ID, "headCount", 1L));
+				.willReturn(RoomSessionInfo.builder()
+					.roomId(TEST_ROOM_ID)
+					.headCount(1L)
+					.build());
 
 			// when
 			chattingUseCase.leftChatRoom(TEST_SESSION_ID, TEST_EMAIL, TEST_ROOM_ID);
@@ -357,10 +366,11 @@ class ChattingUseCaseTest {
 			verify(userDomainService).getUser(TEST_EMAIL);
 			verify(chattingDomainService).getChatRoom(TEST_ROOM_ID);
 
-			verify(eventService).publishRoomEnterAndLeftEvent(user.getNickname() + " 님이 나가셨습니다~", TEST_ROOM_ID);
+			verify(eventService).publishChatRoomEntryExitMessageEvent(
+				ChatMessageTemplate.CHAT_ROOM_LEFT.format(user.getNickname()), TEST_ROOM_ID);
 
 			ArgumentCaptor<RoomChangedResponse> responseCaptor = ArgumentCaptor.forClass(RoomChangedResponse.class);
-			verify(eventService).publishRoomChangeEvent(responseCaptor.capture());
+			verify(eventService).publishChatRoomParticipantCountChangeEvent(responseCaptor.capture());
 			RoomChangedResponse passed = responseCaptor.getValue();
 			assertAll(
 				() -> assertEquals(TEST_ROOM_ID, passed.roomId()),

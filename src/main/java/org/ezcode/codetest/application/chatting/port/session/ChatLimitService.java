@@ -4,7 +4,7 @@ public interface ChatLimitService {
 
 	Long increaseChatCount(String email);
 
-	void applyChatBlock(String email);
+	void applyChatSpamPenalty(String email);
 
 	Boolean isBlocked(String email);
 

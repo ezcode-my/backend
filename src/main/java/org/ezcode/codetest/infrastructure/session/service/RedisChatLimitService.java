@@ -20,13 +20,14 @@ public class RedisChatLimitService implements ChatLimitService {
 
 	private final RedisScript<Long> incrWithTtlScript =
 		new DefaultRedisScript<>(
-			"local current = redis.call('INCR', KEYS[1])\n" +
-				"if tonumber(current) == 1 then\n" +
-				"  redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1]))\n" +
-				"end\n" +
-				"return tonumber(current)",
-			Long.class
-		);
+			"""
+				local current = redis.call('INCR', KEYS[1])
+				if tonumber(current) == 1 then
+				  redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1]))
+				end
+				return tonumber(current)
+				"""
+			, Long.class);
 
 	@Override
 	public Long increaseChatCount(String email) {
@@ -40,7 +41,7 @@ public class RedisChatLimitService implements ChatLimitService {
 		);
 	}
 
-	public void applyChatBlock(String email) {
+	public void applyChatSpamPenalty(String email) {
 
 		String sessionKey = RedisKeyConstants.BLOCKED_SESSION_KEY_PREFIX + email;
 

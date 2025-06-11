@@ -12,6 +12,7 @@ import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCacheService;
 import org.ezcode.codetest.application.chatting.port.event.ChatEventService;
 import org.ezcode.codetest.application.chatting.port.session.ChatSessionService;
 import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCache;
+import org.ezcode.codetest.application.chatting.port.session.RoomSessionInfo;
 import org.ezcode.codetest.domain.chat.model.Chat;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.service.ChattingDomainService;
@@ -46,7 +47,7 @@ public class ChattingUseCase {
 
 		cacheService.addChatRoomToCache(ChatRoomCache.from(savedRoom));
 
-		eventService.publishRoomChangeEvent(RoomChangedResponse.from(savedRoom, EVENT_TYPE_CREATE));
+		eventService.publishChatRoomParticipantCountChangeEvent(RoomChangedResponse.from(savedRoom, EVENT_TYPE_CREATE));
 	}
 
 	@Transactional
@@ -64,7 +65,8 @@ public class ChattingUseCase {
 
 		sessionService.removeRoomSession(request.roomId());
 
-		eventService.publishRoomChangeEvent(RoomChangedResponse.from(removedRoom, EVENT_TYPE_DELETE));
+		eventService.publishChatRoomParticipantCountChangeEvent(
+			RoomChangedResponse.from(removedRoom, EVENT_TYPE_DELETE));
 	}
 
 	@Transactional
@@ -91,7 +93,7 @@ public class ChattingUseCase {
 			)
 			.toList();
 
-		eventService.publishEnterEvent(roomLists, principalName, sessionId);
+		eventService.publishChatRoomListLoadEvent(roomLists, principalName, sessionId);
 	}
 
 	@Transactional
@@ -103,7 +105,7 @@ public class ChattingUseCase {
 
 		Chat chat = chattingDomainService.createChatting(request.toEntity(user, chatRoom));
 
-		eventService.publishBroadCastChatEvent(ChatResponse.from(chat), roomId);
+		eventService.publishChatMessageBroadcastEvent(ChatResponse.from(chat), roomId);
 	}
 
 	@Transactional
@@ -121,11 +123,12 @@ public class ChattingUseCase {
 
 		Long headCount = sessionService.addSessionCount(sessionId, roomId);
 
-		eventService.publishRoomEnterEvent(chatLists, principalName, sessionId);
+		eventService.publishChatRoomHistoryLoadEvent(chatLists, principalName, sessionId);
 
-		eventService.publishRoomEnterAndLeftEvent(user.getNickname() + " 님이 입장했어요~!", roomId);
+		eventService.publishChatRoomEntryExitMessageEvent(
+			ChatMessageTemplate.CHAT_ROOM_ENTER.format(user.getNickname()), roomId);
 
-		eventService.publishRoomChangeEvent(RoomChangedResponse.from(
+		eventService.publishChatRoomParticipantCountChangeEvent(RoomChangedResponse.from(
 				chatRoom,
 				EVENT_TYPE_UPDATE,
 				headCount
@@ -140,14 +143,15 @@ public class ChattingUseCase {
 
 		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomId);
 
-		Map<String, Long> roomData = sessionService.removeSessionCount(sessionId);
+		RoomSessionInfo roomData = sessionService.removeSessionCount(sessionId);
 
-		eventService.publishRoomEnterAndLeftEvent(user.getNickname() + " 님이 나가셨습니다~", roomId);
+		eventService.publishChatRoomEntryExitMessageEvent(
+			ChatMessageTemplate.CHAT_ROOM_LEFT.format(user.getNickname()), roomId);
 
-		eventService.publishRoomChangeEvent(RoomChangedResponse.from(
+		eventService.publishChatRoomParticipantCountChangeEvent(RoomChangedResponse.from(
 				chatRoom,
 				EVENT_TYPE_UPDATE,
-				roomData.get("headCount")
+				roomData.headCount()
 			)
 		);
 	}
