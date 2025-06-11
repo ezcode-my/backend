@@ -18,23 +18,54 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Submission", description = "코드 제출 및 리뷰 관련 API")
 public class SubmissionController {
 
 	private final SubmissionService submissionService;
 
 	@PostMapping("/problems/{problemId}/submit-stream")
+	@Operation(
+		summary = "코드 제출 (SSE 응답)",
+		description = """
+        이 API는 Server-Sent Events(SSE)를 통해 테스트케이스별 채점 결과를 스트리밍으로 전송합니다.
+
+        응답 MIME 타입: `text/event-stream`
+        
+        응답 예시:
+        ```
+        data: {"isPassed":true,"expectedOutput":"7","actualOutput":"7","executionTime":0.129,"memoryUsage":12196,"message":"Accepted"}
+        ```
+        """
+	)
+	@ApiResponse(
+		responseCode = "200",
+		description = "SSE로 스트리밍 응답 전송",
+		content = @Content(mediaType = "text/event-stream")
+	)
 	public SseEmitter submitCodeStream(
-		@PathVariable Long problemId,
+		@Parameter(description = "제출할 문제 ID", required = true) @PathVariable Long problemId,
 		@RequestBody @Valid CodeSubmitRequest request,
 		@AuthenticationPrincipal AuthUser authUser) {
 		return submissionService.submitCodeStream(problemId, request, authUser);
 	}
 
+	@Operation(
+		summary = "사용자 제출 목록 조회",
+		description = "현재 로그인한 사용자의 코드 제출 기록을 조회합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "제출 목록 반환")
+		}
+	)
 	@GetMapping("/submissions")
 	public ResponseEntity<List<GroupedSubmissionResponse>> getSubmissions(@AuthenticationPrincipal AuthUser authUser) {
 		return ResponseEntity
@@ -42,9 +73,16 @@ public class SubmissionController {
 			.body(submissionService.getSubmissions(authUser));
 	}
 
+	@Operation(
+		summary = "코드 리뷰 요청",
+		description = "특정 문제에 대해 사용자의 제출 코드를 리뷰 요청합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "리뷰 결과 반환")
+		}
+	)
 	@PostMapping("/problems/{problemId}/review")
 	public ResponseEntity<CodeReviewResponse> getCodeReview(
-		@PathVariable Long problemId,
+		@Parameter(description = "문제 ID", required = true) @PathVariable Long problemId,
 		@RequestBody @Valid CodeReviewRequest request) {
 		return ResponseEntity
 			.status(HttpStatus.OK)
