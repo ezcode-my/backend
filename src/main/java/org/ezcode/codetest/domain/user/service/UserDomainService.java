@@ -61,4 +61,10 @@ public class UserDomainService {
 			throw new AuthException(AuthExceptionCode.PASSWORD_IS_SAME);
 		}
 	}
+
+	public void isDeletedUser(User user) {
+		if (user.isDeleted()) {
+			throw new AuthException(AuthExceptionCode.ALREADY_WITHDRAW_USER);
+		}
+	}
 }

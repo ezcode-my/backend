@@ -11,9 +11,12 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
 	private final UserDomainService userDomainService;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	@Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(AuthUser authUser) {
@@ -95,6 +99,9 @@ public class UserService {
 		User user = userDomainService.getUserById(authUser.getId());
 
 		user.setDeleted();
+
+
+		redisTemplate.delete("RefreshToken:"+authUser.getId());
 
 		return new WithdrawUserResponse("탈퇴가 완료되었습니다");
 	}
