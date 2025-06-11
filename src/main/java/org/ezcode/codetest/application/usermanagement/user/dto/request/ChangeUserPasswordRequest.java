@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record ChangeUserPasswordRequest(
+	@NotBlank
 	String oldPassword,
 
 	@NotBlank(message = "비밀번호는 공백일 수 없습니다.")

@@ -21,7 +21,7 @@ public class UserDomainService {
 
 	public void checkEmailUnique(String email) {
 		if (userRepository.findByEmail(email).isPresent()) {
-			throw new AuthException(AuthExceptionCode.EXIST_USER_EMAIL);
+			throw new AuthException(AuthExceptionCode.ALREADY_EXIST_USER);
 		}
 	}
 
