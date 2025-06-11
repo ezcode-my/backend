@@ -8,7 +8,7 @@ import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-public class SessionRedisConfig {
+public class RedisSessionConfig {
 
 	@Bean
 	public RedisTemplate<String, Long> redisTemplate(RedisConnectionFactory factory) {

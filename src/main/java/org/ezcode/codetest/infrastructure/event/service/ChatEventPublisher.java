@@ -17,27 +17,27 @@ public class ChatEventPublisher implements ChatEventService {
 
 	private final ApplicationEventPublisher publisher;
 
-	public <T> void publishEnterEvent(T roomData, String principalName, String sessionId) {
+	public <T> void publishChatRoomListLoadEvent(T roomData, String principalName, String sessionId) {
 
 		publisher.publishEvent(new EnterEvent<>(roomData, principalName, sessionId));
 	}
 
-	public <T> void publishRoomEnterEvent(T chatData, String principalName, String sessionId) {
+	public <T> void publishChatRoomHistoryLoadEvent(T chatData, String principalName, String sessionId) {
 
 		publisher.publishEvent(new RoomEnterEvent<>(chatData, principalName, sessionId));
 	}
 
-	public <T> void publishBroadCastChatEvent(T chatData, Long roomId) {
+	public <T> void publishChatMessageBroadcastEvent(T chatData, Long roomId) {
 
 		publisher.publishEvent(new BroadCastChatEvent<>(chatData, roomId));
 	}
 
-	public <T> void publishRoomEnterAndLeftEvent(T messageData, Long roomId) {
+	public <T> void publishChatRoomEntryExitMessageEvent(T messageData, Long roomId) {
 
 		publisher.publishEvent(new RoomEnterAndLeftEvent<>(messageData, roomId));
 	}
 
-	public <T> void publishRoomChangeEvent(T roomData) {
+	public <T> void publishChatRoomParticipantCountChangeEvent(T roomData) {
 
 		publisher.publishEvent(new RoomChangeEvent<>(roomData));
 	}

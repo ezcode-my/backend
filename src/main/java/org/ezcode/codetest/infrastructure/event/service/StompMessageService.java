@@ -18,7 +18,7 @@ public class StompMessageService {
 
 	private final SimpMessagingTemplate messagingTemplate;
 
-	public <T> void handleEnter(T roomData, String principalName, String sessionId) {
+	public <T> void handleChatRoomListLoad(T roomData, String principalName, String sessionId) {
 
 		SimpMessageHeaderAccessor accessor =
 			SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
@@ -34,7 +34,7 @@ public class StompMessageService {
 		);
 	}
 
-	public <T> void handleRoomEnter(T chatData, String principalName, String sessionId) {
+	public <T> void handleChatRoomHistoryLoad(T chatData, String principalName, String sessionId) {
 
 		SimpMessageHeaderAccessor accessor =
 			SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
@@ -68,17 +68,17 @@ public class StompMessageService {
 		);
 	}
 
-	public <T> void handleBroadCastChat(T data, Long roomId) {
+	public <T> void handleChatMessageBroadcast(T data, Long roomId) {
 
 		messagingTemplate.convertAndSend("/topic/chat/" + roomId, data);
 	}
 
-	public <T> void handleRoomEnterAndLeftEvent(T messageData, Long roomId) {
+	public <T> void handleChatRoomEntryExitMessage(T messageData, Long roomId) {
 
 		messagingTemplate.convertAndSend("/topic/chat/" + roomId, messageData);
 	}
 
-	public <T> void handleRoomChangeEvent(T roomData) {
+	public <T> void handleChatRoomParticipantCountChange(T roomData) {
 
 		messagingTemplate.convertAndSend("/topic/chatrooms", roomData);
 	}

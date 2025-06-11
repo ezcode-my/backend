@@ -3,8 +3,11 @@ package org.ezcode.codetest.infrastructure.event.listener;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ezcode.codetest.application.chatting.port.session.RoomSessionInfo;
+import org.ezcode.codetest.application.chatting.service.ChatMessageTemplate;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.service.ChattingDomainService;
+import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.infrastructure.event.service.StompMessageService;
 import org.ezcode.codetest.infrastructure.session.service.RedisSessionCountService;
 import org.springframework.context.ApplicationListener;
@@ -21,6 +24,7 @@ public class WebSocketEventListener implements ApplicationListener<SessionDiscon
 	private final StompMessageService messageService;
 	private final RedisSessionCountService sessionService;
 	private final ChattingDomainService chattingDomainService;
+	private final UserDomainService userDomainService;
 
 	@Override
 	public void onApplicationEvent(SessionDisconnectEvent event) {
@@ -28,16 +32,20 @@ public class WebSocketEventListener implements ApplicationListener<SessionDiscon
 		StompHeaderAccessor h = StompHeaderAccessor.wrap(event.getMessage());
 		String sessionId = h.getSessionId();
 
-		Map<String, Long> roomData = sessionService.removeSessionCount(sessionId);
+		String email = h.getUser().getName();
+		String nickName = userDomainService.getUser(email).getNickname();
 
-		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomData.get("roomId"));
+		RoomSessionInfo roomData = sessionService.removeSessionCount(sessionId);
+		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomData.roomId());
 
 		Map<String, Object> payload = new HashMap<>();
 		payload.put("roomId", chatRoom.getId());
 		payload.put("title", chatRoom.getTitle());
-		payload.put("headCount", roomData.get("headCount"));
+		payload.put("headCount", roomData.headCount());
+		payload.put("eventType", "UPDATE");
 
-		messageService.handleRoomChangeEvent(payload);
-
+		messageService.handleChatRoomParticipantCountChange(payload);
+		messageService.handleChatRoomEntryExitMessage(ChatMessageTemplate.CHAT_ROOM_LEFT.format(nickName),
+			chatRoom.getId());
 	}
 }

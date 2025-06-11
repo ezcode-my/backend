@@ -21,20 +21,20 @@ public class ChatEventListener {
 	private final StompMessageService messageService;
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void handleEnterEvent(EnterEvent<?> event) {
+	public void handleChatRoomListLoad(EnterEvent<?> event) {
 
 		try {
-			messageService.handleEnter(event.roomData(), event.principalName(), event.sessionId());
+			messageService.handleChatRoomListLoad(event.roomData(), event.principalName(), event.sessionId());
 		} catch (Exception e) {
 			log.warn("사용자 입장 후, 채팅룸 전달 중 오류 발생", e);
 		}
 	}
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void handleRoomEnterEvent(RoomEnterEvent<?> event) {
+	public void handleChatRoomHistoryLoad(RoomEnterEvent<?> event) {
 
 		try {
-			messageService.handleRoomEnter(event.chatData(), event.principalName(), event.sessionId());
+			messageService.handleChatRoomHistoryLoad(event.chatData(), event.principalName(), event.sessionId());
 		} catch (Exception e) {
 			log.warn("사용자 채팅방 입장 후, 채팅내역 전달 중 오류 발생", e);
 		}
@@ -44,30 +44,30 @@ public class ChatEventListener {
 		phase = TransactionPhase.AFTER_COMMIT,
 		fallbackExecution = true
 	)
-	public void handleBroadCastChatEvent(BroadCastChatEvent<?> event) {
+	public void handleChatMessageBroadcast(BroadCastChatEvent<?> event) {
 
 		try {
-			messageService.handleBroadCastChat(event.chatData(), event.roomId());
+			messageService.handleChatMessageBroadcast(event.chatData(), event.roomId());
 		} catch (Exception e) {
 			log.warn("사용자 채팅 메시지 전달 중 오류 발생", e);
 		}
 	}
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void handleRoomEnterAndLeftEvent(RoomEnterAndLeftEvent<?> event) {
+	public void handleChatRoomEntryExitMessage(RoomEnterAndLeftEvent<?> event) {
 
 		try {
-			messageService.handleRoomEnterAndLeftEvent(event.messageData(), event.roomId());
+			messageService.handleChatRoomEntryExitMessage(event.messageData(), event.roomId());
 		} catch (Exception e) {
 			log.warn("사용자 입장/퇴장 메시지 전달 중 오류 발생", e);
 		}
 	}
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void handleRoomChangeEvent(RoomChangeEvent<?> event) {
+	public void handleChatRoomParticipantCountChange(RoomChangeEvent<?> event) {
 
 		try {
-			messageService.handleRoomChangeEvent(event.roomData());
+			messageService.handleChatRoomParticipantCountChange(event.roomData());
 		} catch (Exception e) {
 			log.warn("채팅룸 상태 변화 전달 중 오류 발생", e);
 		}

@@ -20,9 +20,9 @@ public class ChatSpamPreventionService {
 
 	public void applyChatBlock(String email, String nickName, Long roomId) {
 
-		limitService.applyChatBlock(email);
+		limitService.applyChatSpamPenalty(email);
 
-		eventService.publishBroadCastChatEvent(nickName + " 님께서 지나친 도배로 30초 동안 차단되었습니다.", roomId);
+		eventService.publishChatMessageBroadcastEvent(ChatMessageTemplate.SPAM_BLOCK.format(nickName, 30), roomId);
 	}
 
 	public Long countChatsInLast10Seconds(String email) {
