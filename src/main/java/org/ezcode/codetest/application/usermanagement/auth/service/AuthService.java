@@ -112,7 +112,7 @@ public class AuthService {
 			jwtUtil.getExpiration(refreshToken),
 			TimeUnit.MILLISECONDS);
 
-		return SigninResponse.from(bearToken);
+		return SigninResponse.from(bearToken, refreshToken);
 	}
 
 	public LogoutResponse logout(Long userId, HttpServletRequest request) {
