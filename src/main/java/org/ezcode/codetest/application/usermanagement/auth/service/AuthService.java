@@ -126,7 +126,7 @@ public class AuthService {
 
 		Long expiration = jwtUtil.getRemainingTime(token);
 
-		// Redis 실패 시에도 로그아웃 성공으로 처리 (보안상 사용자에게 노출하지 않음)
+		// Redis 실패 시에도 로그아웃 성공으로 처리 (보안상 사용자에게 노출하지 않음!)
 		try {
 			//블랙리스트로 등록하기
 			redisTemplate.opsForValue().set(
@@ -138,9 +138,9 @@ public class AuthService {
 
 			redisTemplate.delete("RefreshToken:" + userId);
 			} catch (Exception e) {
-				log.error("Redis 오류로 인한 로그아웃 처리 실패", e);}
+				log.error("Redis 오류로 인한 로그아웃 실패", e);}
 
-		return new LogoutResponse("success");
+		return new LogoutResponse("로그아웃 성공");
 	}
 
 	//토큰 재발급
