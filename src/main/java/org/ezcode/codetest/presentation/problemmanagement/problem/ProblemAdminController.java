@@ -16,17 +16,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/admin/problems")
 @RequiredArgsConstructor
+@Tag(name = "Problem(관리자)", description = "문제 API(관리자용)")
 public class ProblemAdminController {
 
 	private final ProblemService problemService;
 
 	@PostMapping
+	@Operation(summary = "문제 등록", description = "문제를 등록합니다.")
+	@ApiResponse(responseCode = "201", description = "문제 생성 성공")
 	public ResponseEntity<ProblemDetailResponse> createProblem(
 		@Valid @RequestBody ProblemCreateRequest request,
 		@AuthenticationPrincipal AuthUser user
@@ -38,6 +44,8 @@ public class ProblemAdminController {
 	}
 
 	@PutMapping("/{problemId}")
+	@Operation(summary = "문제 수정", description = "문제를 수정합니다.")
+	@ApiResponse(responseCode = "200", description = "문제 수정 성공")
 	public ResponseEntity<ProblemDetailResponse> modifyProblem(
 		@PathVariable Long problemId,
 		@Valid @RequestBody ProblemUpdateRequest request
@@ -49,6 +57,8 @@ public class ProblemAdminController {
 	}
 
 	@DeleteMapping("/{problemId}")
+	@Operation(summary = "문제 삭제", description = "문제를 삭제합니다.")
+	@ApiResponse(responseCode = "204", description = "문제 삭제 성공")
 	public ResponseEntity<Void> removeProblem(@PathVariable Long problemId) {
 
 		problemService.removeProblem(problemId);

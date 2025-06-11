@@ -16,16 +16,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/problems")
 @RequiredArgsConstructor
+@Tag(name = "Problem", description = "문제 API")
 public class ProblemController {
 
 	private final ProblemService problemService;
 
 	@GetMapping
+	@Operation(summary = "문제 전체조회", description = "문제를 전체조회 합니다.")
+	@ApiResponse(responseCode = "200", description = "문제 전체 조회성공")
 	public ResponseEntity<Page<ProblemResponse>> getProblemsList(
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
 		@RequestParam(required = false) Category category
@@ -37,6 +43,8 @@ public class ProblemController {
 	}
 
 	@GetMapping("/{problemId}")
+	@Operation(summary = "문제 상세조회", description = "문제를 상세조회 합니다.")
+	@ApiResponse(responseCode = "200", description = "문제 상세 조회성공")
 	public ResponseEntity<ProblemDetailResponse> getProblem(@PathVariable Long problemId) {
 
 		return ResponseEntity
