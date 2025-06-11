@@ -1,7 +1,8 @@
 package org.ezcode.codetest.application.usermanagement.auth.dto.signin;
 
-public record SigninResponse(String token)  {
-	public static SigninResponse from(String token) {
-		return new SigninResponse(token);
+
+public record SigninResponse(String accessToken, String refreshToken)  {
+	public static SigninResponse from(String accessToken, String refreshToken) {
+		return new SigninResponse(accessToken, refreshToken);
 	}
 }

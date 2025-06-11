@@ -48,12 +48,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		//OAuth2User
 		CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-
 		User loginUser = userDomainService.getOAuthUser(customUserDetails.getEmail(), customUserDetails.getProvider());
 
-		String token = jwtUtil.createToken(
+		String accessToken = jwtUtil.createToken(
 			loginUser.getId(),
 			loginUser.getEmail(),
 			loginUser.getRole(),
@@ -62,7 +59,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 			loginUser.getTier()
 		);
 		String refreshToken = jwtUtil.createRefreshToken(loginUser.getId());
+
 		log.info("refresh token 발급 완료");
+
 		//redis에 LOGIN : {redisToken} 형식으로 저장
 		redisTemplate.opsForValue().set(
 			"RefreshToken:" + loginUser.getId(),
@@ -72,29 +71,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		log.info("레디스에 저장완료");
 
 
-		//CSRF 공격 방어용
-		String encodedToken = URLEncoder.encode(token, StandardCharsets.UTF_8);
-		ResponseCookie cookie = ResponseCookie.from("Authorization", encodedToken)
-			.maxAge(Duration.ofHours(1))
-			.path("/")
-			.httpOnly(true)
-			.sameSite("Lax")
-			.build();
-		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+		//access token, refresh token을 프론트에 어떻게 전달하쥐...?
+
+
 
 		response.sendRedirect("https://ezcode.my/");
-		log.info("------------- token : {} ------------", token);
-	}
-
-
-	private Cookie createCookie(String key, String value) {
-		Cookie cookie = new Cookie(key, value);
-		cookie.setMaxAge(60*60*60);
-		//cookie.setSecure(true);
-		cookie.setPath("/");
-		cookie.setHttpOnly(true);
-
-		return cookie;
+		log.info("------------- accessToken : {}, refreshToken : {} ------------", accessToken, refreshToken);
 	}
 
 }
