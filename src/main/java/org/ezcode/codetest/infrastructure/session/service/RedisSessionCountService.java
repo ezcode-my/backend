@@ -81,12 +81,12 @@ public class RedisSessionCountService implements ChatSessionService {
 		String roomCountKey = RedisKeyConstants.ROOM_COUNT_KEY_PREFIX + roomId;
 
 		List<String> keys = Arrays.asList(roomKey, sessionKey, roomCountKey);
-		Object[] args = new Object[] {sessionId, roomId.toString()};
 
 		return redisTemplate.execute(
 			addSessionScript,
 			keys,
-			args
+			sessionId,
+			roomId.toString()
 		);
 	}
 

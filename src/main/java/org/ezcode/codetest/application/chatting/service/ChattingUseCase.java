@@ -1,7 +1,6 @@
 package org.ezcode.codetest.application.chatting.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.ezcode.codetest.application.chatting.dto.request.ChatRoomDeleteRequest;
 import org.ezcode.codetest.application.chatting.dto.request.ChatRoomSaveRequest;
