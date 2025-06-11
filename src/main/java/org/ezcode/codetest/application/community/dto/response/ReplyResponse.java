@@ -1,6 +1,6 @@
 package org.ezcode.codetest.application.community.dto.response;
 
-import org.ezcode.codetest.application.usermanagement.user.dto.SimpleUserInfoResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.SimpleUserInfoResponse;
 import org.ezcode.codetest.domain.community.model.Reply;
 
 public record ReplyResponse(

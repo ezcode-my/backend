@@ -1,12 +1,10 @@
 package org.ezcode.codetest.domain.user.model.entity;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.ezcode.codetest.application.usermanagement.user.dto.OAuth2Response;
-import org.ezcode.codetest.domain.user.model.enums.UserRole;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Response;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 

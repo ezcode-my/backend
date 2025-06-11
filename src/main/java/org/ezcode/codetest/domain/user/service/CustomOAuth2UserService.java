@@ -1,7 +1,7 @@
 package org.ezcode.codetest.domain.user.service;
 
-import org.ezcode.codetest.application.usermanagement.user.dto.GoogleOAuth2Response;
-import org.ezcode.codetest.application.usermanagement.user.dto.OAuth2Response;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.GoogleOAuth2Response;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Response;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
@@ -64,6 +64,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			log.info("이미 가입된 유저");
 		}
 
-		return new CustomOAuth2User(oAuth2Response, "USER"); //기본적으로 역할은 USER로 설정
+		return new CustomOAuth2User(oAuth2Response);
 	}
 }

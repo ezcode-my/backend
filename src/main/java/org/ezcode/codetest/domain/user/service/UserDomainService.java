@@ -55,4 +55,10 @@ public class UserDomainService {
 	public User getOAuthUser(String email, String provider) {
 		return userRepository.findByEmailAndProvider(email, provider);
 	}
+
+	public void passwordComparison(String newPassword, String oldPassword) {
+		if (passwordEncoder.matches(newPassword, oldPassword)) {
+			throw new AuthException(AuthExceptionCode.PASSWORD_IS_SAME);
+		}
+	}
 }

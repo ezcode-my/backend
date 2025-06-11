@@ -1,9 +1,10 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
-import org.ezcode.codetest.application.usermanagement.user.dto.ModifyUserInfoRequest;
-import org.ezcode.codetest.application.usermanagement.user.dto.UserInfoResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.request.ModifyUserInfoRequest;
+import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.UserInfoResponse;
 import org.ezcode.codetest.application.usermanagement.user.service.UserService;
-import org.ezcode.codetest.common.annotation.Auth;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +35,13 @@ public class UserController {
 		@RequestBody ModifyUserInfoRequest modifyUserInfoRequest
 	){
 		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserInfo(authUser, modifyUserInfoRequest));
+	}
+
+	@PutMapping("/users/password")
+	public ResponseEntity<ChangeUserPasswordResponse> modifyUserPassword(
+		@AuthenticationPrincipal AuthUser authUser,
+		@RequestBody ChangeUserPasswordRequest changeUserPasswordRequest
+	){
+		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserPassword(authUser, changeUserPasswordRequest));
 	}
 }

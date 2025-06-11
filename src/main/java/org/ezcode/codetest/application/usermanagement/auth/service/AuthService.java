@@ -8,17 +8,15 @@ import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninResp
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
-import org.ezcode.codetest.application.usermanagement.user.dto.LogoutResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
-import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;

@@ -3,6 +3,7 @@ package org.ezcode.codetest.domain.user.exception;
 import org.ezcode.codetest.common.base.exception.ResponseCode;
 import org.springframework.http.HttpStatus;
 
+import co.elastic.clients.elasticsearch.nodes.Http;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,8 +18,10 @@ public enum AuthExceptionCode implements ResponseCode {
 	INVALID_AUTHORIZATION_HEADER(false, HttpStatus.BAD_REQUEST, "유효하지 않은 Authorization 헤더"),
 	AUTH_TYPE_MISMATCH(false, HttpStatus.BAD_REQUEST, "소셜 가입 회원입니다"),
 	INVALID_REFRESH_TOKEN(false, HttpStatus.UNAUTHORIZED, "토큰이 유효하지 않거나 없습니다"),
+	ALREADY_EXIST_USER(false, HttpStatus.BAD_REQUEST, "이미 가입된 유저입니다."),
+	NOT_EMAIL_USER(false, HttpStatus.BAD_REQUEST, "소셜 로그인 회원은 비밀번호 변경을 할 수 없습니다."),
 
-	ALREADY_EXIST_USER(false, HttpStatus.BAD_REQUEST, "이미 가입된 유저입니다.");
+	PASSWORD_IS_SAME(false, HttpStatus.BAD_REQUEST, "기존 비밀번호와 같습니다");
 
 	private final boolean success;
 	private final HttpStatus status;

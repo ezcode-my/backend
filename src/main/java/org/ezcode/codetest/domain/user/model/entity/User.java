@@ -149,12 +149,12 @@ public class User extends BaseEntity {
 		this.isDeleted = true;
 	}
 
-	public void setModified() {
-		this.modifiedAt = LocalDateTime.now();
-	}
-
 	public boolean shouldSkipNotification(User recipient) {
 
 		return recipient == null || this.getId().equals(recipient.getId());
+	}
+
+	public void modifyPassword(String newPassword) {
+		this.password = newPassword;
 	}
 }
