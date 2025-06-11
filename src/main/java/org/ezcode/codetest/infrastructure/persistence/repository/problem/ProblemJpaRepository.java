@@ -26,4 +26,6 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
 		where p.id = :problemId
 		""")
 	Optional<Problem> findProblemWithTestcasesById(@Param("problemId") Long problemId);
+
+	boolean existsByTitle(String title);
 }

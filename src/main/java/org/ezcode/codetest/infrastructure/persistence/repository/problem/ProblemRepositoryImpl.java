@@ -48,4 +48,9 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 		return problemJpaRepository.findProblemWithTestcasesById(problemId);
 	}
 
+	@Override
+	public boolean existByTitle(String title) {
+		return problemJpaRepository.existsByTitle(title);
+	}
+
 }

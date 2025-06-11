@@ -24,6 +24,11 @@ public class ProblemDomainService {
 	//저장시 DB 뿐만 아니라 ElasticCache 에도 같이 저장합니다!
 	public Problem createProblem(Problem problem) {
 
+		// 중복된 문제 체크
+		if(problemRepository.existByTitle(problem.getTitle())) {
+			throw new ProblemException(ProblemExceptionCode.DUPLICATE_PROBLEM);
+		}
+
 		Problem savedProblem = problemRepository.save(problem);
 
 		searchRepository.save(ProblemSearchDocument.from(savedProblem));
