@@ -4,6 +4,7 @@ import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUse
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ModifyUserInfoRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserInfoResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.WithdrawUserResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
@@ -86,5 +87,15 @@ public class UserService {
 		user.modifyPassword(newPassword);
 
 		return new ChangeUserPasswordResponse("비밀번호를 성공적으로 변경했습니다");
+	}
+
+
+	@Transactional
+	public WithdrawUserResponse withdrawUser(AuthUser authUser) {
+		User user = userDomainService.getUserById(authUser.getId());
+
+		user.setDeleted();
+
+		return new WithdrawUserResponse("탈퇴가 완료되었습니다");
 	}
 }
