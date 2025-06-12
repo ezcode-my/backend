@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.querydsl.config;
+package org.ezcode.codetest.infrastructure.persistence.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
