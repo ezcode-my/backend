@@ -5,10 +5,8 @@ import org.ezcode.codetest.application.notification.event.NotificationCreateEven
 import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
 import org.ezcode.codetest.application.notification.dto.event.ReplyVoteEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
-import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.model.Reply;
 import org.ezcode.codetest.domain.community.model.ReplyVote;
-import org.ezcode.codetest.domain.community.service.DiscussionDomainService;
 import org.ezcode.codetest.domain.community.service.ReplyDomainService;
 import org.ezcode.codetest.domain.community.service.ReplyVoteDomainService;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -19,9 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomainService> {
 
-	private final UserDomainService userDomainService;
 	private final ReplyDomainService replyDomainService;
-	private final DiscussionDomainService discussionDomainService;
 
 	private final NotificationEventService notificationEventService;
 	private final NotificationConverter notificationConverter;
@@ -30,27 +26,21 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 		ReplyVoteDomainService domainService,
 		UserDomainService userDomainService,
 		ReplyDomainService replyDomainService,
-		DiscussionDomainService discussionDomainService,
 		NotificationEventService notificationEventService,
 		NotificationConverter notificationConverter
 	) {
-		super(domainService);
-		this.userDomainService = userDomainService;
+		super(domainService, userDomainService);
 		this.replyDomainService = replyDomainService;
-		this.discussionDomainService = discussionDomainService;
 		this.notificationEventService = notificationEventService;
 		this.notificationConverter = notificationConverter;
 	}
 
 	@Transactional
-	public VoteResponse validateAndToggleVote(Long problemId, Long discussionId, Long replyId, Long userId) {
+	public VoteResponse toggleVoteOnReply(Long problemId, Long discussionId, Long replyId, Long userId) {
 
-		User voter = userDomainService.getUserById(userId);
+		Reply reply = voteDomainService.getValidatedReply(problemId, discussionId, replyId);
 
-		Discussion discussion = discussionDomainService.getAndValidateDiscussionForProblem(discussionId, problemId);
-		Reply reply = replyDomainService.getAndValidateDiscussionMatches(replyId, discussion);
-
-		return toggleVote(voter, reply.getId());
+		return super.toggleVote(userId, reply.getId());
 	}
 
 	@Override

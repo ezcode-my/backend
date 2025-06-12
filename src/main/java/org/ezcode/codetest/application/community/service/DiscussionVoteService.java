@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DiscussionVoteService extends BaseVoteService<DiscussionVote, DiscussionVoteDomainService> {
 
-	private final UserDomainService userDomainService;
 	private final DiscussionDomainService discussionDomainService;
 
 	private final NotificationEventService notificationEventService;
@@ -30,21 +29,18 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 		NotificationEventService notificationEventService,
 		NotificationConverter notificationConverter
 	) {
-		super(domainService);
-		this.userDomainService = userDomainService;
+		super(domainService, userDomainService);
 		this.discussionDomainService = discussionDomainService;
 		this.notificationEventService = notificationEventService;
 		this.notificationConverter = notificationConverter;
 	}
 
 	@Transactional
-	public VoteResponse validateAndToggleVote(Long problemId, Long discussionId, Long userId) {
+	public VoteResponse toggleVoteOnDiscussion(Long problemId, Long discussionId, Long userId) {
 
-		User voter = userDomainService.getUserById(userId);
+		Discussion discussion = voteDomainService.getValidatedDiscussion(discussionId, problemId);
 
-		Discussion discussion = discussionDomainService.getAndValidateDiscussionForProblem(discussionId, problemId);
-
-		return toggleVote(voter, discussion.getId());
+		return super.toggleVote(userId, discussion.getId());
 	}
 
 	@Override

@@ -28,14 +28,6 @@ public class DiscussionDomainService {
 			.orElseThrow(() -> new CommunityException(CommunityExceptionCode.DISCUSSION_NOT_FOUND));
 	}
 
-	public Discussion getAndValidateDiscussionForProblem(Long discussionId, Long problemId) {
-
-		Discussion discussion = getDiscussionById(discussionId);
-		validateProblemMatches(discussion, problemId);
-
-		return discussion;
-	}
-
 	public Page<Discussion> getAllDiscussionsByProblemId(Long problemId, Pageable pageable) {
 
 		return discussionRepository.findAllByProblemId(problemId, pageable);

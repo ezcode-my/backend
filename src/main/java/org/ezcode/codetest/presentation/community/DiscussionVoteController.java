@@ -43,9 +43,12 @@ public class DiscussionVoteController {
 		@AuthenticationPrincipal AuthUser authUser
 	) {
 
-		VoteResponse response = discussionVoteService.validateAndToggleVote(problemId, discussionId, authUser.getId());
+		VoteResponse response = discussionVoteService.toggleVoteOnDiscussion(problemId, discussionId, authUser.getId());
 		HttpStatus status = response.voteStatus() ? HttpStatus.CREATED : HttpStatus.OK;
-		return ResponseEntity.status(status).body(response);
+
+		return ResponseEntity
+			.status(status)
+			.body(response);
 	}
 
 	@Operation(

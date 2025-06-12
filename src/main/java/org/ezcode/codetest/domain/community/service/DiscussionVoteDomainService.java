@@ -28,4 +28,12 @@ public class DiscussionVoteDomainService extends BaseVoteDomainService<Discussio
 			.discussion(discussion)
 			.build();
 	}
+
+	public Discussion getValidatedDiscussion(Long discussionId, Long problemId) {
+
+		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
+		discussionDomainService.validateProblemMatches(discussion, problemId);
+
+		return discussion;
+	}
 }
