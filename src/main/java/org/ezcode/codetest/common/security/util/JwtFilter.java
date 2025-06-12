@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.security.jwt;
+package org.ezcode.codetest.common.security.util;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
-	private final JwtUtilImpl jwtUtilImpl;
+	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 
 	@Override
@@ -42,13 +42,13 @@ public class JwtFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		String jwt = jwtUtilImpl.substringToken(bearerToken);
+		String jwt = jwtUtil.substringToken(bearerToken);
 
 		if (redisTemplate.opsForValue().get("LOGOUT:" + jwt) != null) {
 			throw new AuthException(AuthExceptionCode.LOGOUT_USER);
 		}
 
-		Claims claims = jwtUtilImpl.extractClaims(jwt);
+		Claims claims = jwtUtil.extractClaims(jwt);
 
 		if (claims == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다");

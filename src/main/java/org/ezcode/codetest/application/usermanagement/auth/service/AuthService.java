@@ -2,18 +2,18 @@ package org.ezcode.codetest.application.usermanagement.auth.service;
 
 import java.util.concurrent.TimeUnit;
 
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.RefreshTokenResponse;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninResponse;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupResponse;
-import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
+import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
