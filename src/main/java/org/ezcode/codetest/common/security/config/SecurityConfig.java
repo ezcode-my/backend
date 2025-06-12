@@ -5,6 +5,7 @@ import org.ezcode.codetest.common.security.hander.CustomSuccessHandler;
 import org.ezcode.codetest.common.security.jwt.ExceptionHandlingFilter;
 import org.ezcode.codetest.common.security.jwt.JwtFilter;
 import org.ezcode.codetest.common.security.jwt.JwtUtil;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -52,10 +53,9 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers(
-						"/",
-						"/signin",
+						"/auth/**",
+						"/refresh",
 						"/signup",
-						"/logout",
 						"/login",
 						"/ezlogin",
 						"/login/**",
@@ -82,5 +82,14 @@ public class SecurityConfig {
 			.addFilterBefore(exceptionFilter, JwtFilter.class)
 
 			.build();
+	}
+
+	@Bean
+	public FilterRegistrationBean<JwtFilter> jwtFilter() {
+		FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
+		registrationBean.setFilter(new JwtFilter(jwtUtil, redisTemplate));
+		registrationBean.addUrlPatterns("/*");
+
+		return registrationBean;
 	}
 }

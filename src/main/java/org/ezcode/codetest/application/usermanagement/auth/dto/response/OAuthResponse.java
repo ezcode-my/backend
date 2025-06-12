@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.usermanagement.auth.dto.signin;
+package org.ezcode.codetest.application.usermanagement.auth.dto.response;
 
 public record OAuthResponse(
 	String accessToken,

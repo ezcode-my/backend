@@ -3,7 +3,7 @@ package org.ezcode.codetest.common.security.hander;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.OAuthResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.OAuthResponse;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;

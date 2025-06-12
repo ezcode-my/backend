@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.usermanagement.auth.dto.signup;
+package org.ezcode.codetest.application.usermanagement.auth.dto.response;
 
 
 public record SignupResponse(String token) {

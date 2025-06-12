@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.usermanagement.auth.dto.signup;
+package org.ezcode.codetest.application.usermanagement.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,10 +1,11 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.RefreshTokenResponse;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninResponse;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.LogoutRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.auth.service.AuthService;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
@@ -31,12 +32,12 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(signupRequest));
 	}
 
-	@PostMapping("/signin")
+	@PostMapping("/auth/signin")
 	public ResponseEntity<SigninResponse> signin(@Valid @RequestBody SigninRequest signinRequest) {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.signin(signinRequest));
 	}
 
-	@PostMapping("/logout")
+	@PostMapping("/auth/logout")
 	public ResponseEntity<LogoutResponse> logout(
 			@AuthenticationPrincipal AuthUser authUser,
 			HttpServletRequest request) {
