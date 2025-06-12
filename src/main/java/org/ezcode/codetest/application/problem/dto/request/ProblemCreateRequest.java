@@ -17,11 +17,11 @@ public record ProblemCreateRequest(
 	Category category,
 
 	@NotBlank(message = "문제 제목을 입력하세요.")
-	@Schema(description = "문제 제목", example = "A+B")
+	@Schema(description = "제목", example = "A+B")
 	String title,
 
 	@NotBlank(message = "문제 설명을 입력하세요.")
-	@Schema(description = "문제 설명", example = "입력한 두수의 값을 더하고, 결과값을 출력하세요")
+	@Schema(description = "설명", example = "입력한 두수의 값을 더하고, 결과값을 출력하세요")
 	String description,
 
 	@NotNull(message = "난이도를 설정해야 합니다.")
@@ -33,7 +33,7 @@ public record ProblemCreateRequest(
 	Long memoryLimit,
 
 	@NotNull(message = "시간 제한을 설정해야 합니다.")
-	@Schema(description = "시간 제한", example = "1000")
+	@Schema(description = "시간 제한", example = "1000.0")
 	Double timeLimit,
 
 	@NotNull(message = "출처를 명시해야 합니다.")
