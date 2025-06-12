@@ -5,6 +5,7 @@ import org.ezcode.codetest.application.community.dto.request.DiscussionModifyReq
 import org.ezcode.codetest.application.community.dto.response.DiscussionResponse;
 import org.ezcode.codetest.application.community.service.DiscussionService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -65,7 +66,7 @@ public class DiscussionController {
 	@GetMapping
 	public ResponseEntity<Page<DiscussionResponse>> getDiscussions(
 		@PathVariable Long problemId,
-		@PageableDefault Pageable pageable
+		@ParameterObject @PageableDefault Pageable pageable
 	) {
 
 		Page<DiscussionResponse> page = discussionService.getDiscussions(problemId, pageable);

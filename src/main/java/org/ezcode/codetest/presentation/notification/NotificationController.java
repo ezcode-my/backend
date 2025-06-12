@@ -35,7 +35,7 @@ public class NotificationController {
 			@Parameter(name = "pageable", description = "페이징 정보 (page, size, sort)")
 		}
 	)
-	@ApiResponse(responseCode = "200", description = "알림 목록 조회 요청 완료")
+	@ApiResponse(responseCode = "200", description = "알림 목록 조회 요청 완료. 데이터는 웹소켓으로 전달됨")
 	@GetMapping
 	@ResponseMessage("알림 목록 조회 요청 완료")
 	public ResponseEntity<Void> getNotificationList(

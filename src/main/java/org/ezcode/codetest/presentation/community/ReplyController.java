@@ -5,6 +5,7 @@ import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
 import org.ezcode.codetest.application.community.service.ReplyService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -69,7 +70,7 @@ public class ReplyController {
 	public ResponseEntity<Page<ReplyResponse>> getReplies(
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
-		@PageableDefault Pageable pageable
+		@ParameterObject @PageableDefault Pageable pageable
 	) {
 
 		Page<ReplyResponse> page = replyService.getReplies(problemId, discussionId, pageable);
@@ -91,7 +92,7 @@ public class ReplyController {
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
 		@PathVariable Long parentReplyId,
-		@PageableDefault Pageable pageable
+		@ParameterObject @PageableDefault Pageable pageable
 	) {
 
 		Page<ReplyResponse> page = replyService.getChildReplies(problemId, discussionId, parentReplyId, pageable);
