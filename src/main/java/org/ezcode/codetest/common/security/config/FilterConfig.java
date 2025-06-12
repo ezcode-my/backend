@@ -1,7 +1,7 @@
-package org.ezcode.codetest.infrastructure.security.config;
+package org.ezcode.codetest.common.security.config;
 
-import org.ezcode.codetest.infrastructure.security.jwt.JwtFilter;
-import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
+import org.ezcode.codetest.common.security.jwt.JwtFilter;
+import org.ezcode.codetest.common.security.jwt.JwtUtil;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class FilterConfig {
-	private final JwtUtilImpl jwtUtil;
+	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 
 	@Bean

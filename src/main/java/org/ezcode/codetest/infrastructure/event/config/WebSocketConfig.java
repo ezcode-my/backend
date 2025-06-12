@@ -1,6 +1,6 @@
 package org.ezcode.codetest.infrastructure.event.config;
 
-import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
+import org.ezcode.codetest.common.security.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	private final JwtUtilImpl jwtUtil;
+	private final JwtUtil jwtUtil;
 
 	@Value("${spring.message.activemq.address}")
 	private String mqAddress;

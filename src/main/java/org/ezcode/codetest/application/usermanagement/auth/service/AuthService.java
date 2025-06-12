@@ -7,13 +7,13 @@ import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninRequ
 import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupResponse;
-import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
+import org.ezcode.codetest.common.security.jwt.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 

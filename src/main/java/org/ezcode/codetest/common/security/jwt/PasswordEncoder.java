@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.security.jwt;
+package org.ezcode.codetest.common.security.jwt;
 
 import org.springframework.stereotype.Component;
 

@@ -1,10 +1,10 @@
-package org.ezcode.codetest.infrastructure.security.config;
+package org.ezcode.codetest.common.security.config;
 
 import org.ezcode.codetest.domain.user.service.CustomOAuth2UserService;
-import org.ezcode.codetest.infrastructure.security.hander.CustomSuccessHandler;
-import org.ezcode.codetest.infrastructure.security.jwt.ExceptionHandlingFilter;
-import org.ezcode.codetest.infrastructure.security.jwt.JwtFilter;
-import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
+import org.ezcode.codetest.common.security.hander.CustomSuccessHandler;
+import org.ezcode.codetest.common.security.jwt.ExceptionHandlingFilter;
+import org.ezcode.codetest.common.security.jwt.JwtFilter;
+import org.ezcode.codetest.common.security.jwt.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-	private final JwtUtilImpl jwtUtil;
+	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final CustomOAuth2UserService customOAuth2UserService; //OAuth2.0 서비스
 	private final CustomSuccessHandler customSuccessHandler;

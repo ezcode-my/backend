@@ -4,7 +4,7 @@ import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
-import org.ezcode.codetest.infrastructure.security.jwt.PasswordEncoder;
+import org.ezcode.codetest.common.security.jwt.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;

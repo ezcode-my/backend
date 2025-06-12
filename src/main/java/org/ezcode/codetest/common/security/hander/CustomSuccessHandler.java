@@ -1,14 +1,13 @@
-package org.ezcode.codetest.infrastructure.security.hander;
+package org.ezcode.codetest.common.security.hander;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.ezcode.codetest.application.usermanagement.auth.dto.signin.OAuthResponse;
-import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
-import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
+import org.ezcode.codetest.common.security.jwt.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -29,7 +28,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ObjectMapper objectMapper; //json직렬화
 
-	public CustomSuccessHandler(JwtUtilImpl jwtUtil, UserDomainService userDomainService,
+	public CustomSuccessHandler(JwtUtil jwtUtil, UserDomainService userDomainService,
 		RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper) {
 		this.jwtUtil = jwtUtil;
 		this.userDomainService = userDomainService;

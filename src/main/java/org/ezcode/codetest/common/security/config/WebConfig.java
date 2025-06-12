@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.security.config;
+package org.ezcode.codetest.common.security.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

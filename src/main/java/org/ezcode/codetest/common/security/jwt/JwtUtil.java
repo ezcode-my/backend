@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.security.jwt;
+package org.ezcode.codetest.common.security.jwt;
 
 import java.security.Key;
 import java.util.Date;
@@ -7,8 +7,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
-import org.ezcode.codetest.application.usermanagement.auth.port.JwtUtil;
 import org.ezcode.codetest.common.exception.ServerException;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
@@ -22,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "JwtUtil")
 @Component
-public class JwtUtilImpl implements JwtUtil {
+public class JwtUtil {
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final long TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7;
 
@@ -95,7 +93,6 @@ public class JwtUtilImpl implements JwtUtil {
 		return expiration.getTime() - System.currentTimeMillis(); // 남은시간을 ms 단위로 계산해서 반환
 	}
 
-	@Override
 	public Long getRemainingTime(String token) {
 		Date expiration = extractClaims(token).getExpiration();
 		return expiration.getTime() - System.currentTimeMillis();
@@ -104,7 +101,6 @@ public class JwtUtilImpl implements JwtUtil {
 	/*
 	토큰 갱신
 	 */
-	@Override
 	public String createRefreshToken(Long userId) {
 		Date now = new Date();
 		Date expirationDate = new Date(now.getTime() + TOKEN_EXPIRATION_TIME * 1000L); //만료 시간
@@ -117,7 +113,6 @@ public class JwtUtilImpl implements JwtUtil {
 			.compact();
 	}
 
-	@Override
 	public Long getUserId(String token) {
 		Claims claims = Jwts.parserBuilder()
 			.setSigningKey(key)
@@ -128,7 +123,6 @@ public class JwtUtilImpl implements JwtUtil {
 		return Long.parseLong(claims.getSubject());
 	}
 
-	@Override
 	public boolean validateToken(String refreshToken) {
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken);
