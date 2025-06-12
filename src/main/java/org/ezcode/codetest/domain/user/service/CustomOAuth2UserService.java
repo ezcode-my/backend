@@ -57,6 +57,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			log.info("newUser: {} 새로운 유저", newUser);
 			try {
 				userRepository.createUser(newUser);
+			} catch (IllegalStateException e) {
+				throw new OAuth2AuthenticationException("닉네임 생성 실패입니다");
 			} catch (Exception e) {
 				log.error("OAuth 사용자 생성 실패 : {}", e.getMessage());
 				throw new OAuth2AuthenticationException("사용자 생성 실패입니다");
