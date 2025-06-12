@@ -1,7 +1,7 @@
 package org.ezcode.codetest.domain.user.service;
 
-	import org.ezcode.codetest.domain.user.model.enums.Adjective;
-	import org.ezcode.codetest.domain.user.model.enums.Noun;
+import org.ezcode.codetest.domain.user.model.enums.Adjective;
+import org.ezcode.codetest.domain.user.model.enums.Noun;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
