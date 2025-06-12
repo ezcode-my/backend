@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      SPRING_REDIS_HOST: ${{ secrets.SPRING_REDIS_HOST }}
+      SPRING_REDIS_PORT: ${{ secrets.SPRING_REDIS_PORT }}
+      SPRING_REDIS_PASSWORD: ${{ secrets.SPRING_REDIS_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      ACTIVEMQ_ADDRESS: ${{ secrets.ACTIVEMQ_ADDRESS }}
+      ACTIVEMQ_USERNAME: ${{ secrets.ACTIVEMQ_USERNAME }}
+      ACTIVEMQ_PASSWORD: ${{ secrets.ACTIVEMQ_PASSWORD }}
+      ACTIVEMQ_PORT: ${{ secrets.ACTIVEMQ_PORT }}
+      JUDGE0_URL: ${{ secrets.JUDGE0_URL }}
+      ELASTICSEARCH_ADDRESS: ${{ secrets.ELASTICSEARCH_ADDRESS }}
+      ELASTICSEARCH_USERNAME: ${{ secrets.ELASTICSEARCH_USERNAME }}
+      ELASTICSEARCH_PASSWORD: ${{ secrets.ELASTICSEARCH_PASSWORD }}
+      ELASTICSEARCH_PORT: ${{ secrets.ELASTICSEARCH_PORT }}
+      OPEN_API_URL: ${{ secrets.OPEN_API_URL }}
+      OPEN_API_KEY: ${{ secrets.OPEN_API_KEY }}
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
