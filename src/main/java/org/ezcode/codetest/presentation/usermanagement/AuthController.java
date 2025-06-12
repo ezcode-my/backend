@@ -1,10 +1,10 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.RefreshTokenResponse;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signin.SigninResponse;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.signup.SignupResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.auth.service.AuthService;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,27 +25,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "인증/인가", description = "회원가입, 로그인, 로그아웃, 토큰 재발급 관련 API")
 public class AuthController {
 	private final AuthService authService;
 
-	@PostMapping("/signup")
+	@Operation(summary = "회원가입", description = "이메일, 비밀번호 등 정보를 입력받아 회원가입을 진행합니다.")
+	@PostMapping("/auth/signup")
 	public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(signupRequest));
 	}
 
-	@PostMapping("/signin")
+	@Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인하고 토큰을 발급받습니다.")
+	@PostMapping("/auth/signin")
 	public ResponseEntity<SigninResponse> signin(@Valid @RequestBody SigninRequest signinRequest) {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.signin(signinRequest));
 	}
 
-	@PostMapping("/logout")
+	@Operation(summary = "로그아웃", description = "현재 로그인된 사용자의 로그아웃을 수행합니다.")
+	@PostMapping("/auth/logout")
 	public ResponseEntity<LogoutResponse> logout(
 			@AuthenticationPrincipal AuthUser authUser,
 			HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.logout(authUser.getId(), request));
 	}
 
-	@PostMapping("/refresh")
+	@Operation(summary = "토큰 재발급", description = "리프레시 토큰을 이용하여 새로운 액세스 토큰을 발급합니다.")
+	@PostMapping("/auth/refresh")
 	public ResponseEntity<RefreshTokenResponse> refresh(HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.refreshToken(request));
 	}

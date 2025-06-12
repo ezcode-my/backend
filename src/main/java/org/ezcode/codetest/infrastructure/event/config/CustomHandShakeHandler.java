@@ -4,7 +4,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.Map;
 
-import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
+import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomHandShakeHandler extends DefaultHandshakeHandler {
 
-	private final JwtUtilImpl jwtUtilImpl;
+	private final JwtUtil jwtUtil;
 
 	@Override
 	protected Principal determineUser(
@@ -33,7 +33,7 @@ public class CustomHandShakeHandler extends DefaultHandshakeHandler {
 		}
 		//TODO : 토큰의 대한 예외처리 아직 구현 x
 
-		Claims claims = jwtUtilImpl.extractClaims(tokenParam);
+		Claims claims = jwtUtil.extractClaims(tokenParam);
 		String email = claims.get("email", String.class);
 
 		return () -> email;

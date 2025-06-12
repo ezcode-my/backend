@@ -1,10 +1,11 @@
-package org.ezcode.codetest.infrastructure.security.config;
+package org.ezcode.codetest.common.security.config;
 
 import org.ezcode.codetest.domain.user.service.CustomOAuth2UserService;
-import org.ezcode.codetest.infrastructure.security.hander.CustomSuccessHandler;
-import org.ezcode.codetest.infrastructure.security.jwt.ExceptionHandlingFilter;
-import org.ezcode.codetest.infrastructure.security.jwt.JwtFilter;
-import org.ezcode.codetest.infrastructure.security.jwt.JwtUtilImpl;
+import org.ezcode.codetest.common.security.hander.CustomSuccessHandler;
+import org.ezcode.codetest.common.security.util.ExceptionHandlingFilter;
+import org.ezcode.codetest.common.security.util.JwtFilter;
+import org.ezcode.codetest.common.security.util.JwtUtil;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-	private final JwtUtilImpl jwtUtil;
+	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final CustomOAuth2UserService customOAuth2UserService; //OAuth2.0 서비스
 	private final CustomSuccessHandler customSuccessHandler;
@@ -52,10 +53,9 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers(
-						"/",
-						"/signin",
+						"/auth/**",
+						"/refresh",
 						"/signup",
-						"/logout",
 						"/login",
 						"/ezlogin",
 						"/login/**",
@@ -82,5 +82,14 @@ public class SecurityConfig {
 			.addFilterBefore(exceptionFilter, JwtFilter.class)
 
 			.build();
+	}
+
+	@Bean
+	public FilterRegistrationBean<JwtFilter> jwtFilter() {
+		FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
+		registrationBean.setFilter(new JwtFilter(jwtUtil, redisTemplate));
+		registrationBean.addUrlPatterns("/*");
+
+		return registrationBean;
 	}
 }
