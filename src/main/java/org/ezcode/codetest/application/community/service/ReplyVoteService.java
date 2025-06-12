@@ -1,7 +1,5 @@
 package org.ezcode.codetest.application.community.service;
 
-import java.util.Optional;
-
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
@@ -49,24 +47,10 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 
 		User voter = userDomainService.getUserById(userId);
 
-		// validate
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
-		Reply reply = replyDomainService.getReplyById(replyId);
-		replyDomainService.validateDiscussionMatches(reply, discussion);
+		Discussion discussion = discussionDomainService.getAndValidateDiscussionForProblem(discussionId, problemId);
+		Reply reply = replyDomainService.getAndValidateDiscussionMatches(replyId, discussion);
 
-		Optional<ReplyVote> replyVote = toggleVote(voter, replyId);
-		return new VoteResponse(replyVote.isPresent());
-	}
-
-	@Override
-	protected ReplyVote buildVoteEntity(User voter, Long targetId) {
-		Reply reply = replyDomainService.getReplyById(targetId);
-
-		return ReplyVote.builder()
-			.voter(voter)
-			.reply(reply)
-			.build();
+		return toggleVote(voter, reply.getId());
 	}
 
 	@Override

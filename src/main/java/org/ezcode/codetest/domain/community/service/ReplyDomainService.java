@@ -28,6 +28,14 @@ public class ReplyDomainService {
 			.orElseThrow(() -> new CommunityException(CommunityExceptionCode.REPLY_NOT_FOUND));
 	}
 
+	public Reply getAndValidateDiscussionMatches(Long replyId, Discussion discussion) {
+
+		Reply reply = getReplyById(replyId);
+		validateDiscussionMatches(reply, discussion);
+
+		return reply;
+	}
+
 	public Page<Reply> getRepliesByDiscussionId(Discussion discussion, Pageable pageable) {
 
 		return replyRepository.findAllRepliesByDiscussionId(discussion.getId(), pageable);

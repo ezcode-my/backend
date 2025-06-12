@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.community.model.BaseVote;
 import org.ezcode.codetest.domain.community.repository.BaseVoteRepository;
+import org.ezcode.codetest.domain.user.model.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -12,14 +13,18 @@ public abstract class BaseVoteDomainService<T extends BaseVote, R extends BaseVo
 
 	protected final R repository;
 
-	public T createVoteEntity(T entity) {
+	public boolean toggleVote(User voter, Long targetId) {
 
-		return repository.save(entity);
-	}
+		Optional<T> existing = repository.findByVoterIdAndTargetId(voter.getId(), targetId);
 
-	public Optional<T> getVoteEntity(Long voterId, Long targetId) {
+		if (existing.isPresent()) {
+			repository.delete(existing.get());
+			return false;
+		}
 
-		return repository.findByVoterIdAndTargetId(voterId, targetId);
+		T vote = buildVote(voter, targetId);
+		repository.save(vote);
+		return true;
 	}
 
 	public boolean getVoteStatus(Long voterId, Long targetId) {
@@ -27,8 +32,5 @@ public abstract class BaseVoteDomainService<T extends BaseVote, R extends BaseVo
 		return repository.existsByVoterIdAndTargetId(voterId, targetId);
 	}
 
-	public void removeVoteEntity(T entity) {
-
-		repository.delete(entity);
-	}
+	protected abstract T buildVote(User voter, Long targetId);
 }

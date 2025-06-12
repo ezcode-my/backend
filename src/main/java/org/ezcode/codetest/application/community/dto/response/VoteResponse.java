@@ -13,4 +13,8 @@ public record VoteResponse(
 	)
 	boolean voteStatus
 ) {
+
+	public static VoteResponse of(boolean voteStatus) {
+		return new VoteResponse(voteStatus);
+	}
 }
