@@ -91,12 +91,12 @@ public class User extends BaseEntity {
 	/*
 	OAuth2로 로그인한 유저 저장
 	 */
-	public static User googleUser(String email, String username){
+	public static User googleUser(String email, String username, String nickname){
 		return User.builder()
 			.email(email)
 			.username(username)
 			.authType(AuthType.GOOGLE)
-			.nickname("user_" + UUID.randomUUID().toString().split("-")[0])//닉네임은 자동으로 생성해주고, 나중에 수정할 수 있도록 함
+			.nickname(nickname)//닉네임은 자동으로 생성해주고, 나중에 수정할 수 있도록 함
 			.tier(Tier.NEWBIE)
 			.role(UserRole.USER)
 			.isDeleted(false)
@@ -104,12 +104,12 @@ public class User extends BaseEntity {
 			.build();
 	}
 
-	public static User githubUser(String email, String username){
+	public static User githubUser(String email, String username,String nickname){
 		return User.builder()
 			.email(email)
 			.username(username)
 			.authType(AuthType.GITHUB)
-			.nickname("user_" + UUID.randomUUID().toString().split("-")[0])//닉네임은 자동으로 생성해주고, 나중에 수정할 수 있도록 함
+			.nickname(nickname)//닉네임은 자동으로 생성해주고, 나중에 수정할 수 있도록 함
 			.tier(Tier.NEWBIE)
 			.role(UserRole.USER)
 			.password(UUID.randomUUID().toString())

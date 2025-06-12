@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
+	private final UserDomainService userDomainService;
 
 	@Override
 	@Transactional
@@ -51,7 +52,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		User findUser = userRepository.getUserByEmail(oAuth2Response.getEmail());
 
 		if (findUser == null) {
-			User newUser = User.googleUser(oAuth2Response.getEmail(), username);
+			String nickname = userDomainService.generateUniqueNickname();
+			User newUser = User.googleUser(oAuth2Response.getEmail(), username, nickname);
 			log.info("newUser: {} 새로운 유저", newUser);
 			try {
 				userRepository.createUser(newUser);

@@ -38,4 +38,9 @@ public class UserRepositoryImpl implements UserRepository {
 		return userJpaRepository.findUserByEmailAndAuthType(email, AuthType.from(provider));
 	}
 
+	@Override
+	public boolean existsByNickname(String nickname) {
+		return userJpaRepository.existsByNickname(nickname);
+	}
+
 }
