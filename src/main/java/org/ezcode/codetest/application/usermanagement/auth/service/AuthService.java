@@ -2,7 +2,6 @@ package org.ezcode.codetest.application.usermanagement.auth.service;
 
 import java.util.concurrent.TimeUnit;
 
-import org.ezcode.codetest.application.usermanagement.auth.dto.request.LogoutRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
@@ -14,7 +13,7 @@ import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
-import org.ezcode.codetest.common.security.jwt.JwtUtil;
+import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 

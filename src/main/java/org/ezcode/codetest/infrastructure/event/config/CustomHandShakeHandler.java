@@ -4,7 +4,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.Map;
 
-import org.ezcode.codetest.common.security.jwt.JwtUtil;
+import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;

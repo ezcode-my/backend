@@ -1,6 +1,6 @@
 package org.ezcode.codetest.infrastructure.event.config;
 
-import org.ezcode.codetest.common.security.jwt.JwtUtil;
+import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

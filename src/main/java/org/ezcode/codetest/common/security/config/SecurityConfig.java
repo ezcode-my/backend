@@ -2,9 +2,9 @@ package org.ezcode.codetest.common.security.config;
 
 import org.ezcode.codetest.domain.user.service.CustomOAuth2UserService;
 import org.ezcode.codetest.common.security.hander.CustomSuccessHandler;
-import org.ezcode.codetest.common.security.jwt.ExceptionHandlingFilter;
-import org.ezcode.codetest.common.security.jwt.JwtFilter;
-import org.ezcode.codetest.common.security.jwt.JwtUtil;
+import org.ezcode.codetest.common.security.util.ExceptionHandlingFilter;
+import org.ezcode.codetest.common.security.util.JwtFilter;
+import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

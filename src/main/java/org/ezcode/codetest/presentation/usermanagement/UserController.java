@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +25,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "사용자 기본 기능", description = "사용자 정보 조회, 수정, 비밀번호 변경, 회원 탈퇴 API")
 public class UserController {
 	private final UserService userService;
 
+	@Operation(summary = "내 정보 조회", description = "로그인한 사용자의 정보를 조회합니다.")
 	@GetMapping("/users")
 	public ResponseEntity<UserInfoResponse> getUserInfo(@AuthenticationPrincipal AuthUser authUser){
 		log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(authUser));
 	}
 
+	@Operation(summary = "내 정보 수정", description = "닉네임, 블로그, 깃허브, 소개 등 개인 정보를 추가하거나 수정합니다.")
 	@PutMapping("/users")
 	public ResponseEntity<UserInfoResponse> modifyUserInfo(
 		@AuthenticationPrincipal AuthUser authUser,
@@ -40,6 +45,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserInfo(authUser, modifyUserInfoRequest));
 	}
 
+	@Operation(summary = "비밀번호 변경", description = "기존 비밀번호와 새 비밀번호를 입력하여 비밀번호를 변경합니다.")
 	@PutMapping("/users/password")
 	public ResponseEntity<ChangeUserPasswordResponse> modifyUserPassword(
 		@AuthenticationPrincipal AuthUser authUser,
@@ -48,6 +54,8 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserPassword(authUser, changeUserPasswordRequest));
 	}
 
+
+	@Operation(summary = "회원 탈퇴", description = "현재 로그인된 사용자를 탈퇴 처리합니다.")
 	@DeleteMapping("/users/withdraw")
 	public ResponseEntity<WithdrawUserResponse> withdraw(
 		@AuthenticationPrincipal AuthUser authUser

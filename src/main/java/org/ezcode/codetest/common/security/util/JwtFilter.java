@@ -1,4 +1,4 @@
-package org.ezcode.codetest.common.security.jwt;
+package org.ezcode.codetest.common.security.util;
 
 import java.io.IOException;
 import java.util.Collection;
