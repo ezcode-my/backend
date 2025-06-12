@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
+	private final UserDomainService userDomainService;
 
 	@Override
 	@Transactional
@@ -51,10 +52,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		User findUser = userRepository.getUserByEmail(oAuth2Response.getEmail());
 
 		if (findUser == null) {
-			User newUser = User.googleUser(oAuth2Response.getEmail(), username);
+			String nickname = userDomainService.generateUniqueNickname();
+			User newUser = User.googleUser(oAuth2Response.getEmail(), username, nickname);
 			log.info("newUser: {} 새로운 유저", newUser);
 			try {
 				userRepository.createUser(newUser);
+			} catch (IllegalStateException e) {
+				throw new OAuth2AuthenticationException("닉네임 생성 실패입니다");
 			} catch (Exception e) {
 				log.error("OAuth 사용자 생성 실패 : {}", e.getMessage());
 				throw new OAuth2AuthenticationException("사용자 생성 실패입니다");

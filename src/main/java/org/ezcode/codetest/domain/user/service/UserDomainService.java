@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.user.service;
 
+import org.ezcode.codetest.domain.user.model.enums.Adjective;
+import org.ezcode.codetest.domain.user.model.enums.Noun;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserDomainService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private static final java.util.Random RANDOM = new java.util.Random();
 
 	public void checkEmailUnique(String email) {
 		if (userRepository.findByEmail(email).isPresent()) {
@@ -66,5 +69,22 @@ public class UserDomainService {
 		if (user.isDeleted()) {
 			throw new AuthException(AuthExceptionCode.ALREADY_WITHDRAW_USER);
 		}
+	}
+
+	public String generateUniqueNickname() {
+		for (int i = 0; i < 10000000; i++) {
+			String nickname = generateRandomNickname();
+			if(!userRepository.existsByNickname(nickname)) {
+				return nickname;
+			}
+		}
+		throw new IllegalStateException("중복된 닉네임 생성 불가");
+	}
+
+	private static String generateRandomNickname() {
+		Adjective adjective = Adjective.values()[RANDOM.nextInt(Adjective.values().length)];
+		Noun noun = Noun.values()[RANDOM.nextInt(Noun.values().length)];
+		int number = RANDOM.nextInt(1000);
+		return adjective.name() + noun.name() + number;
 	}
 }
