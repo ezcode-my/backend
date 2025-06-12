@@ -4,7 +4,13 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
+import org.ezcode.codetest.domain.game.exception.GameException;
+import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
+import org.ezcode.codetest.domain.game.model.enums.Accessory;
+import org.ezcode.codetest.domain.game.model.enums.Defence;
+import org.ezcode.codetest.domain.game.model.enums.Item;
 import org.ezcode.codetest.domain.game.model.enums.Stat;
+import org.ezcode.codetest.domain.game.model.enums.Weapon;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.CollectionTable;
@@ -13,6 +19,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -52,6 +59,17 @@ public class GameCharacter extends BaseEntity {
 
 	@Embedded
 	private CharacterRealStat realStat;
+	
+	@Enumerated(EnumType.STRING)
+	private Weapon weapon;
+
+	@Enumerated(EnumType.STRING)
+	private Defence defence;
+
+	@Enumerated(EnumType.STRING)
+	private Accessory accessory;
+
+	private Long gold;
 
 	public GameCharacter(User user) {
 
@@ -59,7 +77,10 @@ public class GameCharacter extends BaseEntity {
 		for (Stat stat : Stat.values()) {
 			stats.put(stat, 0.0);
 		}
-
+		gold = 100L;
+		weapon = Weapon.NOTHING;
+		defence = Defence.NOTHING;
+		accessory = Accessory.NOTHING;
 		realStat = new CharacterRealStat();
 	}
 
@@ -69,4 +90,31 @@ public class GameCharacter extends BaseEntity {
 		realStat.applyIncreaseRealStats(stats);
 	}
 
+	public void useGoldForGamble() {
+
+		if(gold < 50L) throw new GameException(GameExceptionCode.NOT_ENOUGH_GOLD);
+
+		gold -= 50L;;
+	}
+
+	public void earnGold(Long gold) {
+
+		this.gold += gold;
+	}
+
+	public Item equipItem(Item item) {
+		Item oldItem = null;
+
+		if (item instanceof Weapon newWeapon) {
+			oldItem = weapon;
+			weapon = newWeapon;
+		} else if (item instanceof Defence newDefence) {
+			oldItem = defence;
+			defence = newDefence;
+		} else if (item instanceof Accessory newAccessory) {
+			oldItem = accessory;
+			accessory = newAccessory;
+		}
+		return oldItem;
+	}
 }

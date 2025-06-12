@@ -14,6 +14,6 @@ public enum Stat {
 	private final String stat;
 
 	Stat(String stat) {
-		this.stat=stat;
+		this.stat = stat;
 	}
 }

@@ -1,20 +1,28 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.game;
 
+import java.util.Optional;
+
 import org.ezcode.codetest.domain.game.model.entity.Inventory;
+import org.ezcode.codetest.domain.game.repository.InventoryRepository;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class InventoryRepositoryImpl {
+public class InventoryRepositoryImpl implements InventoryRepository {
 
 	private final InventoryJpaRepository inventoryRepository;
-
 
 	public Inventory save(Inventory inventory) {
 
 		return inventoryRepository.save(inventory);
 	}
+
+	public Optional<Inventory> findByGameCharacterId(Long gameCharacterId) {
+
+		return inventoryRepository.findByGameCharacterId(gameCharacterId);
+	}
+
 
 }
