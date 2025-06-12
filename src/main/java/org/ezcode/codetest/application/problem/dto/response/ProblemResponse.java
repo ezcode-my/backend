@@ -4,23 +4,31 @@ import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
 public record ProblemResponse(
 
+	@Schema(description = "PK", example = "1")
 	Long id,
 
+	@Schema(description = "출제자", example = "홍길동")
 	String creator,
 
+	@Schema(description = "카테고리", example = "FOR_BEGINNER")
 	Category category,
 
+	@Schema(description = "제목", example = "A+B")
 	String title,
 
+	@Schema(description = "점수", example = "20")
 	int score,
 
+	@Schema(description = "난이도", example = "BRONZE")
 	String difficulty,
 
+	@Schema(description = "출처", example = "ORIGINAL")
 	Reference reference
 
 ) {

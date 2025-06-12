@@ -48,4 +48,9 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 		return problemJpaRepository.findProblemWithTestcasesById(problemId);
 	}
 
+	@Override
+	public boolean existsByTitleAndIsDeletedIsFalse(String title) {
+		return problemJpaRepository.existsByTitleAndIsDeletedIsFalse(title);
+	}
+
 }
