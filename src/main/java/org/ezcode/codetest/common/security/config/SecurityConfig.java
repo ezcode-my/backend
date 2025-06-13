@@ -40,10 +40,10 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.logout(AbstractHttpConfigurer::disable)
-			.oauth2Login((outh2)-> outh2
-				.userInfoEndpoint((userInfoEndpointConfig ->
-					userInfoEndpointConfig.userService(customOAuth2UserService)))
-				.successHandler(customSuccessHandler))
+			// .oauth2Login((outh2)-> outh2
+			// 	.userInfoEndpoint((userInfoEndpointConfig ->
+			// 		userInfoEndpointConfig.userService(customOAuth2UserService)))
+			// 	.successHandler(customSuccessHandler))
 			// JWT 사용을 위해 세션을 STATELESS로 설정 (세션 정보 저장 x)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -54,7 +54,6 @@ public class SecurityConfig {
 				authorizeRequests
 					.requestMatchers(
 						"/auth/**",
-						"/refresh",
 						"/signup",
 						"/login",
 						"/ezlogin",
