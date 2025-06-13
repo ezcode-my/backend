@@ -2,6 +2,7 @@ package org.ezcode.codetest.presentation.submission;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Content;
 import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewRequest;
 import org.ezcode.codetest.application.submission.dto.request.submission.CodeSubmitRequest;
 import org.ezcode.codetest.application.submission.dto.response.review.CodeReviewResponse;
@@ -11,11 +12,7 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,29 +21,33 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Tag(name = "Submission", description = "코드 제출 및 리뷰 관련 API")
 public class SubmissionController {
 
 	private final SubmissionService submissionService;
 
-/*	@PostMapping("/problems/{problemId}/submit-stream")
+	@PostMapping("/problems/{problemId}/submit-stream")
 	@Operation(
 		summary = "코드 제출 (SSE 응답)",
 		description = """
         이 API는 Server-Sent Events(SSE)를 통해 테스트케이스별 채점 결과를 스트리밍으로 전송합니다.
 
         응답 MIME 타입: `text/event-stream`
-        
+  
         응답 예시:
         ```
         data: {"isPassed":true,"expectedOutput":"7","actualOutput":"7","executionTime":0.129,"memoryUsage":12196,"message":"Accepted"}
         ```
-        """
+  
+        ```
+        event: final
+        data: {"totalCount":5,"passedCount":5,"message":"Accepted", correct":true}
+        ```
+  """
 	)
 	@ApiResponse(
 		responseCode = "200",
@@ -56,13 +57,6 @@ public class SubmissionController {
 	public SseEmitter submitCodeStream(
 		@Parameter(description = "제출할 문제 ID", required = true) @PathVariable Long problemId,
 		@RequestBody @Valid CodeSubmitRequest request,
-		@AuthenticationPrincipal AuthUser authUser) {
-		return submissionService.submitCodeStream(problemId, request, authUser);
-	}*/
-
-	@PostMapping("/problems/{problemId}/submit-stream-test")
-	public SseEmitter submitCodeStreamTest(@PathVariable Long problemId,
-		@RequestBody CodeSubmitRequest request,
 		@AuthenticationPrincipal AuthUser authUser) {
 		return submissionService.enqueueCodeSubmission(problemId, request, authUser);
 	}
