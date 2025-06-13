@@ -33,7 +33,7 @@ public record ReplyCreateRequest(
 			.discussion(discussion)
 			.user(user)
 			.parent(parent)
-			.content(request.content())
+			.content(request.content)
 			.build();
 	}
 }

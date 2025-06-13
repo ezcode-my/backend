@@ -29,6 +29,7 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 		NotificationEventService notificationEventService,
 		NotificationConverter notificationConverter
 	) {
+
 		super(domainService, userDomainService);
 		this.discussionDomainService = discussionDomainService;
 		this.notificationEventService = notificationEventService;

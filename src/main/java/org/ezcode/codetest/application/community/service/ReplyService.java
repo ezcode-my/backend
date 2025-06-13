@@ -41,23 +41,14 @@ public class ReplyService {
 	) {
 
 		User user = userDomainService.getUserById(userId);
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
 
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply parent = null;
-		if (request.parentReplyId() != null) {
-			parent = replyDomainService.getReplyById(request.parentReplyId());
-			replyDomainService.validateDiscussionMatches(parent, discussion);
-		}
+		Reply reply = replyDomainService.createReply(discussion, user, request.parentReplyId(), request.content());
 
-		Reply reply = replyDomainService.createReply(
-			ReplyCreateRequest.toEntity(discussion, user, parent, request)
-		);
-
+		// TODO: 알림 관련 리팩토링 필요
 		User discussionAuthor = discussion.getUser();	// TODO: get depth 하나로 줄이기
 		User parentAuthor = reply.getParent() != null ? reply.getParent().getUser() : null;
-
 		notify(user, discussionAuthor, reply);
 		notify(user, parentAuthor, reply);
 
@@ -67,10 +58,10 @@ public class ReplyService {
 	@Transactional(readOnly = true)
 	public Page<ReplyResponse> getReplies(Long problemId, Long discussionId, Pageable pageable) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
 		Page<Reply> replies = replyDomainService.getRepliesByDiscussionId(discussion, pageable);
+
 		return replies.map(ReplyResponse::fromEntity);
 	}
 
@@ -82,13 +73,10 @@ public class ReplyService {
 		Pageable pageable
 	) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply parent = replyDomainService.getReplyById(parentReplyId);
-		replyDomainService.validateDiscussionMatches(parent, discussion);
+		Page<Reply> replies = replyDomainService.getRepliesByParentReplyId(parentReplyId, discussion, pageable);
 
-		Page<Reply> replies = replyDomainService.getRepliesByParentReplyId(parentReplyId, pageable);
 		return replies.map(ReplyResponse::fromEntity);
 	}
 
@@ -101,14 +89,9 @@ public class ReplyService {
 		Long userId
 	) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply reply = replyDomainService.getReplyById(replyId);
-		replyDomainService.validateDiscussionMatches(reply, discussion);
-		replyDomainService.validateIsAuthor(reply, userId);
-
-		replyDomainService.modify(reply, request.content());
+		Reply reply = replyDomainService.modify(replyId, discussion, userId, request.content());
 
 		return ReplyResponse.fromEntity(reply);
 	}
@@ -117,14 +100,9 @@ public class ReplyService {
 	@Transactional
 	public void removeReply(Long problemId, Long discussionId, Long replyId, Long userId) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply reply = replyDomainService.getReplyById(replyId);
-		replyDomainService.validateDiscussionMatches(reply, discussion);
-		replyDomainService.validateIsAuthor(reply, userId);
-
-		replyDomainService.remove(reply);
+		replyDomainService.remove(replyId, discussion, userId);
 	}
 
 	private void notify(User sender, User recipient, Reply reply) {

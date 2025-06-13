@@ -49,13 +49,15 @@ public class DiscussionService {
 	@Transactional
 	public DiscussionResponse modifyDiscussion(Long problemId, Long discussionId, DiscussionModifyRequest request, Long userId) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-
-		discussionDomainService.validateProblemMatches(discussion, problemId);
-		discussionDomainService.validateIsAuthor(discussion, userId);
-
 		Language language = languageDomainService.getLanguage(request.languageId());
-		discussionDomainService.modify(discussion, language, request.content());
+
+		Discussion discussion = discussionDomainService.modify(
+			discussionId,
+			problemId,
+			userId,
+			language,
+			request.content()
+		);
 
 		return DiscussionResponse.fromEntity(discussion);
 	}
@@ -63,11 +65,6 @@ public class DiscussionService {
 	@Transactional
 	public void removeDiscussion(Long problemId, Long discussionId, Long userId) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-
-		discussionDomainService.validateProblemMatches(discussion, problemId);
-		discussionDomainService.validateIsAuthor(discussion, userId);
-
-		discussionDomainService.remove(discussion);
+		discussionDomainService.remove(discussionId, problemId, userId);
 	}
 }

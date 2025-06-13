@@ -15,12 +15,14 @@ public class DiscussionVoteDomainService extends BaseVoteDomainService<Discussio
 		DiscussionVoteRepository repository,
 		DiscussionDomainService discussionDomainService
 	) {
+
 		super(repository);
 		this.discussionDomainService = discussionDomainService;
 	}
 
 	@Override
 	protected DiscussionVote buildVote(User voter, Long targetId) {
+
 		Discussion discussion = discussionDomainService.getDiscussionById(targetId);
 
 		return DiscussionVote.builder()

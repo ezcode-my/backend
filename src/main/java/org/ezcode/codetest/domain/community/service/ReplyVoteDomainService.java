@@ -18,6 +18,7 @@ public class ReplyVoteDomainService extends BaseVoteDomainService<ReplyVote, Rep
 		ReplyDomainService replyDomainService,
 		DiscussionDomainService discussionDomainService
 	) {
+
 		super(repository);
 		this.replyDomainService = replyDomainService;
 		this.discussionDomainService = discussionDomainService;
@@ -25,6 +26,7 @@ public class ReplyVoteDomainService extends BaseVoteDomainService<ReplyVote, Rep
 
 	@Override
 	protected ReplyVote buildVote(User voter, Long targetId) {
+
 		Reply reply = replyDomainService.getReplyById(targetId);
 
 		return ReplyVote.builder()
