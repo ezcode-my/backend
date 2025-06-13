@@ -61,7 +61,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers(
-						"/auth/**",
+						"/api/auth/**",   //회원가입 안되서 수정했습니다
 						"/signup",
 						"/login",
 						"/ezlogin",
