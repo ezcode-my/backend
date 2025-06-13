@@ -34,9 +34,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	// 토큰 검증을 건너뛸 경로들
 	private static final String[] WHITE_LIST = {
-		"/auth/signin",
-		"/auth/signup",
-		"/auth/refresh",
+		"/api/auth/signin",
+		"/api/auth/signup",
+		// "/api/auth/refresh",
 		"/swagger-ui",
 		"/v3/api-docs",
 	};

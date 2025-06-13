@@ -61,8 +61,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers(
-						"/auth/**",
-						"/signup",
+						"/api/auth/**",
 						"/login",
 						"/ezlogin",
 						"/login/**",
