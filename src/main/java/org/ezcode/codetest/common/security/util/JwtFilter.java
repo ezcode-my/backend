@@ -36,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	private static final String[] WHITE_LIST = {
 		"/api/auth/signin",
 		"/api/auth/signup",
-		// "/api/auth/refresh",
+		"/api/auth/refresh",
 		"/swagger-ui",
 		"/v3/api-docs",
 	};
