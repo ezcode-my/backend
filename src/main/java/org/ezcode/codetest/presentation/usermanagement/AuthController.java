@@ -1,5 +1,7 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
+import java.util.Optional;
+
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
@@ -7,6 +9,8 @@ import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupReq
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.auth.service.AuthService;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
+import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.netty.handler.codec.http2.Http2Headers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,7 +51,12 @@ public class AuthController {
 	public ResponseEntity<LogoutResponse> logout(
 			@AuthenticationPrincipal AuthUser authUser,
 			HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(authService.logout(authUser.getId(), request));
+
+		String token = Optional.ofNullable(request.getHeader("Authorization"))
+			.map(h -> h.replace("Bearer ", ""))
+			.orElseThrow(()-> new AuthException(AuthExceptionCode.INVALID_AUTHORIZATION_HEADER));
+
+		return ResponseEntity.status(HttpStatus.OK).body(authService.logout(authUser.getId(), token));
 	}
 
 	@Operation(summary = "토큰 재발급", description = "리프레시 토큰을 이용하여 새로운 액세스 토큰을 발급합니다.")

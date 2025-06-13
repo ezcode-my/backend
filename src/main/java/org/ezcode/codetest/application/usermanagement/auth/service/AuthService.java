@@ -115,14 +115,7 @@ public class AuthService {
 		return SigninResponse.from(bearToken, refreshToken);
 	}
 
-	public LogoutResponse logout(Long userId, HttpServletRequest request) {
-		String bearerToken = request.getHeader("Authorization");
-
-		if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-			throw new AuthException(AuthExceptionCode.INVALID_AUTHORIZATION_HEADER);
-		}
-
-		String token = jwtUtil.substringToken(bearerToken);
+	public LogoutResponse logout(Long userId, String token) {
 
 		Long expiration = jwtUtil.getRemainingTime(token);
 
