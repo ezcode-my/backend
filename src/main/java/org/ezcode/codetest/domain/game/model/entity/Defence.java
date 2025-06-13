@@ -27,7 +27,7 @@ public class Defence extends Item {
 		Integer speed,
 		Integer evasion
 	) {
-		super(id, ItemCategory.ARMOR, type, grade, name, description);
+		super(id, ItemCategory.DEFENCE, type, grade, name, description);
 		this.def = def;
 		this.speed = speed;
 		this.evasion = evasion;

@@ -12,6 +12,7 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ public class GamePlayController {
 	public ResponseEntity<Void> createCharacter(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
-		gamePlayUseCase.CreateCharacter(authUser.getEmail());
+		gamePlayUseCase.createCharacter(authUser.getEmail());
 
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
@@ -41,13 +42,13 @@ public class GamePlayController {
 	public ResponseEntity<CharacterStatusResponse> CharacterStatusOpen(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
-		return ResponseEntity.status(HttpStatus.OK).body(gamePlayUseCase.CharacterStatusOpen(authUser.getId()));
+		return ResponseEntity.status(HttpStatus.OK).body(gamePlayUseCase.characterStatusOpen(authUser.getId()));
 	}
 
 	@PostMapping("/gamblings")
 	public ResponseEntity<ItemGamblingResponse> gamblingForItem(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody ItemGamblingRequest request
+		@RequestBody @Validated ItemGamblingRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(gamePlayUseCase.gamblingForItem(authUser.getId(), request.itemCategory()));
@@ -64,7 +65,7 @@ public class GamePlayController {
 	@PatchMapping("/characters")
 	public ResponseEntity<Void> equipItem(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody ItemEquipRequest request
+		@RequestBody @Validated ItemEquipRequest request
 	) {
 		gamePlayUseCase.equipItem(authUser.getId(), request.itemName());
 

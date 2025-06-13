@@ -52,7 +52,7 @@ public class ItemShoppingDomainService {
 
 		character.useGoldForGamble();
 
-		List<Item> defenceList = itemRepository.findAllByItemCategory(ItemCategory.ARMOR);
+		List<Item> defenceList = itemRepository.findAllByItemCategory(ItemCategory.DEFENCE);
 
 		Random random = new Random();
 

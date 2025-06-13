@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.game.dto.response;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public record CharacterStatusResponse(
 
 		return CharacterStatusResponse.builder()
 			.realStat(character.getRealStat())
-			.stats(character.getStats())
+			.stats(Collections.unmodifiableMap(character.getStats()))
 			.gold(character.getGold())
 			.items(items)
 			.skills(skills)

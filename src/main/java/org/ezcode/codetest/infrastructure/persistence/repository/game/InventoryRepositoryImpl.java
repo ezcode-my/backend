@@ -14,11 +14,13 @@ public class InventoryRepositoryImpl implements InventoryRepository {
 
 	private final InventoryJpaRepository inventoryRepository;
 
+	@Override
 	public Inventory save(Inventory inventory) {
 
 		return inventoryRepository.save(inventory);
 	}
 
+	@Override
 	public Optional<Inventory> findByGameCharacterId(Long gameCharacterId) {
 
 		return inventoryRepository.findByGameCharacterId(gameCharacterId);

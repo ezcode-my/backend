@@ -1,5 +1,5 @@
 package org.ezcode.codetest.domain.game.model.enums;
 
 public enum ItemCategory {
-	WEAPON, ARMOR, ACCESSORY
+	WEAPON, DEFENCE, ACCESSORY
 }

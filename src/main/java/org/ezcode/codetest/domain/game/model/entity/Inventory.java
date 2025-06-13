@@ -32,16 +32,16 @@ public class Inventory extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "game_character_id", nullable = false)
-	GameCharacter gameCharacter;
+	private GameCharacter gameCharacter;
 
 	@ElementCollection(fetch = FetchType.LAZY)
-	List<String> weapons = new ArrayList<>();
+	private List<String> weapons = new ArrayList<>();
 
 	@ElementCollection(fetch = FetchType.LAZY)
-	List<String> defences = new ArrayList<>();
+	private List<String> defences = new ArrayList<>();
 
 	@ElementCollection(fetch = FetchType.LAZY)
-	List<String> accessories = new ArrayList<>();
+	private List<String> accessories = new ArrayList<>();
 
 	public Inventory(GameCharacter gameCharacter) {
 

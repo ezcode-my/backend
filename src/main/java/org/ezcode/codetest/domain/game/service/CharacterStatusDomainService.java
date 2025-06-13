@@ -1,7 +1,6 @@
 package org.ezcode.codetest.domain.game.service;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -41,7 +40,7 @@ public class CharacterStatusDomainService {
 			.orElseThrow(() -> new GameException(GameExceptionCode.CHARACTER_NOT_FOUND));
 	}
 
-	public List<Item> InventoryOpen(Long characterId) {
+	public List<Item> inventoryOpen(Long characterId) {
 
 		Inventory inventory = inventoryRepository.findByGameCharacterId(characterId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));

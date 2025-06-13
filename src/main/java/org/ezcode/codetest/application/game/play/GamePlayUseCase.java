@@ -28,7 +28,7 @@ public class GamePlayUseCase {
 	private final GameMapper gameMapper;
 
 	@Transactional
-	public void CreateCharacter(String email) {
+	public void createCharacter(String email) {
 
 		User user = userDomainService.getUser(email);
 
@@ -36,7 +36,7 @@ public class GamePlayUseCase {
 	}
 
 	@Transactional
-	public CharacterStatusResponse CharacterStatusOpen(Long userId) {
+	public CharacterStatusResponse characterStatusOpen(Long userId) {
 
 		GameCharacter character = characterService.getGameCharacter(userId);
 		List<Item> equippedItems = characterService.loadEquippedItems(character);
@@ -58,7 +58,7 @@ public class GamePlayUseCase {
 
 		Item newItem = switch (ItemCategory.valueOf(itemCategory.toUpperCase())) {
 			case WEAPON -> itemShoppingService.gamblingNewWeapon(character);
-			case ARMOR -> itemShoppingService.gamblingNewDefence(character);
+			case DEFENCE -> itemShoppingService.gamblingNewDefence(character);
 			case ACCESSORY -> itemShoppingService.gamblingNewAccessory(character);
 		};
 
@@ -70,7 +70,7 @@ public class GamePlayUseCase {
 
 		GameCharacter character = characterService.getGameCharacter(userId);
 
-		List<Item> inventoryItems = characterService.InventoryOpen(character.getId());
+		List<Item> inventoryItems = characterService.inventoryOpen(character.getId());
 
 		return inventoryItems.stream().map(gameMapper::toItemResponse).toList();
 	}

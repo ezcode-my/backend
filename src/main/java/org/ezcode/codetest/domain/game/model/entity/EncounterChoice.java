@@ -26,7 +26,7 @@ public class EncounterChoice {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "random_encounter_id", nullable = false)
-	RandomEncounter encounter;
+	private RandomEncounter encounter;
 
 	private String resultText;
 

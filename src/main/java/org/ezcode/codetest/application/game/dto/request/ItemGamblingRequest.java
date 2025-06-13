@@ -5,11 +5,11 @@ import jakarta.validation.constraints.Pattern;
 
 public record ItemGamblingRequest(
 
-	@NotBlank(message = "아이템 타입을 결정해주세요(weapon, armor, accessory)")
+	@NotBlank(message = "아이템 타입을 결정해주세요(weapon, defence, accessory)")
 	@Pattern(
-		regexp = "weapon|armor|accessory",
+		regexp = "weapon|defence|accessory",
 		flags = Pattern.Flag.CASE_INSENSITIVE,
-		message = "아이템 타입은 weapon, armor, accessory 중 하나여야 합니다."
+		message = "아이템 타입은 weapon, defence, accessory 중 하나여야 합니다."
 	)
 	String itemCategory
 

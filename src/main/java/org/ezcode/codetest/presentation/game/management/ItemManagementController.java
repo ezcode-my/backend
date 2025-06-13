@@ -21,8 +21,7 @@ public class ItemManagementController {
 	private final GameAdminUseCase gameAdminUseCase;
 
 	@PostMapping
-	public ResponseEntity<Void> createChatRoom(
-		@AuthenticationPrincipal AuthUser authUser,
+	public ResponseEntity<Void> createItem(
 		@RequestBody ItemSaveRequest request
 	) {
 

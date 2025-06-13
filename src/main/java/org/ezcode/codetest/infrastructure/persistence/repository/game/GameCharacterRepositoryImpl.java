@@ -14,11 +14,13 @@ public class GameCharacterRepositoryImpl implements GameCharacterRepository {
 
 	private final GameCharacterJpaRepository characterRepository;
 
+	@Override
 	public GameCharacter save(GameCharacter character) {
 
 		return characterRepository.save(character);
 	}
 
+	@Override
 	public Optional<GameCharacter> findByUserId(Long userId) {
 
 		return characterRepository.findByUserId(userId);
