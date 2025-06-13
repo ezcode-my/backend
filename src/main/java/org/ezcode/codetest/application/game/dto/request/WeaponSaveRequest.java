@@ -4,10 +4,15 @@ import org.ezcode.codetest.domain.game.model.entity.Item;
 import org.ezcode.codetest.domain.game.model.entity.Weapon;
 import org.ezcode.codetest.domain.game.model.enums.WeaponType;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
+@JsonTypeName("weapon")
+@Getter
 public class WeaponSaveRequest extends ItemSaveRequest {
 
 	@NotBlank
@@ -58,9 +63,9 @@ public class WeaponSaveRequest extends ItemSaveRequest {
 		return Weapon.builder()
 			.id(null)
 			.type(wt)
-			.grade(this.getGrade())
-			.name(this.getName())
-			.description(this.getDescription())
+			.grade(getGrade())
+			.name(getName())
+			.description(getDescription())
 			.atk(atk)
 			.speed(speed)
 			.crit(crit)
