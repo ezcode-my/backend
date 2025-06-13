@@ -20,12 +20,13 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Submission", description = "코드 제출 및 리뷰 관련 API")
@@ -33,7 +34,7 @@ public class SubmissionController {
 
 	private final SubmissionService submissionService;
 
-	@PostMapping("/problems/{problemId}/submit-stream")
+/*	@PostMapping("/problems/{problemId}/submit-stream")
 	@Operation(
 		summary = "코드 제출 (SSE 응답)",
 		description = """
@@ -57,6 +58,13 @@ public class SubmissionController {
 		@RequestBody @Valid CodeSubmitRequest request,
 		@AuthenticationPrincipal AuthUser authUser) {
 		return submissionService.submitCodeStream(problemId, request, authUser);
+	}*/
+
+	@PostMapping("/problems/{problemId}/submit-stream-test")
+	public SseEmitter submitCodeStreamTest(@PathVariable Long problemId,
+		@RequestBody CodeSubmitRequest request,
+		@AuthenticationPrincipal AuthUser authUser) {
+		return submissionService.enqueueCodeSubmission(problemId, request, authUser);
 	}
 
 	@Operation(

@@ -1,8 +1,10 @@
 package org.ezcode.codetest.application.submission.service;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewRequest;
 import org.ezcode.codetest.application.submission.dto.request.review.ReviewPayload;
@@ -10,6 +12,9 @@ import org.ezcode.codetest.application.submission.dto.response.review.CodeReview
 import org.ezcode.codetest.application.submission.dto.response.submission.FinalResultResponse;
 import org.ezcode.codetest.application.submission.dto.response.submission.GroupedSubmissionResponse;
 import org.ezcode.codetest.application.submission.model.ReviewResult;
+import org.ezcode.codetest.application.submission.port.QueueProducer;
+import org.ezcode.codetest.infrastructure.event.dto.SubmissionMessage;
+import org.ezcode.codetest.application.submission.port.EmitterStore;
 import org.ezcode.codetest.application.submission.port.ReviewClient;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
@@ -30,12 +35,17 @@ import org.ezcode.codetest.domain.submission.service.SubmissionDomainService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
+import org.ezcode.codetest.infrastructure.event.service.RedisJudgeQueueProducer;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubmissionService {
@@ -46,81 +56,110 @@ public class SubmissionService {
 	private final ProblemDomainService problemDomainService;
 	private final LanguageDomainService languageDomainService;
 	private final SubmissionDomainService submissionDomainService;
+	private final EmitterStore emitterStore;
+	private final QueueProducer queueProducer;
 
 	private static final String COMPILE_MESSAGE = "Accepted";
+	private final ThreadPoolTaskExecutor judgeTestcaseExecutor;
 
-	public SseEmitter submitCodeStream(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
+	public SseEmitter enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
+		log.info("[Submission START] Thread = {}", Thread.currentThread().getName());
+		SseEmitter emitter = new SseEmitter(10 * 60 * 1000L);
+		String emitterKey = authUser.getId() + "_" + UUID.randomUUID();
 
-		SseEmitter emitter = new SseEmitter();
+		emitterStore.save(emitterKey, emitter);
 
-		new Thread(() -> {
-			try {
-				SubmissionAggregator aggregator = new SubmissionAggregator();
-				User user = userDomainService.getUserById(authUser.getId());
-				Language language = languageDomainService.getLanguage(request.languageId());
-				ProblemInfo problemInfo = problemDomainService.getProblemInfo(problemId);
+		SubmissionMessage message = new SubmissionMessage(
+			emitterKey, problemId, request.languageId(), authUser.getId(), request.sourceCode()
+		);
 
-				int passedCount = 0;
-				String message = COMPILE_MESSAGE;
-
-				for (Testcase tc : problemInfo.testcaseList()) {
-
-					JudgeResult result = judgeClient.execute(
-						new CodeCompileRequest(request.sourceCode(), language.getJudge0Id(), tc.getInput())
-					);
-
-					AnswerEvaluation evaluation = submissionDomainService.evaluate(
-						tc.getOutput(), result.actualOutput(), result.success(), result.executionTime(), result.memoryUsage() , problemInfo
-					);
-
-					if (evaluation.isPassed()) {
-						passedCount++;
-					} else {
-						message = result.message();
-					}
-
-					submissionDomainService.collectStatistics(aggregator, result.executionTime(), result.memoryUsage());
-
-					emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
-				}
-
-				SubmissionData submissionData = SubmissionData.base(
-					user, problemInfo, language, request.sourceCode(), message
-				);
-
-				submissionDomainService.finalizeSubmission(submissionData, aggregator, passedCount);
-
-				emitter.send(SseEmitter.event()
-					.name("final")
-					.data(new FinalResultResponse(problemInfo.getTestcaseCount(), passedCount, message))
-				);
-
-				emitter.complete();
-			} catch (Exception e) {
-				emitter.completeWithError(e);
-			}
-		}).start();
+		queueProducer.enqueue(message);
 
 		return emitter;
+	}
+
+	@Async("judgeSubmissionExecutor")
+	public void submitCodeStreamTest(SubmissionMessage msg) {
+		try {
+			User user = userDomainService.getUserById(msg.userId());
+			Language language = languageDomainService.getLanguage(msg.languageId());
+			ProblemInfo problemInfo = problemDomainService.getProblemInfo(msg.problemId());
+
+			SubmissionAggregator aggregator = new SubmissionAggregator();
+			AtomicInteger passedCount = new AtomicInteger(0);
+			AtomicInteger processedCount = new AtomicInteger(0);
+			AtomicReference<String> message = new AtomicReference<>(COMPILE_MESSAGE);
+			SseEmitter emitter = emitterStore.get(msg.emitterKey()).orElse(null);
+
+			List<Testcase> testcases = problemInfo.testcaseList();
+
+			for (Testcase tc : testcases) {
+				CompletableFuture.runAsync(() -> {
+					log.info("[Testcase RUN] Thread = {}", Thread.currentThread().getName());
+					try {
+						String token = judgeClient.submitAndGetToken(
+							new CodeCompileRequest(msg.sourceCode(), language.getJudge0Id(), tc.getInput())
+						);
+
+						JudgeResult result = judgeClient.pollUntilDone(token);
+
+						AnswerEvaluation evaluation = submissionDomainService.evaluate(
+							tc.getOutput(), result.actualOutput(), result.success(),
+							result.executionTime(), result.memoryUsage(), problemInfo
+						);
+
+						if (evaluation.isPassed()) {
+							passedCount.incrementAndGet();
+						} else {
+							message.set(result.message());
+						}
+						processedCount.incrementAndGet();
+
+						submissionDomainService.collectStatistics(aggregator, result.executionTime(), result.memoryUsage());
+
+						if (emitter != null) {
+							emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
+						}
+					} catch (Exception e) {
+						if (emitter != null) emitter.completeWithError(e);
+					}
+				}, judgeTestcaseExecutor);
+			}
+			CompletableFuture.runAsync(() -> {
+				try {
+					while (processedCount.get() < testcases.size()) {
+						Thread.sleep(200); // 체크 간격
+					}
+
+					if (emitter != null) {
+						emitter.send(SseEmitter.event()
+							.name("final")
+							.data(new FinalResultResponse(testcases.size(), passedCount.get(), message.get())));
+						emitter.complete();
+						emitterStore.remove(msg.emitterKey());
+					}
+
+					SubmissionData submissionData = SubmissionData.base(
+						user, problemInfo, language, msg.sourceCode(), message.get()
+					);
+					submissionDomainService.finalizeSubmission(submissionData, aggregator, passedCount.get());
+
+				} catch (Exception e) {
+					if (emitter != null) emitter.completeWithError(e);
+				}
+			}, judgeTestcaseExecutor);
+
+		} catch (Exception e) {
+			emitterStore.get(msg.emitterKey()).ifPresent(emitter -> emitter.completeWithError(e));
+		}
 	}
 
 	@Transactional(readOnly = true)
 	public List<GroupedSubmissionResponse> getSubmissions(AuthUser authUser) {
 
 		User user = userDomainService.getUserById(authUser.getId());
-
-		return submissionDomainService.getSubmissions(user.getId()).stream()
-			.collect(Collectors.groupingBy(Submission::getProblem))
-			.entrySet()
-			.stream()
-			.map(entry -> {
-				Problem problem = entry.getKey();
-				List<Submission> sorted = entry.getValue().stream()
-					.sorted(Comparator.comparing(Submission::getCreatedAt).reversed())
-					.toList();
-				return new GroupedSubmissionResponse(problem, sorted);
-			})
-			.toList();
+		List<Submission> submissions = submissionDomainService.getSubmissions(user.getId());
+		return GroupedSubmissionResponse.groupByProblem(submissions);
 	}
 
 	public CodeReviewResponse getCodeReview(Long problemId, CodeReviewRequest request) {
