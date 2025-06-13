@@ -47,11 +47,11 @@ public class AccessorySaveRequest extends ItemSaveRequest {
 	) {
 		super(grade, name, description);
 		this.accessoryType = accessoryType;
-		this.speed = (speed != null ? speed : 0);
-		this.crit = (crit != null ? crit : 0);
-		this.stun = (stun != null ? stun : 0);
-		this.evasion = (evasion != null ? evasion : 0);
-		this.accuracy = (accuracy != null ? accuracy : 0);
+		this.speed = speed;
+		this.crit = crit;
+		this.stun = stun;
+		this.evasion = evasion;
+		this.accuracy = accuracy;
 	}
 
 	@Override
