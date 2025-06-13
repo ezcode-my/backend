@@ -6,6 +6,8 @@ import org.ezcode.codetest.application.submission.dto.request.compile.CodeCompil
 import org.ezcode.codetest.application.submission.dto.response.compile.ExecutionResultResponse;
 import org.ezcode.codetest.application.submission.model.JudgeResult;
 import org.ezcode.codetest.application.submission.port.JudgeClient;
+import org.ezcode.codetest.domain.submission.exception.SubmissionException;
+import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -43,7 +45,10 @@ public class Judge0Client implements JudgeClient {
 
 	@Override
 	public JudgeResult pollUntilDone(String token) {
-		while (true) {
+		int maxAttempts = 30;
+		int attempt = 0;
+
+		while (attempt < maxAttempts) {
 			ExecutionResultResponse executionResultResponse = webClient.get()
 				.uri("/submissions/{token}", token)
 				.accept(MediaType.APPLICATION_JSON)
@@ -51,7 +56,11 @@ public class Judge0Client implements JudgeClient {
 				.bodyToMono(ExecutionResultResponse.class)
 				.block();
 
-			if (Objects.requireNonNull(executionResultResponse).status().id() >= 3) {
+			if (executionResultResponse == null) {
+				throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
+			}
+
+			if (executionResultResponse.status().id() >= 3) {
 				return interpreter.toJudgeResult(executionResultResponse);
 			}
 
@@ -59,8 +68,10 @@ public class Judge0Client implements JudgeClient {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-				throw new RuntimeException("Polling interrupted", e);
+				throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
 			}
+			attempt++;
 		}
+		throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
 	}
 }
