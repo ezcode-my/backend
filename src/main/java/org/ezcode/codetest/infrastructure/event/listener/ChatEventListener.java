@@ -1,10 +1,10 @@
 package org.ezcode.codetest.infrastructure.event.listener;
 
-import org.ezcode.codetest.infrastructure.event.dto.BroadCastChatEvent;
-import org.ezcode.codetest.infrastructure.event.dto.EnterEvent;
-import org.ezcode.codetest.infrastructure.event.dto.RoomChangeEvent;
-import org.ezcode.codetest.infrastructure.event.dto.RoomEnterAndLeftEvent;
-import org.ezcode.codetest.infrastructure.event.dto.RoomEnterEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatMessageBroadcastEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatRoomListLoadEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatRoomParticipantCountChangeEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatRoomEntryExitMessageEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatRoomHistoryLoadEvent;
 import org.ezcode.codetest.infrastructure.event.service.StompMessageService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -21,7 +21,7 @@ public class ChatEventListener {
 	private final StompMessageService messageService;
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void handleChatRoomListLoad(EnterEvent<?> event) {
+	public void handleChatRoomListLoad(ChatRoomListLoadEvent<?> event) {
 
 		try {
 			messageService.handleChatRoomListLoad(event.roomData(), event.principalName(), event.sessionId());
@@ -31,7 +31,7 @@ public class ChatEventListener {
 	}
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void handleChatRoomHistoryLoad(RoomEnterEvent<?> event) {
+	public void handleChatRoomHistoryLoad(ChatRoomHistoryLoadEvent<?> event) {
 
 		try {
 			messageService.handleChatRoomHistoryLoad(event.chatData(), event.principalName(), event.sessionId());
@@ -44,7 +44,7 @@ public class ChatEventListener {
 		phase = TransactionPhase.AFTER_COMMIT,
 		fallbackExecution = true
 	)
-	public void handleChatMessageBroadcast(BroadCastChatEvent<?> event) {
+	public void handleChatMessageBroadcast(ChatMessageBroadcastEvent<?> event) {
 
 		try {
 			messageService.handleChatMessageBroadcast(event.chatData(), event.roomId());
@@ -54,7 +54,7 @@ public class ChatEventListener {
 	}
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void handleChatRoomEntryExitMessage(RoomEnterAndLeftEvent<?> event) {
+	public void handleChatRoomEntryExitMessage(ChatRoomEntryExitMessageEvent<?> event) {
 
 		try {
 			messageService.handleChatRoomEntryExitMessage(event.messageData(), event.roomId());
@@ -64,7 +64,7 @@ public class ChatEventListener {
 	}
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void handleChatRoomParticipantCountChange(RoomChangeEvent<?> event) {
+	public void handleChatRoomParticipantCountChange(ChatRoomParticipantCountChangeEvent<?> event) {
 
 		try {
 			messageService.handleChatRoomParticipantCountChange(event.roomData());

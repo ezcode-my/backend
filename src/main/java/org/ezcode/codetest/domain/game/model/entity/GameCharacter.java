@@ -1,16 +1,18 @@
 package org.ezcode.codetest.domain.game.model.entity;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
-import org.ezcode.codetest.domain.game.model.enums.Accessory;
-import org.ezcode.codetest.domain.game.model.enums.Defence;
-import org.ezcode.codetest.domain.game.model.enums.Item;
+import org.ezcode.codetest.domain.game.model.enums.AccessoryType;
+import org.ezcode.codetest.domain.game.model.enums.DefenceType;
+import org.ezcode.codetest.domain.game.model.enums.ItemType;
 import org.ezcode.codetest.domain.game.model.enums.Stat;
-import org.ezcode.codetest.domain.game.model.enums.Weapon;
+import org.ezcode.codetest.domain.game.model.enums.WeaponType;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.CollectionTable;
@@ -19,7 +21,6 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,10 +45,10 @@ public class GameCharacter extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
+	@JoinColumn(name = "user_id", nullable = false, unique = true)
 	private User user;
 
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(
 		name = "user_stat_value",
 		joinColumns = @JoinColumn(name = "game_character_id")
@@ -59,15 +60,13 @@ public class GameCharacter extends BaseEntity {
 
 	@Embedded
 	private CharacterRealStat realStat;
-	
-	@Enumerated(EnumType.STRING)
-	private Weapon weapon;
 
-	@Enumerated(EnumType.STRING)
-	private Defence defence;
+	private String weaponId;
+	private String defenceId;
+	private String accessoryId;
 
-	@Enumerated(EnumType.STRING)
-	private Accessory accessory;
+	@ElementCollection(fetch = FetchType.LAZY)
+	private List<String> skillId = new ArrayList<>();
 
 	private Long gold;
 
@@ -77,10 +76,10 @@ public class GameCharacter extends BaseEntity {
 		for (Stat stat : Stat.values()) {
 			stats.put(stat, 0.0);
 		}
-		gold = 100L;
-		weapon = Weapon.NOTHING;
-		defence = Defence.NOTHING;
-		accessory = Accessory.NOTHING;
+		gold = 10000L; //임시로 넉넉하게 지급
+		this.weaponId = WeaponType.NOTHING.name();
+		this.defenceId = DefenceType.NOTHING.name();
+		this.accessoryId = AccessoryType.NOTHING.name();
 		realStat = new CharacterRealStat();
 	}
 
@@ -102,19 +101,20 @@ public class GameCharacter extends BaseEntity {
 		this.gold += gold;
 	}
 
-	public Item equipItem(Item item) {
-		Item oldItem = null;
+	public String equipItem(ItemType item , String newItem) {
 
-		if (item instanceof Weapon newWeapon) {
-			oldItem = weapon;
-			weapon = newWeapon;
-		} else if (item instanceof Defence newDefence) {
-			oldItem = defence;
-			defence = newDefence;
-		} else if (item instanceof Accessory newAccessory) {
-			oldItem = accessory;
-			accessory = newAccessory;
+		String oldItemId = null;
+
+		if (item instanceof WeaponType) {
+			oldItemId = weaponId;
+			weaponId = newItem;
+		} else if (item instanceof DefenceType) {
+			oldItemId = defenceId;
+			defenceId = newItem;
+		} else if (item instanceof AccessoryType) {
+			oldItemId = accessoryId;
+			accessoryId = newItem;
 		}
-		return oldItem;
+		return oldItemId;
 	}
 }

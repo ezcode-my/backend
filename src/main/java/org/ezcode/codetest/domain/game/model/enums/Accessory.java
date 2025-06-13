@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Accessory implements Item {
+public enum Accessory {
 
-	//임시
+	//임시 파일 곧 지워질 예정
 	NOTHING("맨손", "일반", "맨손", "아무것도 장착하지 않은 상태입니다.", 0, 0, 0, 0, 0, 0, 0),
 	CODE_RING("반지", "일반", "코드 반지", "코딩의 힘을 증폭시키는 반지.", 1, 1, 2, 1, 0, 1, 5),
 	BUG_NECKLACE("목걸이", "일반", "버그 목걸이", "버그 탐지를 도와준다.", 0, 2, 3, 0, 0, 2, 4),

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Skill {
 
-	//임시
+	//임시 파일 곧 지워질 예정
 	DDOS_ATTACK("디도스 공격","전설", "공격 시, 공격 기회를 30% 확률로 한번 더 획득한다."),
 	INFINITE_LOOP("무한 루프 폭발", "전설", "사용 즉시 상대를 무한 루프에 빠뜨려 2턴 동안 행동 불가 상태로 만든다."),
 	DIVIDE_BY_ZERO("제로 나누기", "전설", "사용 시 연산 오류를 일으켜 적에게 막대한 피해를 주고, 자신의 다음 스킬 쿨다운 1턴이 증가한다."),

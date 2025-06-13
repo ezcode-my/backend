@@ -4,25 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
-import org.ezcode.codetest.domain.game.model.enums.Accessory;
-import org.ezcode.codetest.domain.game.model.enums.Defence;
-import org.ezcode.codetest.domain.game.model.enums.Item;
-import org.ezcode.codetest.domain.game.model.enums.Weapon;
+import org.ezcode.codetest.domain.game.model.enums.AccessoryType;
+import org.ezcode.codetest.domain.game.model.enums.DefenceType;
+import org.ezcode.codetest.domain.game.model.enums.ItemType;
+import org.ezcode.codetest.domain.game.model.enums.WeaponType;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Inventory extends BaseEntity {
 
 	@Id
@@ -33,59 +34,57 @@ public class Inventory extends BaseEntity {
 	@JoinColumn(name = "game_character_id", nullable = false)
 	GameCharacter gameCharacter;
 
-	@Enumerated(EnumType.STRING)
 	@ElementCollection(fetch = FetchType.LAZY)
-	List<Weapon> weapons = new ArrayList<>();
+	List<String> weapons = new ArrayList<>();
 
-	@Enumerated(EnumType.STRING)
 	@ElementCollection(fetch = FetchType.LAZY)
-	List<Defence> defences = new ArrayList<>();
+	List<String> defences = new ArrayList<>();
 
-	@Enumerated(EnumType.STRING)
 	@ElementCollection(fetch = FetchType.LAZY)
-	List<Accessory> accessories = new ArrayList<>();
+	List<String> accessories = new ArrayList<>();
 
 	public Inventory(GameCharacter gameCharacter) {
 
 		this.gameCharacter = gameCharacter;
 	}
 
-	public void addItem(Item item) {
+	public void addItem(ItemType item, String itemId) {
 
-		if (item instanceof Weapon newWeapon)
-			weapons.add(newWeapon);
-		else if (item instanceof Defence newDefence)
-			defences.add(newDefence);
-		else if (item instanceof Accessory newAccessory)
-			accessories.add(newAccessory);
+		if (item instanceof WeaponType)
+			weapons.add(itemId);
+		else if (item instanceof DefenceType)
+			defences.add(itemId);
+		else if (item instanceof AccessoryType)
+			accessories.add(itemId);
 	}
 
-	public void removeItem(Item item) {
-		if (item instanceof Weapon removeWeapon)
-			weapons.remove(removeWeapon);
-		else if (item instanceof Defence removeDefence)
-			defences.remove(removeDefence);
-		else if (item instanceof Accessory removeAccessory)
-			accessories.remove(removeAccessory);
+	public void removeItem(ItemType item, String itemId) {
+
+		if (item instanceof WeaponType)
+			weapons.remove(itemId);
+		else if (item instanceof DefenceType)
+			defences.remove(itemId);
+		else if (item instanceof AccessoryType)
+			accessories.remove(itemId);
 	}
 
-	public Item findItem(Item item) {
+	public String findItem(ItemType item, String itemId) {
 
-		Item foundItem = null;
+		String foundItem = null;
 
-		if (item instanceof Weapon newWeapon) {
+		if (item instanceof WeaponType) {
 			foundItem = weapons.stream()
-				.filter(w -> w.equals(newWeapon))
+				.filter(w -> w.equals(itemId))
 				.findFirst()
 				.orElse(null);
-		} else if (item instanceof Defence newDefence) {
+		} else if (item instanceof DefenceType) {
 			foundItem = defences.stream()
-				.filter(d -> d.equals(newDefence))
+				.filter(d -> d.equals(itemId))
 				.findFirst()
 				.orElse(null);
-		} else if (item instanceof Accessory newAccessory) {
+		} else if (item instanceof AccessoryType) {
 			foundItem = accessories.stream()
-				.filter(a -> a.equals(newAccessory))
+				.filter(a -> a.equals(itemId))
 				.findFirst()
 				.orElse(null);
 		}

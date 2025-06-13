@@ -21,6 +21,7 @@ public class CharacterRealStat {
 	private Double evasion = 5.0;
 	private Double accuracy = 5.0;
 	private Double hp = 50.0;
+	private Integer ap = 3;
 
 	public void applyIncreaseRealStats(Map<Stat, Double> increaseRates) {
 		increaseRates.forEach(this::increase);

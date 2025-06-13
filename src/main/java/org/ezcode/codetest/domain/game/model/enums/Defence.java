@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Defence implements Item {
+public enum Defence {
 
-	//임시
+	//임시 파일 곧 지워질 예정
 	NOTHING("맨손", "일반", "맨손", "아무것도 장착하지 않은 상태입니다.", 0, 0, 0, 0, 0, 0, 0),
 	CODE_GUARD("갑옷", "일반", "코드 가드", "코드를 보호하는 기본 방패.", 1, 8, 1, 0, 0, 1, 3),
 	BUG_SHIELD("방패", "일반", "버그 실드", "버그 공격을 흡수하는 실드.", 2, 9, 1, 0, 0, 2, 3),

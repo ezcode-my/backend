@@ -9,4 +9,7 @@ public interface InventoryRepository {
 	Inventory save(Inventory inventory);
 
 	Optional<Inventory> findByGameCharacterId(Long gameCharacterId);
+
+
+
 }

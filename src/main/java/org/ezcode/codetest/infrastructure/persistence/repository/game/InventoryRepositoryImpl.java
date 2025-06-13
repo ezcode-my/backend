@@ -23,6 +23,4 @@ public class InventoryRepositoryImpl implements InventoryRepository {
 
 		return inventoryRepository.findByGameCharacterId(gameCharacterId);
 	}
-
-
 }

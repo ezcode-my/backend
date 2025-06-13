@@ -1,10 +1,16 @@
 package org.ezcode.codetest.domain.game.service;
 
+import java.util.List;
+import java.util.Random;
+
+import org.ezcode.codetest.domain.game.exception.GameException;
+import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
-import org.ezcode.codetest.domain.game.model.enums.Accessory;
-import org.ezcode.codetest.domain.game.model.enums.Defence;
-import org.ezcode.codetest.domain.game.model.enums.Item;
-import org.ezcode.codetest.domain.game.model.enums.Weapon;
+import org.ezcode.codetest.domain.game.model.entity.Inventory;
+import org.ezcode.codetest.domain.game.model.entity.Item;
+import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
+import org.ezcode.codetest.domain.game.repository.InventoryRepository;
+import org.ezcode.codetest.domain.game.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -13,25 +19,83 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ItemShoppingDomainService {
 
-	public Weapon gamblingNewWeapon(GameCharacter character) {
+	private final ItemRepository itemRepository;
+	private final InventoryRepository inventoryRepository;
+
+	public Item gamblingNewWeapon(GameCharacter character) {
 
 		character.useGoldForGamble();
 
-		return Item.randomItem(Weapon.class);
+		//TODO : 나중에 REDIS 에 캐싱해서 DB IO 를 줄이는 방법으로 수정 (레디스에 전체 리스트 사이즈랑 전체 필드 저장)
+		List<Item> weaponList = itemRepository.findAllByItemCategory(ItemCategory.WEAPON);
+
+		Random random = new Random();
+
+		int randomIndex = random.nextInt(weaponList.size());
+
+		Item item = weaponList.get(randomIndex);
+
+		Inventory inventory = inventoryRepository.findByGameCharacterId(character.getId())
+			.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
+
+		if (inventory.getWeapons().contains(item.getId())) {
+			character.earnGold(25L);
+			return item;
+		}
+
+		inventory.addItem(item.getItemType(), item.getId());
+
+		return item;
 	}
 
-	public Defence gamblingNewDefence(GameCharacter character) {
+	public Item gamblingNewDefence(GameCharacter character) {
 
 		character.useGoldForGamble();
 
-		return Item.randomItem(Defence.class);
+		List<Item> defenceList = itemRepository.findAllByItemCategory(ItemCategory.ARMOR);
+
+		Random random = new Random();
+
+		int randomIndex = random.nextInt(defenceList.size());
+
+		Item item = defenceList.get(randomIndex);
+
+		Inventory inventory = inventoryRepository.findByGameCharacterId(character.getId())
+			.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
+
+		if (inventory.getDefences().contains(item.getId())) {
+			character.earnGold(25L);
+			return item;
+		}
+
+		inventory.addItem(item.getItemType(), item.getId());
+
+		return item;
 	}
 
-	public Accessory gamblingNewAccessory(GameCharacter character) {
+	public Item gamblingNewAccessory(GameCharacter character) {
 
 		character.useGoldForGamble();
 
-		return Item.randomItem(Accessory.class);
+		List<Item> accessoryList = itemRepository.findAllByItemCategory(ItemCategory.ACCESSORY);
+
+		Random random = new Random();
+
+		int randomIndex = random.nextInt(accessoryList.size());
+
+		Item item = accessoryList.get(randomIndex);
+
+		Inventory inventory = inventoryRepository.findByGameCharacterId(character.getId())
+			.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
+
+		if (inventory.getAccessories().contains(item.getId())) {
+			character.earnGold(25L);
+			return item;
+		}
+
+		inventory.addItem(item.getItemType(), item.getId());
+
+		return item;
 	}
 
 	public void sellingItemForGold(GameCharacter character) {
