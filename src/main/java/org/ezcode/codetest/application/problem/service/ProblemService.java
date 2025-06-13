@@ -1,6 +1,7 @@
 package org.ezcode.codetest.application.problem.service;
 
 import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
+import org.ezcode.codetest.application.problem.dto.request.ProblemSearchCondition;
 import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
@@ -39,14 +40,8 @@ public class ProblemService {
 
 	// 문제 전체 조회
 	@Transactional(readOnly = true)
-	public Page<ProblemResponse> getProblemsList(Pageable pageable, Category category) {
-		Page<Problem> problems;
-
-		if (category != null) {
-			problems = problemDomainService.getProblemsByCategoryList(category, pageable);
-		} else {
-			problems = problemDomainService.getProblemsList(pageable);
-		}
+	public Page<ProblemResponse> getProblemsList(Pageable pageable, ProblemSearchCondition searchCondition) {
+		Page<Problem> problems = problemDomainService.getProblemBySearchCondition(pageable, searchCondition);
 
 		return problems.map(ProblemResponse::from); // Entity → DTO 변환
 	}

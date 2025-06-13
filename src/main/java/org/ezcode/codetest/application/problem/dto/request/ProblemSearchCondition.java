@@ -8,6 +8,6 @@ public record ProblemSearchCondition(
 
 	Difficulty difficulty,
 
-	String keyword // 제목 키워드
+	String title
 ) {
 }

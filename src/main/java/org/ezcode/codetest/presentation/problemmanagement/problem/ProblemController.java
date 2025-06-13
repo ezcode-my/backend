@@ -1,9 +1,11 @@
 package org.ezcode.codetest.presentation.problemmanagement.problem;
 
+import org.ezcode.codetest.application.problem.dto.request.ProblemSearchCondition;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.application.problem.service.ProblemService;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
+import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,12 +36,16 @@ public class ProblemController {
 	@ApiResponse(responseCode = "200", description = "문제 전체 조회성공")
 	public ResponseEntity<Page<ProblemResponse>> getProblemsList(
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-		@RequestParam(required = false) Category category
+		@RequestParam(required = false) Category category,
+		@RequestParam(required = false) Difficulty difficulty,
+		@RequestParam(required = false) String title
 	) {
+
+		ProblemSearchCondition searchCondition = new ProblemSearchCondition(category, difficulty, title);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(problemService.getProblemsList(pageable, category));
+				.body(problemService.getProblemsList(pageable, searchCondition));
 	}
 
 	@GetMapping("/{problemId}")
