@@ -33,7 +33,7 @@ public class RedisJudgeQueueConsumer implements StreamListener<String, MapRecord
 		);
 
 		try {
-			submissionService.submitCodeStreamTest(msg);
+			submissionService.submitCodeStream(msg);
 			redisTemplate.opsForStream().acknowledge("judge-group", message);
 		} catch (Exception e) {
 			log.error("채점 메시지 처리 실패: {}", message.getId(), e);
