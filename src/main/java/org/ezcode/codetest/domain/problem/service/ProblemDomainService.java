@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.problem.service;
 
+import org.ezcode.codetest.application.problem.dto.request.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.exception.ProblemException;
 import org.ezcode.codetest.domain.problem.exception.code.ProblemExceptionCode;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
@@ -36,15 +37,11 @@ public class ProblemDomainService {
 		return savedProblem;
 	}
 
-	public Page<Problem> getProblemsByCategoryList(Category category, Pageable pageable) {
+	public Page<Problem> getProblemBySearchCondition(Pageable pageable, ProblemSearchCondition searchCondition) {
 
-		return problemRepository.findByCategoryAndIsDeletedIsFalse(category, pageable);
+		return problemRepository.searchByCondition(pageable, searchCondition);
 	}
 
-	public Page<Problem> getProblemsList(Pageable pageable) {
-
-		return problemRepository.findByIsDeletedIsFalse(pageable);
-	}
 
 	public Problem getProblem(Long problemId) {
 
@@ -68,4 +65,5 @@ public class ProblemDomainService {
 
 		return new ProblemInfo(problem, problem.getTestcases());
 	}
+
 }
