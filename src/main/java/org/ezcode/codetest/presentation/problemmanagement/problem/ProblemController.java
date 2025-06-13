@@ -37,11 +37,10 @@ public class ProblemController {
 	public ResponseEntity<Page<ProblemResponse>> getProblemsList(
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
 		@RequestParam(required = false) Category category,
-		@RequestParam(required = false) Difficulty difficulty,
-		@RequestParam(required = false) String title
+		@RequestParam(required = false) String difficulty
 	) {
 
-		ProblemSearchCondition searchCondition = new ProblemSearchCondition(category, difficulty, title);
+		ProblemSearchCondition searchCondition = new ProblemSearchCondition(category, difficulty);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)

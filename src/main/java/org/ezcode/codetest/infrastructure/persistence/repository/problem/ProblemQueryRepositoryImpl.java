@@ -35,12 +35,8 @@ public class ProblemQueryRepositoryImpl implements ProblemRepositoryCustom {
 			builder.and(problem.category.eq(searchCondition.category()));
 		}
 
-		if(searchCondition.difficulty().getDifficulty() != null) {
-			builder.and(problem.difficulty.eq(searchCondition.difficulty().getDifficulty()));
-		}
-
-		if(searchCondition.title() != null) {
-			builder.and(problem.title.eq(searchCondition.title()));
+		if(searchCondition.difficulty() != null) {
+			builder.and(problem.difficulty.eq(searchCondition.difficulty()));
 		}
 
 		List<Problem> content = jpaQueryFactory
