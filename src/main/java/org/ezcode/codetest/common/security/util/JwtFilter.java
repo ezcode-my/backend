@@ -1,6 +1,7 @@
 package org.ezcode.codetest.common.security.util;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,9 +32,27 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 
+	// 토큰 검증을 건너뛸 경로들
+	private static final String[] WHITE_LIST = {
+		"/auth/signin",
+		"/auth/signup",
+		"/auth/refresh",
+		"/swagger-ui",
+		"/v3/api-docs",
+	};
+
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 									FilterChain filterChain) throws ServletException, IOException {
+
+		String requestURI = request.getRequestURI();
+
+		//whiteList 등록
+		if (shouldSkipFilter(requestURI)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
 		String bearerToken = request.getHeader("Authorization");
 
@@ -86,4 +105,9 @@ public class JwtFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 		}
 
+	private boolean shouldSkipFilter(String requestURI){
+		return Arrays.stream(WHITE_LIST).anyMatch(requestURI::startsWith);
 	}
+
+	}
+

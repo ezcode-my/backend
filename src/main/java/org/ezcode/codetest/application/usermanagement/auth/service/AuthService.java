@@ -17,7 +17,7 @@ import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -115,14 +115,7 @@ public class AuthService {
 		return SigninResponse.from(bearToken, refreshToken);
 	}
 
-	public LogoutResponse logout(Long userId, HttpServletRequest request) {
-		String bearerToken = request.getHeader("Authorization");
-
-		if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-			throw new AuthException(AuthExceptionCode.INVALID_AUTHORIZATION_HEADER);
-		}
-
-		String token = jwtUtil.substringToken(bearerToken);
+	public LogoutResponse logout(Long userId, String token) {
 
 		Long expiration = jwtUtil.getRemainingTime(token);
 
@@ -144,28 +137,21 @@ public class AuthService {
 	}
 
 	//토큰 재발급
-	public RefreshTokenResponse refreshToken(HttpServletRequest request) {
-		String bearToken = request.getHeader("Authorization");
+	public RefreshTokenResponse refreshToken(String token) {
+		log.info("서비스 입장");
 
-		if (bearToken == null || !bearToken.startsWith("Bearer ")) {
-			throw new AuthException(AuthExceptionCode.INVALID_AUTHORIZATION_HEADER);
-		}
-		String refreshToken = jwtUtil.substringToken(bearToken);
+		Long userId = jwtUtil.getUserId(token);
 
-		if (!jwtUtil.validateToken(refreshToken)){
-			throw new AuthException(AuthExceptionCode.INVALID_REFRESH_TOKEN);
-		}
-
-		Long userId = jwtUtil.getUserId(refreshToken);
-
+		log.info("유저 아이디 가져옴");
 		String savedToken = redisTemplate.opsForValue().get("RefreshToken:" + userId);
-
-		if (savedToken==null || !savedToken.equals(refreshToken)){
+		log.info("저장된 토큰 가져옴");
+		if (savedToken==null || !savedToken.equals(token)){
+			log.error("저장된 토큰 없음");
 			throw new AuthException(AuthExceptionCode.INVALID_REFRESH_TOKEN);
 		}
 
 		User user = userDomainService.getUserById(userId);
-
+		log.info("유저 도메인서비스에서 유저 아이디로 유저 찾아옴");
 		String newAccessToken = jwtUtil.createToken(
 			user.getId(),
 			user.getEmail(),

@@ -14,9 +14,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -43,18 +46,22 @@ public class SecurityConfig {
 			.oauth2Login((outh2)-> outh2
 				.userInfoEndpoint((userInfoEndpointConfig ->
 					userInfoEndpointConfig.userService(customOAuth2UserService)))
-				.successHandler(customSuccessHandler))
+				.successHandler(customSuccessHandler)
+				.loginPage("/login"))
 			// JWT 사용을 위해 세션을 STATELESS로 설정 (세션 정보 저장 x)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
+			//에러 처리 체인 추가
+			.exceptionHandling(except -> except
+				.authenticationEntryPoint(customAuthenticationEntryPoint())
+				.accessDeniedHandler(customAccessDeniedHandler()))
 
 			//인증 URL 범위 설정
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers(
 						"/auth/**",
-						"/refresh",
 						"/signup",
 						"/login",
 						"/ezlogin",
@@ -84,12 +91,53 @@ public class SecurityConfig {
 			.build();
 	}
 
+	// 인증 실패 시 JSON 응답 반환 (HTML 리다이렉트 방지)
 	@Bean
-	public FilterRegistrationBean<JwtFilter> jwtFilter() {
-		FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
-		registrationBean.setFilter(new JwtFilter(jwtUtil, redisTemplate));
-		registrationBean.addUrlPatterns("/*");
+	public AuthenticationEntryPoint customAuthenticationEntryPoint() {
+		return (request, response, authException) -> {
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-		return registrationBean;
+			String jsonResponse = """
+                {
+                    "error": "Unauthorized",
+                    "message": "토큰이 필요합니다",
+                    "timestamp": "%s",
+                    "path": "%s"
+                }
+                """.formatted(
+				java.time.LocalDateTime.now().toString(),
+				request.getRequestURI()
+			);
+
+			response.getWriter().write(jsonResponse);
+		};
 	}
+
+	// 접근 권한 없을 때 JSON 응답 반환
+	@Bean
+	public AccessDeniedHandler customAccessDeniedHandler() {
+		return (request, response, accessDeniedException) -> {
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+			String jsonResponse = """
+                {
+                    "error": "Forbidden",
+                    "message": "접근 권한이 없습니다",
+                    "timestamp": "%s",
+                    "path": "%s"
+                }
+                """.formatted(
+				java.time.LocalDateTime.now().toString(),
+				request.getRequestURI()
+			);
+
+			response.getWriter().write(jsonResponse);
+		};
+	}
+
+
 }
