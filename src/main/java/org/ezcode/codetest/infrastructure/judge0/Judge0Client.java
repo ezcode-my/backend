@@ -1,9 +1,13 @@
 package org.ezcode.codetest.infrastructure.judge0;
 
+import java.util.Objects;
+
 import org.ezcode.codetest.application.submission.dto.request.compile.CodeCompileRequest;
 import org.ezcode.codetest.application.submission.dto.response.compile.ExecutionResultResponse;
 import org.ezcode.codetest.application.submission.model.JudgeResult;
 import org.ezcode.codetest.application.submission.port.JudgeClient;
+import org.ezcode.codetest.domain.submission.exception.SubmissionException;
+import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -26,15 +30,48 @@ public class Judge0Client implements JudgeClient {
 		this.webClient = WebClient.create(judge0ApiUrl);
 	}
 
-	public JudgeResult execute(CodeCompileRequest request) {
+	@Override
+	public String submitAndGetToken(CodeCompileRequest request) {
 		ExecutionResultResponse executionResultResponse = webClient.post()
-			.uri("/submissions?base64_encoded=false&wait=true")
+			.uri("/submissions?base64_encoded=false&wait=false")
 			.contentType(MediaType.APPLICATION_JSON)
 			.bodyValue(request)
 			.retrieve()
 			.bodyToMono(ExecutionResultResponse.class)
 			.block();
 
-		return interpreter.toJudgeResult(executionResultResponse);
+		return Objects.requireNonNull(executionResultResponse).token();
+	}
+
+	@Override
+	public JudgeResult pollUntilDone(String token) {
+		int maxAttempts = 30;
+		int attempt = 0;
+
+		while (attempt < maxAttempts) {
+			ExecutionResultResponse executionResultResponse = webClient.get()
+				.uri("/submissions/{token}", token)
+				.accept(MediaType.APPLICATION_JSON)
+				.retrieve()
+				.bodyToMono(ExecutionResultResponse.class)
+				.block();
+
+			if (executionResultResponse == null) {
+				throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
+			}
+
+			if (executionResultResponse.status().id() >= 3) {
+				return interpreter.toJudgeResult(executionResultResponse);
+			}
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
+			}
+			attempt++;
+		}
+		throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
 	}
 }

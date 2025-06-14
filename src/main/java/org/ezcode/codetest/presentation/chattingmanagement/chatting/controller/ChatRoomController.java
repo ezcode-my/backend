@@ -15,15 +15,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/chatrooms")
+@RequestMapping("/api/chatrooms")
 public class ChatRoomController {
 
 	private final ChattingUseCase chatUseCase;
 
+	@Operation(
+		summary = "채팅방 생성 API",
+		description = "현재 로그인한 사용자의 채팅방을 생성합니다.",
+		responses = {
+			@ApiResponse(responseCode = "201", description = "채팅방 생성 여부 반환")
+		}
+	)
 	@ResponseMessage("정상적으로 채팅방이 생성되었습니다.")
 	@PostMapping
 	public ResponseEntity<Void> createChatRoom(
@@ -35,6 +44,13 @@ public class ChatRoomController {
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
+	@Operation(
+		summary = "채팅방 삭제 API",
+		description = "현재 로그인한 사용자의 채팅방을 삭제합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "채팅방 삭제 여부 반환")
+		}
+	)
 	@ResponseMessage("정상적으로 채팅방이 삭제되었습니다.")
 	@DeleteMapping
 	public ResponseEntity<Void> removeChatRoom(

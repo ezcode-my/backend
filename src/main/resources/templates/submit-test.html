@@ -100,7 +100,7 @@
         const resultBox = document.getElementById('judgeResult');
         resultBox.textContent = '';
 
-        fetch(`/problems/${problemId}/submit-stream`, {
+        fetch(`/api/problems/${problemId}/submit-stream`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -134,7 +134,7 @@
 
         const isCorrect = false; // 필요 시 동적으로 설정하세요
 
-        fetch(`/problems/${problemId}/review`, {
+        fetch(`/api/problems/${problemId}/review`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/languages")
+@RequestMapping("/api/languages")
 @Tag(name = "Language", description = "프로그래밍 언어 관리 API")
 public class LanguageController {
 

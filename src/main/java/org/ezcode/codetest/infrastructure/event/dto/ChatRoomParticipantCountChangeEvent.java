@@ -1,6 +1,6 @@
 package org.ezcode.codetest.infrastructure.event.dto;
 
-public record RoomChangeEvent<T>(
+public record ChatRoomParticipantCountChangeEvent<T>(
 
 	T roomData
 ) {

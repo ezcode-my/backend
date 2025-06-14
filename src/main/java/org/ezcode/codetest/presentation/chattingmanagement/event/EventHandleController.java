@@ -17,7 +17,7 @@ public class EventHandleController {
 	private final ChattingUseCase chatUseCase;
 
 	@MessageMapping("/enter")
-	public void handleEnter(
+	public void handleGetChatRoomList(
 		Principal principal,
 		SimpMessageHeaderAccessor accessor
 	) {
@@ -26,7 +26,7 @@ public class EventHandleController {
 	}
 
 	@MessageMapping("/room/{roomId}/enter")
-	public void handleChatRoomEnter(
+	public void handleGetChattingHistory(
 		Principal principal,
 		@DestinationVariable Long roomId,
 		SimpMessageHeaderAccessor accessor
