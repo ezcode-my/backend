@@ -142,9 +142,9 @@ public class AuthService {
 
 		Long userId = jwtUtil.getUserId(token);
 
-		log.info("유저 아이디 가져옴");
+		log.info("유저 아이디 가져옴 id : {}", userId);
 		String savedToken = redisTemplate.opsForValue().get("RefreshToken:" + userId);
-		log.info("저장된 토큰 가져옴");
+		log.info("저장된 토큰 가져옴 {}", savedToken);
 		if (savedToken==null || !savedToken.equals(token)){
 			log.error("저장된 토큰 없음");
 			throw new AuthException(AuthExceptionCode.INVALID_REFRESH_TOKEN);
