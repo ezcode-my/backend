@@ -91,7 +91,7 @@ public class CharacterStatusDomainService {
 
 	public List<Skill> loadEquippedSkills(GameCharacter character) {
 
-		List<GameCharacterSkill> characterSkill =characterSkillRepository.findByCharacterIdEAndEquipped(character.getId());
+		List<GameCharacterSkill> characterSkill =characterSkillRepository.findByCharacterIdAndEquipped(character.getId());
 
 		return characterSkill.stream().map(GameCharacterSkill::getSkill).toList();
 	}
@@ -121,7 +121,7 @@ public class CharacterStatusDomainService {
 			throw new GameException(GameExceptionCode.SKILL_SLOT_FULL);
 		}
 
-		has.EquipSkill();
+		has.equipSkill();
 	}
 
 	public void equipNewItem(GameCharacter character, String itemName) {

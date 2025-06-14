@@ -22,6 +22,12 @@ public class SkillRepositoryImpl implements SkillRepository {
 	}
 
 	@Override
+	public boolean existsByName(String name) {
+
+		return skillRepository.existsByName(name);
+	}
+
+	@Override
 	public Optional<Skill> findByName(String name) {
 
 		return skillRepository.findByName(name);

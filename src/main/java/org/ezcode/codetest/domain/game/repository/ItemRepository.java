@@ -10,6 +10,8 @@ public interface ItemRepository {
 
 	Item save(Item item);
 
+	boolean existsByName(String name);
+
 	void delete(Item item);
 
 	void deleteByName(String name);

@@ -10,4 +10,6 @@ public interface SkillJpaRepository extends JpaRepository<Skill, Long> {
 	Optional<Skill> findByName(String name);
 
 	void deleteByName(String name);
+
+	boolean existsByName(String name);
 }

@@ -23,6 +23,12 @@ public class ItemRepositoryImpl implements ItemRepository {
 	}
 
 	@Override
+	public boolean existsByName(String name) {
+
+		return itemRepository.existsByName(name);
+	}
+
+	@Override
 	public Item save(Item item) {
 
 		return itemRepository.save(item);

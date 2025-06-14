@@ -17,4 +17,6 @@ public interface ItemMongoRepository extends MongoRepository<Item, String> {
 	void deleteByName(String name);
 
 	List<Item> findByIdIn(Collection<String> id);
+
+	boolean existsByName(String name);
 }

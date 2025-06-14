@@ -9,6 +9,8 @@ public interface SkillRepository {
 
 	Optional<Skill> findById(Long id);
 
+	boolean existsByName(String name);
+
 	Optional<Skill> findByName(String name);
 
 	Skill save(Skill skill);

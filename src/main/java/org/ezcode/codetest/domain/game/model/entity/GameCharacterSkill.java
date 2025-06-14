@@ -58,7 +58,7 @@ public class GameCharacterSkill extends BaseEntity {
 		this.slotType = SkillSlotType.BACKPACK;
 	}
 
-	public void EquipSkill() {
+	public void equipSkill() {
 
 		slotType = SkillSlotType.EQUIPPED;
 	}
