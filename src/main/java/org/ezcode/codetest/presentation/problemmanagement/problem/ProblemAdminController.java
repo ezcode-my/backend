@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/admin/problems")
+@RequestMapping("/api/admin/problems")
 @RequiredArgsConstructor
 @Tag(name = "Problem(관리자)", description = "문제 API(관리자용)")
 public class ProblemAdminController {

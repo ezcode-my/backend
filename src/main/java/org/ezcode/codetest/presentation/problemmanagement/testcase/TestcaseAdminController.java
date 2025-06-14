@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/admin/problems/{problemId}/testcases")
+@RequestMapping("/api/admin/problems/{problemId}/testcases")
 @RequiredArgsConstructor
 @Tag(name = "Testcase(관리자)", description = "테스트 케이스 API(관리자용) ")
 public class TestcaseAdminController {
