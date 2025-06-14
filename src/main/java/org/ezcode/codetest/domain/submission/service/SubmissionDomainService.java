@@ -3,7 +3,9 @@ package org.ezcode.codetest.domain.submission.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
+import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
 import org.ezcode.codetest.domain.submission.dto.AnswerEvaluation;
 import org.ezcode.codetest.domain.submission.dto.SubmissionData;
@@ -50,8 +52,31 @@ public class SubmissionDomainService {
 		);
 	}
 
-	public AnswerEvaluation evaluate(
-		String expectedOutput, String actualOutput, boolean success, double executionTime, long memoryUsage, ProblemInfo problemInfo
+	public AnswerEvaluation handleEvaluationAndUpdateStats(
+			TestcaseEvaluationInput input, ProblemInfo problemInfo, SubmissionContext context
+	) {
+		AnswerEvaluation evaluation =
+				evaluate(input.expectedOutput(), input.actualOutput(), input.success(),
+						input.executionTime(), input.memoryUsage(), problemInfo);
+
+		if (evaluation.isPassed()) {
+			context.incrementPassedCount();
+		} else {
+			context.updateMessage(input.resultMessage());
+		}
+		context.incrementProcessedCount();
+
+		collectStatistics(context.aggregator(), input.executionTime(), input.memoryUsage());
+
+		return evaluation;
+	}
+
+	public List<Submission> getSubmissions(Long userId) {
+		return submissionRepository.findSubmissionsByUserId(userId);
+	}
+
+	private AnswerEvaluation evaluate(
+			String expectedOutput, String actualOutput, boolean success, double executionTime, long memoryUsage, ProblemInfo problemInfo
 	) {
 		boolean isCorrect = success && expectedOutput.strip().equals(actualOutput.strip());
 		boolean timeEfficient = executionTime <= problemInfo.getTimeLimit();
@@ -59,12 +84,8 @@ public class SubmissionDomainService {
 		return new AnswerEvaluation(isCorrect, timeEfficient, memoryEfficient, expectedOutput, actualOutput);
 	}
 
-	public void collectStatistics(SubmissionAggregator aggregator, double executionTime, long memoryUsage) {
+	private void collectStatistics(SubmissionAggregator aggregator, double executionTime, long memoryUsage) {
 		aggregator.accumulate(executionTime, memoryUsage);
-	}
-
-	public List<Submission> getSubmissions(Long userId) {
-		return submissionRepository.findSubmissionsByUserId(userId);
 	}
 
 	private void createSubmission(Submission submission) {

@@ -1,23 +1,31 @@
 package org.ezcode.codetest.application.submission.service;
 
-import java.util.Comparator;
+import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewRequest;
 import org.ezcode.codetest.application.submission.dto.request.review.ReviewPayload;
 import org.ezcode.codetest.application.submission.dto.response.review.CodeReviewResponse;
-import org.ezcode.codetest.application.submission.dto.response.submission.FinalResultResponse;
 import org.ezcode.codetest.application.submission.dto.response.submission.GroupedSubmissionResponse;
+import org.ezcode.codetest.application.submission.model.JudgeResult;
 import org.ezcode.codetest.application.submission.model.ReviewResult;
+import org.ezcode.codetest.application.submission.model.SubmissionContext;
+import org.ezcode.codetest.application.submission.port.QueueProducer;
+import org.ezcode.codetest.domain.submission.exception.SubmissionException;
+import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
+import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
+import org.ezcode.codetest.infrastructure.event.dto.SubmissionMessage;
+import org.ezcode.codetest.application.submission.port.EmitterStore;
 import org.ezcode.codetest.application.submission.port.ReviewClient;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
-import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
 import org.ezcode.codetest.domain.submission.dto.AnswerEvaluation;
 import org.ezcode.codetest.domain.submission.dto.SubmissionData;
 import org.ezcode.codetest.application.submission.dto.request.compile.CodeCompileRequest;
 import org.ezcode.codetest.application.submission.dto.request.submission.CodeSubmitRequest;
-import org.ezcode.codetest.application.submission.model.JudgeResult;
 import org.ezcode.codetest.application.submission.dto.response.submission.JudgeResultResponse;
 import org.ezcode.codetest.application.submission.port.JudgeClient;
 import org.ezcode.codetest.domain.language.model.entity.Language;
@@ -30,106 +38,126 @@ import org.ezcode.codetest.domain.submission.service.SubmissionDomainService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubmissionService {
 
-	private final JudgeClient judgeClient;
-	private final ReviewClient reviewClient;
-	private final UserDomainService userDomainService;
-	private final ProblemDomainService problemDomainService;
-	private final LanguageDomainService languageDomainService;
-	private final SubmissionDomainService submissionDomainService;
+    private final JudgeClient judgeClient;
+    private final ReviewClient reviewClient;
+    private final UserDomainService userDomainService;
+    private final ProblemDomainService problemDomainService;
+    private final LanguageDomainService languageDomainService;
+    private final SubmissionDomainService submissionDomainService;
+    private final EmitterStore emitterStore;
+    private final QueueProducer queueProducer;
+	private final Executor judgeTestcaseExecutor;
 
-	private static final String COMPILE_MESSAGE = "Accepted";
+    public SseEmitter enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
+        SseEmitter emitter = new SseEmitter(10 * 60 * 1000L);
+        String emitterKey = authUser.getId() + "_" + UUID.randomUUID();
 
-	public SseEmitter submitCodeStream(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
+        emitterStore.save(emitterKey, emitter);
 
-		SseEmitter emitter = new SseEmitter();
+        SubmissionMessage message = new SubmissionMessage(
+                emitterKey, problemId, request.languageId(), authUser.getId(), request.sourceCode()
+        );
 
-		new Thread(() -> {
-			try {
-				SubmissionAggregator aggregator = new SubmissionAggregator();
-				User user = userDomainService.getUserById(authUser.getId());
-				Language language = languageDomainService.getLanguage(request.languageId());
-				ProblemInfo problemInfo = problemDomainService.getProblemInfo(problemId);
+        queueProducer.enqueue(message);
 
-				int passedCount = 0;
-				String message = COMPILE_MESSAGE;
+        return emitter;
+    }
 
-				for (Testcase tc : problemInfo.testcaseList()) {
+    @Async("judgeSubmissionExecutor")
+    public void submitCodeStream(SubmissionMessage msg) {
+        try {
+            log.info("[Submission RUN] Thread = {}", Thread.currentThread().getName());
+			log.info("Principal = {}", SecurityContextHolder.getContext().getAuthentication());
+			User user = userDomainService.getUserById(msg.userId());
+            Language language = languageDomainService.getLanguage(msg.languageId());
+            ProblemInfo problemInfo = problemDomainService.getProblemInfo(msg.problemId());
+            SseEmitter emitter = emitterStore.get(msg.emitterKey()).orElseThrow(
+                    () -> new SubmissionException(SubmissionExceptionCode.EMITTER_NOT_FOUND)
+            );
 
-					JudgeResult result = judgeClient.execute(
-						new CodeCompileRequest(request.sourceCode(), language.getJudge0Id(), tc.getInput())
-					);
+			int totalTestcaseCount = problemInfo.getTestcaseCount();
+            SubmissionContext context = SubmissionContext.initialize(totalTestcaseCount);
 
-					AnswerEvaluation evaluation = submissionDomainService.evaluate(
-						tc.getOutput(), result.actualOutput(), result.success(), result.executionTime(), result.memoryUsage() , problemInfo
-					);
+            for (Testcase tc : problemInfo.testcaseList()) {
+				CompletableFuture
+					.supplyAsync(() -> {
+						try {
+							log.info("[Judge RUN] Thread = {}", Thread.currentThread().getName());
+							log.info("Principal = {}", SecurityContextHolder.getContext().getAuthentication());
+							String token = judgeClient.submitAndGetToken(
+									new CodeCompileRequest(msg.sourceCode(), language.getJudge0Id(), tc.getInput())
+							);
+							JudgeResult result = judgeClient.pollUntilDone(token);
 
-					if (evaluation.isPassed()) {
-						passedCount++;
-					} else {
-						message = result.message();
-					}
+							AnswerEvaluation evaluation = submissionDomainService.handleEvaluationAndUpdateStats(
+								TestcaseEvaluationInput.from(tc, result), problemInfo, context
+							);
 
-					submissionDomainService.collectStatistics(aggregator, result.executionTime(), result.memoryUsage());
-
-					emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
-				}
-
-				SubmissionData submissionData = SubmissionData.base(
-					user, problemInfo, language, request.sourceCode(), message
-				);
-
-				submissionDomainService.finalizeSubmission(submissionData, aggregator, passedCount);
-
-				emitter.send(SseEmitter.event()
-					.name("final")
-					.data(new FinalResultResponse(problemInfo.getTestcaseCount(), passedCount, message))
-				);
-
-				emitter.complete();
-			} catch (Exception e) {
-				emitter.completeWithError(e);
+							emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
+							context.countDown();
+							return result;
+						} catch (IOException e) {
+							throw new SubmissionException(SubmissionExceptionCode.EMITTER_SEND_ERROR);
+						} catch (Exception e) {
+							throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
+						}
+					}, judgeTestcaseExecutor);
 			}
-		}).start();
 
-		return emitter;
-	}
+			if (!context.latch().await(30, TimeUnit.SECONDS)) {
+				throw new SubmissionException(SubmissionExceptionCode.TESTCASE_TIMEOUT);
+			}
 
-	@Transactional(readOnly = true)
-	public List<GroupedSubmissionResponse> getSubmissions(AuthUser authUser) {
+			emitter.send(SseEmitter.event()
+				.name("final")
+                .data(context.toFinalResult(totalTestcaseCount)
+				)
+            );
 
-		User user = userDomainService.getUserById(authUser.getId());
+            emitter.complete();
+            emitterStore.remove(msg.emitterKey());
 
-		return submissionDomainService.getSubmissions(user.getId()).stream()
-			.collect(Collectors.groupingBy(Submission::getProblem))
-			.entrySet()
-			.stream()
-			.map(entry -> {
-				Problem problem = entry.getKey();
-				List<Submission> sorted = entry.getValue().stream()
-					.sorted(Comparator.comparing(Submission::getCreatedAt).reversed())
-					.toList();
-				return new GroupedSubmissionResponse(problem, sorted);
-			})
-			.toList();
-	}
+            SubmissionData submissionData = SubmissionData.base(
+            	user, problemInfo, language, msg.sourceCode(), context.getCurrentMessage()
+            );
 
-	public CodeReviewResponse getCodeReview(Long problemId, CodeReviewRequest request) {
+            submissionDomainService.finalizeSubmission(
+				submissionData, context.aggregator(), context.getPassedCount()
+			);
+        } catch (Exception e) {
+            emitterStore.get(msg.emitterKey()).ifPresent(emitter -> emitter.completeWithError(e));
+        }
+    }
 
-		Problem problem = problemDomainService.getProblem(problemId);
-		Language language = languageDomainService.getLanguage(request.languageId());
+    @Transactional(readOnly = true)
+    public List<GroupedSubmissionResponse> getSubmissions(AuthUser authUser) {
 
-		ReviewResult reviewResult = reviewClient.requestReview(ReviewPayload.of(problem, language, request));
+        User user = userDomainService.getUserById(authUser.getId());
+        List<Submission> submissions = submissionDomainService.getSubmissions(user.getId());
+        return GroupedSubmissionResponse.groupByProblem(submissions);
+    }
 
-		return new CodeReviewResponse(reviewResult.reviewContent());
-	}
+    public CodeReviewResponse getCodeReview(Long problemId, CodeReviewRequest request) {
+
+        Problem problem = problemDomainService.getProblem(problemId);
+        Language language = languageDomainService.getLanguage(request.languageId());
+
+        ReviewResult reviewResult = reviewClient.requestReview(ReviewPayload.of(problem, language, request));
+
+        return new CodeReviewResponse(reviewResult.reviewContent());
+    }
 }
