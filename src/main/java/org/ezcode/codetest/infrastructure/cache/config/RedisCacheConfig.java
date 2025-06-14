@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
-public class CacheRedisConfig {
+public class RedisCacheConfig {
 
 	@Bean
 	public RedisTemplate<String, ChatRoomCache> cacheRedisTemplate(

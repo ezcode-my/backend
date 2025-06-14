@@ -1,10 +1,9 @@
 package org.ezcode.codetest.infrastructure.event.dto;
 
-public record BroadCastChatEvent<T>(
+public record ChatRoomEntryExitMessageEvent<T>(
 
-	T chatData,
+	T messageData,
 
 	Long roomId
 ) {
-
 }

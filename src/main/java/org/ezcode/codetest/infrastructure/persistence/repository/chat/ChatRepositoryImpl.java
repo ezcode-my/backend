@@ -15,16 +15,19 @@ public class ChatRepositoryImpl implements ChatRepository {
 
 	private final ChatJpaRepository chatRepository;
 
+	@Override
 	public Chat save(Chat chat) {
 
 		return chatRepository.save(chat);
 	}
 
+	@Override
 	public List<Chat> findAll() {
 
 		return chatRepository.findAll();
 	}
 
+	@Override
 	public List<Chat> findChatsFromLastHour(Long roomId) {
 
 		LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
