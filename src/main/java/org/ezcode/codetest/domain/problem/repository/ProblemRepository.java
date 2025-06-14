@@ -6,6 +6,7 @@ import org.ezcode.codetest.application.problem.dto.request.ProblemSearchConditio
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
 
 public interface ProblemRepository {
 
@@ -13,7 +14,7 @@ public interface ProblemRepository {
 
 	Optional<Problem> findByIdNotDeleted(Long problemId);
 
-	Page<Problem> searchByCondition(Pageable pageable, ProblemSearchCondition searchCondition);
+	Page<Problem> searchByCondition(@NonNull Pageable pageable, @NonNull ProblemSearchCondition searchCondition);
 
 	void delete(Problem problem);
 
