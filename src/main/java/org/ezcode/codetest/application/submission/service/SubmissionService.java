@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewRequest;
 import org.ezcode.codetest.application.submission.dto.request.review.ReviewPayload;
 import org.ezcode.codetest.application.submission.dto.response.review.CodeReviewResponse;
 import org.ezcode.codetest.application.submission.dto.response.submission.GroupedSubmissionResponse;
+import org.ezcode.codetest.application.submission.model.JudgeResult;
 import org.ezcode.codetest.application.submission.model.ReviewResult;
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.application.submission.port.QueueProducer;
@@ -37,7 +39,7 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -58,7 +60,7 @@ public class SubmissionService {
     private final SubmissionDomainService submissionDomainService;
     private final EmitterStore emitterStore;
     private final QueueProducer queueProducer;
-	private final ThreadPoolTaskExecutor judgeTestcaseExecutor;
+	private final Executor judgeTestcaseExecutor;
 
     public SseEmitter enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
         SseEmitter emitter = new SseEmitter(10 * 60 * 1000L);
@@ -79,7 +81,8 @@ public class SubmissionService {
     public void submitCodeStream(SubmissionMessage msg) {
         try {
             log.info("[Submission RUN] Thread = {}", Thread.currentThread().getName());
-            User user = userDomainService.getUserById(msg.userId());
+			log.info("Principal = {}", SecurityContextHolder.getContext().getAuthentication());
+			User user = userDomainService.getUserById(msg.userId());
             Language language = languageDomainService.getLanguage(msg.languageId());
             ProblemInfo problemInfo = problemDomainService.getProblemInfo(msg.problemId());
             SseEmitter emitter = emitterStore.get(msg.emitterKey()).orElseThrow(
@@ -91,28 +94,28 @@ public class SubmissionService {
 
             for (Testcase tc : problemInfo.testcaseList()) {
 				CompletableFuture
-						.supplyAsync(() -> {
-							try {
-								log.info("[Judge RUN] Thread = {}", Thread.currentThread().getName());
-								String token = judgeClient.submitAndGetToken(
-										new CodeCompileRequest(msg.sourceCode(), language.getJudge0Id(), tc.getInput())
-								);
-								return judgeClient.pollUntilDone(token);
-							} catch (Exception e) {
-								throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
-							}
-						}, judgeTestcaseExecutor)
-						.thenAccept(result -> {
-							AnswerEvaluation evaluation = submissionDomainService.handleEvaluationAndUpdateStats(
-									TestcaseEvaluationInput.from(tc, result), problemInfo, context
+					.supplyAsync(() -> {
+						try {
+							log.info("[Judge RUN] Thread = {}", Thread.currentThread().getName());
+							log.info("Principal = {}", SecurityContextHolder.getContext().getAuthentication());
+							String token = judgeClient.submitAndGetToken(
+									new CodeCompileRequest(msg.sourceCode(), language.getJudge0Id(), tc.getInput())
 							);
-							try {
-								emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
-								context.countDown();
-							} catch (IOException e) {
-								throw new SubmissionException(SubmissionExceptionCode.EMITTER_SEND_ERROR);
-							}
-						});
+							JudgeResult result = judgeClient.pollUntilDone(token);
+
+							AnswerEvaluation evaluation = submissionDomainService.handleEvaluationAndUpdateStats(
+								TestcaseEvaluationInput.from(tc, result), problemInfo, context
+							);
+
+							emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
+							context.countDown();
+							return result;
+						} catch (IOException e) {
+							throw new SubmissionException(SubmissionExceptionCode.EMITTER_SEND_ERROR);
+						} catch (Exception e) {
+							throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
+						}
+					}, judgeTestcaseExecutor);
 			}
 
 			if (!context.latch().await(30, TimeUnit.SECONDS)) {
