@@ -8,12 +8,17 @@ import java.util.stream.Stream;
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
+import org.ezcode.codetest.domain.game.model.entity.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.entity.Inventory;
 import org.ezcode.codetest.domain.game.model.entity.Item;
+import org.ezcode.codetest.domain.game.model.entity.Skill;
 import org.ezcode.codetest.domain.game.model.enums.ItemType;
+import org.ezcode.codetest.domain.game.model.enums.SkillSlotType;
 import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
+import org.ezcode.codetest.domain.game.repository.GameCharacterSkillRepository;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
+import org.ezcode.codetest.domain.game.repository.SkillRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +29,11 @@ public class CharacterStatusDomainService {
 
 	private final GameCharacterRepository characterRepository;
 	private final InventoryRepository inventoryRepository;
+	private final SkillRepository skillRepository;
 	private final ItemRepository itemRepository;
+	private final GameCharacterSkillRepository characterSkillRepository;
+
+	private static final Integer ITEM_MAX_SLOT = 3;
 
 	public GameCharacter createGameCharacter(GameCharacter character) {
 
@@ -53,7 +62,13 @@ public class CharacterStatusDomainService {
 			.flatMap(Collection::stream)
 			.toList();
 
-		return itemRepository.findByIdIn(allIds);
+		List<Item> inventoryItems = itemRepository.findByIdIn(allIds);
+
+		if (allIds.size() != inventoryItems.size()) {
+			inventory.cleanUpdateInventory(inventoryItems);
+		}
+
+		return inventoryItems;
 	}
 
 	public List<Item> loadEquippedItems(GameCharacter character) {
@@ -62,7 +77,51 @@ public class CharacterStatusDomainService {
 		String defenceId = character.getDefenceId();
 		String accessoryId = character.getAccessoryId();
 
-		return itemRepository.findByIdIn(List.of(weaponId, defenceId, accessoryId));
+		List<Item> equippedItems = itemRepository.findByIdIn(List.of(weaponId, defenceId, accessoryId));
+
+		if (equippedItems.size() == ITEM_MAX_SLOT) {
+			return equippedItems;
+		}
+
+		character.unEquipAllItems();
+		equippedItems.forEach(item -> character.equipItem(item.getItemType(), item.getId()));
+
+		return equippedItems;
+	}
+
+	public List<Skill> loadEquippedSkills(GameCharacter character) {
+
+		List<GameCharacterSkill> characterSkill =characterSkillRepository.findByCharacterIdAndEquipped(character.getId());
+
+		return characterSkill.stream().map(GameCharacterSkill::getSkill).toList();
+	}
+
+
+	public void equipNewSkill(GameCharacter character, String skillName) {
+
+		Skill skill = skillRepository.findByName(skillName)
+			.orElseThrow(() -> new GameException(GameExceptionCode.SKILL_NOT_FOUND));
+
+		List<GameCharacterSkill> characterSkills = characterSkillRepository.findByCharacterId(character.getId());
+
+		GameCharacterSkill has = characterSkills.stream()
+			.filter(cs -> cs.getSkill().getId().equals(skill.getId()))
+			.findFirst()
+			.orElseThrow(() -> new GameException(GameExceptionCode.SKILL_NOT_OWNED));
+
+		if (has.getSlotType() == SkillSlotType.EQUIPPED) {
+			throw new GameException(GameExceptionCode.SKILL_ALREADY_EQUIPPED);
+		}
+
+		long equippedCount = characterSkills.stream()
+			.filter(cs -> cs.getSlotType() == SkillSlotType.EQUIPPED)
+			.count();
+
+		if (equippedCount >= 3) {
+			throw new GameException(GameExceptionCode.SKILL_SLOT_FULL);
+		}
+
+		has.equipSkill();
 	}
 
 	public void equipNewItem(GameCharacter character, String itemName) {
@@ -80,11 +139,7 @@ public class CharacterStatusDomainService {
 		String checkFoundId = Optional.ofNullable(foundItemId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.ITEM_NOT_FOUND));
 
-		String oldItem = character.equipItem(type, checkFoundId);
-
-		inventory.removeItem(type, checkFoundId);
-
-		inventory.addItem(type, oldItem);
+		character.equipItem(type, checkFoundId);
 	}
 
 	public void getNewItemToInventory(GameCharacter character, Item item) {

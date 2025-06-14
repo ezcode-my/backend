@@ -1,7 +1,9 @@
 package org.ezcode.codetest.domain.game.model.entity;
 
+import java.util.List;
 import java.util.Map;
 
+import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
 import org.ezcode.codetest.domain.game.model.enums.Stat;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -22,6 +24,46 @@ public class CharacterRealStat {
 	private Double accuracy = 5.0;
 	private Double hp = 50.0;
 	private Integer ap = 3;
+
+	public CharacterRealStat(CharacterRealStat source) {
+		this.atk      = source.atk;
+		this.def      = source.def;
+		this.speed    = source.speed;
+		this.crit     = source.crit;
+		this.stun     = source.stun;
+		this.evasion  = source.evasion;
+		this.accuracy = source.accuracy;
+		this.hp       = source.hp;
+		this.ap       = source.ap;
+	}
+
+	public void applyItemRealStat(List<Item> equippedItems) {
+
+		if (equippedItems == null || equippedItems.isEmpty()) {
+			return;
+		}
+
+		equippedItems.forEach(item -> {
+				if(item instanceof Weapon weapon) {
+					this.atk += weapon.getAtk();
+					this.speed += weapon.getSpeed();
+					this.crit += weapon.getCrit();
+					this.stun += weapon.getStun();
+					this.accuracy += weapon.getAccuracy();
+				} else if(item instanceof Defence defence) {
+					this.def += defence.getDef();
+					this.speed += defence.getSpeed();
+					this.evasion += defence.getEvasion();
+				} else if(item instanceof Accessory accessory) {
+					this.speed += accessory.getSpeed();
+					this.crit += accessory.getCrit();
+					this.stun += accessory.getStun();
+					this.evasion += accessory.getEvasion();
+					this.accuracy += accessory.getAccuracy();
+				}
+			}
+		);
+	}
 
 	public void applyIncreaseRealStats(Map<Stat, Double> increaseRates) {
 		increaseRates.forEach(this::increase);

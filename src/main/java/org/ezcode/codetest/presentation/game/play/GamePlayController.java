@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.ezcode.codetest.application.game.dto.request.ItemEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.ItemGamblingRequest;
+import org.ezcode.codetest.application.game.dto.request.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.response.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.ItemGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.ItemResponse;
+import org.ezcode.codetest.application.game.dto.response.SkillGamblingResponse;
 import org.ezcode.codetest.application.game.play.GamePlayUseCase;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/games")
+@RequestMapping("/api/games")
 public class GamePlayController {
 
 	private final GamePlayUseCase gamePlayUseCase;
@@ -45,7 +47,7 @@ public class GamePlayController {
 		return ResponseEntity.status(HttpStatus.OK).body(gamePlayUseCase.characterStatusOpen(authUser.getId()));
 	}
 
-	@PostMapping("/gamblings")
+	@PostMapping("/items/gambling")
 	public ResponseEntity<ItemGamblingResponse> gamblingForItem(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Validated ItemGamblingRequest request
@@ -54,21 +56,41 @@ public class GamePlayController {
 			.body(gamePlayUseCase.gamblingForItem(authUser.getId(), request.itemCategory()));
 	}
 
+	@PostMapping("/skills/gambling")
+	public ResponseEntity<SkillGamblingResponse> gamblingForSkill(
+		@AuthenticationPrincipal AuthUser authUser
+	) {
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(gamePlayUseCase.gamblingForSkill(authUser.getId()));
+	}
+
 	@GetMapping("/inventories")
-	public ResponseEntity<List<ItemResponse>> gamblingForItem(
+	public ResponseEntity<List<ItemResponse>> inventoryOpen(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(gamePlayUseCase.inventoryOpen(authUser.getId()));
 	}
 
-	@PatchMapping("/characters")
+	@PatchMapping("/items/equip")
 	public ResponseEntity<Void> equipItem(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Validated ItemEquipRequest request
 	) {
-		gamePlayUseCase.equipItem(authUser.getId(), request.itemName());
+		gamePlayUseCase.equipItem(authUser.getId(), request.name());
 
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
+
+	@PatchMapping("/skills/equip")
+	public ResponseEntity<Void> equipSkill(
+		@AuthenticationPrincipal AuthUser authUser,
+		@RequestBody @Validated SkillEquipRequest request
+	) {
+		gamePlayUseCase.equipSkill(authUser.getId(), request.name());
+
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+
 }

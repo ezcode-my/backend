@@ -50,11 +50,11 @@ public class Inventory extends BaseEntity {
 
 	public void addItem(ItemType item, String itemId) {
 
-		if (item instanceof WeaponType)
+		if (item instanceof WeaponType wt && wt != WeaponType.NOTHING)
 			weapons.add(itemId);
-		else if (item instanceof DefenceType)
+		else if (item instanceof DefenceType dt && dt != DefenceType.NOTHING)
 			defences.add(itemId);
-		else if (item instanceof AccessoryType)
+		else if (item instanceof AccessoryType at && at != AccessoryType.NOTHING)
 			accessories.add(itemId);
 	}
 
@@ -66,6 +66,22 @@ public class Inventory extends BaseEntity {
 			defences.remove(itemId);
 		else if (item instanceof AccessoryType)
 			accessories.remove(itemId);
+	}
+
+	public void cleanUpdateInventory(List<Item> items) {
+
+		weapons.clear();
+		defences.clear();
+		accessories.clear();
+
+		items.forEach(item -> {
+			if (item.getItemType() instanceof WeaponType wt && wt != WeaponType.NOTHING)
+				weapons.add(item.getId());
+			else if (item.getItemType() instanceof DefenceType dt && dt != DefenceType.NOTHING)
+				defences.add(item.getId());
+			else if (item.getItemType() instanceof AccessoryType at && at != AccessoryType.NOTHING)
+				accessories.add(item.getId());
+		});
 	}
 
 	public String findItem(ItemType item, String itemId) {

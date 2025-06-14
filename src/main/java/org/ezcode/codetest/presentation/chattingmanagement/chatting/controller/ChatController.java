@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/room/{roomId}/chat")
+@RequestMapping("/api/room/{roomId}/chat")
 @RequiredArgsConstructor
 public class ChatController {
 

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.ezcode.codetest.domain.game.model.entity.CharacterRealStat;
 import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
-import org.ezcode.codetest.domain.game.model.entity.Skill;
 import org.ezcode.codetest.domain.game.model.enums.Stat;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,10 +24,10 @@ public record CharacterStatusResponse(
 
 	List<ItemResponse> items,
 
-	List<Skill> skills
+	List<SkillResponse> skills
 ) {
 
-	public static CharacterStatusResponse from(GameCharacter character, List<ItemResponse> items, List<Skill> skills) {
+	public static CharacterStatusResponse from(GameCharacter character, List<ItemResponse> items, List<SkillResponse> skills) {
 
 		return CharacterStatusResponse.builder()
 			.realStat(character.getRealStat())

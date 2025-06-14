@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.game.model.entity;
 
+import org.ezcode.codetest.domain.game.model.enums.Grade;
 import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
 import org.ezcode.codetest.domain.game.model.enums.ItemType;
 
@@ -22,7 +23,7 @@ public class Weapon extends Item {
 	public Weapon(
 		String id,
 		ItemType type,
-		String grade,
+		Grade grade,
 		String name,
 		String description,
 		Integer atk,
