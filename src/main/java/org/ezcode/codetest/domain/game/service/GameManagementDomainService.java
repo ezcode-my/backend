@@ -32,7 +32,7 @@ public class GameManagementDomainService {
 
 		boolean exists = itemRepository.existsByName(name);
 
-		if(!exists) throw new GameException(GameExceptionCode.ITEM_NOT_FOUND);
+		if(!exists) throw new GameException(GameExceptionCode.ITEM_NOT_EXISTS);
 
 		itemRepository.deleteByName(name);
 	}
@@ -55,7 +55,7 @@ public class GameManagementDomainService {
 
 		boolean exists = skillRepository.existsByName(name);
 
-		if(!exists) throw new GameException(GameExceptionCode.SKILL_NOT_FOUND);
+		if(!exists) throw new GameException(GameExceptionCode.SKILL_NOT_EXISTS);
 
 		skillRepository.deleteByName(name);
 	}
