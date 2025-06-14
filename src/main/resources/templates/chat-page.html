@@ -344,7 +344,7 @@
                 if (!currentRoomId) return;
                 const m = msgInput.value.trim();
                 if (!m) return;
-                fetch(`/room/${currentRoomId}/chat`, {
+                fetch(`/api/room/${currentRoomId}/chat`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

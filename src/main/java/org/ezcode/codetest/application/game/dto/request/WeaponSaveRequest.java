@@ -2,6 +2,7 @@ package org.ezcode.codetest.application.game.dto.request;
 
 import org.ezcode.codetest.domain.game.model.entity.Item;
 import org.ezcode.codetest.domain.game.model.entity.Weapon;
+import org.ezcode.codetest.domain.game.model.enums.Grade;
 import org.ezcode.codetest.domain.game.model.enums.WeaponType;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 @JsonTypeName("weapon")
@@ -16,6 +18,11 @@ import lombok.Getter;
 public class WeaponSaveRequest extends ItemSaveRequest {
 
 	@NotBlank
+	@Pattern(
+		regexp = "SHOT_GUN|RIFLE|PISTOL|LONG_SWORD|SHORT_SWORD|SPEAR|BOW",
+		flags = Pattern.Flag.CASE_INSENSITIVE,
+		message = "무기 타입은 SHOT_GUN, RIFLE, PISTOL, LONG_SWORD, SHORT_SWORD, SPEAR, BOW 중 하나여야 합니다."
+	)
 	private final String weaponType;
 
 	@NotNull
@@ -60,10 +67,11 @@ public class WeaponSaveRequest extends ItemSaveRequest {
 
 	public Item toItem() {
 		WeaponType wt = WeaponType.valueOf(weaponType.trim().toUpperCase());
+		Grade grade = Grade.valueOf(getGrade().trim().toUpperCase());
 		return Weapon.builder()
 			.id(null)
 			.type(wt)
-			.grade(getGrade())
+			.grade(grade)
 			.name(getName())
 			.description(getDescription())
 			.atk(atk)

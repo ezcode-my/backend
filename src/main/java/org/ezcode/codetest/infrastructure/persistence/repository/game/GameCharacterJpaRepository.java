@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GameCharacterJpaRepository extends JpaRepository<GameCharacter, Long> {
 
-	@EntityGraph(attributePaths = {"stats", "skillId"})
+	@EntityGraph(attributePaths = "stats")
 	Optional<GameCharacter> findByUserId(Long userId);
 }

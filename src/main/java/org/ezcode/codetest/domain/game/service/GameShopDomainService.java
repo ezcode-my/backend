@@ -6,21 +6,27 @@ import java.util.Random;
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
+import org.ezcode.codetest.domain.game.model.entity.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.entity.Inventory;
 import org.ezcode.codetest.domain.game.model.entity.Item;
+import org.ezcode.codetest.domain.game.model.entity.Skill;
 import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
+import org.ezcode.codetest.domain.game.repository.GameCharacterSkillRepository;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
+import org.ezcode.codetest.domain.game.repository.SkillRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ItemShoppingDomainService {
+public class GameShopDomainService {
 
 	private final ItemRepository itemRepository;
 	private final InventoryRepository inventoryRepository;
+	private final SkillRepository skillRepository;
+	private final GameCharacterSkillRepository characterSkillRepository;
 
 	public Item gamblingNewWeapon(GameCharacter character) {
 
@@ -96,6 +102,40 @@ public class ItemShoppingDomainService {
 		inventory.addItem(item.getItemType(), item.getId());
 
 		return item;
+	}
+
+	public Skill gamblingNewSkill(GameCharacter character) {
+
+		character.useGoldForGamble();
+
+		List<Skill> skillList = skillRepository.findAll();
+		//TODO : 나중에 REDIS 에 캐싱해서 DB IO 를 줄이는 방법으로 수정 (레디스에 전체 리스트 사이즈랑 전체 필드 저장)
+
+		Random random = new Random();
+
+		int randomIndex = random.nextInt(skillList.size());
+
+		Skill skill = skillList.get(randomIndex);
+
+		List<GameCharacterSkill> characterSkills = characterSkillRepository.findByCharacterId(character.getId());
+
+		boolean alreadyHas = characterSkills.stream()
+			.anyMatch(cs -> cs.getSkill().getId().equals(skill.getId()));
+
+		if (alreadyHas) {
+			character.earnGold(25L);
+			return skill;
+		}
+
+		characterSkillRepository.save(
+			GameCharacterSkill
+				.builder()
+				.skill(skill)
+				.character(character)
+				.build()
+		);
+
+		return skill;
 	}
 
 	public void sellingItemForGold(GameCharacter character) {

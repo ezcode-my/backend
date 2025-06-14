@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.game.model.entity;
 
+import org.ezcode.codetest.domain.game.model.enums.Grade;
 import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
 import org.ezcode.codetest.domain.game.model.enums.ItemType;
 import org.springframework.data.annotation.Id;
@@ -24,7 +25,7 @@ public abstract class Item {
 
 	private ItemType itemType;
 
-	private String grade;
+	private Grade grade;
 
 	@Indexed(unique = true)
 	private String name;

@@ -2,10 +2,10 @@ package org.ezcode.codetest.application.game.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record ItemEquipRequest(
+public record SkillDeleteRequest(
 
-	@NotBlank(message = "장착할 아이템 이름을 입력해주십시오.")
+	@NotBlank(message = "삭제하려는 스킬의 이름이 필요합니다.")
 	String name
-
 ) {
+
 }

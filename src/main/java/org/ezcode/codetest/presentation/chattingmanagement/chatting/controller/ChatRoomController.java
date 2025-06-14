@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/chatrooms")
+@RequestMapping("/api/chatrooms")
 public class ChatRoomController {
 
 	private final ChattingUseCase chatUseCase;

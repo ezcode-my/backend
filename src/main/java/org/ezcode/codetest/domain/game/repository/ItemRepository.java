@@ -12,6 +12,8 @@ public interface ItemRepository {
 
 	void delete(Item item);
 
+	void deleteByName(String name);
+
 	List<Item> findAll();
 
 	List<Item> findAllByItemCategory(ItemCategory category);

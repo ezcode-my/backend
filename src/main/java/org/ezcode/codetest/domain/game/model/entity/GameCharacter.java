@@ -1,6 +1,5 @@
 package org.ezcode.codetest.domain.game.model.entity;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +43,8 @@ public class GameCharacter extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	private String name;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false, unique = true)
 	private User user;
@@ -65,9 +66,6 @@ public class GameCharacter extends BaseEntity {
 	private String defenceId;
 	private String accessoryId;
 
-	@ElementCollection(fetch = FetchType.LAZY)
-	private List<String> skillId = new ArrayList<>();
-
 	private Long gold;
 
 	public GameCharacter(User user) {
@@ -76,7 +74,10 @@ public class GameCharacter extends BaseEntity {
 		for (Stat stat : Stat.values()) {
 			stats.put(stat, 0.0);
 		}
-		gold = 10000L; //임시로 넉넉하게 지급
+
+		this.name = user.getNickname();
+
+		gold = 10000L;
 		this.weaponId = WeaponType.NOTHING.name();
 		this.defenceId = DefenceType.NOTHING.name();
 		this.accessoryId = AccessoryType.NOTHING.name();
@@ -101,20 +102,22 @@ public class GameCharacter extends BaseEntity {
 		this.gold += gold;
 	}
 
-	public String equipItem(ItemType item , String newItem) {
-
-		String oldItemId = null;
+	public void equipItem(ItemType item , String newItem) {
 
 		if (item instanceof WeaponType) {
-			oldItemId = weaponId;
 			weaponId = newItem;
 		} else if (item instanceof DefenceType) {
-			oldItemId = defenceId;
 			defenceId = newItem;
 		} else if (item instanceof AccessoryType) {
-			oldItemId = accessoryId;
 			accessoryId = newItem;
 		}
-		return oldItemId;
+	}
+
+	public List<String> unEquipAllItems() {
+
+		weaponId = WeaponType.NOTHING.name();
+		defenceId = DefenceType.NOTHING.name();
+		accessoryId = AccessoryType.NOTHING.name();
+		return List.of(weaponId, defenceId, accessoryId);
 	}
 }
