@@ -1,6 +1,6 @@
 package org.ezcode.codetest.infrastructure.event.dto;
 
-public record RoomEnterEvent<T>(
+public record ChatRoomHistoryLoadEvent<T>(
 
 	T chatData,
 
