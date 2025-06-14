@@ -98,10 +98,6 @@ public class JwtFilter extends OncePerRequestFilter {
 		// SecurityContextHolder(세션)에 토큰 담기
 		SecurityContextHolder.getContext().setAuthentication(authToken);
 
-		log.info("Authentication 등록됨: {}", SecurityContextHolder.getContext().getAuthentication());
-		log.info("Principal: {}", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-
-
 		filterChain.doFilter(request, response);
 		}
 

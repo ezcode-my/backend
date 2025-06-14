@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
@@ -30,9 +31,14 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
 		} catch (UnsupportedJwtException e) {
 			log.info("Unsupported JWT token", e);
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
+		} catch (JwtException e) {
+			log.warn("JWT 관련 예외", e);
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT 처리 오류입니다.");
+		} catch (IOException | ServletException e) {
+			throw e;
 		} catch (Exception e) {
-			log.info("Unexpected error in filter chain", e);
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
+			// 서비스 예외는 컨트롤러까지 전달
+			throw e;
 		}
 
 	}
