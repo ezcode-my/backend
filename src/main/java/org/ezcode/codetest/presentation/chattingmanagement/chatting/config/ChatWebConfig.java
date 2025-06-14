@@ -16,6 +16,6 @@ public class ChatWebConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(chatSpamInterceptor)
-			.addPathPatterns("/room/*/chat");
+			.addPathPatterns("/api/room/*/chat");
 	}
 }
