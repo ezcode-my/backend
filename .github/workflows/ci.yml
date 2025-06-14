@@ -33,6 +33,7 @@ jobs:
       CLIENT_ID: ${{ secrets.CLIENT_ID }}
       CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
       REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
+      SPRING_MONGODB_URI: ${{ secrests.SPRING_MONGODB_URI}}
 
     steps:
       - name: Checkout Repository
