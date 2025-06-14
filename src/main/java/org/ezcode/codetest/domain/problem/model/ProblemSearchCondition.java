@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.problem.dto.request;
+package org.ezcode.codetest.domain.problem.model;
 
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 

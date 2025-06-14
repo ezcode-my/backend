@@ -1,11 +1,10 @@
 package org.ezcode.codetest.presentation.problemmanagement.problem;
 
-import org.ezcode.codetest.application.problem.dto.request.ProblemSearchCondition;
+import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.application.problem.service.ProblemService;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
-import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

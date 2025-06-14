@@ -2,7 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.problem;
 
 import java.util.Optional;
 
-import org.ezcode.codetest.application.problem.dto.request.ProblemSearchCondition;
+import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.repository.ProblemRepository;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.springframework.data.domain.Page;
