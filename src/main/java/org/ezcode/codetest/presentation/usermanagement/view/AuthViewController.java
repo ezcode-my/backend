@@ -13,6 +13,6 @@ public class AuthViewController {
 
 	@GetMapping("/login/oauth")
 	public String oAuthLogin(){
-		return "/login";
+		return "redirect:/oauth2/authorization/google";
 	}
 }
