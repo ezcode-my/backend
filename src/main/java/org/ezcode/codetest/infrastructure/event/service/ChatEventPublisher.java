@@ -1,11 +1,11 @@
 package org.ezcode.codetest.infrastructure.event.service;
 
 import org.ezcode.codetest.application.chatting.port.event.ChatEventService;
-import org.ezcode.codetest.infrastructure.event.dto.BroadCastChatEvent;
-import org.ezcode.codetest.infrastructure.event.dto.EnterEvent;
-import org.ezcode.codetest.infrastructure.event.dto.RoomChangeEvent;
-import org.ezcode.codetest.infrastructure.event.dto.RoomEnterAndLeftEvent;
-import org.ezcode.codetest.infrastructure.event.dto.RoomEnterEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatMessageBroadcastEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatRoomListLoadEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatRoomParticipantCountChangeEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatRoomEntryExitMessageEvent;
+import org.ezcode.codetest.infrastructure.event.dto.ChatRoomHistoryLoadEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -19,26 +19,26 @@ public class ChatEventPublisher implements ChatEventService {
 
 	public <T> void publishChatRoomListLoadEvent(T roomData, String principalName, String sessionId) {
 
-		publisher.publishEvent(new EnterEvent<>(roomData, principalName, sessionId));
+		publisher.publishEvent(new ChatRoomListLoadEvent<>(roomData, principalName, sessionId));
 	}
 
 	public <T> void publishChatRoomHistoryLoadEvent(T chatData, String principalName, String sessionId) {
 
-		publisher.publishEvent(new RoomEnterEvent<>(chatData, principalName, sessionId));
+		publisher.publishEvent(new ChatRoomHistoryLoadEvent<>(chatData, principalName, sessionId));
 	}
 
 	public <T> void publishChatMessageBroadcastEvent(T chatData, Long roomId) {
 
-		publisher.publishEvent(new BroadCastChatEvent<>(chatData, roomId));
+		publisher.publishEvent(new ChatMessageBroadcastEvent<>(chatData, roomId));
 	}
 
 	public <T> void publishChatRoomEntryExitMessageEvent(T messageData, Long roomId) {
 
-		publisher.publishEvent(new RoomEnterAndLeftEvent<>(messageData, roomId));
+		publisher.publishEvent(new ChatRoomEntryExitMessageEvent<>(messageData, roomId));
 	}
 
 	public <T> void publishChatRoomParticipantCountChangeEvent(T roomData) {
 
-		publisher.publishEvent(new RoomChangeEvent<>(roomData));
+		publisher.publishEvent(new ChatRoomParticipantCountChangeEvent<>(roomData));
 	}
 }
