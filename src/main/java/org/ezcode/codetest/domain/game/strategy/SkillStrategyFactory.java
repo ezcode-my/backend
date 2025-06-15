@@ -16,7 +16,7 @@ public class SkillStrategyFactory {
 	public SkillStrategyFactory(List<SkillStrategy> strategies) {
 
 		skillFactory = strategies.stream()
-			.collect(Collectors.toMap(SkillStrategy::getType, Function.identity()));
+			.collect(Collectors.toMap(SkillStrategy::getType, Function.identity(), (first, second) -> first));
 	}
 
 	public SkillStrategy getStrategy(SkillEffect effect) {
