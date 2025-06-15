@@ -3,7 +3,6 @@ package org.ezcode.codetest.domain.game.model.entity;
 import java.util.List;
 import java.util.Map;
 
-import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
 import org.ezcode.codetest.domain.game.model.enums.Stat;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
