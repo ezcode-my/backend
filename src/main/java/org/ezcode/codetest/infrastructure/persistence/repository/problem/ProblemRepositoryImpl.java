@@ -2,7 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.problem;
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.problem.model.enums.Category;
+import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.repository.ProblemRepository;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.springframework.data.domain.Page;
@@ -16,20 +16,11 @@ import lombok.RequiredArgsConstructor;
 public class ProblemRepositoryImpl implements ProblemRepository {
 
 	private final ProblemJpaRepository problemJpaRepository;
+	private final ProblemRepositoryCustom problemRepositoryCustom;
 
 	@Override
 	public Problem save(Problem problem) {
 		return problemJpaRepository.save(problem);
-	}
-
-	@Override
-	public Page<Problem> findByCategoryAndIsDeletedIsFalse(Category category, Pageable pageable) {
-		return problemJpaRepository.findByCategoryAndIsDeletedIsFalse(category, pageable);
-	}
-
-	@Override
-	public Page<Problem> findByIsDeletedIsFalse(Pageable pageable) {
-		return problemJpaRepository.findByIsDeletedIsFalse(pageable);
 	}
 
 	@Override
@@ -38,8 +29,12 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	}
 
 	@Override
-	public void delete(Problem problem) {
+	public Page<Problem> searchByCondition(Pageable pageable, ProblemSearchCondition searchCondition) {
+		return problemRepositoryCustom.searchByCondition(pageable, searchCondition);
+	}
 
+	@Override
+	public void delete(Problem problem) {
 		problem.softDelete();
 	}
 
@@ -52,5 +47,4 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	public boolean existsByTitleAndIsDeletedIsFalse(String title) {
 		return problemJpaRepository.existsByTitleAndIsDeletedIsFalse(title);
 	}
-
 }

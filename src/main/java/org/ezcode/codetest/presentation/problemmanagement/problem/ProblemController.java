@@ -1,5 +1,6 @@
 package org.ezcode.codetest.presentation.problemmanagement.problem;
 
+import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.application.problem.service.ProblemService;
@@ -22,7 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/problems")
+@RequestMapping("/api/problems")
 @RequiredArgsConstructor
 @Tag(name = "Problem", description = "문제 API")
 public class ProblemController {
@@ -34,12 +35,15 @@ public class ProblemController {
 	@ApiResponse(responseCode = "200", description = "문제 전체 조회성공")
 	public ResponseEntity<Page<ProblemResponse>> getProblemsList(
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-		@RequestParam(required = false) Category category
+		@RequestParam(required = false) Category category,
+		@RequestParam(required = false) String difficulty
 	) {
+
+		ProblemSearchCondition searchCondition = new ProblemSearchCondition(category, difficulty);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(problemService.getProblemsList(pageable, category));
+				.body(problemService.getProblemsList(pageable, searchCondition));
 	}
 
 	@GetMapping("/{problemId}")
