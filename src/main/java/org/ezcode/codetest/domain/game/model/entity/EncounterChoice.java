@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.game.model.entity;
 
-import org.ezcode.codetest.domain.game.model.enums.EncounterHandlerKey;
+import org.ezcode.codetest.common.base.entity.BaseEntity;
+import org.ezcode.codetest.domain.game.model.enums.RandomEncounterEffect;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EncounterChoice {
+public class EncounterChoice extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,5 +32,5 @@ public class EncounterChoice {
 	private String resultText;
 
 	@Enumerated(EnumType.STRING)
-	private EncounterHandlerKey handlerKey;
+	private RandomEncounterEffect encounterEffect;
 }

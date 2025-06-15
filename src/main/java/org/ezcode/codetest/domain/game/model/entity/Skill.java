@@ -1,7 +1,6 @@
 package org.ezcode.codetest.domain.game.model.entity;
 
-import java.util.UUID;
-
+import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.game.model.enums.Grade;
 import org.ezcode.codetest.domain.game.model.enums.SkillEffect;
 
@@ -20,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Skill {
+public class Skill extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
