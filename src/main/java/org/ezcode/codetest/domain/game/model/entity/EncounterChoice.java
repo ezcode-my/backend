@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,4 +34,15 @@ public class EncounterChoice extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	private RandomEncounterEffect encounterEffect;
+
+	@Builder
+	public EncounterChoice(
+		RandomEncounter encounter,
+		String resultText,
+		RandomEncounterEffect encounterEffect
+	) {
+		this.encounter = encounter;
+		this.resultText = resultText;
+		this.encounterEffect = encounterEffect;
+	}
 }
