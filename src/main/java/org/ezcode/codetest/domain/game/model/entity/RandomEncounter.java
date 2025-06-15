@@ -10,14 +10,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RandomEncounter extends BaseEntity {
 
 	@Id
@@ -34,27 +30,8 @@ public class RandomEncounter extends BaseEntity {
 	private String encounterText;
 
 	@Column(nullable = false)
-	private boolean activated;
+	private Boolean isActivated;
 
 	@Column(nullable = false)
 	private Integer weight;
-
-	@Builder
-	public RandomEncounter(
-		EncounterCategory encounterCategory,
-		String name,
-		String encounterText,
-		boolean activated,
-		Integer weight
-	) {
-		this.encounterCategory = encounterCategory;
-		this.name = name;
-		this.encounterText = encounterText;
-		this.activated = activated;
-		this.weight = weight;
-	}
-
-	public void softDelete() {
-		activated = false;
-	}
 }
