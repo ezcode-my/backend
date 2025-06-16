@@ -2,7 +2,7 @@ package org.ezcode.codetest.domain.community.repository;
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.community.model.BaseVote;
+import org.ezcode.codetest.domain.community.model.entity.BaseVote;
 
 public interface BaseVoteRepository<T extends BaseVote> {
 

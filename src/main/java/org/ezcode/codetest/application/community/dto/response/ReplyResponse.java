@@ -3,7 +3,7 @@ package org.ezcode.codetest.application.community.dto.response;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.*;
 
 import org.ezcode.codetest.application.usermanagement.user.dto.response.SimpleUserInfoResponse;
-import org.ezcode.codetest.domain.community.model.Reply;
+import org.ezcode.codetest.domain.community.model.entity.Reply;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

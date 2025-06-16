@@ -2,7 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.community.repl
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.community.model.Reply;
+import org.ezcode.codetest.domain.community.model.entity.Reply;
 import org.ezcode.codetest.domain.community.repository.ReplyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

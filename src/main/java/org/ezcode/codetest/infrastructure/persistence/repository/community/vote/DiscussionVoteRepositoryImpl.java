@@ -2,7 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.community.vote
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.community.model.DiscussionVote;
+import org.ezcode.codetest.domain.community.model.entity.DiscussionVote;
 import org.ezcode.codetest.domain.community.repository.DiscussionVoteRepository;
 import org.springframework.stereotype.Repository;
 

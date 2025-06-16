@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.community.model;
 
 import java.time.LocalDateTime;
 
+import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

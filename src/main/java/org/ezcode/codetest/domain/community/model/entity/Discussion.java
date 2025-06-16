@@ -1,4 +1,4 @@
-package org.ezcode.codetest.domain.community.model;
+package org.ezcode.codetest.domain.community.model.entity;
 
 import java.util.Objects;
 

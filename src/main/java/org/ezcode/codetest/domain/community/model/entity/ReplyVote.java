@@ -1,4 +1,4 @@
-package org.ezcode.codetest.domain.community.model;
+package org.ezcode.codetest.domain.community.model.entity;
 
 import org.ezcode.codetest.domain.user.model.entity.User;
 
