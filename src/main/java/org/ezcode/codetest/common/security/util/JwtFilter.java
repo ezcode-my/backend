@@ -32,27 +32,17 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 
-	// 토큰 검증을 건너뛸 경로들
-	private static final String[] WHITE_LIST = {
-		"/api/auth/signin",
-		"/api/auth/signup",
-		"/api/auth/refresh",
-		"/swagger-ui",
-		"/v3/api-docs",
-	};
-
-
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 									FilterChain filterChain) throws ServletException, IOException {
 
-		String requestURI = request.getRequestURI();
-
-		//whiteList 등록
-		if (shouldSkipFilter(requestURI)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+		// String requestURI = request.getRequestURI();
+		//
+		// //whiteList 등록
+		// if (shouldNotFilter(requestURI)) {
+		// 	filterChain.doFilter(request, response);
+		// 	return;
+		// }
 
 		String bearerToken = request.getHeader("Authorization");
 
@@ -101,9 +91,19 @@ public class JwtFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 		}
 
-	private boolean shouldSkipFilter(String requestURI){
-		return Arrays.stream(WHITE_LIST).anyMatch(requestURI::startsWith);
+	// 필터링 제외할 경로 지정
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		String requestURI = request.getRequestURI();
+		return Arrays.stream(SecurityPath.PUBLIC_PATH)
+			.anyMatch(path -> {
+				if (path.endsWith("/**")) {
+					return requestURI.startsWith(path.substring(0, path.length() - 3));
+				}
+				return requestURI.startsWith(path);
+			});
 	}
+
 
 	}
 

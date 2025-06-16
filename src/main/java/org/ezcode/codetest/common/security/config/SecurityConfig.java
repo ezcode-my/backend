@@ -1,5 +1,6 @@
 package org.ezcode.codetest.common.security.config;
 
+import org.ezcode.codetest.common.security.util.SecurityPath;
 import org.ezcode.codetest.domain.user.service.CustomOAuth2UserService;
 import org.ezcode.codetest.common.security.hander.CustomSuccessHandler;
 import org.ezcode.codetest.common.security.util.ExceptionHandlingFilter;
@@ -46,8 +47,7 @@ public class SecurityConfig {
 			.oauth2Login((outh2)-> outh2
 				.userInfoEndpoint((userInfoEndpointConfig ->
 					userInfoEndpointConfig.userService(customOAuth2UserService)))
-				.successHandler(customSuccessHandler)
-				.loginPage("/login"))
+				.successHandler(customSuccessHandler))
 			// JWT 사용을 위해 세션을 STATELESS로 설정 (세션 정보 저장 x)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -61,26 +61,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers(
-						"/api/auth/**",
-						"/login",
-						"/ezlogin",
-						"/login/**",
-						"/oauth2/**",
-						"/login/oauth",
-						"/login/oauth2/**", //OAuth로그인 접근
-						"/actuator/**",
-						"/chatting",
-						"/submit-test",
-						"/problems/**",
-						"/ws/**",
-						"/swagger-ui/**",
-						"/swagger-resources/**",
-						"/v2/**",
-						"/v3/**",
-						"/webjars/**",
-						"/searching",
-						"/css/**", //html 화면 구성 접근
-						"/images/**").permitAll()
+						SecurityPath.PUBLIC_PATH).permitAll()
 					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.anyRequest().authenticated() //나머지는 일반 인증
 			)
