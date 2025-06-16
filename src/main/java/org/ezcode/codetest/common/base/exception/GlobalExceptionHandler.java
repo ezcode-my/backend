@@ -49,8 +49,9 @@ public class GlobalExceptionHandler {
 	) {
 
 		String requestUri = request.getRequestURI();
-		boolean isSseRequest = requestUri.contains("/api/problems/**") ||
-			"text/event-stream".equals(request.getHeader("Accept"));
+		boolean isSseRequest = requestUri.startsWith("/api/problems/")
+			&& request.getHeader("Accept") != null
+			&& request.getHeader("Accept").toLowerCase().contains("text/event-stream");
 
 		if (isSseRequest) {
 			if (response.isCommitted()) {
@@ -58,7 +59,7 @@ public class GlobalExceptionHandler {
 				return null;
 			}
 			return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
+				.status(HttpStatus.FORBIDDEN)
 				.body(CommonResponse.of(false, ex.getMessage(), 400, null));
 		}
 		throw ex;

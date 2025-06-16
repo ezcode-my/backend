@@ -110,6 +110,7 @@ public class SubmissionService {
 					} catch (Exception e) {
 						if (context.notified().compareAndSet(false, true)) {
 							exceptionNotificationHelper(e);
+							emitter.completeWithError(e);
 						}
 					} finally {
 						context.countDown();

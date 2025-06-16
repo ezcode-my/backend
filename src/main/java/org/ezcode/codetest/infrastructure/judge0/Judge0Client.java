@@ -82,6 +82,8 @@ public class Judge0Client implements JudgeClient {
 				attempt++;
 			}
 			throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
+		} catch (SubmissionException se) {
+			throw se;
 		} catch (Exception e) {
 			throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
 		}
