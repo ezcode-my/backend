@@ -1,5 +1,8 @@
 package org.ezcode.codetest.domain.community.service;
 
+import org.ezcode.codetest.application.notification.enums.NotificationType;
+import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
+import org.ezcode.codetest.application.notification.event.payload.ReplyCreatePayload;
 import org.ezcode.codetest.domain.community.exception.CommunityException;
 import org.ezcode.codetest.domain.community.exception.CommunityExceptionCode;
 import org.ezcode.codetest.domain.community.model.Discussion;
@@ -91,5 +94,21 @@ public class ReplyDomainService {
 		if (!reply.isAuthor(userId)) {
 			throw new CommunityException(CommunityExceptionCode.USER_NOT_AUTHOR);
 		}
+	}
+
+	public NotificationCreateEvent createReplyNotification(User target, Reply reply) {
+
+		ReplyCreatePayload payload = new ReplyCreatePayload(
+			reply.getProblemId(),
+			reply.getId(),
+			reply.getDiscussionId(),
+			reply.getContent()
+		);
+
+		return NotificationCreateEvent.of(
+			target.getEmail(),
+			NotificationType.COMMUNITY_REPLY,
+			payload
+		);
 	}
 }

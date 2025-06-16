@@ -1,5 +1,10 @@
 package org.ezcode.codetest.domain.community.service;
 
+import java.util.Optional;
+
+import org.ezcode.codetest.application.notification.enums.NotificationType;
+import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
+import org.ezcode.codetest.application.notification.event.payload.ReplyVotePayload;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.model.Reply;
 import org.ezcode.codetest.domain.community.model.ReplyVote;
@@ -44,5 +49,26 @@ public class ReplyVoteDomainService extends BaseVoteDomainService<ReplyVote, Rep
 		replyDomainService.validateDiscussionMatches(reply, discussion);
 
 		return reply;
+	}
+
+	public Optional<NotificationCreateEvent> createReplyVoteNotification(User voter, Reply reply) {
+
+		if (voter.shouldSkipNotification(reply.getUser())) {
+			return Optional.empty();
+		}
+
+		ReplyVotePayload payload = new ReplyVotePayload(
+			reply.getDiscussion().getProblemId(),
+			reply.getId(),
+			voter.getNickname()
+		);
+
+		return Optional.of(
+			NotificationCreateEvent.of(
+				reply.getUserEmail(),
+				NotificationType.COMMUNITY_REPLY_VOTED_UP,
+				payload
+			)
+		);
 	}
 }

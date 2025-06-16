@@ -1,11 +1,11 @@
 package org.ezcode.codetest.application.community.service;
 
+import java.util.List;
+
 import org.ezcode.codetest.application.community.dto.request.ReplyCreateRequest;
 import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
-import org.ezcode.codetest.application.notification.dto.event.ReplyCreateEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Discussion;
 import org.ezcode.codetest.domain.community.model.Reply;
@@ -30,7 +30,6 @@ public class ReplyService {
 	private final UserDomainService userDomainService;
 
 	private final NotificationEventService notificationEventService;
-	private final NotificationConverter notificationConverter;
 
 	@Transactional
 	public ReplyResponse createReply(
@@ -46,11 +45,14 @@ public class ReplyService {
 
 		Reply reply = replyDomainService.createReply(discussion, user, request.parentReplyId(), request.content());
 
-		// TODO: 알림 관련 리팩토링 필요
-		User discussionAuthor = discussion.getUser();	// TODO: get depth 하나로 줄이기
-		User parentAuthor = reply.getParent() != null ? reply.getParent().getUser() : null;
-		notify(user, discussionAuthor, reply);
-		notify(user, parentAuthor, reply);
+		List<User> notificationTargets = reply.generateNotificationTargets();
+
+		if (!notificationTargets.isEmpty()) {
+			for (User target : notificationTargets) {
+				NotificationCreateEvent notificationEvent = replyDomainService.createReplyNotification(target, reply);
+				notificationEventService.saveAndNotify(notificationEvent);
+			}
+		}
 
 		return ReplyResponse.fromEntity(reply);
 	}
@@ -103,22 +105,5 @@ public class ReplyService {
 		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
 		replyDomainService.remove(replyId, discussion, userId);
-	}
-
-	private void notify(User sender, User recipient, Reply reply) {
-
-		if (sender.shouldSkipNotification(recipient)) {
-			return;
-		}
-
-		NotificationCreateEvent event = notificationConverter.convert(
-			new ReplyCreateEvent(
-				recipient.getEmail(),
-				reply.getId(),
-				reply.getDiscussion().getId(),
-				reply.getContent()
-			)
-		);
-		notificationEventService.saveAndNotify(event);
 	}
 }

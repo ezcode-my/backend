@@ -1,9 +1,9 @@
 package org.ezcode.codetest.application.community.service;
 
+import java.util.Optional;
+
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
-import org.ezcode.codetest.application.notification.dto.event.ReplyVoteEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.ezcode.codetest.domain.community.model.Reply;
 import org.ezcode.codetest.domain.community.model.ReplyVote;
@@ -20,19 +20,16 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	private final ReplyDomainService replyDomainService;
 
 	private final NotificationEventService notificationEventService;
-	private final NotificationConverter notificationConverter;
 
 	public ReplyVoteService(
 		ReplyVoteDomainService domainService,
 		UserDomainService userDomainService,
 		ReplyDomainService replyDomainService,
-		NotificationEventService notificationEventService,
-		NotificationConverter notificationConverter
+		NotificationEventService notificationEventService
 	) {
 		super(domainService, userDomainService);
 		this.replyDomainService = replyDomainService;
 		this.notificationEventService = notificationEventService;
-		this.notificationConverter = notificationConverter;
 	}
 
 	@Transactional
@@ -47,17 +44,9 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	protected void afterVote(User voter, Long targetId) {
 
 		Reply reply = replyDomainService.getReplyById(targetId);
-		if (voter.shouldSkipNotification(reply.getUser())) {
-			return;
-		}
 
-		NotificationCreateEvent event = notificationConverter.convert(
-			new ReplyVoteEvent(
-				reply.getUser().getEmail(),
-				reply.getId(),
-				voter.getNickname()
-			)
-		);
-		notificationEventService.saveAndNotify(event);
+		Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createReplyVoteNotification(voter, reply);
+
+		notificationEvent.ifPresent(notificationEventService::saveAndNotify);
 	}
 }
