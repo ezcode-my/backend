@@ -1,4 +1,4 @@
-package org.ezcode.codetest.domain.game.Util;
+package org.ezcode.codetest.domain.game.util;
 
 import java.util.Collections;
 import java.util.EnumMap;

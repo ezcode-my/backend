@@ -21,7 +21,11 @@ public enum GameExceptionCode implements ResponseCode {
 	SKILL_ALREADY_EQUIPPED(false, HttpStatus.BAD_REQUEST, "해당 스킬을 이미 장착중입니다."),
 	SKILL_SLOT_FULL(false, HttpStatus.BAD_REQUEST, "스킬 슬롯이 꽉차있습니다."),
 	SKILL_ALREADY_EXISTS(false, HttpStatus.BAD_REQUEST, "이미 존재하는 스킬입니다."),
-	ITEM_ALREADY_EXISTS(false, HttpStatus.BAD_REQUEST, "이미 존재하는 아이템입니다.");
+	ITEM_ALREADY_EXISTS(false, HttpStatus.BAD_REQUEST, "이미 존재하는 아이템입니다."),
+	RANDOM_ENCOUNTER_ALREADY_EXISTS(false, HttpStatus.BAD_REQUEST, "이미 존재하는 랜덤 인카운터입니다."),
+	RANDOM_ENCOUNTER_NOT_EXISTS(false, HttpStatus.BAD_REQUEST, "해당 랜덤 인카운터가 존재하지 않습니다."),
+	ENCOUNTER_CHOICE_ALREADY_EXISTS(false, HttpStatus.BAD_REQUEST, "이미 존재하는 인카운터 선택지입니다."),
+	ENCOUNTER_CHOICE_NOT_EXISTS(false, HttpStatus.BAD_REQUEST, "해당 인카운터 선택지가 존재하지 않습니다.");
 
 	private final boolean success;
 	private final HttpStatus status;
