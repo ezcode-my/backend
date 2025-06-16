@@ -19,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -60,6 +61,7 @@ public class SecurityConfig {
 			//인증 URL 범위 설정
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
+					.requestMatchers(request -> request.getDispatcherType() == DispatcherType.ASYNC).permitAll()
 					.requestMatchers(
 						"/api/auth/**",
 						"/login",

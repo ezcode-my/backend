@@ -12,7 +12,6 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -60,8 +59,8 @@ public class SubmissionController {
 	public SseEmitter submitCodeStream(
 		@Parameter(description = "제출할 문제 ID", required = true) @PathVariable Long problemId,
 		@RequestBody @Valid CodeSubmitRequest request,
-		@AuthenticationPrincipal AuthUser authUser) {
-		log.info("초기 SecurityContext = {}", SecurityContextHolder.getContext().getAuthentication());
+		@AuthenticationPrincipal AuthUser authUser
+	) {
 		return submissionService.enqueueCodeSubmission(problemId, request, authUser);
 	}
 
