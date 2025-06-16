@@ -101,7 +101,7 @@ public class GamePlayUseCase {
 
 		GameCharacter character = characterService.getGameCharacter(userId);
 
-		characterService.UnEquipSkill(character, request.name());
+		characterService.unEquipSkill(character, request.name());
 	}
 
 	@Transactional

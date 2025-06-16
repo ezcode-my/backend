@@ -12,6 +12,7 @@ import org.ezcode.codetest.domain.game.model.enums.WeaponType;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
 import org.ezcode.codetest.domain.game.repository.SkillRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class DataLoader {
 	private final SkillRepository skillRepository;
 
 	@PostConstruct
+	@Transactional
 	public void init() {
 
 		if (itemRepository.count() == 0L) {

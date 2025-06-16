@@ -83,9 +83,9 @@ public class CharacterStatusDomainService {
 		characterLoadService.equipSkill(character, skillName, slotNumber);
 	}
 
-	public void UnEquipSkill(GameCharacter character, String skillName) {
+	public void unEquipSkill(GameCharacter character, String skillName) {
 
-		characterLoadService.UnEquipSkill(character, skillName);
+		characterLoadService.unEquipSkill(character, skillName);
 	}
 
 	public void equipItem(GameCharacter character, String itemName) {

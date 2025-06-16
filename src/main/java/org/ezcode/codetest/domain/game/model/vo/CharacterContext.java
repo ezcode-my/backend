@@ -32,6 +32,7 @@ public class CharacterContext {
 			.evasion(character.getEvasion())
 			.hp(character.getHp())
 			.ap(character.getAp())
+			.accuracy(character.getAccuracy())
 			.build();
 	}
 

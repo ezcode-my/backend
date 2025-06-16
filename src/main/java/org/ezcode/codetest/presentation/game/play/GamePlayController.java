@@ -96,7 +96,7 @@ public class GamePlayController {
 	}
 
 	@PatchMapping("/skills/unequip")
-	public ResponseEntity<Void> UnEquipSkill(
+	public ResponseEntity<Void> unEquipSkill(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Validated SkillUnEquipRequest request
 	) {

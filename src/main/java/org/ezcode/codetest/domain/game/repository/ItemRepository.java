@@ -10,7 +10,7 @@ public interface ItemRepository {
 
 	Item save(Item item);
 
-	void saveAll(List<Item> items);
+	List<Item> saveAll(List<Item> items);
 
 	boolean existsByName(String name);
 

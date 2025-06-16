@@ -95,7 +95,7 @@ public class CharacterEquipService {
 		has.equipSkill(wantedSlot);
 	}
 
-	public void UnEquipSkill(GameCharacter character, String skillName) {
+	public void unEquipSkill(GameCharacter character, String skillName) {
 
 		Skill skill = skillRepository.findByName(skillName)
 			.orElseThrow(() -> new GameException(GameExceptionCode.SKILL_NOT_FOUND));

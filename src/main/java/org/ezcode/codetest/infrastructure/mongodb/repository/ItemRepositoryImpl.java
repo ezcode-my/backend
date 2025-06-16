@@ -41,9 +41,9 @@ public class ItemRepositoryImpl implements ItemRepository {
 	}
 
 	@Override
-	public void saveAll(List<Item> items) {
+	public List<Item> saveAll(List<Item> items) {
 
-		itemRepository.saveAll(items);
+		return itemRepository.saveAll(items);
 	}
 
 	@Override
