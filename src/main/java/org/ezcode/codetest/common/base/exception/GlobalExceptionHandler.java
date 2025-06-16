@@ -66,6 +66,7 @@ public class GlobalExceptionHandler {
 				.body(CommonResponse.of(false, ex.getMessage(), 400, null));
 		}
 		throw ex;
+}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<CommonResponse<String>> handleAllException(Exception e
@@ -75,6 +76,5 @@ public class GlobalExceptionHandler {
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
 			.body(CommonResponse.of(false, e.getMessage(), 400, null));
-
 	}
 }
