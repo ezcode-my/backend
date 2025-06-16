@@ -23,7 +23,9 @@ public abstract class BaseVoteService<T extends BaseVote, D extends BaseVoteDoma
 
 		VoteResult voteResult = voteDomainService.manageVote(voter, targetId, voteType);
 
-		if (voteResult.voteType() == VoteType.UP) {
+		// 알림 도배 방지용 검증 로직
+		// voteType=UP인 요청을 반복해서 날릴 경우 알림이 도배될 수 있는 문제를 방지
+		if (voteResult.voteType() == VoteType.UP && voteResult.prevVoteType() != VoteType.UP) {
 			afterVote(voter, targetId);
 		}
 

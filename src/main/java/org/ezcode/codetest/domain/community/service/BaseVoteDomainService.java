@@ -18,10 +18,12 @@ public abstract class BaseVoteDomainService<T extends BaseVote, R extends BaseVo
 	public VoteResult manageVote(User voter, Long targetId, VoteType voteType) {
 
 		Optional<T> existing = voteRepository.findByVoterIdAndTargetId(voter.getId(), targetId);
+		VoteType prevVoteType;
 
 		if (existing.isPresent()) {
 			// 추천 또는 비추천 기록이 존재
 			T vote = existing.get();
+			prevVoteType = vote.getVoteType();
 
 			// 요청 타입이 NONE 이면 기존 기록 삭제
 			if (voteType == VoteType.NONE) {
@@ -34,12 +36,14 @@ public abstract class BaseVoteDomainService<T extends BaseVote, R extends BaseVo
 			// 기록이 없으면 새로 생성
 			T vote = buildVote(voter, targetId, voteType);
 			voteRepository.save(vote);
+
+			prevVoteType = VoteType.NONE;
 		}
 
 		Long upvoteCount = voteRepository.countUpvotesByTargetId(targetId);
 		Long downvoteCount = voteRepository.countDownvotesByTargetId(targetId);
 
-		return new VoteResult(voteType, upvoteCount, downvoteCount);
+		return new VoteResult(voteType, prevVoteType, upvoteCount, downvoteCount);
 	}
 
 	public VoteResult getVoteStatus(Long voterId, Long targetId) {
@@ -51,7 +55,7 @@ public abstract class BaseVoteDomainService<T extends BaseVote, R extends BaseVo
 		Long upvoteCount = voteRepository.countUpvotesByTargetId(targetId);
 		Long downvoteCount = voteRepository.countDownvotesByTargetId(targetId);
 
-		return new VoteResult(voteType, upvoteCount, downvoteCount);
+		return new VoteResult(voteType, VoteType.NONE, upvoteCount, downvoteCount);
 	}
 
 	protected abstract T buildVote(User voter, Long targetId, VoteType voteType);
