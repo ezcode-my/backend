@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
 			}
 			return ResponseEntity
 				.status(HttpStatus.FORBIDDEN)
-				.body(CommonResponse.of(false, ex.getMessage(), 400, null));
+				.body(CommonResponse.of(false, ex.getMessage(), 403, null));
 		}
 		throw ex;
 }
