@@ -14,6 +14,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class DiscordNotifier implements ExceptionNotifier {
 
@@ -61,7 +64,7 @@ public class DiscordNotifier implements ExceptionNotifier {
 
 			restTemplate.postForEntity(webhookUrl, entity, String.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Discord 웹훅 전송 실패", e);
 		}
 	}
 }
