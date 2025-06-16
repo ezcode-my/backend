@@ -12,6 +12,7 @@ public record RandomEncounterSaveRequest(
 	@NotBlank(message = "인카운터 카테고리는 필수입니다.")
 	@Pattern(
 		regexp = "^(BATTLE|MERCHANT|EVENT|EXPLORATION)$",
+		flags  = Pattern.Flag.CASE_INSENSITIVE,
 		message = "인카운터 카테고리는 BATTLE, MERCHANT, EVENT, EXPLORATION 중 하나여야 합니다."
 	)
 	String encounterCategory,

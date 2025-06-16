@@ -16,6 +16,12 @@ public class SkillRepositoryImpl implements SkillRepository {
 	private final SkillJpaRepository skillRepository;
 
 	@Override
+	public long count() {
+
+		return skillRepository.count();
+	}
+
+	@Override
 	public Optional<Skill> findById(Long id) {
 
 		return skillRepository.findById(id);

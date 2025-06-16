@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.ezcode.codetest.domain.game.model.entity.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.enums.SkillEffect;
+import org.ezcode.codetest.domain.game.model.enums.SkillSlotType;
 import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 public class SkillStrategyFactory {
@@ -19,8 +24,30 @@ public class SkillStrategyFactory {
 			.collect(Collectors.toMap(SkillStrategy::getType, Function.identity(), (first, second) -> first));
 	}
 
-	public SkillStrategy getStrategy(SkillEffect effect) {
+	private SkillStrategy getStrategy(SkillEffect effect) {
 		return skillFactory.get(effect);
 	}
 
+	public List<SkillStrategy> orderedStrategies(List<GameCharacterSkill> equipped) {
+
+		Map<SkillSlotType, GameCharacterSkill> map = equipped.stream()
+			.collect(Collectors.toMap(
+				GameCharacterSkill::getSlotType,
+				Function.identity()
+			));
+
+		return Stream.of(
+				SkillSlotType.SLOT_1,
+				SkillSlotType.SLOT_2,
+				SkillSlotType.SLOT_3
+			)
+			.map(slot -> {
+				GameCharacterSkill cs = map.get(slot);
+				SkillEffect effect = (cs != null)
+					? cs.getSkill().getSkillEffect()
+					: SkillEffect.NO_SKILL;
+				return getStrategy(effect);
+			})
+			.toList();
+	}
 }

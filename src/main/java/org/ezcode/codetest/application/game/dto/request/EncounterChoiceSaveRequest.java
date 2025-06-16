@@ -27,6 +27,7 @@ public record EncounterChoiceSaveRequest(
 			+ "|WILD_BEASTS_ESCAPE|WILD_BEASTS_ATTACK"
 			+ "|ANCIENT_RUINS_TREASURE|ANCIENT_RUINS_TRAP"
 			+ "|TREASURE_CACHE_FOUND|TREASURE_CACHE_EMPTY)$",
+		flags  = Pattern.Flag.CASE_INSENSITIVE,
 		message = "effect 는 RandomEncounterEffect 의 유효한 값이어야 합니다."
 	)
 	String randomEncounterEffect

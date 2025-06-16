@@ -19,5 +19,7 @@ public interface SkillRepository {
 
 	void deleteByName(String name);
 
+	long count();
+
 	List<Skill> findAll();
 }

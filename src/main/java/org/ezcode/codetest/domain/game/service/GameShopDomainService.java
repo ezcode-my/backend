@@ -11,6 +11,7 @@ import org.ezcode.codetest.domain.game.model.entity.Inventory;
 import org.ezcode.codetest.domain.game.model.entity.Item;
 import org.ezcode.codetest.domain.game.model.entity.Skill;
 import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
+import org.ezcode.codetest.domain.game.model.enums.SkillSlotType;
 import org.ezcode.codetest.domain.game.repository.GameCharacterSkillRepository;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
@@ -132,6 +133,7 @@ public class GameShopDomainService {
 				.builder()
 				.skill(skill)
 				.character(character)
+				.slotType(SkillSlotType.BACKPACK)
 				.build()
 		);
 

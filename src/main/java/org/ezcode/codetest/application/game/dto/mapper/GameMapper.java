@@ -12,8 +12,8 @@ import org.ezcode.codetest.domain.game.model.entity.Accessory;
 import org.ezcode.codetest.domain.game.model.entity.CharacterRealStat;
 import org.ezcode.codetest.domain.game.model.entity.Defence;
 import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
+import org.ezcode.codetest.domain.game.model.entity.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.entity.Item;
-import org.ezcode.codetest.domain.game.model.entity.Skill;
 import org.ezcode.codetest.domain.game.model.entity.Weapon;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -40,13 +40,13 @@ public interface GameMapper {
 	@Mapping(target = "realStat", ignore = true)
 	@Mapping(target = "items", ignore = true)
 	@Mapping(target = "skills", ignore = true)
-	CharacterStatusResponse toCharacterStatusResponse(GameCharacter character, List<Item> items, List<Skill> skills);
+	CharacterStatusResponse toCharacterStatusResponse(GameCharacter character, List<Item> items, List<GameCharacterSkill> skills);
 
 	@AfterMapping
 	default void applyItemStatsToRealStat(
 		GameCharacter character,
 		List<Item> items,
-		List<Skill> skills,
+		List<GameCharacterSkill> skills,
 		@MappingTarget CharacterStatusResponse.CharacterStatusResponseBuilder builder
 	) {
 		CharacterRealStat sum = new CharacterRealStat(character.getRealStat());

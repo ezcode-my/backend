@@ -29,9 +29,21 @@ public class ItemRepositoryImpl implements ItemRepository {
 	}
 
 	@Override
+	public Long count() {
+
+		return itemRepository.count();
+	}
+
+	@Override
 	public Item save(Item item) {
 
 		return itemRepository.save(item);
+	}
+
+	@Override
+	public void saveAll(List<Item> items) {
+
+		itemRepository.saveAll(items);
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class GameCharacterSkillRepositoryImpl implements GameCharacterSkillRepos
 	@Override
 	public List<GameCharacterSkill> findByCharacterIdAndEquipped(Long characterId) {
 
-		return gameCharacterSkillRepository.findByCharacterIdAndSlotType(characterId, SkillSlotType.EQUIPPED);
+		return gameCharacterSkillRepository.findByCharacterIdAndSlotTypeNot(characterId, SkillSlotType.BACKPACK);
 	}
 
 }

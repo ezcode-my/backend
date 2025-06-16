@@ -26,8 +26,8 @@ import lombok.NoArgsConstructor;
 @Table(
 	name = "game_character_skill",
 	uniqueConstraints = @UniqueConstraint(
-		name = "character_skill_unique",
-		columnNames = { "game_character_id", "skill_id" }
+		name = "uk_character_skill",
+		columnNames = {"game_character_id", "skill_id"}
 	)
 )
 @Getter
@@ -52,14 +52,19 @@ public class GameCharacterSkill extends BaseEntity {
 	private SkillSlotType slotType;
 
 	@Builder
-	public GameCharacterSkill(GameCharacter character, Skill skill) {
+	public GameCharacterSkill(GameCharacter character, Skill skill, SkillSlotType slotType) {
 		this.character = character;
 		this.skill = skill;
-		this.slotType = SkillSlotType.BACKPACK;
+		this.slotType = slotType;
 	}
 
-	public void equipSkill() {
+	public void equipSkill(SkillSlotType slotType) {
 
-		slotType = SkillSlotType.EQUIPPED;
+		this.slotType = slotType;
+	}
+
+	public void unEquipSkill() {
+
+		this.slotType = SkillSlotType.BACKPACK;
 	}
 }

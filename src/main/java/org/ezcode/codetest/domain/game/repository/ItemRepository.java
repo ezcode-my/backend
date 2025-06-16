@@ -10,11 +10,15 @@ public interface ItemRepository {
 
 	Item save(Item item);
 
+	void saveAll(List<Item> items);
+
 	boolean existsByName(String name);
 
 	void delete(Item item);
 
 	void deleteByName(String name);
+
+	Long count();
 
 	List<Item> findAll();
 
