@@ -5,7 +5,6 @@ import org.ezcode.codetest.common.security.hander.CustomSuccessHandler;
 import org.ezcode.codetest.common.security.util.ExceptionHandlingFilter;
 import org.ezcode.codetest.common.security.util.JwtFilter;
 import org.ezcode.codetest.common.security.util.JwtUtil;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,6 +17,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.DispatcherTypeRequestMatcher;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
@@ -61,8 +61,7 @@ public class SecurityConfig {
 			// 인증 URL 범위 설정
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
-					// cleanup(Async dispatch) 요청만 무조건 허용
-					.requestMatchers(request -> request.getDispatcherType() == DispatcherType.ASYNC).permitAll()
+					.requestMatchers(new DispatcherTypeRequestMatcher(DispatcherType.ASYNC)).permitAll()
 					.requestMatchers(
 						"/api/auth/**",
 						"/login",

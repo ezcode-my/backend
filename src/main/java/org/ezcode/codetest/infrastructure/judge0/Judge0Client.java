@@ -1,7 +1,5 @@
 package org.ezcode.codetest.infrastructure.judge0;
 
-import java.util.Objects;
-
 import org.ezcode.codetest.application.submission.dto.request.compile.CodeCompileRequest;
 import org.ezcode.codetest.application.submission.dto.response.compile.ExecutionResultResponse;
 import org.ezcode.codetest.application.submission.model.JudgeResult;
@@ -15,7 +13,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class Judge0Client implements JudgeClient {
@@ -32,26 +32,11 @@ public class Judge0Client implements JudgeClient {
 
 	@Override
 	public String submitAndGetToken(CodeCompileRequest request) {
-		ExecutionResultResponse executionResultResponse = webClient.post()
-			.uri("/submissions?base64_encoded=false&wait=false")
-			.contentType(MediaType.APPLICATION_JSON)
-			.bodyValue(request)
-			.retrieve()
-			.bodyToMono(ExecutionResultResponse.class)
-			.block();
-
-		return Objects.requireNonNull(executionResultResponse).token();
-	}
-
-	@Override
-	public JudgeResult pollUntilDone(String token) {
-		int maxAttempts = 30;
-		int attempt = 0;
-
-		while (attempt < maxAttempts) {
-			ExecutionResultResponse executionResultResponse = webClient.get()
-				.uri("/submissions/{token}", token)
-				.accept(MediaType.APPLICATION_JSON)
+		try {
+			ExecutionResultResponse executionResultResponse = webClient.post()
+				.uri("/submissions?base64_encoded=false&wait=false")
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(request)
 				.retrieve()
 				.bodyToMono(ExecutionResultResponse.class)
 				.block();
@@ -60,18 +45,47 @@ public class Judge0Client implements JudgeClient {
 				throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
 			}
 
-			if (executionResultResponse.status().id() >= 3) {
-				return interpreter.toJudgeResult(executionResultResponse);
-			}
-
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
-			}
-			attempt++;
+			return executionResultResponse.token();
+		} catch (Exception e) {
+			throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
 		}
-		throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
+	}
+
+	@Override
+	public JudgeResult pollUntilDone(String token) {
+		try {
+			int maxAttempts = 30;
+			int attempt = 0;
+
+			while (attempt < maxAttempts) {
+				ExecutionResultResponse executionResultResponse = webClient.get()
+					.uri("/submissions/{token}", token)
+					.accept(MediaType.APPLICATION_JSON)
+					.retrieve()
+					.bodyToMono(ExecutionResultResponse.class)
+					.block();
+
+				if (executionResultResponse == null) {
+					throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
+				}
+
+				if (executionResultResponse.status().id() >= 3) {
+					return interpreter.toJudgeResult(executionResultResponse);
+				}
+
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
+				}
+				attempt++;
+			}
+			throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
+		} catch (SubmissionException se) {
+			throw se;
+		} catch (Exception e) {
+			throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
+		}
 	}
 }

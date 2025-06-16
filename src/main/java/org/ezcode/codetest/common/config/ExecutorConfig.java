@@ -4,11 +4,23 @@ import java.util.concurrent.Executor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
 
+@EnableAsync
 @Configuration
 public class ExecutorConfig {
+
+	@Bean(name = "consumerExecutor")
+	public Executor consumerExecutor() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(5);
+		executor.setMaxPoolSize(10);
+		executor.setQueueCapacity(100);
+		executor.setThreadNamePrefix("consumer-");
+		executor.initialize();
+		return executor;
+	}
 
 	@Bean(name = "judgeSubmissionExecutor")
 	public Executor judgeSubmissionExecutor() {
@@ -18,7 +30,7 @@ public class ExecutorConfig {
 		executor.setQueueCapacity(100);
 		executor.setThreadNamePrefix("submission-");
 		executor.initialize();
-		return new DelegatingSecurityContextAsyncTaskExecutor(executor);
+		return executor;
 	}
 
 	@Bean(name = "judgeTestcaseExecutor")
@@ -29,6 +41,6 @@ public class ExecutorConfig {
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("testcase-");
 		executor.initialize();
-		return new DelegatingSecurityContextAsyncTaskExecutor(executor);
+		return executor;
 	}
 }
