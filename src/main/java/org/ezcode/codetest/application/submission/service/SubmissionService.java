@@ -64,12 +64,18 @@ public class SubmissionService {
 
 	public SseEmitter enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
         SseEmitter emitter = new SseEmitter(10 * 60 * 1000L);
+        String emitterKey = authUser.getId() + "_" + UUID.randomUUID();
 
 		emitter.onCompletion(() -> log.info("[SSE 완료] 정상 종료됨"));
-		emitter.onTimeout(() -> log.warn("[SSE 타임아웃] 연결 시간이 초과되었습니다"));
-		emitter.onError(e -> log.error("[SSE 에러 발생] 예외: {}", e.toString(), e));
-
-        String emitterKey = authUser.getId() + "_" + UUID.randomUUID();
+		emitter.onTimeout(() -> {
+			log.warn("[SSE 타임아웃] 연결 시간이 초과되었습니다");
+			emitter.completeWithError(new SubmissionException(SubmissionExceptionCode.EMITTER_SEND_ERROR));
+			emitterStore.remove(emitterKey);
+		});
+		emitter.onError(e -> {
+			log.error("[SSE 에러 발생] 예외: {}", e.toString(), e);
+			emitterStore.remove(emitterKey);
+		});
 
         emitterStore.save(emitterKey, emitter);
 
@@ -109,8 +115,9 @@ public class SubmissionService {
 						emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
 					} catch (Exception e) {
 						if (context.notified().compareAndSet(false, true)) {
-							exceptionNotificationHelper(e);
 							emitter.completeWithError(e);
+							emitterStore.remove(msg.emitterKey());
+							exceptionNotificationHelper(e);
 						}
 					} finally {
 						context.countDown();
@@ -137,6 +144,7 @@ public class SubmissionService {
 			);
 		} catch (Exception e) {
 			emitterStore.get(msg.emitterKey()).ifPresent(emitter -> emitter.completeWithError(e));
+			emitterStore.remove(msg.emitterKey());
 			exceptionNotificationHelper(e);
 		}
     }
