@@ -34,7 +34,7 @@ public class RandomEncounter extends BaseEntity {
 	private String encounterText;
 
 	@Column(nullable = false)
-	private boolean isActivated;
+	private boolean activated;
 
 	@Column(nullable = false)
 	private Integer weight;
@@ -44,13 +44,17 @@ public class RandomEncounter extends BaseEntity {
 		EncounterCategory encounterCategory,
 		String name,
 		String encounterText,
-		boolean isActivated,
+		boolean activated,
 		Integer weight
 	) {
 		this.encounterCategory = encounterCategory;
 		this.name = name;
 		this.encounterText = encounterText;
-		this.isActivated = isActivated;
+		this.activated = activated;
 		this.weight = weight;
+	}
+
+	public void softDelete() {
+		activated = false;
 	}
 }

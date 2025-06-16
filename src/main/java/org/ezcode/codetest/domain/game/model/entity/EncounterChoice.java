@@ -3,6 +3,7 @@ package org.ezcode.codetest.domain.game.model.entity;
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.game.model.enums.RandomEncounterEffect;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -30,6 +31,10 @@ public class EncounterChoice extends BaseEntity {
 	@JoinColumn(name = "random_encounter_id", nullable = false)
 	private RandomEncounter encounter;
 
+	@Column(nullable = false, unique = true)
+	private String name;
+
+	@Column(nullable = false)
 	private String resultText;
 
 	@Enumerated(EnumType.STRING)
@@ -38,10 +43,12 @@ public class EncounterChoice extends BaseEntity {
 	@Builder
 	public EncounterChoice(
 		RandomEncounter encounter,
+		String name,
 		String resultText,
 		RandomEncounterEffect encounterEffect
 	) {
 		this.encounter = encounter;
+		this.name = name;
 		this.resultText = resultText;
 		this.encounterEffect = encounterEffect;
 	}
