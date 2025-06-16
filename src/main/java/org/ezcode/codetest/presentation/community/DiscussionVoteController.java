@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/problems/{problemId}/discussions/{discussionId}/votes")
+@RequestMapping("/api/problems/{problemId}/discussions/{discussionId}/votes")
 @Tag(name = "DiscussionVotes", description = "토론 추천(Vote) 관리 API")
 @RequiredArgsConstructor
 public class DiscussionVoteController {
@@ -43,9 +43,12 @@ public class DiscussionVoteController {
 		@AuthenticationPrincipal AuthUser authUser
 	) {
 
-		VoteResponse response = discussionVoteService.validateAndToggleVote(problemId, discussionId, authUser.getId());
+		VoteResponse response = discussionVoteService.toggleVoteOnDiscussion(problemId, discussionId, authUser.getId());
 		HttpStatus status = response.voteStatus() ? HttpStatus.CREATED : HttpStatus.OK;
-		return ResponseEntity.status(status).body(response);
+
+		return ResponseEntity
+			.status(status)
+			.body(response);
 	}
 
 	@Operation(

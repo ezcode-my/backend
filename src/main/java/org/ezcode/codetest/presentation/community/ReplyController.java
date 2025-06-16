@@ -29,7 +29,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/problems/{problemId}/discussions/{discussionId}/replies")
+@RequestMapping("/api/problems/{problemId}/discussions/{discussionId}/replies")
 @Tag(name = "Replies", description = "토론 댓글(Reply) 관리 API")
 @RequiredArgsConstructor
 public class ReplyController {
