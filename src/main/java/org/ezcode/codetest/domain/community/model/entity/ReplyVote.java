@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.community.model.entity;
 
+import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.Entity;
@@ -32,8 +33,9 @@ public class ReplyVote extends BaseVote {
 	private Reply reply;
 
 	@Builder
-	public ReplyVote(User voter, Reply reply) {
+	public ReplyVote(User voter, Reply reply, VoteType voteType) {
 		this.voter = voter;
 		this.reply = reply;
+		this.voteType = voteType;
 	}
 }

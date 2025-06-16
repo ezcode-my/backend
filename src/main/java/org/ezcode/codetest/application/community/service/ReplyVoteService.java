@@ -2,6 +2,7 @@ package org.ezcode.codetest.application.community.service;
 
 import java.util.Optional;
 
+import org.ezcode.codetest.application.community.dto.request.VoteRequest;
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
@@ -33,11 +34,11 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	}
 
 	@Transactional
-	public VoteResponse toggleVoteOnReply(Long problemId, Long discussionId, Long replyId, Long userId) {
+	public VoteResponse manageVoteOnReply(Long problemId, Long discussionId, Long replyId, VoteRequest request, Long userId) {
 
 		Reply reply = voteDomainService.getValidatedReply(problemId, discussionId, replyId);
 
-		return super.toggleVote(userId, reply.getId());
+		return super.manageVote(userId, reply.getId(), request.voteType());
 	}
 
 	@Override

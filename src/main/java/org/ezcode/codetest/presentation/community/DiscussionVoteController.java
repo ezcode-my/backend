@@ -1,14 +1,15 @@
 package org.ezcode.codetest.presentation.community;
 
+import org.ezcode.codetest.application.community.dto.request.VoteRequest;
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
 import org.ezcode.codetest.application.community.service.DiscussionVoteService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,18 +38,16 @@ public class DiscussionVoteController {
 	@ApiResponse(responseCode = "201", description = "추천 생성됨 (voteStatus=true)")
 	@ApiResponse(responseCode = "200", description = "추천 취소됨 (voteStatus=false)")
 	@PostMapping
-	public ResponseEntity<VoteResponse> toggleVote(
+	public ResponseEntity<VoteResponse> vote(
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
+		@RequestBody VoteRequest request,
 		@AuthenticationPrincipal AuthUser authUser
 	) {
 
-		VoteResponse response = discussionVoteService.toggleVoteOnDiscussion(problemId, discussionId, authUser.getId());
-		HttpStatus status = response.voteStatus() ? HttpStatus.CREATED : HttpStatus.OK;
+		VoteResponse response = discussionVoteService.manageVoteOnDiscussion(problemId, discussionId, request, authUser.getId());
 
-		return ResponseEntity
-			.status(status)
-			.body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@Operation(
@@ -68,6 +67,7 @@ public class DiscussionVoteController {
 	) {
 
 		VoteResponse response = discussionVoteService.getVoteStatus(authUser.getId(), discussionId);
+
 		return ResponseEntity.ok(response);
 	}
 }

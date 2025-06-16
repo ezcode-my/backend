@@ -8,6 +8,7 @@ import org.ezcode.codetest.application.notification.event.payload.ReplyVotePaylo
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.model.entity.Reply;
 import org.ezcode.codetest.domain.community.model.entity.ReplyVote;
+import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.community.repository.ReplyVoteRepository;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,14 @@ public class ReplyVoteDomainService extends BaseVoteDomainService<ReplyVote, Rep
 	}
 
 	@Override
-	protected ReplyVote buildVote(User voter, Long targetId) {
+	protected ReplyVote buildVote(User voter, Long targetId, VoteType voteType) {
 
 		Reply reply = replyDomainService.getReplyById(targetId);
 
 		return ReplyVote.builder()
 			.voter(voter)
 			.reply(reply)
+			.voteType(voteType)
 			.build();
 	}
 
