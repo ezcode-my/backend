@@ -72,4 +72,13 @@ public class Discussion extends BaseEntity {
 		return Objects.equals(this.user.getId(), userId);
 	}
 
+	// Getter
+	public String getUserEmail() {
+		return this.user.getEmail();
+	}
+
+	public Long getProblemId() {
+		return this.problem.getId();
+	}
+
 }

@@ -1,8 +1,10 @@
 package org.ezcode.codetest.domain.community.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -15,7 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,5 +72,40 @@ public class Reply extends BaseEntity {
 
 	public boolean isAuthor(Long userId) {
 		return Objects.equals(this.user.getId(), userId);
+	}
+
+	// Getter
+	public User getParentReplyUser() {
+		return this.parent != null ? this.parent.getUser() : null;
+	}
+
+	public String getUserEmail() {
+		return this.user.getEmail();
+	}
+
+	public Long getDiscussionId() {
+		return this.discussion.getId();
+	}
+
+	public Long getProblemId() {
+		return this.discussion.getProblemId();
+	}
+
+	public List<User> generateNotificationTargets() {
+
+		Set<User> targets = new HashSet<>(); 	// 중복 방지를 위해 Set 사용
+
+		User discussionAuthor = discussion.getUser();
+		User parentAuthor = this.getParentReplyUser();
+
+		if (!this.getUser().shouldSkipNotification(discussionAuthor)) {
+			targets.add(discussionAuthor);
+		}
+
+		if (!this.getUser().shouldSkipNotification(parentAuthor)) {
+			targets.add(parentAuthor);
+		}
+
+		return new ArrayList<>(targets);
 	}
 }

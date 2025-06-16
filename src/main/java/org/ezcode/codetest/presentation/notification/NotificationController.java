@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/notifications")
+@RequestMapping("/api/notifications")
 @Tag(name = "Notifications", description = "알림 조회 및 읽음 처리 API")
 @RequiredArgsConstructor
 public class NotificationController {

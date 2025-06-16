@@ -45,21 +45,21 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.logout(AbstractHttpConfigurer::disable)
-			.oauth2Login((outh2)-> outh2
-				.userInfoEndpoint((userInfoEndpointConfig ->
-					userInfoEndpointConfig.userService(customOAuth2UserService)))
+			.oauth2Login(outh2 -> outh2
+				.userInfoEndpoint(userInfoEndpointConfig ->
+					userInfoEndpointConfig.userService(customOAuth2UserService))
 				.successHandler(customSuccessHandler)
-				.loginPage("/login"))
-			// JWT 사용을 위해 세션을 STATELESS로 설정 (세션 정보 저장 x)
+				.loginPage("/login")
+			)
+			// JWT 사용을 위해 세션을 STATELESS로 설정
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
-			//에러 처리 체인 추가
+			// 에러 처리 체인 추가
 			.exceptionHandling(except -> except
 				.authenticationEntryPoint(customAuthenticationEntryPoint())
 				.accessDeniedHandler(customAccessDeniedHandler()))
-
-			//인증 URL 범위 설정
+			// 인증 URL 범위 설정
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers(new DispatcherTypeRequestMatcher(DispatcherType.ASYNC)).permitAll()
@@ -70,7 +70,7 @@ public class SecurityConfig {
 						"/login/**",
 						"/oauth2/**",
 						"/login/oauth",
-						"/login/oauth2/**", //OAuth로그인 접근
+						"/login/oauth2/**",
 						"/actuator/**",
 						"/chatting",
 						"/submit-test",
@@ -82,14 +82,14 @@ public class SecurityConfig {
 						"/v3/**",
 						"/webjars/**",
 						"/searching",
-						"/css/**", //html 화면 구성 접근
-						"/images/**").permitAll()
-					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
-					.anyRequest().authenticated() //나머지는 일반 인증
+						"/css/**",
+						"/images/**"
+					).permitAll()
+					.requestMatchers("/admin/**").hasRole("ADMIN")
+					.anyRequest().authenticated()
 			)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(exceptionFilter, JwtFilter.class)
-
 			.build();
 	}
 

@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.servlet.http.HttpServletResponse;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -41,6 +43,7 @@ public class GlobalExceptionHandler {
 			.body(CommonResponse.from(e.getResponseCode()));
 	}
 
+
 	@ExceptionHandler(AuthorizationDeniedException.class)
 	public ResponseEntity<CommonResponse<Void>> handleSseAuthorizationDenied(
 		AuthorizationDeniedException ex,
@@ -63,5 +66,15 @@ public class GlobalExceptionHandler {
 				.body(CommonResponse.of(false, ex.getMessage(), 400, null));
 		}
 		throw ex;
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<CommonResponse<String>> handleAllException(Exception e
+	) {
+		log.error("Unhandled exception caught", e);
+
+		return ResponseEntity
+			.status(HttpStatus.BAD_REQUEST)
+			.body(CommonResponse.of(false, e.getMessage(), 400, null));
+
 	}
 }

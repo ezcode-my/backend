@@ -11,15 +11,21 @@ public record NotificationCreateEvent(
 
 	NotificationType notificationType,
 
-	String message,
-
 	NotificationPayload payload,
-
-	String redirectUrl,
 
 	boolean isRead,
 
 	LocalDateTime createdAt
 
 ) {
+
+	public static NotificationCreateEvent of(String principalName, NotificationType notificationType, NotificationPayload payload) {
+		return new NotificationCreateEvent(
+			principalName,
+			notificationType,
+			payload,
+			false,
+			LocalDateTime.now()
+		);
+	}
 }
