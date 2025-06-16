@@ -76,7 +76,7 @@ public class Reply extends BaseEntity {
 
 	// Getter
 	public User getParentReplyUser() {
-		return this.parent.getUser();
+		return this.parent != null ? this.parent.getUser() : null;
 	}
 
 	public String getUserEmail() {
@@ -96,7 +96,7 @@ public class Reply extends BaseEntity {
 		Set<User> targets = new HashSet<>(); 	// 중복 방지를 위해 Set 사용
 
 		User discussionAuthor = discussion.getUser();
-		User parentAuthor = this.getParent() != null ? this.getParentReplyUser() : null;
+		User parentAuthor = this.getParentReplyUser();
 
 		if (!this.getUser().shouldSkipNotification(discussionAuthor)) {
 			targets.add(discussionAuthor);
