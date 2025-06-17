@@ -8,7 +8,7 @@ import org.ezcode.codetest.domain.game.strategy.SkillStrategy;
 import org.springframework.stereotype.Component;
 
 @Component
-class DefenceSkill implements SkillStrategy {
+public class DefenceSkill implements SkillStrategy {
 
 	@Override
 	public SkillEffect getType() {

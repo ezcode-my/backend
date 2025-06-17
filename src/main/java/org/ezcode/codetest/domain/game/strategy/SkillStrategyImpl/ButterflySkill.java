@@ -7,7 +7,7 @@ import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.springframework.stereotype.Component;
 
 @Component
-class ButterflySkill extends AbstractSkill {
+public class ButterflySkill extends AbstractSkill {
 
 	@Override
 	public SkillEffect getType() {
@@ -19,6 +19,7 @@ class ButterflySkill extends AbstractSkill {
 		WeaponType weaponType) {
 
 		attacker.consumeActionPoints();
+
 		double originalEvasion = attacker.getEvasion();
 		double multiplier = 2.0;
 

@@ -7,7 +7,7 @@ import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.springframework.stereotype.Component;
 
 @Component
-class BurstAttackSkill extends AbstractSkill {
+public class BurstAttackSkill extends AbstractSkill {
 
 	@Override
 	public SkillEffect getType() { return SkillEffect.BURST_ATTACK; }

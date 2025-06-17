@@ -7,7 +7,7 @@ import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.springframework.stereotype.Component;
 
 @Component
-class BloodyMessSkill extends AbstractSkill {
+public class BloodyMessSkill extends AbstractSkill {
 
 	@Override
 	public SkillEffect getType() { return SkillEffect.BLOODY_MESS; }

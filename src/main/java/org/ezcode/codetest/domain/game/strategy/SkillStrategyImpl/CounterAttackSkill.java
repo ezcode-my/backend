@@ -7,7 +7,7 @@ import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.springframework.stereotype.Component;
 
 @Component
-class CounterAttackSkill extends AbstractSkill {
+public class CounterAttackSkill extends AbstractSkill {
 
 	@Override
 	public SkillEffect getType() { return SkillEffect.COUNTER_ATTACK; }

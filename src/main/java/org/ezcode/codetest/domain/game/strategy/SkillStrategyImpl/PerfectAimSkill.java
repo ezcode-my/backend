@@ -7,7 +7,7 @@ import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.springframework.stereotype.Component;
 
 @Component
-class PerfectAimSkill extends AbstractSkill {
+public class PerfectAimSkill extends AbstractSkill {
 
 	@Override
 	public SkillEffect getType() {

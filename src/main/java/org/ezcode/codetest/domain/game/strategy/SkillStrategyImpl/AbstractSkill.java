@@ -7,7 +7,7 @@ import org.ezcode.codetest.domain.game.model.Encounter.CharacterContext;
 import org.ezcode.codetest.domain.game.strategy.SkillStrategy;
 
 
-abstract class AbstractSkill implements SkillStrategy {
+public abstract class AbstractSkill implements SkillStrategy {
 
 	protected static final Random RNG = new Random();
 	protected static final double BASE_HIT_RATE = 50.0;

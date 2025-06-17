@@ -6,10 +6,13 @@ import org.ezcode.codetest.domain.game.model.item.WeaponType;
 import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.springframework.stereotype.Component;
 
-@Component
-class HealSkill extends AbstractSkill {
+import lombok.RequiredArgsConstructor;
 
-	private final NoSkill fallback = new NoSkill();
+@Component
+@RequiredArgsConstructor
+public class HealSkill extends AbstractSkill {
+
+	private final NoSkill fallback;
 
 	@Override
 	public SkillEffect getType() { return SkillEffect.HEAL; }
@@ -20,7 +23,6 @@ class HealSkill extends AbstractSkill {
 		if (weaponType != WeaponType.MAGIC_BOOK) {
 			return fallback.useSkill(attacker, defender, log, weaponType);
 		}
-		attacker.consumeActionPoints();
 		double amount = attacker.getAtk() * 0.5;
 		attacker.restoreHp(amount);
 		log.add("%s의 회복! %,.1f 회복.", attacker.getName(), amount);

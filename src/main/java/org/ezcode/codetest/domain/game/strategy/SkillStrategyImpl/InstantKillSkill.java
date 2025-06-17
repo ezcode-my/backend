@@ -6,10 +6,13 @@ import org.ezcode.codetest.domain.game.model.item.WeaponType;
 import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.springframework.stereotype.Component;
 
-@Component
-class InstantKillSkill extends AbstractSkill {
+import lombok.RequiredArgsConstructor;
 
-	private final NoSkill fallback = new NoSkill();
+@Component
+@RequiredArgsConstructor
+public class InstantKillSkill extends AbstractSkill {
+
+	private final NoSkill fallback;
 
 	@Override
 	public SkillEffect getType() {
@@ -22,8 +25,6 @@ class InstantKillSkill extends AbstractSkill {
 
 		if (!rollHit(attacker, defender, log))
 			return true;
-
-		attacker.consumeActionPoints();
 
 		if (RNG.nextDouble() < 0.08) {
 			double dealt = attacker.getAtk() * 100;
