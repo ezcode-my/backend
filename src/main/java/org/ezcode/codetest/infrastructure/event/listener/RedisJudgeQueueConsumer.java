@@ -35,11 +35,14 @@ public class RedisJudgeQueueConsumer implements StreamListener<String, MapRecord
 		);
 
 		try {
+			log.info("[컨슈머 수신] {}", msg.emitterKey());
 			submissionService.submitCodeStream(msg);
-			redisTemplate.opsForStream().acknowledge("judge-group", message);
 		} catch (Exception e) {
 			log.error("채점 메시지 처리 실패: {}", message.getId(), e);
 			throw new SubmissionException(SubmissionExceptionCode.REDIS_SERVER_ERROR);
+		} finally {
+			log.info("[컨슈머 ACK] messageId={}", message.getId());
+			redisTemplate.opsForStream().acknowledge("judge-group", message);
 		}
 	}
 }

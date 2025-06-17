@@ -77,7 +77,8 @@ public class SubmissionService {
 			emitterStore.remove(emitterKey);
 		});
 
-        emitterStore.save(emitterKey, emitter);
+		log.info("[SSE 저장] emitterKey: {}", emitterKey);
+		emitterStore.save(emitterKey, emitter);
 
         queueProducer.enqueue(
 			new SubmissionMessage(emitterKey, problemId, request.languageId(), authUser.getId(), request.sourceCode())
@@ -90,6 +91,7 @@ public class SubmissionService {
     public void submitCodeStream(SubmissionMessage msg) {
 		try {
             log.info("[Submission RUN] Thread = {}", Thread.currentThread().getName());
+			log.info("[큐 수신] SubmissionMessage.emitterKey: {}", msg.emitterKey());
 			User user = userDomainService.getUserById(msg.userId());
             Language language = languageDomainService.getLanguage(msg.languageId());
             ProblemInfo problemInfo = problemDomainService.getProblemInfo(msg.problemId());
@@ -126,7 +128,9 @@ public class SubmissionService {
 			}
 
 			if (!context.latch().await(60, TimeUnit.SECONDS)) {
-				throw new SubmissionException(SubmissionExceptionCode.TESTCASE_TIMEOUT);
+				emitter.completeWithError(new SubmissionException(SubmissionExceptionCode.TESTCASE_TIMEOUT));
+				emitterStore.remove(msg.emitterKey());
+				return;
 			}
 
 			emitter.send(SseEmitter.event()

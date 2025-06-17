@@ -7,6 +7,7 @@ import java.util.concurrent.Executor;
 import org.ezcode.codetest.infrastructure.event.listener.RedisJudgeQueueConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.ReadOffset;
@@ -43,6 +44,20 @@ public class RedisStreamConfig {
 				));
 			}
 
+			try {
+				log.info("Redis Consumer Group의 기존 컨슈머 삭제 시도");
+				redisTemplate.execute((RedisConnection connection) -> {
+					connection.xGroupDelConsumer(
+						"judge-queue".getBytes(),
+						"judge-group",
+						"consumer-1"
+					);
+					return null;
+				});
+			} catch (Exception e) {
+				log.warn("DELCONSUMER 중 오류 발생: {}", e.getMessage());
+			}
+
 			redisTemplate.opsForStream().createGroup("judge-queue", ReadOffset.latest(), "judge-group");
 
 			log.info("Redis Stream 'judge-queue'에 대한 Consumer Group 'judge-group'을 생성했습니다.");
@@ -57,7 +72,7 @@ public class RedisStreamConfig {
 		}
 	}
 
-	@Bean
+	@Bean(destroyMethod = "stop")
 	public StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer(
 		RedisConnectionFactory factory,
 		RedisJudgeQueueConsumer consumer
@@ -68,7 +83,7 @@ public class RedisStreamConfig {
 				.StreamMessageListenerContainerOptions
 				.builder()
 				.executor(consumerExecutor)
-				.pollTimeout(Duration.ofSeconds(1))
+				.pollTimeout(Duration.ofSeconds(2))
 				.build();
 
 		StreamMessageListenerContainer<String, MapRecord<String, String, String>> container =

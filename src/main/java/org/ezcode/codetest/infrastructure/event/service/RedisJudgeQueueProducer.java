@@ -8,7 +8,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RedisJudgeQueueProducer implements QueueProducer {
@@ -16,6 +18,7 @@ public class RedisJudgeQueueProducer implements QueueProducer {
 	private final RedisTemplate<String, String> redisTemplate;
 
 	public void enqueue(SubmissionMessage submissionMessage) {
+		log.info("[SSE enqueue] emitterKey: {}", submissionMessage.emitterKey());
 		Map<String, String> map = Map.of(
 			"emitterKey", submissionMessage.emitterKey(),
 			"problemId", submissionMessage.problemId().toString(),
