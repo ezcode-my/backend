@@ -1,6 +1,5 @@
 package org.ezcode.codetest.domain.user.model.entity;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
