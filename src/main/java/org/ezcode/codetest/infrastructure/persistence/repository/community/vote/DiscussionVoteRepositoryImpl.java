@@ -48,12 +48,12 @@ public class DiscussionVoteRepositoryImpl implements DiscussionVoteRepository {
 	@Override
 	public Long countUpvotesByTargetId(Long targetId) {
 
-		return repository.countUpvoteByDiscussionId(targetId);
+		return repository.countUpvoteByDiscussionId(targetId, VoteType.UP);
 	}
 
 	@Override
 	public Long countDownvotesByTargetId(Long targetId) {
 
-		return repository.countDownvoteByDiscussionId(targetId);
+		return repository.countDownvoteByDiscussionId(targetId, VoteType.DOWN);
 	}
 }

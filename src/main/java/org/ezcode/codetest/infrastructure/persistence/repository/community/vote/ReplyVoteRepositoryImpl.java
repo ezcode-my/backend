@@ -48,12 +48,12 @@ public class ReplyVoteRepositoryImpl implements ReplyVoteRepository {
 	@Override
 	public Long countUpvotesByTargetId(Long targetId) {
 
-		return repository.countUpvoteByReplyId(targetId);
+		return repository.countUpvoteByReplyId(targetId, VoteType.UP);
 	}
 
 	@Override
 	public Long countDownvotesByTargetId(Long targetId) {
 
-		return repository.countDownvoteByReplyId(targetId);
+		return repository.countDownvoteByReplyId(targetId, VoteType.DOWN);
 	}
 }
