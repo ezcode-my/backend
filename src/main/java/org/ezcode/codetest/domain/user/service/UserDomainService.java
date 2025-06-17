@@ -1,10 +1,12 @@
 package org.ezcode.codetest.domain.user.service;
 
+import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.Adjective;
 import org.ezcode.codetest.domain.user.model.enums.Noun;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.repository.UserAuthTypeRepository;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.ezcode.codetest.common.security.util.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class UserDomainService {
 	private final UserRepository userRepository;
+	private final UserAuthTypeRepository userAuthTypeRepository;
 	private final PasswordEncoder passwordEncoder;
 	private static final java.util.Random RANDOM = new java.util.Random();
 
@@ -30,6 +33,10 @@ public class UserDomainService {
 
 	public void createUser(User user) {
 		userRepository.createUser(user);
+	}
+
+	public void createUserAuthType(UserAuthType userAuthType) {
+		userAuthTypeRepository.createUserAuthType(userAuthType);
 	}
 
 	public User getUser(String email) {
@@ -87,4 +94,6 @@ public class UserDomainService {
 		int number = RANDOM.nextInt(1000);
 		return adjective.name() + noun.name() + number;
 	}
+
+
 }

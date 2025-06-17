@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -42,5 +41,6 @@ public class UserRepositoryImpl implements UserRepository {
 	public boolean existsByNickname(String nickname) {
 		return userJpaRepository.existsByNickname(nickname);
 	}
+
 
 }

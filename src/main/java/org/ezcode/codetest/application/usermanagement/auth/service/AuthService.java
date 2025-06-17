@@ -11,6 +11,7 @@ import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutRe
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.common.security.util.JwtUtil;
@@ -57,7 +58,10 @@ public class AuthService {
 			signupRequest.getAge()
 		);
 
+		UserAuthType userAuthType = new UserAuthType(newUser, AuthType.EMAIL);
+
 		userDomainService.createUser(newUser);
+		userDomainService.createUserAuthType(userAuthType);
 
 		String bearToken = jwtUtil.createToken(
 			newUser.getId(),
