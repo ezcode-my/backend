@@ -1,13 +1,13 @@
 package org.ezcode.codetest.presentation.game.management;
 
-import org.ezcode.codetest.application.game.dto.request.EncounterChoiceDeleteRequest;
-import org.ezcode.codetest.application.game.dto.request.EncounterChoiceSaveRequest;
-import org.ezcode.codetest.application.game.dto.request.ItemDeleteRequest;
-import org.ezcode.codetest.application.game.dto.request.ItemSaveRequest;
-import org.ezcode.codetest.application.game.dto.request.RandomEncounterDeleteRequest;
-import org.ezcode.codetest.application.game.dto.request.RandomEncounterSaveRequest;
-import org.ezcode.codetest.application.game.dto.request.SkillDeleteRequest;
-import org.ezcode.codetest.application.game.dto.request.SkillSaveRequest;
+import org.ezcode.codetest.application.game.dto.request.encounter.EncounterChoiceDeleteRequest;
+import org.ezcode.codetest.application.game.dto.request.encounter.EncounterChoiceSaveRequest;
+import org.ezcode.codetest.application.game.dto.request.item.ItemDeleteRequest;
+import org.ezcode.codetest.application.game.dto.request.item.ItemSaveRequest;
+import org.ezcode.codetest.application.game.dto.request.encounter.RandomEncounterDeleteRequest;
+import org.ezcode.codetest.application.game.dto.request.encounter.RandomEncounterSaveRequest;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillDeleteRequest;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillSaveRequest;
 import org.ezcode.codetest.application.game.management.GameAdminUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

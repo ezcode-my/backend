@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
-import org.ezcode.codetest.domain.game.model.entity.EncounterChoice;
-import org.ezcode.codetest.domain.game.model.entity.Item;
-import org.ezcode.codetest.domain.game.model.entity.RandomEncounter;
-import org.ezcode.codetest.domain.game.model.entity.Skill;
+import org.ezcode.codetest.domain.game.model.Encounter.EncounterChoice;
+import org.ezcode.codetest.domain.game.model.item.Item;
+import org.ezcode.codetest.domain.game.model.Encounter.RandomEncounter;
+import org.ezcode.codetest.domain.game.model.skill.Skill;
 import org.ezcode.codetest.domain.game.repository.EncounterChoiceRepository;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
 import org.ezcode.codetest.domain.game.repository.RandomEncounterRepository;
@@ -80,7 +80,7 @@ public class GameManagementDomainService {
 		return encounterRepository.save(encounter);
 	}
 
-	public RandomEncounter findRandomEncounter(String name) {
+	public RandomEncounter getRandomEncounter(String name) {
 
 		return encounterRepository.findByName(name)
 			.orElseThrow(() -> new GameException(GameExceptionCode.RANDOM_ENCOUNTER_NOT_EXISTS));

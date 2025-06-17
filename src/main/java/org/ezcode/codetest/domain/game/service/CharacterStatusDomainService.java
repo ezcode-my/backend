@@ -8,10 +8,10 @@ import java.util.stream.Stream;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
-import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
-import org.ezcode.codetest.domain.game.model.entity.GameCharacterSkill;
-import org.ezcode.codetest.domain.game.model.entity.Inventory;
-import org.ezcode.codetest.domain.game.model.entity.Item;
+import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
+import org.ezcode.codetest.domain.game.model.Character.Inventory;
+import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;

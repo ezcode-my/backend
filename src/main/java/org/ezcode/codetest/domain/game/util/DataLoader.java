@@ -2,13 +2,13 @@ package org.ezcode.codetest.domain.game.util;
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.game.model.entity.Accessory;
-import org.ezcode.codetest.domain.game.model.entity.Defence;
-import org.ezcode.codetest.domain.game.model.entity.Weapon;
-import org.ezcode.codetest.domain.game.model.enums.AccessoryType;
-import org.ezcode.codetest.domain.game.model.enums.DefenceType;
-import org.ezcode.codetest.domain.game.model.enums.Grade;
-import org.ezcode.codetest.domain.game.model.enums.WeaponType;
+import org.ezcode.codetest.domain.game.model.item.Accessory;
+import org.ezcode.codetest.domain.game.model.item.Defence;
+import org.ezcode.codetest.domain.game.model.item.Weapon;
+import org.ezcode.codetest.domain.game.model.item.AccessoryType;
+import org.ezcode.codetest.domain.game.model.item.DefenceType;
+import org.ezcode.codetest.domain.game.model.item.Grade;
+import org.ezcode.codetest.domain.game.model.item.WeaponType;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
 import org.ezcode.codetest.domain.game.repository.SkillRepository;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class DataLoader {
 
 	private final ItemRepository itemRepository;
-	private final SkillRepository skillRepository;
 
 	@PostConstruct
 	@Transactional

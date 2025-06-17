@@ -3,7 +3,7 @@ package org.ezcode.codetest.domain.game.repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.game.model.entity.EncounterChoice;
+import org.ezcode.codetest.domain.game.model.Encounter.EncounterChoice;
 
 public interface EncounterChoiceRepository {
 

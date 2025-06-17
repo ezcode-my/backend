@@ -6,12 +6,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.ezcode.codetest.domain.game.model.entity.GameCharacterSkill;
-import org.ezcode.codetest.domain.game.model.enums.SkillEffect;
-import org.ezcode.codetest.domain.game.model.enums.SkillSlotType;
+import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
+import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
+import org.ezcode.codetest.domain.game.model.skill.SkillSlotType;
 import org.springframework.stereotype.Component;
-
-import lombok.RequiredArgsConstructor;
 
 @Component
 public class SkillStrategyFactory {

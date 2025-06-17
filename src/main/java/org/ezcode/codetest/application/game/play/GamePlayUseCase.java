@@ -3,19 +3,21 @@ package org.ezcode.codetest.application.game.play;
 import java.util.List;
 
 import org.ezcode.codetest.application.game.dto.mapper.GameMapper;
-import org.ezcode.codetest.application.game.dto.request.SkillEquipRequest;
-import org.ezcode.codetest.application.game.dto.request.SkillUnEquipRequest;
-import org.ezcode.codetest.application.game.dto.response.CharacterStatusResponse;
-import org.ezcode.codetest.application.game.dto.response.ItemGamblingResponse;
-import org.ezcode.codetest.application.game.dto.response.ItemResponse;
-import org.ezcode.codetest.application.game.dto.response.SkillGamblingResponse;
-import org.ezcode.codetest.application.game.dto.response.SkillResponse;
-import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
-import org.ezcode.codetest.domain.game.model.entity.GameCharacterSkill;
-import org.ezcode.codetest.domain.game.model.entity.Item;
-import org.ezcode.codetest.domain.game.model.entity.Skill;
-import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
-import org.ezcode.codetest.domain.game.model.vo.BattleLog;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
+import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
+import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
+import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
+import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
+import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
+import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.Encounter.BattleHistory;
+import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
+import org.ezcode.codetest.domain.game.model.item.Item;
+import org.ezcode.codetest.domain.game.model.skill.Skill;
+import org.ezcode.codetest.domain.game.model.item.ItemCategory;
+import org.ezcode.codetest.domain.game.model.Encounter.BattleLog;
 import org.ezcode.codetest.domain.game.service.CharacterStatusDomainService;
 import org.ezcode.codetest.domain.game.service.GameEncounterDomainService;
 import org.ezcode.codetest.domain.game.service.GameShopDomainService;
@@ -115,12 +117,21 @@ public class GamePlayUseCase {
 	}
 
 	@Transactional
-	public BattleLog battle(Long playerId, Long enemyId) {
+	public BattleHistoryResponse battle(Long playerId, Long enemyId) {
 
 		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
 		GameCharacter enemyCharacter = characterService.getGameCharacter(enemyId);
 
-		return encounterDomainService.battle(playerCharacter, enemyCharacter);
+		BattleLog log = encounterDomainService.battle(playerCharacter, enemyCharacter);
+
+		encounterDomainService.createBattleHistory(playerCharacter, enemyCharacter, log);
+
+		return BattleHistoryResponse.of(
+			playerCharacter.getName(),
+			enemyCharacter.getName(),
+			log.getMessages(),
+			log.getPlayerWin()
+		);
 	}
 
 }

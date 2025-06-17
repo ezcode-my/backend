@@ -2,16 +2,17 @@ package org.ezcode.codetest.presentation.game.play;
 
 import java.util.List;
 
-import org.ezcode.codetest.application.game.dto.request.ItemEquipRequest;
-import org.ezcode.codetest.application.game.dto.request.ItemGamblingRequest;
-import org.ezcode.codetest.application.game.dto.request.SkillEquipRequest;
-import org.ezcode.codetest.application.game.dto.request.SkillUnEquipRequest;
-import org.ezcode.codetest.application.game.dto.response.CharacterStatusResponse;
-import org.ezcode.codetest.application.game.dto.response.ItemGamblingResponse;
-import org.ezcode.codetest.application.game.dto.response.ItemResponse;
-import org.ezcode.codetest.application.game.dto.response.SkillGamblingResponse;
+import org.ezcode.codetest.application.game.dto.request.item.ItemEquipRequest;
+import org.ezcode.codetest.application.game.dto.request.item.ItemGamblingRequest;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
+import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
+import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
+import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
+import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
 import org.ezcode.codetest.application.game.play.GamePlayUseCase;
-import org.ezcode.codetest.domain.game.model.vo.BattleLog;
+import org.ezcode.codetest.domain.game.model.Encounter.BattleLog;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -106,7 +107,7 @@ public class GamePlayController {
 	}
 
 	@PostMapping("/battles/{enemyId}")
-	public ResponseEntity<BattleLog> battle(
+	public ResponseEntity<BattleHistoryResponse> battle(
 		@AuthenticationPrincipal AuthUser authUser,
 		@PathVariable Long enemyId
 	) {

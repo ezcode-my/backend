@@ -2,11 +2,13 @@ package org.ezcode.codetest.domain.game.service;
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.game.model.entity.CharacterRealStat;
-import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
-import org.ezcode.codetest.domain.game.model.entity.GameCharacterSkill;
-import org.ezcode.codetest.domain.game.model.vo.BattleLog;
-import org.ezcode.codetest.domain.game.model.vo.CharacterContext;
+import org.ezcode.codetest.domain.game.model.Character.CharacterRealStat;
+import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.Encounter.BattleHistory;
+import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
+import org.ezcode.codetest.domain.game.model.Encounter.BattleLog;
+import org.ezcode.codetest.domain.game.model.Encounter.CharacterContext;
+import org.ezcode.codetest.domain.game.repository.BattleHistoryRepository;
 import org.ezcode.codetest.domain.game.strategy.SkillStrategy;
 import org.ezcode.codetest.domain.game.strategy.SkillStrategyFactory;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class GameEncounterDomainService {
 
 	private final CharacterEquipService characterEquipService;
 	private final SkillStrategyFactory  skillStrategyFactory;
+	private final BattleHistoryRepository historyRepository;
 
 	public BattleLog battle(GameCharacter player, GameCharacter opponent) {
 
@@ -77,6 +80,21 @@ public class GameEncounterDomainService {
 		battleLog.add("전투가 종료되었습니다. 양쪽 모두 살아남았습니다. 무승부입니다!");
 		battleLog.setPlayerWin(false);
 		return battleLog;
+	}
+
+	public BattleHistory createBattleHistory(GameCharacter player, GameCharacter opponent, BattleLog log) {
+
+		return historyRepository.save(BattleHistory.builder()
+			.attacker(player)
+			.defender(opponent)
+			.battleLog(log.getMessages())
+			.isAttackerWin(log.getPlayerWin())
+			.build());
+	}
+
+	public List<BattleHistory> getBattleHistory(GameCharacter character) {
+
+		return historyRepository.findByCharacterId(character.getId());
 	}
 
 }

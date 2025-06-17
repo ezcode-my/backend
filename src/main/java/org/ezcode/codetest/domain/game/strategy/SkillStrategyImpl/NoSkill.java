@@ -1,8 +1,8 @@
 package org.ezcode.codetest.domain.game.strategy.SkillStrategyImpl;
 
-import org.ezcode.codetest.domain.game.model.enums.SkillEffect;
-import org.ezcode.codetest.domain.game.model.vo.BattleLog;
-import org.ezcode.codetest.domain.game.model.vo.CharacterContext;
+import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
+import org.ezcode.codetest.domain.game.model.Encounter.BattleLog;
+import org.ezcode.codetest.domain.game.model.Encounter.CharacterContext;
 import org.ezcode.codetest.domain.game.strategy.SkillStrategy;
 import org.springframework.stereotype.Component;
 
