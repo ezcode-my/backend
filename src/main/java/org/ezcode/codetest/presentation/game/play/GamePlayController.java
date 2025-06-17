@@ -8,11 +8,11 @@ import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.MatchingResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
 import org.ezcode.codetest.application.game.play.GamePlayUseCase;
-import org.ezcode.codetest.domain.game.model.Encounter.BattleLog;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -113,6 +113,22 @@ public class GamePlayController {
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(gamePlayUseCase.battle(authUser.getId(), enemyId));
+	}
+
+	@PostMapping("/battles")
+	public ResponseEntity<BattleHistoryResponse> randomBattle(
+		@AuthenticationPrincipal AuthUser authUser
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(gamePlayUseCase.randomBattle(authUser.getId()));
+	}
+
+	@GetMapping("/battles/matching")
+	public ResponseEntity<MatchingResponse> randomMatching(
+		@AuthenticationPrincipal AuthUser authUser
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(gamePlayUseCase.randomMatching(authUser.getId()));
 	}
 
 }

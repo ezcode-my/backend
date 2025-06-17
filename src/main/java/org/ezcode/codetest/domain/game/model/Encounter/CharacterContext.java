@@ -40,13 +40,58 @@ public class CharacterContext {
 
 		enemyAtk -= def;
 
-		if(enemyAtk < 0.0) {
+		if (enemyAtk < 0.0) {
 			enemyAtk = 0.0;
 		}
 
 		hp -= enemyAtk;
 
 		return hp > 0;
+	}
+
+	public void restoreHp(Double hp) {
+
+		this.hp += hp;
+	}
+
+	public void applyCritBuff(Double crit) {
+
+		this.crit += crit;
+	}
+
+	public void applyAtkBuff(Double atk) {
+
+		this.atk += atk;
+	}
+
+	public void applyAtkDebuff(Double atk) {
+
+		this.atk = (this.atk - atk) >= 0 ? (this.atk - atk) : 0;
+	}
+
+	public void applyEvasionBuff(Double evasion) {
+
+		this.evasion += evasion;
+	}
+
+	public void applyAccuracyBuff(Double accuracy) {
+
+		this.accuracy += accuracy;
+	}
+
+	public void applyAccuracyDebuff(Double accuracy) {
+
+		this.accuracy = (this.accuracy - accuracy) >= 0 ? (this.accuracy - accuracy) : 0;
+	}
+
+	public void applyDefBuff(Double def) {
+
+		this.def += def;
+	}
+
+	public void applyStunBuff(Double stun) {
+
+		this.stun += stun;
 	}
 
 	public boolean checkSpeed(Double enemySpeed) {
@@ -56,9 +101,14 @@ public class CharacterContext {
 
 	public boolean consumeActionPoints() {
 
+		if(ap <= 0) {
+
+			return false;
+		}
+
 		ap--;
 
-		return ap > 0;
+		return true;
 	}
 
 	public boolean checkActionPoints() {
@@ -66,7 +116,7 @@ public class CharacterContext {
 		return ap > 0;
 	}
 
- }
+}
 
 
 

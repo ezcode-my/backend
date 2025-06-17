@@ -17,11 +17,11 @@ import lombok.Getter;
 @Getter
 public class WeaponSaveRequest extends ItemSaveRequest {
 
-	@NotBlank
+	@NotBlank(message = "무기 타입은 공백일 수 없습니다.")
 	@Pattern(
-		regexp = "SHOT_GUN|RIFLE|PISTOL|LONG_SWORD|SHORT_SWORD|SPEAR|BOW",
+		regexp = "SHOT_GUN|RIFLE|PISTOL|LONG_SWORD|SHORT_SWORD|SPEAR|BOW|MAGIC_BOOK",
 		flags = Pattern.Flag.CASE_INSENSITIVE,
-		message = "무기 타입은 SHOT_GUN, RIFLE, PISTOL, LONG_SWORD, SHORT_SWORD, SPEAR, BOW 중 하나여야 합니다."
+		message = "무기 타입은 SHOT_GUN, RIFLE, PISTOL, LONG_SWORD, SHORT_SWORD, SPEAR, BOW, MAGIC_BOOK 중 하나여야 합니다."
 	)
 	private final String weaponType;
 

@@ -68,6 +68,11 @@ public class CharacterRealStat {
 		);
 	}
 
+	public Double statSummary() {
+
+		return atk + def + speed + crit + stun + evasion + accuracy;
+	}
+
 	public void applyIncreaseRealStats(Map<Stat, Double> increaseRates) {
 		increaseRates.forEach(this::increase);
 	}

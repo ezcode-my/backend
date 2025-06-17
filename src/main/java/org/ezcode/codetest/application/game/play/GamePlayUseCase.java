@@ -7,12 +7,13 @@ import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.MatchingResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
 import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
-import org.ezcode.codetest.domain.game.model.Encounter.BattleHistory;
+import org.ezcode.codetest.domain.game.model.Encounter.MatchMessageTemplate;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.model.skill.Skill;
@@ -132,6 +133,39 @@ public class GamePlayUseCase {
 			log.getMessages(),
 			log.getPlayerWin()
 		);
+	}
+
+	@Transactional
+	public BattleHistoryResponse randomBattle(Long playerId) {
+
+		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+		GameCharacter enemyCharacter = encounterDomainService.getRandomEnemyCharacter(playerId);
+
+		BattleLog log = encounterDomainService.battle(playerCharacter, enemyCharacter);
+
+		encounterDomainService.createBattleHistory(playerCharacter, enemyCharacter, log);
+
+		return BattleHistoryResponse.of(
+			playerCharacter.getName(),
+			enemyCharacter.getName(),
+			log.getMessages(),
+			log.getPlayerWin()
+		);
+	}
+
+	@Transactional
+	public MatchingResponse randomMatching(Long playerId) {
+
+		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+		GameCharacter enemyCharacter = encounterDomainService.getRandomEnemyCharacter(playerId);
+
+		boolean checkStrength = encounterDomainService.compareStrength(playerCharacter, enemyCharacter);
+
+		String matchMessage = MatchMessageTemplate.random(playerCharacter.getName(), enemyCharacter.getName());
+
+		Long enemyUserId = enemyCharacter.getUser().getId();
+
+		return MatchingResponse.of(checkStrength, matchMessage, enemyUserId);
 	}
 
 }

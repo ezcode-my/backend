@@ -10,7 +10,6 @@ import org.ezcode.codetest.domain.game.model.item.DefenceType;
 import org.ezcode.codetest.domain.game.model.item.Grade;
 import org.ezcode.codetest.domain.game.model.item.WeaponType;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
-import org.ezcode.codetest.domain.game.repository.SkillRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

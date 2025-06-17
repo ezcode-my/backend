@@ -5,10 +5,14 @@ import java.util.List;
 import org.ezcode.codetest.domain.game.model.Character.CharacterRealStat;
 import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
 import org.ezcode.codetest.domain.game.model.Encounter.BattleHistory;
+import org.ezcode.codetest.domain.game.model.item.Item;
+import org.ezcode.codetest.domain.game.model.item.Weapon;
+import org.ezcode.codetest.domain.game.model.item.WeaponType;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.Encounter.BattleLog;
 import org.ezcode.codetest.domain.game.model.Encounter.CharacterContext;
 import org.ezcode.codetest.domain.game.repository.BattleHistoryRepository;
+import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
 import org.ezcode.codetest.domain.game.strategy.SkillStrategy;
 import org.ezcode.codetest.domain.game.strategy.SkillStrategyFactory;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,7 @@ public class GameEncounterDomainService {
 	private final CharacterEquipService characterEquipService;
 	private final SkillStrategyFactory  skillStrategyFactory;
 	private final BattleHistoryRepository historyRepository;
+	private final GameCharacterRepository characterRepository;
 
 	public BattleLog battle(GameCharacter player, GameCharacter opponent) {
 
@@ -31,10 +36,25 @@ public class GameEncounterDomainService {
 		List<SkillStrategy> playerSkillStrategies = skillStrategyFactory.orderedStrategies(playerEquippedSkills);
 		List<SkillStrategy> opponentSkillStrategies = skillStrategyFactory.orderedStrategies(opponentEquippedSkills);
 
+		List<Item> playerItems = characterEquipService.loadEquippedItems(player);
+		List<Item> opponentItems = characterEquipService.loadEquippedItems(opponent);
+
+		WeaponType playerWeaponType = playerItems.stream()
+			.filter(item -> item instanceof Weapon)
+			.map(item -> (WeaponType) item.getItemType())
+			.findFirst()
+			.orElse(WeaponType.NOTHING);
+
+		WeaponType opponentWeaponType = opponentItems.stream()
+			.filter(item -> item instanceof Weapon)
+			.map(item -> (WeaponType) item.getItemType())
+			.findFirst()
+			.orElse(WeaponType.NOTHING);
+
 		CharacterRealStat playerStats = new CharacterRealStat(player.getRealStat());
 		CharacterRealStat opponentStats = new CharacterRealStat(opponent.getRealStat());
-		playerStats.applyItemRealStat(characterEquipService.loadEquippedItems(player));
-		opponentStats.applyItemRealStat(characterEquipService.loadEquippedItems(opponent));
+		playerStats.applyItemRealStat(playerItems);
+		opponentStats.applyItemRealStat(opponentItems);
 
 		CharacterContext playerContext = CharacterContext.from(player.getName(), playerStats);
 		CharacterContext opponentContext = CharacterContext.from(opponent.getName(), opponentStats);
@@ -43,34 +63,35 @@ public class GameEncounterDomainService {
 		int currentSkillIndex = 0;
 
 		while (playerContext.checkActionPoints() || opponentContext.checkActionPoints()) {
-
 			boolean isPlayerFirst = playerContext.checkSpeed(opponentContext.getSpeed());
 
-			CharacterContext firstAttacker = isPlayerFirst ? playerContext : opponentContext;
-			CharacterContext firstDefender = isPlayerFirst ? opponentContext : playerContext;
+			CharacterContext attacker = isPlayerFirst ? playerContext : opponentContext;
+			CharacterContext defender = isPlayerFirst ? opponentContext : playerContext;
 
-			List<SkillStrategy> firstAttackerStrategies = isPlayerFirst ? playerSkillStrategies : opponentSkillStrategies;
-			List<SkillStrategy> firstDefenderStrategies = isPlayerFirst ? opponentSkillStrategies : playerSkillStrategies;
+			List<SkillStrategy> attackerStrategies = isPlayerFirst ? playerSkillStrategies : opponentSkillStrategies;
+			WeaponType attackerWeapon = isPlayerFirst ? playerWeaponType : opponentWeaponType;
 
-			boolean attackerAlive = true;
-			if (firstAttacker.checkActionPoints()) {
-				attackerAlive = firstAttackerStrategies.get(currentSkillIndex)
-					.useSkill(firstAttacker, firstDefender, battleLog);
+			boolean alive = true;
+			if (attacker.checkActionPoints()) {
+				alive = attackerStrategies.get(currentSkillIndex)
+					.useSkill(attacker, defender, battleLog, attackerWeapon);
 			}
 
-			if (!attackerAlive) {
-				battleLog.setPlayerWin(firstAttacker == playerContext);
+			if (!alive) {
+				battleLog.setPlayerWin(attacker == playerContext);
 				return battleLog;
 			}
 
-			boolean defenderAlive = true;
-			if (firstDefender.checkActionPoints()) {
-				defenderAlive = firstDefenderStrategies.get(currentSkillIndex)
-					.useSkill(firstDefender, firstAttacker, battleLog);
+			SkillStrategy defenderStrategy = isPlayerFirst ? opponentSkillStrategies.get(currentSkillIndex)
+				: playerSkillStrategies.get(currentSkillIndex);
+			WeaponType defenderWeapon = isPlayerFirst ? opponentWeaponType : playerWeaponType;
+
+			if (defender.checkActionPoints()) {
+				alive = defenderStrategy.useSkill(defender, attacker, battleLog, defenderWeapon);
 			}
 
-			if (!defenderAlive) {
-				battleLog.setPlayerWin(firstDefender == playerContext);
+			if (!alive) {
+				battleLog.setPlayerWin(defender == playerContext);
 				return battleLog;
 			}
 
@@ -92,9 +113,24 @@ public class GameEncounterDomainService {
 			.build());
 	}
 
+	public boolean compareStrength(GameCharacter player, GameCharacter opponent) {
+
+		CharacterRealStat playerStats = new CharacterRealStat(player.getRealStat());
+		CharacterRealStat opponentStats = new CharacterRealStat(opponent.getRealStat());
+		playerStats.applyItemRealStat(characterEquipService.loadEquippedItems(player));
+		opponentStats.applyItemRealStat(characterEquipService.loadEquippedItems(opponent));
+
+		return playerStats.statSummary() < opponentStats.statSummary();
+	}
+
 	public List<BattleHistory> getBattleHistory(GameCharacter character) {
 
 		return historyRepository.findByCharacterId(character.getId());
+	}
+
+	public GameCharacter getRandomEnemyCharacter(Long userId) {
+
+		return characterRepository.findRandomCharacter(userId).get(0);
 	}
 
 }
