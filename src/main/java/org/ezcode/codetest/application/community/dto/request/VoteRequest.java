@@ -5,6 +5,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.*;
 import org.ezcode.codetest.domain.community.model.enums.VoteType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 @Schema(name = "VoteRequest", description = "추천 요청 DTO")
 public record VoteRequest(
@@ -14,6 +15,7 @@ public record VoteRequest(
 		example = "UP",
 		requiredMode = REQUIRED
 	)
+	@NotNull
 	VoteType voteType
 
 ) {
