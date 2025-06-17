@@ -2,7 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.game.mysql.cha
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.game.model.Character.Inventory;
+import org.ezcode.codetest.domain.game.model.character.Inventory;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
 import org.springframework.stereotype.Repository;
 

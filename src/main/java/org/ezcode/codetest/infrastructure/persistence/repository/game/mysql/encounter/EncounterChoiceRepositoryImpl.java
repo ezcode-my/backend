@@ -3,7 +3,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.game.mysql.enc
 import java.util.List;
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.game.model.Encounter.EncounterChoice;
+import org.ezcode.codetest.domain.game.model.encounter.EncounterChoice;
 import org.ezcode.codetest.domain.game.repository.EncounterChoiceRepository;
 import org.springframework.stereotype.Repository;
 

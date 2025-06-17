@@ -1,7 +1,7 @@
 package org.ezcode.codetest.application.game.dto.request.encounter;
 
-import org.ezcode.codetest.domain.game.model.Encounter.RandomEncounter;
-import org.ezcode.codetest.domain.game.model.Encounter.EncounterCategory;
+import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
+import org.ezcode.codetest.domain.game.model.encounter.EncounterCategory;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

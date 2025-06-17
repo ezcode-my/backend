@@ -5,7 +5,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ezcode.codetest.domain.game.model.Character.Stat;
+import org.ezcode.codetest.domain.game.model.character.Stat;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;

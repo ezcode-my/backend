@@ -10,16 +10,16 @@ import org.ezcode.codetest.domain.game.model.item.Grade;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.ezcode.codetest.domain.game.model.skill.SkillSlotType;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.BloodyMessDecorator;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.BurstAttackDecorator;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.ButterflyDecorator;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.CounterAttackDecorator;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.DefenceDecorator;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.HealDecorator;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.InstantKillDecorator;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.LifeStealDecorator;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.MentalDestroyDecorator;
-import org.ezcode.codetest.domain.game.strategy.SkillDecorator.PerfectAimDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.BloodyMessDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.BurstAttackDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.ButterflyDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.CounterAttackDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.DefenceDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.HealDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.InstantKillDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.LifeStealDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.MentalDestroyDecorator;
+import org.ezcode.codetest.domain.game.strategy.skilldecorator.PerfectAimDecorator;
 import org.springframework.stereotype.Component;
 
 @Component

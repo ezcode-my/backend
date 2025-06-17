@@ -1,8 +1,8 @@
 package org.ezcode.codetest.application.game.dto.request.encounter;
 
-import org.ezcode.codetest.domain.game.model.Encounter.EncounterChoice;
-import org.ezcode.codetest.domain.game.model.Encounter.RandomEncounter;
-import org.ezcode.codetest.domain.game.model.Encounter.RandomEncounterEffect;
+import org.ezcode.codetest.domain.game.model.encounter.EncounterChoice;
+import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
+import org.ezcode.codetest.domain.game.model.encounter.RandomEncounterEffect;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

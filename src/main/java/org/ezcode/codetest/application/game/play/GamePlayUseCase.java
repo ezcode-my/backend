@@ -12,13 +12,13 @@ import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingRespon
 import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
-import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
-import org.ezcode.codetest.domain.game.model.Encounter.MatchMessageTemplate;
+import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.encounter.MatchMessageTemplate;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.model.skill.Skill;
 import org.ezcode.codetest.domain.game.model.item.ItemCategory;
-import org.ezcode.codetest.domain.game.model.Encounter.BattleLog;
+import org.ezcode.codetest.domain.game.model.encounter.BattleLog;
 import org.ezcode.codetest.domain.game.service.CharacterStatusDomainService;
 import org.ezcode.codetest.domain.game.service.GameEncounterDomainService;
 import org.ezcode.codetest.domain.game.service.GameShopDomainService;

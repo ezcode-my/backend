@@ -3,7 +3,7 @@ package org.ezcode.codetest.domain.game.model.skill;
 import static jakarta.persistence.FetchType.*;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
-import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.character.GameCharacter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 

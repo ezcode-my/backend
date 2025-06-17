@@ -5,9 +5,9 @@ import java.util.Random;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
-import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.character.GameCharacter;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
-import org.ezcode.codetest.domain.game.model.Character.Inventory;
+import org.ezcode.codetest.domain.game.model.character.Inventory;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.model.skill.Skill;
 import org.ezcode.codetest.domain.game.model.item.ItemCategory;

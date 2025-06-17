@@ -3,10 +3,9 @@ package org.ezcode.codetest.infrastructure.persistence.repository.game.mysql.cha
 import java.util.List;
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.character.GameCharacter;
 import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;

@@ -2,15 +2,15 @@ package org.ezcode.codetest.domain.game.service;
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.game.model.Character.CharacterRealStat;
-import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
-import org.ezcode.codetest.domain.game.model.Encounter.BattleHistory;
+import org.ezcode.codetest.domain.game.model.character.CharacterRealStat;
+import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.encounter.BattleHistory;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.model.item.Weapon;
 import org.ezcode.codetest.domain.game.model.item.WeaponType;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
-import org.ezcode.codetest.domain.game.model.Encounter.BattleLog;
-import org.ezcode.codetest.domain.game.model.Encounter.CharacterContext;
+import org.ezcode.codetest.domain.game.model.encounter.BattleLog;
+import org.ezcode.codetest.domain.game.model.encounter.CharacterContext;
 import org.ezcode.codetest.domain.game.repository.BattleHistoryRepository;
 import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
 import org.ezcode.codetest.domain.game.strategy.SkillStrategy;

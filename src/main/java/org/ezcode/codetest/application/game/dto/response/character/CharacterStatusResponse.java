@@ -6,9 +6,9 @@ import java.util.Map;
 
 import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
-import org.ezcode.codetest.domain.game.model.Character.CharacterRealStat;
-import org.ezcode.codetest.domain.game.model.Character.GameCharacter;
-import org.ezcode.codetest.domain.game.model.Character.Stat;
+import org.ezcode.codetest.domain.game.model.character.CharacterRealStat;
+import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.character.Stat;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

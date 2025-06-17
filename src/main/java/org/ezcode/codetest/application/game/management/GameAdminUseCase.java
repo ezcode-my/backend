@@ -8,7 +8,7 @@ import org.ezcode.codetest.application.game.dto.request.encounter.RandomEncounte
 import org.ezcode.codetest.application.game.dto.request.encounter.RandomEncounterSaveRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillDeleteRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillSaveRequest;
-import org.ezcode.codetest.domain.game.model.Encounter.RandomEncounter;
+import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
 import org.ezcode.codetest.domain.game.service.GameManagementDomainService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

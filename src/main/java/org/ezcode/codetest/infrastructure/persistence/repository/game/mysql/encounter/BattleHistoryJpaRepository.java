@@ -2,7 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.game.mysql.enc
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.game.model.Encounter.BattleHistory;
+import org.ezcode.codetest.domain.game.model.encounter.BattleHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BattleHistoryJpaRepository extends JpaRepository<BattleHistory, Long> {

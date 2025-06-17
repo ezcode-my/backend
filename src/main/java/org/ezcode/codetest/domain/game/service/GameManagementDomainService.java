@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
-import org.ezcode.codetest.domain.game.model.Encounter.EncounterChoice;
+import org.ezcode.codetest.domain.game.model.encounter.EncounterChoice;
 import org.ezcode.codetest.domain.game.model.item.Item;
-import org.ezcode.codetest.domain.game.model.Encounter.RandomEncounter;
+import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
 import org.ezcode.codetest.domain.game.model.skill.Skill;
 import org.ezcode.codetest.domain.game.repository.EncounterChoiceRepository;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;

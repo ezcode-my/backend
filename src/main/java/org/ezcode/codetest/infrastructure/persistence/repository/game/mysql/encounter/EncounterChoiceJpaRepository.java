@@ -2,7 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.game.mysql.enc
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.game.model.Encounter.EncounterChoice;
+import org.ezcode.codetest.domain.game.model.encounter.EncounterChoice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EncounterChoiceJpaRepository extends JpaRepository<EncounterChoice, Long> {
