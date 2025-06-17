@@ -2,7 +2,7 @@ package org.ezcode.codetest.domain.game.repository;
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.game.model.entity.Inventory;
+import org.ezcode.codetest.domain.game.model.character.Inventory;
 
 public interface InventoryRepository {
 
