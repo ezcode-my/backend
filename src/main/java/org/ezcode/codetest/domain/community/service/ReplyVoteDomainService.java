@@ -44,11 +44,9 @@ public class ReplyVoteDomainService extends BaseVoteDomainService<ReplyVote, Rep
 
 	public Reply getValidatedReply(Long problemId, Long discussionId, Long replyId) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply reply = replyDomainService.getReplyById(replyId);
-		replyDomainService.validateDiscussionMatches(reply, discussion);
+		Reply reply = replyDomainService.getReplyForDiscussion(replyId, discussion);
 
 		return reply;
 	}
@@ -60,7 +58,7 @@ public class ReplyVoteDomainService extends BaseVoteDomainService<ReplyVote, Rep
 		}
 
 		ReplyVotePayload payload = new ReplyVotePayload(
-			reply.getDiscussion().getProblemId(),
+			reply.getProblemId(),
 			reply.getId(),
 			voter.getNickname()
 		);
