@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/problems/{problemId}/discussions/{discussionId}/votes")
-@Tag(name = "DiscussionVotes", description = "토론 추천(Vote) 관리 API")
+@Tag(name = "DiscussionVotes", description = "토론글 추천(Vote) 관리 API")
 @RequiredArgsConstructor
 public class DiscussionVoteController {
 
@@ -35,8 +35,7 @@ public class DiscussionVoteController {
 			@Parameter(name = "discussionId", description = "토론 ID", required = true)
 		}
 	)
-	@ApiResponse(responseCode = "201", description = "추천 생성됨 (voteStatus=true)")
-	@ApiResponse(responseCode = "200", description = "추천 취소됨 (voteStatus=false)")
+	@ApiResponse(responseCode = "200", description = "VoteResponse 반환")
 	@PostMapping
 	public ResponseEntity<VoteResponse> vote(
 		@PathVariable Long problemId,
