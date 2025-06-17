@@ -43,7 +43,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		//OAuth2User
 		CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-		User loginUser = userDomainService.getOAuthUser(customUserDetails.getEmail(), customUserDetails.getProvider());
+		User loginUser= userDomainService.getOAuthUser(customUserDetails.getEmail(), customUserDetails.getProvider());;
+		if (loginUser == null) {
+			loginUser = userDomainService.getUser(customUserDetails.getEmail());
+		}
 
 		String accessToken = jwtUtil.createToken(
 			loginUser.getId(),
