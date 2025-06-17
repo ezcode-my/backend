@@ -16,9 +16,6 @@ public class InMemoryEmitterStore implements EmitterStore {
 	@Override
 	public void save(String key, SseEmitter emitter) {
 		emitterMap.put(key, emitter);
-		emitter.onCompletion(() -> emitterMap.remove(key));
-		emitter.onTimeout(() -> emitterMap.remove(key));
-		emitter.onError((e) -> emitterMap.remove(key));
 	}
 
 	@Override
