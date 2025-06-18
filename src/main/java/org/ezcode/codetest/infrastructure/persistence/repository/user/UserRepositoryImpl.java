@@ -43,9 +43,4 @@ public class UserRepositoryImpl implements UserRepository {
 		return userJpaRepository.existsByNickname(nickname);
 	}
 
-	@Override
-	public User findById(Long id) {
-		return userJpaRepository.findById(id).get();
-	}
-
 }

@@ -3,6 +3,7 @@ package org.ezcode.codetest.infrastructure.ranking.redis;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ezcode.codetest.application.ranking.dto.RankingResponse;
+import org.ezcode.codetest.infrastructure.persistence.repository.user.UserJpaRepository;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ import java.util.stream.Collectors;
 public class RedisRankingService {
 
     private final StringRedisTemplate redisTemplate;
+    private final UserJpaRepository userJpaRepository;
+
 
     private static final String WEEKLY_PREFIX = "ranking:weekly:";
     private static final String ALLTIME_KEY = "ranking:all";
@@ -47,12 +50,19 @@ public class RedisRankingService {
         if (raw == null) return List.of();
 
         int[] rank = {1};
-        return raw.stream().map(tuple -> RankingResponse.builder()
-                .userId(Long.parseLong(tuple.getValue()))
-                .nickname("유저닉네임")
-                .rank(rank[0]++)
-                .score(tuple.getScore().intValue())
-                .build()
-        ).collect(Collectors.toList());
+        return raw.stream().map(tuple -> {
+            Long userId = Long.parseLong(tuple.getValue());
+            String nickname = userJpaRepository.findById(userId)
+                    .map(user -> user.getNickname())
+                    .orElse("알 수 없음");
+
+            return RankingResponse.builder()
+                    .userId(userId)
+                    .nickname(nickname)
+                    .rank(rank[0]++)
+                    .score(tuple.getScore().intValue())
+                    .build();
+        }).collect(Collectors.toList());
     }
+
 }

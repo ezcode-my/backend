@@ -3,6 +3,7 @@ package org.ezcode.codetest.domain.user.repository;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +20,5 @@ public interface UserRepository {
 
 	boolean existsByNickname(String nickname);
 
-	User findById(Long id);
 
 }
