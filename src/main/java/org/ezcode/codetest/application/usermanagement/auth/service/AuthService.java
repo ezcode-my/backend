@@ -107,10 +107,10 @@ public class AuthService {
     	User loginUser = userDomainService.getUser(signinRequest.getEmail());
 
 		userDomainService.isDeletedUser(loginUser);
-		List<UserAuthType> userAuthType = userDomainService.getUser(signinRequest.getEmail()).getUserAuthTypes();
+		List<AuthType> userAuthTypes = userDomainService.getUserAuthTypes(loginUser);
 
 		//OAuth 가입 유저는 일반 로그인 불가능(향후 이메일과 소셜 모두 가입되어있는 회원의 경우 로그인 가능할 수 있도록 리팩토링)
-		if (!userAuthType.contains(AuthType.EMAIL)) {
+		if (!userAuthTypes.contains(AuthType.EMAIL)) {
 			throw new AuthException(AuthExceptionCode.AUTH_TYPE_MISMATCH);
 		}
 
