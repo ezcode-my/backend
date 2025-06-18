@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.user.service;
 
+import java.util.Optional;
+
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.Adjective;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
@@ -13,6 +15,9 @@ import org.ezcode.codetest.common.security.util.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +32,13 @@ public class UserDomainService {
 	private static final java.util.Random RANDOM = new java.util.Random();
 
 	public void checkEmailUnique(String email) {
-		if (userRepository.findByEmail(email).isPresent()) {
+		log.info("Checking email unique: {}", email);
+		Optional<User> findUser = userRepository.findByEmail(email);
+		log.info("Found user: {}", findUser);
+		//이미 EMAIL로 가입한 유저면 에러
+		if (findUser.isPresent()
+			&& userAuthTypeRepository.getUserAuthType(findUser.get()).contains(AuthType.EMAIL)) {
+			log.info("Email and AuthType already in use: {}", email);
 			throw new AuthException(AuthExceptionCode.ALREADY_EXIST_USER);
 		}
 	}
@@ -63,9 +74,9 @@ public class UserDomainService {
 		return passwordEncoder.encode(password);
 	}
 
-	public User getOAuthUser(String email, String provider) {
-		return userRepository.findByEmailAndProvider(email, provider);
-	}
+	// public User getOAuthUser(String email, String provider) {
+	// 	return userRepository.findByEmailAndProvider(email, provider);
+	// }
 
 	public void passwordComparison(String newPassword, String oldPassword) {
 		if (passwordEncoder.matches(newPassword, oldPassword)) {
@@ -96,5 +107,7 @@ public class UserDomainService {
 		return adjective.name() + noun.name() + number;
 	}
 
-
+	public User getUserByEmail(String email) {
+		return userRepository.getUserByEmail(email);
+	}
 }

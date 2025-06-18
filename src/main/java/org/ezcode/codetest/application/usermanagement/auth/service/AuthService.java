@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.usermanagement.auth.service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
@@ -41,6 +42,7 @@ public class AuthService {
 	 */
 	@Transactional
 	public SignupResponse signup(SignupRequest signupRequest) {
+
 		userDomainService.checkEmailUnique(signupRequest.getEmail());
 
 		if (!signupRequest.getPassword().equals(signupRequest.getPasswordConfirm())){
@@ -49,26 +51,42 @@ public class AuthService {
 
 		String encodedPassword = userDomainService.encodePassword(signupRequest.getPassword());
 
+		User existUser = userDomainService.getUserByEmail(signupRequest.getEmail());
 
-		User newUser = User.emailUser(
-			signupRequest.getEmail(),
-			encodedPassword,
-			signupRequest.getUsername(),
-			signupRequest.getNickname(),
-			signupRequest.getAge()
-		);
+		String bearToken;
 
-		UserAuthType userAuthType = new UserAuthType(newUser, AuthType.EMAIL);
+		//만약 아예 유저 테이블에 없으면 둘 다 저장
+		if (existUser == null) {
+			User newUser = User.emailUser(
+				signupRequest.getEmail(),
+				encodedPassword,
+				signupRequest.getUsername(),
+				signupRequest.getNickname(),
+				signupRequest.getAge()
+			);
+			UserAuthType userAuthType = new UserAuthType(newUser, AuthType.EMAIL);
+			userDomainService.createUser(newUser);
+			userDomainService.createUserAuthType(userAuthType);
 
-		userDomainService.createUser(newUser);
-		userDomainService.createUserAuthType(userAuthType);
-
-		String bearToken = jwtUtil.createToken(
-			newUser.getId(),
-			newUser.getEmail(),
-			newUser.getRole(),
-			newUser.getUsername(),newUser.getNickname(),
-			newUser.getTier());
+			bearToken = jwtUtil.createToken(
+				newUser.getId(),
+				newUser.getEmail(),
+				newUser.getRole(),
+				newUser.getUsername(),newUser.getNickname(),
+				newUser.getTier());
+		} else {
+			//유저 테이블에는 존재하다면 AuthType만 추가
+			UserAuthType userAuthType = new UserAuthType(existUser, AuthType.EMAIL);
+			userDomainService.createUserAuthType(userAuthType);
+			log.info("유저 타입 저장 완료 {}", userAuthType);
+			bearToken = jwtUtil.createToken(
+				existUser.getId(),
+				existUser.getEmail(),
+				existUser.getRole(),
+				existUser.getUsername(),
+				existUser.getNickname(),
+				existUser.getTier());
+		}
 
 		return SignupResponse.from(bearToken);
 	}
@@ -85,9 +103,10 @@ public class AuthService {
     	User loginUser = userDomainService.getUser(signinRequest.getEmail());
 
 		userDomainService.isDeletedUser(loginUser);
+		List<UserAuthType> userAuthType = userDomainService.getUser(signinRequest.getEmail()).getUserAuthTypes();
 
 		//OAuth 가입 유저는 일반 로그인 불가능(향후 이메일과 소셜 모두 가입되어있는 회원의 경우 로그인 가능할 수 있도록 리팩토링)
-		if (!loginUser.getAuthType().equals(AuthType.EMAIL)) {
+		if (!userAuthType.contains(AuthType.EMAIL)) {
 			throw new AuthException(AuthExceptionCode.AUTH_TYPE_MISMATCH);
 		}
 

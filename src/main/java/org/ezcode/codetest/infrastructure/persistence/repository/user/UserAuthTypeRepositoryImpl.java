@@ -1,7 +1,6 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.user;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;

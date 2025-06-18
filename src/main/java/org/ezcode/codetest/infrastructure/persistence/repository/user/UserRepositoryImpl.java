@@ -33,11 +33,6 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
-	public User findByEmailAndProvider(String email, String provider) {
-		return userJpaRepository.findUserByEmailAndAuthType(email, AuthType.from(provider));
-	}
-
-	@Override
 	public boolean existsByNickname(String nickname) {
 		return userJpaRepository.existsByNickname(nickname);
 	}

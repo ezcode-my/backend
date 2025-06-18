@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.user.service;
 
+import java.util.List;
+
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Response;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
@@ -57,7 +59,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 		if (findUser == null) {
 			String nickname = userDomainService.generateUniqueNickname();
-			User newUser = User.googleUser(oAuth2Response.getEmail(), username, nickname);
+			User newUser = User.socialUser(oAuth2Response.getEmail(), username, nickname);
 			log.info("newUser: {} 새로운 유저", newUser);
 			try {
 				userRepository.createUser(newUser);
@@ -71,7 +73,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			}
 
 		} else {
-			if (!findUser.getAuthType().equals(AuthType.GOOGLE) && !userAuthTypeRepository.getUserAuthType(findUser).contains(AuthType.GOOGLE)) {
+			if (!userDomainService.getUser(findUser.getEmail()).getUserAuthTypes().contains(AuthType.GOOGLE)) {
 				UserAuthType userAuthType = new UserAuthType(findUser, AuthType.GOOGLE);
 				userAuthTypeRepository.createUserAuthType(userAuthType);
 			} else {

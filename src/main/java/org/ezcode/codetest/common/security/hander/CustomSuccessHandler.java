@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.OAuthResponse;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -43,10 +44,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		//OAuth2User
 		CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-		User loginUser= userDomainService.getOAuthUser(customUserDetails.getEmail(), customUserDetails.getProvider());;
-		if (loginUser == null) {
-			loginUser = userDomainService.getUser(customUserDetails.getEmail());
-		}
+		User loginUser = userDomainService.getUserByEmail(customUserDetails.getEmail());
+		log.info("loginUser: {}", loginUser);
 
 		String accessToken = jwtUtil.createToken(
 			loginUser.getId(),
