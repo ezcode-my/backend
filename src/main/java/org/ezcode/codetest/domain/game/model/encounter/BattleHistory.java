@@ -29,11 +29,11 @@ public class BattleHistory extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "attacker_id")
+	@JoinColumn(name = "attacker_id", nullable = false)
 	private GameCharacter attacker;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "defender_id")
+	@JoinColumn(name = "defender_id", nullable = false)
 	private GameCharacter defender;
 
 	@ElementCollection(fetch = FetchType.LAZY)

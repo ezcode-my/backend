@@ -4,7 +4,6 @@ import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
 import org.ezcode.codetest.domain.game.model.encounter.EncounterCategory;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record RandomEncounterSaveRequest(
@@ -21,10 +20,7 @@ public record RandomEncounterSaveRequest(
 	String name,
 
 	@NotBlank(message = "설명란은 필수입니다.")
-	String encounterText,
-
-	@NotNull(message = "가중치 입력은 필수입니다.")
-	Integer weight
+	String encounterText
 ) {
 
 	public RandomEncounter toRandomEncounter() {
@@ -33,7 +29,6 @@ public record RandomEncounterSaveRequest(
 			.encounterCategory(EncounterCategory.valueOf(encounterCategory.trim().toUpperCase()))
 			.activated(true)
 			.name(name)
-			.weight(weight)
 			.encounterText(encounterText)
 			.build();
 	}

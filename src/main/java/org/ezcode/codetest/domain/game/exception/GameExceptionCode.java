@@ -15,6 +15,7 @@ public enum GameExceptionCode implements ResponseCode {
 	SKILL_NOT_EXISTS(false, HttpStatus.NOT_FOUND, "해당 스킬이 존재하지 않습니다."),
 	ITEM_NOT_EXISTS(false, HttpStatus.NOT_FOUND, "해당 아이템이 존재하지 않습니다."),
 	CHARACTER_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 캐릭터가 조회되지 없습니다."),
+	RANDOM_CHARACTER_MATCHING_FAIL(false, HttpStatus.NOT_FOUND, "현재 매칭가능한 유저가 존재하지 않습니다."),
 	NOT_ENOUGH_GOLD(false, HttpStatus.BAD_REQUEST, "도박을 하기에 충분한 골드가 있지 않습니다."),
 	SKILL_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 스킬이 조회되지 없습니다."),
 	SKILL_NOT_OWNED(false, HttpStatus.BAD_REQUEST, "해당 스킬을 보유하고 있지 않습니다."),
@@ -25,6 +26,7 @@ public enum GameExceptionCode implements ResponseCode {
 	ITEM_ALREADY_EXISTS(false, HttpStatus.BAD_REQUEST, "이미 존재하는 아이템입니다."),
 	RANDOM_ENCOUNTER_ALREADY_EXISTS(false, HttpStatus.BAD_REQUEST, "이미 존재하는 랜덤 인카운터입니다."),
 	RANDOM_ENCOUNTER_NOT_EXISTS(false, HttpStatus.BAD_REQUEST, "해당 랜덤 인카운터가 존재하지 않습니다."),
+	RANDOM_ENCOUNTER_MATCHING_FAIL(false, HttpStatus.NOT_FOUND, "현재 매칭가능한 인카운터가 존재하지 않습니다."),
 	ENCOUNTER_CHOICE_ALREADY_EXISTS(false, HttpStatus.BAD_REQUEST, "이미 존재하는 인카운터 선택지입니다."),
 	ENCOUNTER_CHOICE_NOT_EXISTS(false, HttpStatus.BAD_REQUEST, "해당 인카운터 선택지가 존재하지 않습니다.");
 

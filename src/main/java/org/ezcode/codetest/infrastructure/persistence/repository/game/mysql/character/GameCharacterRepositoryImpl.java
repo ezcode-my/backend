@@ -1,6 +1,5 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.game.mysql.character;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
@@ -29,10 +28,12 @@ public class GameCharacterRepositoryImpl implements GameCharacterRepository {
 	}
 
 	@Override
-	public List<GameCharacter> findRandomCharacter(Long userId) {
+	public Optional<GameCharacter> findRandomCharacter(Long userId) {
 
-		return characterRepository.findRandomCharacter(userId, PageRequest.of(0, 1));
+		GameCharacter randomCharacter = characterRepository
+			.findRandomCharacter(userId, PageRequest.of(0, 1)).get(0);
+
+		return Optional.of(randomCharacter);
 	}
-
 
 }

@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
 import org.ezcode.codetest.domain.game.repository.RandomEncounterRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,14 @@ public class RandomEncounterRepositoryImpl implements RandomEncounterRepository 
 	public Optional<RandomEncounter> findById(Long id) {
 
 		return randomEncounterRepository.findById(id);
+	}
+
+	@Override
+	public Optional<RandomEncounter> findRandomEncounter() {
+
+		RandomEncounter encounter = randomEncounterRepository.findRandomEncounter(PageRequest.of(0, 1)).get(0);
+
+		return Optional.of(encounter);
 	}
 
 	@Override

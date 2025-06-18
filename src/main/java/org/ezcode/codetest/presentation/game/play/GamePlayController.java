@@ -2,13 +2,16 @@ package org.ezcode.codetest.presentation.game.play;
 
 import java.util.List;
 
+import org.ezcode.codetest.application.game.dto.request.encounter.EncounterChoiceRequest;
 import org.ezcode.codetest.application.game.dto.request.item.ItemEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.item.ItemGamblingRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
-import org.ezcode.codetest.application.game.dto.response.encounter.MatchingResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.EncounterResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.MatchingBattleResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.MatchingEncounterResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
@@ -124,11 +127,28 @@ public class GamePlayController {
 	}
 
 	@GetMapping("/battles/matching")
-	public ResponseEntity<MatchingResponse> randomMatching(
+	public ResponseEntity<MatchingBattleResponse> randomBattleMatching(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(gamePlayUseCase.randomMatching(authUser.getId()));
+			.body(gamePlayUseCase.randomBattleMatching(authUser.getId()));
+	}
+
+	@GetMapping("/encounters/matching")
+	public ResponseEntity<MatchingEncounterResponse> randomEncounterMatching(
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(gamePlayUseCase.randomEncounterMatching());
+	}
+
+	@PostMapping("/encounters/{encounterId}")
+	public ResponseEntity<EncounterResponse> encounterChoice(
+		@AuthenticationPrincipal AuthUser authUser,
+		@PathVariable Long encounterId,
+		@RequestBody @Validated EncounterChoiceRequest request
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(gamePlayUseCase.encounterChoice(authUser.getId(), encounterId, request));
 	}
 
 }

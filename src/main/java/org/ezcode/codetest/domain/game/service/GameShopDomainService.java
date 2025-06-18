@@ -33,7 +33,6 @@ public class GameShopDomainService {
 
 		character.useGoldForGamble();
 
-		//TODO : 나중에 REDIS 에 캐싱해서 DB IO 를 줄이는 방법으로 수정 (레디스에 전체 리스트 사이즈랑 전체 필드 저장)
 		List<Item> weaponList = itemRepository.findAllByItemCategory(ItemCategory.WEAPON);
 
 		Random random = new Random();
@@ -110,7 +109,6 @@ public class GameShopDomainService {
 		character.useGoldForGamble();
 
 		List<Skill> skillList = skillRepository.findAll();
-		//TODO : 나중에 REDIS 에 캐싱해서 DB IO 를 줄이는 방법으로 수정 (레디스에 전체 리스트 사이즈랑 전체 필드 저장)
 
 		Random random = new Random();
 

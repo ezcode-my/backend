@@ -120,6 +120,7 @@ public class SubmissionService {
             submissionDomainService.finalizeSubmission(
 				submissionData, context.aggregator(), context.getPassedCount()
 			);
+
 		} catch (Exception e) {
 			emitterStore.get(msg.emitterKey()).ifPresent(emitter -> emitter.completeWithError(e));
 			exceptionNotificationHelper(e);

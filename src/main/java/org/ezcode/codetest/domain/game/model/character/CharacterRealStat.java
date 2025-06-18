@@ -102,4 +102,47 @@ public class CharacterRealStat {
 				break;
 		}
 	}
+
+	public void applyAtkChange(Double atk) {
+
+		this.atk += atk;
+		if(this.atk < 0) this.atk = 0.0;
+	}
+
+	public void applyDefChange(Double def) {
+
+		this.def += def;
+		if(this.def < 0) this.def = 0.0;
+	}
+
+	public void applySpeedChange(Double speed) {
+
+		this.speed += speed;
+		if(this.speed < 0) this.speed = 0.0;
+	}
+
+	public void applyCritChange(Double crit) {
+
+		this.crit += crit;
+		if(this.crit < 0) this.crit = 0.0;
+	}
+
+	public void applyEvasionChange(Double evasion) {
+
+		this.evasion += evasion;
+		if(this.evasion < 0) this.evasion = 0.0;
+	}
+
+	public void applyAccuracyChange(Double accuracy) {
+
+		this.accuracy += accuracy;
+		if(this.accuracy < 0) this.accuracy = 0.0;
+	}
+
+	public void applyStunChange(Double stun) {
+
+		this.stun += stun;
+		if(this.stun < 0) this.stun = 0.0;
+	}
+
 }

@@ -3,17 +3,23 @@ package org.ezcode.codetest.application.game.play;
 import java.util.List;
 
 import org.ezcode.codetest.application.game.dto.mapper.GameMapper;
+import org.ezcode.codetest.application.game.dto.request.encounter.EncounterChoiceRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
-import org.ezcode.codetest.application.game.dto.response.encounter.MatchingResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.EncounterResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.MatchingBattleResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.MatchingEncounterResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.encounter.EncounterHistory;
+import org.ezcode.codetest.domain.game.model.encounter.EncounterLog;
 import org.ezcode.codetest.domain.game.model.encounter.MatchMessageTemplate;
+import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.model.skill.Skill;
@@ -154,7 +160,7 @@ public class GamePlayUseCase {
 	}
 
 	@Transactional
-	public MatchingResponse randomMatching(Long playerId) {
+	public MatchingBattleResponse randomBattleMatching(Long playerId) {
 
 		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
 		GameCharacter enemyCharacter = encounterDomainService.getRandomEnemyCharacter(playerId);
@@ -165,7 +171,28 @@ public class GamePlayUseCase {
 
 		Long enemyUserId = enemyCharacter.getUser().getId();
 
-		return MatchingResponse.of(checkStrength, matchMessage, enemyUserId);
+		return MatchingBattleResponse.of(checkStrength, matchMessage, enemyUserId);
+	}
+
+	@Transactional
+	public MatchingEncounterResponse randomEncounterMatching() {
+
+		RandomEncounter encounter = encounterDomainService.getRandomEncounter();
+
+		return MatchingEncounterResponse.from(encounter);
+	}
+
+	@Transactional
+	public EncounterResponse encounterChoice(Long userId, Long encounterId, EncounterChoiceRequest request) {
+
+		GameCharacter player = characterService.getGameCharacter(userId);
+
+		EncounterLog resultLog = encounterDomainService.EncounterHappen(player, encounterId,
+			request.playerDecision());
+
+		EncounterHistory history = encounterDomainService.createEncounterHistory(player, resultLog);
+
+		return EncounterResponse.from(history);
 	}
 
 }
