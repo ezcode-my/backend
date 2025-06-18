@@ -18,11 +18,11 @@ public class RedisStreamCleanupScheduler {
 	public void cleanUpOldMessages() {
 		try {
 			Long trimmed = redisTemplate.opsForStream()
-				.trim("judge-queue", 100);
+				.trim("judge-queue", 5);
 
-			log.info("Redis Stream trim executed, deleted count: {}", trimmed);
+			log.info("Redis Stream 트림(정리) 작업이 실행되었습니다. 삭제된 메시지 개수: {}", trimmed);
 		} catch (Exception e) {
-			log.error("Redis Stream trim failed", e);
+			log.error("Redis Stream 트림(정리) 작업에 실패했습니다.", e);
 		}
 	}
 }

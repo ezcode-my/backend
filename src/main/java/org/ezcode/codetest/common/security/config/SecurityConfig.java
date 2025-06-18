@@ -19,7 +19,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.DispatcherTypeRequestMatcher;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -52,14 +54,14 @@ public class SecurityConfig {
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
-			//에러 처리 체인 추가
+			// 에러 처리 체인 추가
 			.exceptionHandling(except -> except
 				.authenticationEntryPoint(customAuthenticationEntryPoint())
 				.accessDeniedHandler(customAccessDeniedHandler()))
-
-			//인증 URL 범위 설정
+			// 인증 URL 범위 설정
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
+					.requestMatchers(new DispatcherTypeRequestMatcher(DispatcherType.ASYNC)).permitAll()
 					.requestMatchers(
 						SecurityPath.PUBLIC_PATH).permitAll()
 					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)

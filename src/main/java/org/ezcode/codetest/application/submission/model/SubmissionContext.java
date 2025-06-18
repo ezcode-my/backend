@@ -4,6 +4,7 @@ import org.ezcode.codetest.application.submission.dto.response.submission.FinalR
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -17,23 +18,26 @@ public record SubmissionContext(
 
     AtomicReference<String> message,
 
-    CountDownLatch latch
+    CountDownLatch latch,
+
+    AtomicBoolean notified
 ) {
     public static SubmissionContext initialize(int totalTestcaseCount) {
         return new SubmissionContext(
-                new SubmissionAggregator(),
-                new AtomicInteger(0),
-                new AtomicInteger(0),
-                new AtomicReference<>("Accepted"),
-                new CountDownLatch(totalTestcaseCount)
+            new SubmissionAggregator(),
+            new AtomicInteger(0),
+            new AtomicInteger(0),
+            new AtomicReference<>("Accepted"),
+            new CountDownLatch(totalTestcaseCount),
+            new AtomicBoolean(false)
         );
     }
 
     public FinalResultResponse toFinalResult(int totalTestcaseCount) {
         return new FinalResultResponse(
-                totalTestcaseCount,
-                this.getProcessedCount(),
-                this.getCurrentMessage()
+            totalTestcaseCount,
+            this.getPassedCount(),
+            this.getCurrentMessage()
         );
     }
 

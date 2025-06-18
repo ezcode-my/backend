@@ -2,7 +2,7 @@ package org.ezcode.codetest.domain.community.service;
 
 import org.ezcode.codetest.domain.community.exception.CommunityException;
 import org.ezcode.codetest.domain.community.exception.CommunityExceptionCode;
-import org.ezcode.codetest.domain.community.model.Discussion;
+import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.repository.DiscussionRepository;
 import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.springframework.data.domain.Page;
@@ -28,17 +28,37 @@ public class DiscussionDomainService {
 			.orElseThrow(() -> new CommunityException(CommunityExceptionCode.DISCUSSION_NOT_FOUND));
 	}
 
+	public Discussion getDiscussionForProblem(Long discussionId, Long problemId) {
+
+		Discussion discussion = getDiscussionById(discussionId);
+		validateProblemMatches(discussion, problemId);
+
+		return discussion;
+	}
+
 	public Page<Discussion> getAllDiscussionsByProblemId(Long problemId, Pageable pageable) {
 
 		return discussionRepository.findAllByProblemId(problemId, pageable);
 	}
 
-	public void modify(Discussion discussion, Language language, String content) {
+	public Discussion modify(Long discussionId, Long problemId, Long userId, Language language, String content) {
+
+		Discussion discussion = getDiscussionById(discussionId);
+
+		validateProblemMatches(discussion, problemId);
+		validateIsAuthor(discussion, userId);
 
 		discussionRepository.updateDiscussion(discussion, language, content);
+
+		return discussion;
 	}
 
-	public void remove(Discussion discussion) {
+	public void remove(Long discussionId, Long problemId, Long userId) {
+
+		Discussion discussion = getDiscussionById(discussionId);
+
+		validateProblemMatches(discussion, problemId);
+		validateIsAuthor(discussion, userId);
 
 		discussionRepository.deleteDiscussion(discussion);
 	}

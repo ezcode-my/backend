@@ -1,14 +1,14 @@
 package org.ezcode.codetest.application.community.service;
 
+import java.util.List;
+
 import org.ezcode.codetest.application.community.dto.request.ReplyCreateRequest;
 import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
-import org.ezcode.codetest.application.notification.dto.event.ReplyCreateEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
-import org.ezcode.codetest.domain.community.model.Discussion;
-import org.ezcode.codetest.domain.community.model.Reply;
+import org.ezcode.codetest.domain.community.model.entity.Discussion;
+import org.ezcode.codetest.domain.community.model.entity.Reply;
 import org.ezcode.codetest.domain.community.service.DiscussionDomainService;
 import org.ezcode.codetest.domain.community.service.ReplyDomainService;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -30,7 +30,6 @@ public class ReplyService {
 	private final UserDomainService userDomainService;
 
 	private final NotificationEventService notificationEventService;
-	private final NotificationConverter notificationConverter;
 
 	@Transactional
 	public ReplyResponse createReply(
@@ -41,25 +40,19 @@ public class ReplyService {
 	) {
 
 		User user = userDomainService.getUserById(userId);
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
 
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply parent = null;
-		if (request.parentReplyId() != null) {
-			parent = replyDomainService.getReplyById(request.parentReplyId());
-			replyDomainService.validateDiscussionMatches(parent, discussion);
+		Reply reply = replyDomainService.createReply(discussion, user, request.parentReplyId(), request.content());
+
+		List<User> notificationTargets = reply.generateNotificationTargets();
+
+		if (!notificationTargets.isEmpty()) {
+			for (User target : notificationTargets) {
+				NotificationCreateEvent notificationEvent = replyDomainService.createReplyNotification(target, reply);
+				notificationEventService.saveAndNotify(notificationEvent);
+			}
 		}
-
-		Reply reply = replyDomainService.createReply(
-			ReplyCreateRequest.toEntity(discussion, user, parent, request)
-		);
-
-		User discussionAuthor = discussion.getUser();	// TODO: get depth 하나로 줄이기
-		User parentAuthor = reply.getParent() != null ? reply.getParent().getUser() : null;
-
-		notify(user, discussionAuthor, reply);
-		notify(user, parentAuthor, reply);
 
 		return ReplyResponse.fromEntity(reply);
 	}
@@ -67,10 +60,10 @@ public class ReplyService {
 	@Transactional(readOnly = true)
 	public Page<ReplyResponse> getReplies(Long problemId, Long discussionId, Pageable pageable) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
 		Page<Reply> replies = replyDomainService.getRepliesByDiscussionId(discussion, pageable);
+
 		return replies.map(ReplyResponse::fromEntity);
 	}
 
@@ -82,13 +75,10 @@ public class ReplyService {
 		Pageable pageable
 	) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply parent = replyDomainService.getReplyById(parentReplyId);
-		replyDomainService.validateDiscussionMatches(parent, discussion);
+		Page<Reply> replies = replyDomainService.getRepliesByParentReplyId(parentReplyId, discussion, pageable);
 
-		Page<Reply> replies = replyDomainService.getRepliesByParentReplyId(parentReplyId, pageable);
 		return replies.map(ReplyResponse::fromEntity);
 	}
 
@@ -101,14 +91,9 @@ public class ReplyService {
 		Long userId
 	) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply reply = replyDomainService.getReplyById(replyId);
-		replyDomainService.validateDiscussionMatches(reply, discussion);
-		replyDomainService.validateIsAuthor(reply, userId);
-
-		replyDomainService.modify(reply, request.content());
+		Reply reply = replyDomainService.modify(replyId, discussion, userId, request.content());
 
 		return ReplyResponse.fromEntity(reply);
 	}
@@ -117,30 +102,8 @@ public class ReplyService {
 	@Transactional
 	public void removeReply(Long problemId, Long discussionId, Long replyId, Long userId) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply reply = replyDomainService.getReplyById(replyId);
-		replyDomainService.validateDiscussionMatches(reply, discussion);
-		replyDomainService.validateIsAuthor(reply, userId);
-
-		replyDomainService.remove(reply);
-	}
-
-	private void notify(User sender, User recipient, Reply reply) {
-
-		if (sender.shouldSkipNotification(recipient)) {
-			return;
-		}
-
-		NotificationCreateEvent event = notificationConverter.convert(
-			new ReplyCreateEvent(
-				recipient.getEmail(),
-				reply.getId(),
-				reply.getDiscussion().getId(),
-				reply.getContent()
-			)
-		);
-		notificationEventService.saveAndNotify(event);
+		replyDomainService.remove(replyId, discussion, userId);
 	}
 }

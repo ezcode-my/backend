@@ -3,16 +3,24 @@ package org.ezcode.codetest.application.game.play;
 import java.util.List;
 
 import org.ezcode.codetest.application.game.dto.mapper.GameMapper;
-import org.ezcode.codetest.application.game.dto.response.CharacterStatusResponse;
-import org.ezcode.codetest.application.game.dto.response.ItemGamblingResponse;
-import org.ezcode.codetest.application.game.dto.response.ItemResponse;
-import org.ezcode.codetest.application.game.dto.response.SkillGamblingResponse;
-import org.ezcode.codetest.application.game.dto.response.SkillResponse;
-import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
-import org.ezcode.codetest.domain.game.model.entity.Item;
-import org.ezcode.codetest.domain.game.model.entity.Skill;
-import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
+import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.MatchingResponse;
+import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
+import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
+import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
+import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
+import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.encounter.MatchMessageTemplate;
+import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
+import org.ezcode.codetest.domain.game.model.item.Item;
+import org.ezcode.codetest.domain.game.model.skill.Skill;
+import org.ezcode.codetest.domain.game.model.item.ItemCategory;
+import org.ezcode.codetest.domain.game.model.encounter.BattleLog;
 import org.ezcode.codetest.domain.game.service.CharacterStatusDomainService;
+import org.ezcode.codetest.domain.game.service.GameEncounterDomainService;
 import org.ezcode.codetest.domain.game.service.GameShopDomainService;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
@@ -28,6 +36,7 @@ public class GamePlayUseCase {
 	private final CharacterStatusDomainService characterService;
 	private final GameShopDomainService gameShopService;
 	private final UserDomainService userDomainService;
+	private final GameEncounterDomainService encounterDomainService;
 	private final GameMapper gameMapper;
 
 	@Transactional
@@ -45,7 +54,7 @@ public class GamePlayUseCase {
 
 		List<Item> equippedItems = characterService.loadEquippedItems(character);
 
-		List<Skill> equippedSkills = characterService.loadEquippedSkills(character);
+		List<GameCharacterSkill> equippedSkills = characterService.loadEquippedSkills(character);
 
 		return gameMapper.toCharacterStatusResponse(character, equippedItems, equippedSkills);
 	}
@@ -79,15 +88,23 @@ public class GamePlayUseCase {
 
 		GameCharacter character = characterService.getGameCharacter(userId);
 
-		characterService.equipNewItem(character, itemName);
+		characterService.equipItem(character, itemName);
 	}
 
 	@Transactional
-	public void equipSkill(Long userId, String skillName) {
+	public void equipSkill(Long userId, SkillEquipRequest request) {
 
 		GameCharacter character = characterService.getGameCharacter(userId);
 
-		characterService.equipNewSkill(character, skillName);
+		characterService.equipSkill(character, request.name(), request.slotNumber());
+	}
+
+	@Transactional
+	public void unEquipSkill(Long userId, SkillUnEquipRequest request) {
+
+		GameCharacter character = characterService.getGameCharacter(userId);
+
+		characterService.unEquipSkill(character, request.name());
 	}
 
 	@Transactional
@@ -98,6 +115,57 @@ public class GamePlayUseCase {
 		Skill skill = gameShopService.gamblingNewSkill(character);
 
 		return SkillGamblingResponse.from(SkillResponse.from(skill));
+	}
+
+	@Transactional
+	public BattleHistoryResponse battle(Long playerId, Long enemyId) {
+
+		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+		GameCharacter enemyCharacter = characterService.getGameCharacter(enemyId);
+
+		BattleLog log = encounterDomainService.battle(playerCharacter, enemyCharacter);
+
+		encounterDomainService.createBattleHistory(playerCharacter, enemyCharacter, log);
+
+		return BattleHistoryResponse.of(
+			playerCharacter.getName(),
+			enemyCharacter.getName(),
+			log.getMessages(),
+			log.getPlayerWin()
+		);
+	}
+
+	@Transactional
+	public BattleHistoryResponse randomBattle(Long playerId) {
+
+		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+		GameCharacter enemyCharacter = encounterDomainService.getRandomEnemyCharacter(playerId);
+
+		BattleLog log = encounterDomainService.battle(playerCharacter, enemyCharacter);
+
+		encounterDomainService.createBattleHistory(playerCharacter, enemyCharacter, log);
+
+		return BattleHistoryResponse.of(
+			playerCharacter.getName(),
+			enemyCharacter.getName(),
+			log.getMessages(),
+			log.getPlayerWin()
+		);
+	}
+
+	@Transactional
+	public MatchingResponse randomMatching(Long playerId) {
+
+		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+		GameCharacter enemyCharacter = encounterDomainService.getRandomEnemyCharacter(playerId);
+
+		boolean checkStrength = encounterDomainService.compareStrength(playerCharacter, enemyCharacter);
+
+		String matchMessage = MatchMessageTemplate.random(playerCharacter.getName(), enemyCharacter.getName());
+
+		Long enemyUserId = enemyCharacter.getUser().getId();
+
+		return MatchingResponse.of(checkStrength, matchMessage, enemyUserId);
 	}
 
 }

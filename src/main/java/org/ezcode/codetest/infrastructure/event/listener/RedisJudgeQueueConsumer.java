@@ -3,6 +3,8 @@ package org.ezcode.codetest.infrastructure.event.listener;
 import java.util.Map;
 
 import org.ezcode.codetest.application.submission.service.SubmissionService;
+import org.ezcode.codetest.domain.submission.exception.SubmissionException;
+import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
 import org.ezcode.codetest.infrastructure.event.dto.SubmissionMessage;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -33,11 +35,14 @@ public class RedisJudgeQueueConsumer implements StreamListener<String, MapRecord
 		);
 
 		try {
+			log.info("[컨슈머 수신] {}", msg.emitterKey());
 			submissionService.submitCodeStream(msg);
-			redisTemplate.opsForStream().acknowledge("judge-group", message);
 		} catch (Exception e) {
 			log.error("채점 메시지 처리 실패: {}", message.getId(), e);
-			throw new RuntimeException(e);
+			throw new SubmissionException(SubmissionExceptionCode.REDIS_SERVER_ERROR);
+		} finally {
+			log.info("[컨슈머 ACK] messageId={}", message.getId());
+			redisTemplate.opsForStream().acknowledge("judge-group", message);
 		}
 	}
 }

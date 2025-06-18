@@ -2,8 +2,8 @@ package org.ezcode.codetest.application.community.dto.request;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.*;
 
-import org.ezcode.codetest.domain.community.model.Discussion;
-import org.ezcode.codetest.domain.community.model.Reply;
+import org.ezcode.codetest.domain.community.model.entity.Discussion;
+import org.ezcode.codetest.domain.community.model.entity.Reply;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,7 +33,7 @@ public record ReplyCreateRequest(
 			.discussion(discussion)
 			.user(user)
 			.parent(parent)
-			.content(request.content())
+			.content(request.content)
 			.build();
 	}
 }

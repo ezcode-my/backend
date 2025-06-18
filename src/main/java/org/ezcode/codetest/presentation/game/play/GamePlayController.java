@@ -2,13 +2,16 @@ package org.ezcode.codetest.presentation.game.play;
 
 import java.util.List;
 
-import org.ezcode.codetest.application.game.dto.request.ItemEquipRequest;
-import org.ezcode.codetest.application.game.dto.request.ItemGamblingRequest;
-import org.ezcode.codetest.application.game.dto.request.SkillEquipRequest;
-import org.ezcode.codetest.application.game.dto.response.CharacterStatusResponse;
-import org.ezcode.codetest.application.game.dto.response.ItemGamblingResponse;
-import org.ezcode.codetest.application.game.dto.response.ItemResponse;
-import org.ezcode.codetest.application.game.dto.response.SkillGamblingResponse;
+import org.ezcode.codetest.application.game.dto.request.item.ItemEquipRequest;
+import org.ezcode.codetest.application.game.dto.request.item.ItemGamblingRequest;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
+import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
+import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.MatchingResponse;
+import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
+import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
+import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
 import org.ezcode.codetest.application.game.play.GamePlayUseCase;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,10 +91,44 @@ public class GamePlayController {
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Validated SkillEquipRequest request
 	) {
-		gamePlayUseCase.equipSkill(authUser.getId(), request.name());
+		gamePlayUseCase.equipSkill(authUser.getId(), request);
 
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
+	@PatchMapping("/skills/unequip")
+	public ResponseEntity<Void> unEquipSkill(
+		@AuthenticationPrincipal AuthUser authUser,
+		@RequestBody @Validated SkillUnEquipRequest request
+	) {
+		gamePlayUseCase.unEquipSkill(authUser.getId(), request);
+
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@PostMapping("/battles/{enemyId}")
+	public ResponseEntity<BattleHistoryResponse> battle(
+		@AuthenticationPrincipal AuthUser authUser,
+		@PathVariable Long enemyId
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(gamePlayUseCase.battle(authUser.getId(), enemyId));
+	}
+
+	@PostMapping("/battles")
+	public ResponseEntity<BattleHistoryResponse> randomBattle(
+		@AuthenticationPrincipal AuthUser authUser
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(gamePlayUseCase.randomBattle(authUser.getId()));
+	}
+
+	@GetMapping("/battles/matching")
+	public ResponseEntity<MatchingResponse> randomMatching(
+		@AuthenticationPrincipal AuthUser authUser
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(gamePlayUseCase.randomMatching(authUser.getId()));
+	}
 
 }

@@ -1,6 +1,6 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.community.discussion;
 
-import org.ezcode.codetest.domain.community.model.Discussion;
+import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

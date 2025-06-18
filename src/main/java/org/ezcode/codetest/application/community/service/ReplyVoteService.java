@@ -2,15 +2,12 @@ package org.ezcode.codetest.application.community.service;
 
 import java.util.Optional;
 
+import org.ezcode.codetest.application.community.dto.request.VoteRequest;
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.event.converter.NotificationConverter;
-import org.ezcode.codetest.application.notification.dto.event.ReplyVoteEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
-import org.ezcode.codetest.domain.community.model.Discussion;
-import org.ezcode.codetest.domain.community.model.Reply;
-import org.ezcode.codetest.domain.community.model.ReplyVote;
-import org.ezcode.codetest.domain.community.service.DiscussionDomainService;
+import org.ezcode.codetest.domain.community.model.entity.Reply;
+import org.ezcode.codetest.domain.community.model.entity.ReplyVote;
 import org.ezcode.codetest.domain.community.service.ReplyDomainService;
 import org.ezcode.codetest.domain.community.service.ReplyVoteDomainService;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -21,69 +18,36 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomainService> {
 
-	private final UserDomainService userDomainService;
 	private final ReplyDomainService replyDomainService;
-	private final DiscussionDomainService discussionDomainService;
 
 	private final NotificationEventService notificationEventService;
-	private final NotificationConverter notificationConverter;
 
 	public ReplyVoteService(
 		ReplyVoteDomainService domainService,
 		UserDomainService userDomainService,
 		ReplyDomainService replyDomainService,
-		DiscussionDomainService discussionDomainService,
-		NotificationEventService notificationEventService,
-		NotificationConverter notificationConverter
+		NotificationEventService notificationEventService
 	) {
-		super(domainService);
-		this.userDomainService = userDomainService;
+		super(domainService, userDomainService);
 		this.replyDomainService = replyDomainService;
-		this.discussionDomainService = discussionDomainService;
 		this.notificationEventService = notificationEventService;
-		this.notificationConverter = notificationConverter;
 	}
 
 	@Transactional
-	public VoteResponse validateAndToggleVote(Long problemId, Long discussionId, Long replyId, Long userId) {
+	public VoteResponse manageVoteOnReply(Long problemId, Long discussionId, Long replyId, VoteRequest request, Long userId) {
 
-		User voter = userDomainService.getUserById(userId);
+		Reply reply = voteDomainService.getValidatedReply(problemId, discussionId, replyId);
 
-		// validate
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
-		Reply reply = replyDomainService.getReplyById(replyId);
-		replyDomainService.validateDiscussionMatches(reply, discussion);
-
-		Optional<ReplyVote> replyVote = toggleVote(voter, replyId);
-		return new VoteResponse(replyVote.isPresent());
-	}
-
-	@Override
-	protected ReplyVote buildVoteEntity(User voter, Long targetId) {
-		Reply reply = replyDomainService.getReplyById(targetId);
-
-		return ReplyVote.builder()
-			.voter(voter)
-			.reply(reply)
-			.build();
+		return super.manageVote(userId, reply.getId(), request.voteType());
 	}
 
 	@Override
 	protected void afterVote(User voter, Long targetId) {
 
 		Reply reply = replyDomainService.getReplyById(targetId);
-		if (voter.shouldSkipNotification(reply.getUser())) {
-			return;
-		}
 
-		NotificationCreateEvent event = notificationConverter.convert(
-			new ReplyVoteEvent(
-				reply.getUser().getEmail(),
-				reply.getId(),
-				voter.getNickname()
-			)
-		);
-		notificationEventService.saveAndNotify(event);
+		Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createReplyVoteNotification(voter, reply);
+
+		notificationEvent.ifPresent(notificationEventService::saveAndNotify);
 	}
 }
