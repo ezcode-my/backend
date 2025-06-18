@@ -33,22 +33,22 @@ public class EncounterChoice extends BaseEntity {
 	@Column(nullable = false, unique = true)
 	private String name;
 
-	@Column(nullable = false)
-	private String resultText;
-
 	@Enumerated(EnumType.STRING)
 	private RandomEncounterEffect encounterEffect;
+
+	@Column(nullable = false)
+	private boolean playerDecision;
 
 	@Builder
 	public EncounterChoice(
 		RandomEncounter encounter,
 		String name,
-		String resultText,
-		RandomEncounterEffect encounterEffect
+		RandomEncounterEffect encounterEffect,
+		boolean playerDecision
 	) {
 		this.encounter = encounter;
 		this.name = name;
-		this.resultText = resultText;
 		this.encounterEffect = encounterEffect;
+		this.playerDecision = playerDecision;
 	}
 }

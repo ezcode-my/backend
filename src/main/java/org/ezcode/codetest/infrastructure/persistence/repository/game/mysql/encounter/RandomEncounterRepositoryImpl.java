@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
 import org.ezcode.codetest.domain.game.repository.RandomEncounterRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,13 @@ public class RandomEncounterRepositoryImpl implements RandomEncounterRepository 
 	}
 
 	@Override
+	@Cacheable(value = "encounters", key = "'all'")
+	public List<RandomEncounter> findAllEncounters() {
+
+		return randomEncounterRepository.findAllByActivated(true);
+	}
+
+	@Override
 	public boolean existsByName(String name) {
 
 		return randomEncounterRepository.existsByNameAndActivated(name, true);
@@ -34,18 +43,21 @@ public class RandomEncounterRepositoryImpl implements RandomEncounterRepository 
 	}
 
 	@Override
+	@CacheEvict(value = "encounters", allEntries = true)
 	public RandomEncounter save(RandomEncounter encounter) {
 
 		return randomEncounterRepository.save(encounter);
 	}
 
 	@Override
+	@CacheEvict(value = "encounters", allEntries = true)
 	public void delete(RandomEncounter encounter) {
 
 		randomEncounterRepository.delete(encounter);
 	}
 
 	@Override
+	@CacheEvict(value = "encounters", allEntries = true)
 	public void deleteByName(String name) {
 
 		randomEncounterRepository.deleteByName(name);

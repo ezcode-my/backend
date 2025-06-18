@@ -16,7 +16,6 @@ public record BattleHistoryResponse(
 	boolean isPlayerWin
 
 ) {
-
 	public static BattleHistoryResponse of(
 		String playerNickName,
 		String enemyNickName,

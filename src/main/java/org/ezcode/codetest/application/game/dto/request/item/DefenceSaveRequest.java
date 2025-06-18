@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.game.dto.request.item;
 
+import org.ezcode.codetest.common.validation.EnumValidator;
 import org.ezcode.codetest.domain.game.model.item.Defence;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.model.item.DefenceType;
@@ -10,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 @JsonTypeName("defence")
@@ -18,11 +18,7 @@ import lombok.Getter;
 public class DefenceSaveRequest extends ItemSaveRequest {
 
 	@NotBlank
-	@Pattern(
-		regexp = "ARMOR|SHIELD",
-		flags = Pattern.Flag.CASE_INSENSITIVE,
-		message = "방어구 타입은 ARMOR 또는 SHIELD 여야 합니다."
-	)
+	@EnumValidator(enumClass = DefenceType.class)
 	private final String defenceType;
 
 	@NotNull

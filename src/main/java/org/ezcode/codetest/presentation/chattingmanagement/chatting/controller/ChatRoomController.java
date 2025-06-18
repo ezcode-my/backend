@@ -8,7 +8,6 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,7 +37,7 @@ public class ChatRoomController {
 	@PostMapping
 	public ResponseEntity<Void> createChatRoom(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody @Validated ChatRoomSaveRequest request
+		@RequestBody @Valid ChatRoomSaveRequest request
 	) {
 		chatUseCase.createChatRoom(request, authUser.getEmail());
 
@@ -55,7 +55,7 @@ public class ChatRoomController {
 	@DeleteMapping
 	public ResponseEntity<Void> removeChatRoom(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody @Validated ChatRoomDeleteRequest request
+		@RequestBody @Valid ChatRoomDeleteRequest request
 	) {
 		chatUseCase.removeChatRoom(request, authUser.getEmail());
 
