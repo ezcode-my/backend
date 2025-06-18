@@ -132,7 +132,7 @@
         const reviewBox = document.getElementById('reviewResult');
         reviewBox.textContent = '';
 
-        const isCorrect = false; // 필요 시 동적으로 설정하세요
+        const isCorrect = true; // 필요 시 동적으로 설정하세요
 
         fetch(`/api/problems/${problemId}/review`, {
             method: 'POST',
