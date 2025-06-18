@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.user.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Response;
@@ -59,7 +60,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 		if (findUser == null) {
 			String nickname = userDomainService.generateUniqueNickname();
-			User newUser = User.socialUser(oAuth2Response.getEmail(), username, nickname);
+			//아예 처음 가입을 소셜로하는 회원이면, 비번을 UUID로 설정
+			User newUser = User.socialUser(oAuth2Response.getEmail(), username, nickname, UUID.randomUUID().toString());
 			log.info("newUser: {} 새로운 유저", newUser);
 			try {
 				userRepository.createUser(newUser);
@@ -73,7 +75,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			}
 
 		} else {
-			if (!userDomainService.getUser(findUser.getEmail()).getUserAuthTypes().contains(AuthType.GOOGLE)) {
+			if (!userDomainService.getUserAuthTypes(findUser).contains(AuthType.GOOGLE)) {
 				UserAuthType userAuthType = new UserAuthType(findUser, AuthType.GOOGLE);
 				userAuthTypeRepository.createUserAuthType(userAuthType);
 			} else {

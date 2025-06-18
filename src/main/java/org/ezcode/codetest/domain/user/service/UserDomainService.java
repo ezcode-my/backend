@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.user.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
@@ -77,6 +78,11 @@ public class UserDomainService {
 	// public User getOAuthUser(String email, String provider) {
 	// 	return userRepository.findByEmailAndProvider(email, provider);
 	// }
+
+	//유저의 AuthType을 리스트형태로 반환
+	public List<AuthType> getUserAuthTypes(User user) {
+		return userAuthTypeRepository.getUserAuthType(user);
+	}
 
 	public void passwordComparison(String newPassword, String oldPassword) {
 		if (passwordEncoder.matches(newPassword, oldPassword)) {

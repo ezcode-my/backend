@@ -78,10 +78,8 @@ public class UserService {
 	public ChangeUserPasswordResponse modifyUserPassword(AuthUser authUser, ChangeUserPasswordRequest changeUserPasswordRequest) {
 		User user = userDomainService.getUserById(authUser.getId());
 
-		log.info("유저 로그인타입 {}",user.getUserAuthTypes().contains(AuthType.EMAIL));
-
 		//소셜로그인 회원은 변경 불가
-		if (!user.getUserAuthTypes().contains(AuthType.EMAIL)) {
+		if (!userDomainService.getUserAuthTypes(user).contains(AuthType.EMAIL)) {
 			throw new AuthException(AuthExceptionCode.NOT_EMAIL_USER);
 		}
 

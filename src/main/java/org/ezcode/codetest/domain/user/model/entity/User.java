@@ -94,14 +94,14 @@ public class User extends BaseEntity {
 	OAuth2로 로그인한 유저 저장
 	구글 & 깃허브 모두 하나의 소셜 유저로 입력 받기 -> AuthType 테이블에서만 구분됨 (GOOGLE, GITHUB)
 	 */
-	public static User socialUser(String email, String username, String nickname){
+	public static User socialUser(String email, String username, String nickname, String password){
 		return User.builder()
 			.email(email)
 			.username(username)
 			.role(UserRole.USER)
 			.tier(Tier.NEWBIE)
 			.nickname(nickname) //닉네임 자동 생성
-			.password(UUID.randomUUID().toString())
+			.password(password)
 			.isDeleted(false)
 			.build();
 	}

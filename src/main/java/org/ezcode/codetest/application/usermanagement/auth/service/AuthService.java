@@ -78,7 +78,11 @@ public class AuthService {
 			//유저 테이블에는 존재하다면 AuthType만 추가
 			UserAuthType userAuthType = new UserAuthType(existUser, AuthType.EMAIL);
 			userDomainService.createUserAuthType(userAuthType);
+
+			//로컬 가입(이메일)은 안되어있는데 소셜은 되어있는 경우이므로, UUID 비번을 사용자가 지정한 비번으로 변경한다. -> 이후 비번 변경하면 User테이블에서 변경하면됨.
+			existUser.modifyPassword(encodedPassword);
 			log.info("유저 타입 저장 완료 {}", userAuthType);
+
 			bearToken = jwtUtil.createToken(
 				existUser.getId(),
 				existUser.getEmail(),
