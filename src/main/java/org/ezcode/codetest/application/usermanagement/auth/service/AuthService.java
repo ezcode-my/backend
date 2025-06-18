@@ -142,6 +142,7 @@ public class AuthService {
 		return SigninResponse.from(bearToken, refreshToken);
 	}
 
+
 	public LogoutResponse logout(Long userId, String token) {
 
 		Long expiration = jwtUtil.getRemainingTime(token);
