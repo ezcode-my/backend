@@ -1,9 +1,15 @@
 package org.ezcode.codetest.domain.user.service;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Response;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
+import org.ezcode.codetest.domain.user.model.enums.AuthType;
+import org.ezcode.codetest.domain.user.repository.UserAuthTypeRepository;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -21,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
+	private final UserAuthTypeRepository userAuthTypeRepository;
 	private final UserDomainService userDomainService;
 
 	@Override
@@ -53,10 +60,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 		if (findUser == null) {
 			String nickname = userDomainService.generateUniqueNickname();
-			User newUser = User.googleUser(oAuth2Response.getEmail(), username, nickname);
+			//아예 처음 가입을 소셜로하는 회원이면, 비번을 UUID로 설정
+			User newUser = User.socialUser(oAuth2Response.getEmail(), username, nickname, UUID.randomUUID().toString());
 			log.info("newUser: {} 새로운 유저", newUser);
 			try {
 				userRepository.createUser(newUser);
+				UserAuthType userAuthType = new UserAuthType(newUser, AuthType.GOOGLE);
+				userAuthTypeRepository.createUserAuthType(userAuthType);
 			} catch (IllegalStateException e) {
 				throw new OAuth2AuthenticationException("닉네임 생성 실패입니다");
 			} catch (Exception e) {
@@ -65,7 +75,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			}
 
 		} else {
-			log.info("이미 가입된 유저");
+			if (!userDomainService.getUserAuthTypes(findUser).contains(AuthType.GOOGLE)) {
+				UserAuthType userAuthType = new UserAuthType(findUser, AuthType.GOOGLE);
+				userAuthTypeRepository.createUserAuthType(userAuthType);
+			} else {
+				log.info("이메일, 소셜 모두 가입 유저");
+			}
 		}
 
 		return new CustomOAuth2User(oAuth2Response);

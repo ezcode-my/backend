@@ -1,10 +1,12 @@
 package org.ezcode.codetest.common.security.config;
 
+import org.ezcode.codetest.common.security.util.SecurityPath;
 import org.ezcode.codetest.domain.user.service.CustomOAuth2UserService;
 import org.ezcode.codetest.common.security.hander.CustomSuccessHandler;
 import org.ezcode.codetest.common.security.util.ExceptionHandlingFilter;
 import org.ezcode.codetest.common.security.util.JwtFilter;
 import org.ezcode.codetest.common.security.util.JwtUtil;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -44,13 +46,11 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.logout(AbstractHttpConfigurer::disable)
-			.oauth2Login(outh2 -> outh2
-				.userInfoEndpoint(userInfoEndpointConfig ->
-					userInfoEndpointConfig.userService(customOAuth2UserService))
-				.successHandler(customSuccessHandler)
-				.loginPage("/login")
-			)
-			// JWT 사용을 위해 세션을 STATELESS로 설정
+			.oauth2Login((outh2)-> outh2
+				.userInfoEndpoint((userInfoEndpointConfig ->
+					userInfoEndpointConfig.userService(customOAuth2UserService)))
+				.successHandler(customSuccessHandler))
+			// JWT 사용을 위해 세션을 STATELESS로 설정 (세션 정보 저장 x)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
@@ -63,32 +63,13 @@ public class SecurityConfig {
 				authorizeRequests
 					.requestMatchers(new DispatcherTypeRequestMatcher(DispatcherType.ASYNC)).permitAll()
 					.requestMatchers(
-						"/api/auth/**",
-						"/login",
-						"/ezlogin",
-						"/login/**",
-						"/oauth2/**",
-						"/login/oauth",
-						"/login/oauth2/**",
-						"/actuator/**",
-						"/chatting",
-						"/submit-test",
-						"/problems/**",
-						"/ws/**",
-						"/swagger-ui/**",
-						"/swagger-resources/**",
-						"/v2/**",
-						"/v3/**",
-						"/webjars/**",
-						"/searching",
-						"/css/**",
-						"/images/**"
-					).permitAll()
-					.requestMatchers("/admin/**").hasRole("ADMIN")
-					.anyRequest().authenticated()
+						SecurityPath.PUBLIC_PATH).permitAll()
+					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
+					.anyRequest().authenticated() //나머지는 일반 인증
 			)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(exceptionFilter, JwtFilter.class)
+
 			.build();
 	}
 

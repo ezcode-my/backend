@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.user.model.entity;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
@@ -8,6 +9,7 @@ import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +17,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,7 +36,7 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	private String username;
 
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private String email;
 
 	@Column(nullable = false)
@@ -47,10 +50,6 @@ public class User extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private UserRole role;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "auth_type", nullable = false)
-	private AuthType authType;
 
 	@Column(name = "github_url")
 	private String githubUrl;
@@ -68,6 +67,10 @@ public class User extends BaseEntity {
 
 	private boolean isDeleted;
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<UserAuthType> userAuthTypes = new ArrayList<>();
+
+
 
 	/*
 	처음 유저 생성(가입) 시에는 기본 정보만 받음
@@ -81,7 +84,6 @@ public class User extends BaseEntity {
 			.username(username)
 			.nickname(nickname)
 			.age(age)
-			.authType(AuthType.EMAIL)
 			.tier(Tier.NEWBIE)
 			.role(UserRole.ADMIN) // 테스트용
 			.isDeleted(false)
@@ -90,42 +92,29 @@ public class User extends BaseEntity {
 
 	/*
 	OAuth2로 로그인한 유저 저장
+	구글 & 깃허브 모두 하나의 소셜 유저로 입력 받기 -> AuthType 테이블에서만 구분됨 (GOOGLE, GITHUB)
 	 */
-	public static User googleUser(String email, String username, String nickname){
+	public static User socialUser(String email, String username, String nickname, String password){
 		return User.builder()
 			.email(email)
 			.username(username)
-			.authType(AuthType.GOOGLE)
-			.nickname(nickname)//닉네임은 자동으로 생성해주고, 나중에 수정할 수 있도록 함
-			.tier(Tier.NEWBIE)
 			.role(UserRole.USER)
+			.tier(Tier.NEWBIE)
+			.nickname(nickname) //닉네임 자동 생성
+			.password(password)
 			.isDeleted(false)
-			.password(UUID.randomUUID().toString())
 			.build();
 	}
 
-	public static User githubUser(String email, String username,String nickname){
-		return User.builder()
-			.email(email)
-			.username(username)
-			.authType(AuthType.GITHUB)
-			.nickname(nickname)//닉네임은 자동으로 생성해주고, 나중에 수정할 수 있도록 함
-			.tier(Tier.NEWBIE)
-			.role(UserRole.USER)
-			.password(UUID.randomUUID().toString())
-			.isDeleted(false)
-			.build();
-	}
 
 	@Builder
 	public User(String email, String password, String username, String nickname,
-		Integer age, AuthType authType, Tier tier, UserRole role, boolean isDeleted) {
+		Integer age, Tier tier, UserRole role, boolean isDeleted) {
 		this.email = email;
 		this.password = password;
 		this.username = username;
 		this.nickname = nickname;
 		this.age = age;
-		this.authType = authType;
 		this.tier = tier;
 		this.role = role;
 		this.isDeleted = isDeleted;
