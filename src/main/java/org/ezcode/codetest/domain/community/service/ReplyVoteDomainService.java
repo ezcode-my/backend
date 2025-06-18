@@ -5,9 +5,10 @@ import java.util.Optional;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.event.payload.ReplyVotePayload;
-import org.ezcode.codetest.domain.community.model.Discussion;
-import org.ezcode.codetest.domain.community.model.Reply;
-import org.ezcode.codetest.domain.community.model.ReplyVote;
+import org.ezcode.codetest.domain.community.model.entity.Discussion;
+import org.ezcode.codetest.domain.community.model.entity.Reply;
+import org.ezcode.codetest.domain.community.model.entity.ReplyVote;
+import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.community.repository.ReplyVoteRepository;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.springframework.stereotype.Service;
@@ -30,23 +31,22 @@ public class ReplyVoteDomainService extends BaseVoteDomainService<ReplyVote, Rep
 	}
 
 	@Override
-	protected ReplyVote buildVote(User voter, Long targetId) {
+	protected ReplyVote buildVote(User voter, Long targetId, VoteType voteType) {
 
 		Reply reply = replyDomainService.getReplyById(targetId);
 
 		return ReplyVote.builder()
 			.voter(voter)
 			.reply(reply)
+			.voteType(voteType)
 			.build();
 	}
 
 	public Reply getValidatedReply(Long problemId, Long discussionId, Long replyId) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(discussionId);
-		discussionDomainService.validateProblemMatches(discussion, problemId);
+		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Reply reply = replyDomainService.getReplyById(replyId);
-		replyDomainService.validateDiscussionMatches(reply, discussion);
+		Reply reply = replyDomainService.getReplyForDiscussion(replyId, discussion);
 
 		return reply;
 	}
@@ -58,7 +58,7 @@ public class ReplyVoteDomainService extends BaseVoteDomainService<ReplyVote, Rep
 		}
 
 		ReplyVotePayload payload = new ReplyVotePayload(
-			reply.getDiscussion().getProblemId(),
+			reply.getProblemId(),
 			reply.getId(),
 			voter.getNickname()
 		);

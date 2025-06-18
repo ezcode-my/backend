@@ -5,8 +5,8 @@ import org.ezcode.codetest.application.notification.event.NotificationCreateEven
 import org.ezcode.codetest.application.notification.event.payload.ReplyCreatePayload;
 import org.ezcode.codetest.domain.community.exception.CommunityException;
 import org.ezcode.codetest.domain.community.exception.CommunityExceptionCode;
-import org.ezcode.codetest.domain.community.model.Discussion;
-import org.ezcode.codetest.domain.community.model.Reply;
+import org.ezcode.codetest.domain.community.model.entity.Discussion;
+import org.ezcode.codetest.domain.community.model.entity.Reply;
 import org.ezcode.codetest.domain.community.repository.ReplyRepository;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.springframework.data.domain.Page;
@@ -44,6 +44,14 @@ public class ReplyDomainService {
 
 		return replyRepository.findReplyById(replyId)
 			.orElseThrow(() -> new CommunityException(CommunityExceptionCode.REPLY_NOT_FOUND));
+	}
+
+	public Reply getReplyForDiscussion(Long replyId, Discussion discussion) {
+
+		Reply reply = getReplyById(replyId);
+		validateDiscussionMatches(reply, discussion);
+
+		return reply;
 	}
 
 	public Page<Reply> getRepliesByDiscussionId(Discussion discussion, Pageable pageable) {

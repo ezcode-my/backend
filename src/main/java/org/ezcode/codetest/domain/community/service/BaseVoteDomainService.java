@@ -2,7 +2,9 @@ package org.ezcode.codetest.domain.community.service;
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.community.model.BaseVote;
+import org.ezcode.codetest.domain.community.model.VoteResult;
+import org.ezcode.codetest.domain.community.model.entity.BaseVote;
+import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.community.repository.BaseVoteRepository;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
@@ -13,32 +15,43 @@ public abstract class BaseVoteDomainService<T extends BaseVote, R extends BaseVo
 
 	protected final R voteRepository;
 
-	/**
-	 * 추천 도메인 서비스 공통 로직
-	 * - 추천 또는 추천 취소 동작 수행
-	 *
-	 * @param voter 추천한 유저
-	 * @param targetId 추천 대상 entity id (자유글, 댓글 등)
-	 * @return 추천을 하면 true 반환, 취소하면 false 반환
-	 */
-	public boolean toggleVote(User voter, Long targetId) {
+	public VoteResult manageVote(User voter, Long targetId, VoteType voteType) {
 
 		Optional<T> existing = voteRepository.findByVoterIdAndTargetId(voter.getId(), targetId);
+		VoteType prevVoteType = VoteType.NONE;
 
-		if (existing.isPresent()) {
-			voteRepository.delete(existing.get());
-			return false;
+		if (voteType == VoteType.NONE) {
+			existing.ifPresent(voteRepository::delete);
+		} else {
+			if (existing.isPresent()) {
+				T vote = existing.get();
+
+				prevVoteType = vote.getVoteType();
+				voteRepository.update(vote, voteType);
+			} else {
+				T vote = buildVote(voter, targetId, voteType);
+
+				voteRepository.save(vote);
+			}
 		}
 
-		T vote = buildVote(voter, targetId);
-		voteRepository.save(vote);
-		return true;
+		Long upvoteCount = voteRepository.countUpvotesByTargetId(targetId);
+		Long downvoteCount = voteRepository.countDownvotesByTargetId(targetId);
+
+		return new VoteResult(voteType, prevVoteType, upvoteCount, downvoteCount);
 	}
 
-	public boolean getVoteStatus(Long voterId, Long targetId) {
+	public VoteResult getVoteStatus(Long voterId, Long targetId) {
 
-		return voteRepository.existsByVoterIdAndTargetId(voterId, targetId);
+		Optional<T> existing = voteRepository.findByVoterIdAndTargetId(voterId, targetId);
+
+		VoteType voteType = existing.isPresent() ? existing.get().getVoteType() : VoteType.NONE;
+
+		Long upvoteCount = voteRepository.countUpvotesByTargetId(targetId);
+		Long downvoteCount = voteRepository.countDownvotesByTargetId(targetId);
+
+		return new VoteResult(voteType, VoteType.NONE, upvoteCount, downvoteCount);
 	}
 
-	protected abstract T buildVote(User voter, Long targetId);
+	protected abstract T buildVote(User voter, Long targetId, VoteType voteType);
 }

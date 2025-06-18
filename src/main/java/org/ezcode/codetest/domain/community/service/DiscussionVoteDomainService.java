@@ -5,8 +5,9 @@ import java.util.Optional;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.event.payload.DiscussionVotePayload;
-import org.ezcode.codetest.domain.community.model.Discussion;
-import org.ezcode.codetest.domain.community.model.DiscussionVote;
+import org.ezcode.codetest.domain.community.model.entity.Discussion;
+import org.ezcode.codetest.domain.community.model.entity.DiscussionVote;
+import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.community.repository.DiscussionVoteRepository;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,14 @@ public class DiscussionVoteDomainService extends BaseVoteDomainService<Discussio
 	}
 
 	@Override
-	protected DiscussionVote buildVote(User voter, Long targetId) {
+	protected DiscussionVote buildVote(User voter, Long targetId, VoteType voteType) {
 
 		Discussion discussion = discussionDomainService.getDiscussionById(targetId);
 
 		return DiscussionVote.builder()
 			.voter(voter)
 			.discussion(discussion)
+			.voteType(voteType)
 			.build();
 	}
 

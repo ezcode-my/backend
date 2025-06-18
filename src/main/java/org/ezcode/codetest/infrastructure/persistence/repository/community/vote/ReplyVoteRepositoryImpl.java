@@ -2,7 +2,8 @@ package org.ezcode.codetest.infrastructure.persistence.repository.community.vote
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.community.model.ReplyVote;
+import org.ezcode.codetest.domain.community.model.entity.ReplyVote;
+import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.community.repository.ReplyVoteRepository;
 import org.springframework.stereotype.Repository;
 
@@ -33,8 +34,26 @@ public class ReplyVoteRepositoryImpl implements ReplyVoteRepository {
 	}
 
 	@Override
+	public void update(ReplyVote vote, VoteType voteType) {
+
+		vote.updateVoteType(voteType);
+	}
+
+	@Override
 	public void delete(ReplyVote voteEntity) {
 
 		repository.delete(voteEntity);
+	}
+
+	@Override
+	public Long countUpvotesByTargetId(Long targetId) {
+
+		return repository.countUpvoteByReplyId(targetId, VoteType.UP);
+	}
+
+	@Override
+	public Long countDownvotesByTargetId(Long targetId) {
+
+		return repository.countDownvoteByReplyId(targetId, VoteType.DOWN);
 	}
 }
