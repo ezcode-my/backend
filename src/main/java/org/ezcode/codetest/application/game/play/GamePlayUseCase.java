@@ -163,6 +163,7 @@ public class GamePlayUseCase {
 	public MatchingBattleResponse randomBattleMatching(Long playerId) {
 
 		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+
 		GameCharacter enemyCharacter = encounterDomainService.getRandomEnemyCharacter(playerId);
 
 		boolean checkStrength = encounterDomainService.compareStrength(playerCharacter, enemyCharacter);
@@ -187,7 +188,7 @@ public class GamePlayUseCase {
 
 		GameCharacter player = characterService.getGameCharacter(userId);
 
-		EncounterLog resultLog = encounterDomainService.EncounterHappen(player, encounterId,
+		EncounterLog resultLog = encounterDomainService.encounterHappen(player, encounterId,
 			request.playerDecision());
 
 		EncounterHistory history = encounterDomainService.createEncounterHistory(player, resultLog);

@@ -29,16 +29,18 @@ public class AmbushBanditsBad implements EncounterStrategy {
 		CharacterRealStat realStat = character.getRealStat();
 		double speed = playerContext.getSpeed();
 		double evasion = playerContext.getEvasion();
-		double successChance = (speed + evasion) / 100.0;
+		double successChance = Math.min((speed + evasion) / 100.0, 1.0);
 
 		log.add("바람에 실려온 먼지 냄새 속에서, %s의 귓가에 낮은 속삭임이 전해집니다.", playerContext.getName());
 		log.add("그 순간, 어둠 속에 숨어있던 도적들이 일제히 모습을 드러냅니다!");
 
 		log.add("%s(은)는 심호흡을 짧게 들이쉬며, 순간적으로 몸의 균형을 재조정합니다.", playerContext.getName());
+
 		boolean escaped = ThreadLocalRandom.current().nextDouble() < successChance;
+
 		if (escaped) {
 			realStat.applySpeedChange(0.5);
-			log.add("번득이는 반사신경으로 %,s(은)는 번개처럼 움직이며 도적들의 시선을 교묘히 피합니다.", playerContext.getName());
+			log.add("번득이는 반사신경으로 %s(은)는 번개처럼 움직이며 도적들의 시선을 교묘히 피합니다.", playerContext.getName());
 			log.add("바위 틈이나 나무 뒤로 몸을 숨기며, 숨결이 차오르는 가운데도 심장이 한 박자 느려진 듯 안정됩니다.");
 			log.add("%s(은)는 무사히 도망치면서 자신 안에 감춰진 민첩함을 느낍니다. (스피드 +0.5)", playerContext.getName());
 			log.setIsPositive(true);

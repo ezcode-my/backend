@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.game.strategy.encounter.encounterstrategyimpl
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
 import org.ezcode.codetest.domain.game.model.character.Inventory;
@@ -42,8 +43,9 @@ public class AncientRuinsTreasure implements EncounterStrategy {
 		log.add("방 중앙에 놓인 정교하게 조각된 고대의 보물 상자는 그 존재 자체로 위엄과 신비로움을 풍기고 있습니다.");
 
 		List<Item> weaponList = itemRepository.findAllByItemCategory(ItemCategory.WEAPON);
-		Random random = new Random();
-		int randomIndex = random.nextInt(weaponList.size());
+
+		int randomIndex = ThreadLocalRandom.current().nextInt(weaponList.size());
+
 		Item item = weaponList.get(randomIndex);
 
 		String grade = item.getGrade().getGrade();

@@ -22,9 +22,9 @@ public class EncounterHistoryRepositoryImpl implements EncounterHistoryRepositor
 	}
 
 	@Override
-	public List<EncounterHistory> findByPlayerId(Long characterId) {
+	public List<EncounterHistory> findByPlayerId(Long playerId) {
 
-		return encounterHistoryRepository.findByCharacterId(characterId);
+		return encounterHistoryRepository.findByCharacterId(playerId);
 	}
 
 	@Override

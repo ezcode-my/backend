@@ -52,7 +52,8 @@ public class CharacterStatusDomainService {
 
 	public void gameCharacterLevelUp(Long userId, boolean isProblemSolved, String problemCategory) {
 
-		if(!isProblemSolved) return;
+		if (!isProblemSolved)
+			return;
 
 		Map<Stat, Double> increaseStatRate = statUpdateUtil.getStatIncreasePerProblem(problemCategory);
 

@@ -9,7 +9,7 @@ public interface EncounterHistoryRepository {
 
 	Optional<EncounterHistory> findById(Long id);
 
-	List<EncounterHistory> findByPlayerId(Long characterId);
+	List<EncounterHistory> findByPlayerId(Long playerId);
 
 	EncounterHistory save(EncounterHistory battleHistory);
 

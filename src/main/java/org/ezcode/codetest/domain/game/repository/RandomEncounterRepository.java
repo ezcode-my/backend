@@ -21,6 +21,6 @@ public interface RandomEncounterRepository {
 
 	List<RandomEncounter> findAll();
 
-	Optional<RandomEncounter> findRandomEncounter();
+	List<RandomEncounter> findAllEncounters();
 
 }

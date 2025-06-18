@@ -1,7 +1,7 @@
 package org.ezcode.codetest.domain.game.service;
 
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
@@ -157,17 +157,18 @@ public class GameEncounterDomainService {
 
 	public RandomEncounter getRandomEncounter() {
 
-		return encounterRepository.findRandomEncounter()
-			.orElseThrow(() -> new GameException(GameExceptionCode.RANDOM_ENCOUNTER_MATCHING_FAIL));
+		List<RandomEncounter> encounters = encounterRepository.findAllEncounters();
+
+		int randomIndex = ThreadLocalRandom.current().nextInt(encounters.size());
+
+		return encounters.get(randomIndex);
 	}
 
-	public EncounterLog EncounterHappen(GameCharacter player, Long encounterId, boolean playerDecision) {
+	public EncounterLog encounterHappen(GameCharacter player, Long encounterId, boolean playerDecision) {
 
-		List<EncounterChoice> choices = choiceRepository.findByChoiceByPlayerDecision(encounterId, playerDecision);
+		List<EncounterChoice> choices = choiceRepository.findChoiceByPlayerDecision(encounterId, playerDecision);
 
-		Random random = new Random();
-
-		int randomIndex = random.nextInt(choices.size());
+		int randomIndex = ThreadLocalRandom.current().nextInt(choices.size());
 
 		EncounterChoice choice = choices.get(randomIndex);
 

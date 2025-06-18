@@ -93,7 +93,7 @@ public class GameCharacter extends BaseEntity {
 
 		if(gold < 50L) throw new GameException(GameExceptionCode.NOT_ENOUGH_GOLD);
 
-		gold -= 50L;;
+		gold -= 50L;
 	}
 
 	public void earnGold(Long gold) {

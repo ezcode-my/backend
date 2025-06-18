@@ -11,7 +11,7 @@ public interface EncounterChoiceRepository {
 
 	boolean existsByName(String name);
 
-	List<EncounterChoice> findByChoiceByPlayerDecision(Long encounterId, boolean playerDecision);
+	List<EncounterChoice> findChoiceByPlayerDecision(Long encounterId, boolean playerDecision);
 
 	Optional<EncounterChoice> findByName(String name);
 

@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
 import org.ezcode.codetest.domain.game.repository.RandomEncounterRepository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,11 +24,10 @@ public class RandomEncounterRepositoryImpl implements RandomEncounterRepository 
 	}
 
 	@Override
-	public Optional<RandomEncounter> findRandomEncounter() {
+	@Cacheable(value = "encounters", key = "'all'")
+	public List<RandomEncounter> findAllEncounters() {
 
-		RandomEncounter encounter = randomEncounterRepository.findRandomEncounter(PageRequest.of(0, 1)).get(0);
-
-		return Optional.of(encounter);
+		return randomEncounterRepository.findAllByActivated(true);
 	}
 
 	@Override
@@ -44,18 +43,21 @@ public class RandomEncounterRepositoryImpl implements RandomEncounterRepository 
 	}
 
 	@Override
+	@CacheEvict(value = "encounters", allEntries = true)
 	public RandomEncounter save(RandomEncounter encounter) {
 
 		return randomEncounterRepository.save(encounter);
 	}
 
 	@Override
+	@CacheEvict(value = "encounters", allEntries = true)
 	public void delete(RandomEncounter encounter) {
 
 		randomEncounterRepository.delete(encounter);
 	}
 
 	@Override
+	@CacheEvict(value = "encounters", allEntries = true)
 	public void deleteByName(String name) {
 
 		randomEncounterRepository.deleteByName(name);

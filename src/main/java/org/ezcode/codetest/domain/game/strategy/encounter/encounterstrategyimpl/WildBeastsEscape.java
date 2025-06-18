@@ -29,7 +29,7 @@ public class WildBeastsEscape implements EncounterStrategy {
 		CharacterRealStat real = character.getRealStat();
 		double speed    = context.getSpeed();
 		double evasion  = context.getEvasion();
-		double chance   = (speed + evasion) / 100.0;
+		double chance = Math.min((speed + evasion) / 100.0, 1.0);
 
 		log.add("울창한 숲 속, 짙은 안개 너머로 굶주린 맹수의 으르렁거림이 귓가를 울립니다.");
 		log.add(context.getName() + "(은)는 재빠르게 주위를 살피고, 낙엽을 밟지 않도록 조심스럽게 몸을 낮춥니다.");

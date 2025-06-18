@@ -28,7 +28,7 @@ public class AmbushBanditsGood implements EncounterStrategy {
 	) {
 		CharacterRealStat realStat = character.getRealStat();
 		double atk = playerContext.getAtk();
-		double successChance = atk / 100.0;
+		double successChance = Math.min(atk / 100.0, 1.0);
 
 		log.add("낮게 으스스하게 울려 퍼지는 발소리, %s(은)는 숨결을 고르며 칼자루를 움켜쥡니다.", playerContext.getName());
 		log.add("검은 망토를 두른 무리의 그림자가 성큼성큼 다가오며, 긴장감이 온몸을 지배합니다.");

@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.game.strategy.encounter.encounterstrategyimpl
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
 import org.ezcode.codetest.domain.game.model.character.Inventory;
@@ -40,9 +41,10 @@ public class TreasureCacheFound implements EncounterStrategy {
 		log.add(player + "(은)는 심호흡을 하고, 두근거리는 마음으로 상자의 뚜껑을 조심스레 엽니다...");
 
 		List<Item> defenceList = itemRepository.findAllByItemCategory(ItemCategory.DEFENCE);
-		Random random = new Random();
-		int index = random.nextInt(defenceList.size());
-		Item item = defenceList.get(index);
+
+		int randomIndex = ThreadLocalRandom.current().nextInt(defenceList.size());
+
+		Item item = defenceList.get(randomIndex);
 
 		String grade = item.getGrade().getGrade();
 		String name = item.getName();

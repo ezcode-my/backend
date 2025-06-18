@@ -16,10 +16,5 @@ public interface RandomEncounterJpaRepository extends JpaRepository<RandomEncoun
 
 	void deleteByName(String name);
 
-	@Query("""
-		  SELECT r
-		  FROM RandomEncounter r
-		  ORDER BY function('RAND')
-		""")
-	List<RandomEncounter> findRandomEncounter(Pageable pageable);
+	List<RandomEncounter> findAllByActivated(boolean activated);
 }

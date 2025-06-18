@@ -92,6 +92,8 @@ public class AuthService {
 				existUser.getTier());
 		}
 
+
+
 		return SignupResponse.from(bearToken);
 	}
 

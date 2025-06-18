@@ -28,7 +28,7 @@ public class WildBeastsAttack implements EncounterStrategy {
 	) {
 		CharacterRealStat real = character.getRealStat();
 		double atk   = context.getAtk();
-		double chance = atk / 100.0;
+		double chance = Math.min(atk / 100.0, 1.0);
 
 		log.add("어둠을 가르며 거대한 포효가 울려퍼집니다. 무성한 수풀을 헤치고 날카로운 송곳니를 드러낸 맹수가 모습을 드러냅니다!");
 		log.add(context.getName() + "(은)는 한 치의 망설임도 없이 무기를 쥐고, 맹수와 한 판 승부에 돌입합니다!");
