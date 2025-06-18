@@ -5,12 +5,13 @@ import java.util.Random;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
-import org.ezcode.codetest.domain.game.model.entity.GameCharacter;
-import org.ezcode.codetest.domain.game.model.entity.GameCharacterSkill;
-import org.ezcode.codetest.domain.game.model.entity.Inventory;
-import org.ezcode.codetest.domain.game.model.entity.Item;
-import org.ezcode.codetest.domain.game.model.entity.Skill;
-import org.ezcode.codetest.domain.game.model.enums.ItemCategory;
+import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
+import org.ezcode.codetest.domain.game.model.character.Inventory;
+import org.ezcode.codetest.domain.game.model.item.Item;
+import org.ezcode.codetest.domain.game.model.skill.Skill;
+import org.ezcode.codetest.domain.game.model.item.ItemCategory;
+import org.ezcode.codetest.domain.game.model.skill.SkillSlotType;
 import org.ezcode.codetest.domain.game.repository.GameCharacterSkillRepository;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
@@ -132,6 +133,7 @@ public class GameShopDomainService {
 				.builder()
 				.skill(skill)
 				.character(character)
+				.slotType(SkillSlotType.BACKPACK)
 				.build()
 		);
 

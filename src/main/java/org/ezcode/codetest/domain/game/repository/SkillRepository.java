@@ -3,7 +3,7 @@ package org.ezcode.codetest.domain.game.repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.game.model.entity.Skill;
+import org.ezcode.codetest.domain.game.model.skill.Skill;
 
 public interface SkillRepository {
 
@@ -18,6 +18,8 @@ public interface SkillRepository {
 	void delete(Skill skill);
 
 	void deleteByName(String name);
+
+	long count();
 
 	List<Skill> findAll();
 }

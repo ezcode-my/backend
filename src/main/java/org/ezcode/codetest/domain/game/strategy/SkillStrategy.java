@@ -1,11 +1,13 @@
 package org.ezcode.codetest.domain.game.strategy;
 
-import org.ezcode.codetest.domain.game.model.enums.SkillEffect;
-import org.ezcode.codetest.domain.game.model.vo.CharacterContext;
+import org.ezcode.codetest.domain.game.model.item.WeaponType;
+import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
+import org.ezcode.codetest.domain.game.model.encounter.BattleLog;
+import org.ezcode.codetest.domain.game.model.encounter.CharacterContext;
 
 public interface SkillStrategy {
 
 	SkillEffect getType();
 
-	void useSkill(CharacterContext player, CharacterContext enemy);
+	boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log, WeaponType attackerWeapon);
 }
