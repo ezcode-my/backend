@@ -1,15 +1,24 @@
 package org.ezcode.codetest.domain.user.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.Adjective;
+import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.model.enums.Noun;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.repository.UserAuthTypeRepository;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.ezcode.codetest.common.security.util.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,17 +28,28 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class UserDomainService {
 	private final UserRepository userRepository;
+	private final UserAuthTypeRepository userAuthTypeRepository;
 	private final PasswordEncoder passwordEncoder;
 	private static final java.util.Random RANDOM = new java.util.Random();
 
 	public void checkEmailUnique(String email) {
-		if (userRepository.findByEmail(email).isPresent()) {
+		log.info("Checking email unique: {}", email);
+		Optional<User> findUser = userRepository.findByEmail(email);
+		log.info("Found user: {}", findUser);
+		//이미 EMAIL로 가입한 유저면 에러
+		if (findUser.isPresent()
+			&& userAuthTypeRepository.getUserAuthType(findUser.get()).contains(AuthType.EMAIL)) {
+			log.info("Email and AuthType already in use: {}", email);
 			throw new AuthException(AuthExceptionCode.ALREADY_EXIST_USER);
 		}
 	}
 
 	public void createUser(User user) {
 		userRepository.createUser(user);
+	}
+
+	public void createUserAuthType(UserAuthType userAuthType) {
+		userAuthTypeRepository.createUserAuthType(userAuthType);
 	}
 
 	public User getUser(String email) {
@@ -55,8 +75,13 @@ public class UserDomainService {
 		return passwordEncoder.encode(password);
 	}
 
-	public User getOAuthUser(String email, String provider) {
-		return userRepository.findByEmailAndProvider(email, provider);
+	// public User getOAuthUser(String email, String provider) {
+	// 	return userRepository.findByEmailAndProvider(email, provider);
+	// }
+
+	//유저의 AuthType을 리스트형태로 반환
+	public List<AuthType> getUserAuthTypes(User user) {
+		return userAuthTypeRepository.getUserAuthType(user);
 	}
 
 	public void passwordComparison(String newPassword, String oldPassword) {
@@ -86,5 +111,9 @@ public class UserDomainService {
 		Noun noun = Noun.values()[RANDOM.nextInt(Noun.values().length)];
 		int number = RANDOM.nextInt(1000);
 		return adjective.name() + noun.name() + number;
+	}
+
+	public User getUserByEmail(String email) {
+		return userRepository.getUserByEmail(email);
 	}
 }

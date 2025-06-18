@@ -79,7 +79,7 @@ public class UserService {
 		User user = userDomainService.getUserById(authUser.getId());
 
 		//소셜로그인 회원은 변경 불가
-		if (!user.getAuthType().equals(AuthType.EMAIL)) {
+		if (!userDomainService.getUserAuthTypes(user).contains(AuthType.EMAIL)) {
 			throw new AuthException(AuthExceptionCode.NOT_EMAIL_USER);
 		}
 
@@ -103,7 +103,6 @@ public class UserService {
 		userDomainService.isDeletedUser(user);
 
 		user.setDeleted();
-
 
 		redisTemplate.delete("RefreshToken:"+authUser.getId());
 
