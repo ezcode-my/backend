@@ -34,16 +34,6 @@ public class GlobalExceptionHandler {
 			.body(CommonResponse.of(false, errorMessage, 400, null));
 	}
 
-	@ExceptionHandler(BaseException.class)
-	public ResponseEntity<CommonResponse<Void>> handleBaseException(
-		BaseException e
-	) {
-		return ResponseEntity
-			.status(e.getHttpStatus())
-			.body(CommonResponse.from(e.getResponseCode()));
-	}
-
-
 	@ExceptionHandler(AuthorizationDeniedException.class)
 	public ResponseEntity<CommonResponse<Void>> handleSseAuthorizationDenied(
 		AuthorizationDeniedException ex,

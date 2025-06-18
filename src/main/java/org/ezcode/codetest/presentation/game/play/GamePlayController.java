@@ -20,7 +20,6 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -57,7 +57,7 @@ public class GamePlayController {
 	@PostMapping("/items/gambling")
 	public ResponseEntity<ItemGamblingResponse> gamblingForItem(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody @Validated ItemGamblingRequest request
+		@RequestBody @Valid ItemGamblingRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(gamePlayUseCase.gamblingForItem(authUser.getId(), request.itemCategory()));
@@ -82,7 +82,7 @@ public class GamePlayController {
 	@PatchMapping("/items/equip")
 	public ResponseEntity<Void> equipItem(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody @Validated ItemEquipRequest request
+		@RequestBody @Valid ItemEquipRequest request
 	) {
 		gamePlayUseCase.equipItem(authUser.getId(), request.name());
 
@@ -92,7 +92,7 @@ public class GamePlayController {
 	@PatchMapping("/skills/equip")
 	public ResponseEntity<Void> equipSkill(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody @Validated SkillEquipRequest request
+		@RequestBody @Valid SkillEquipRequest request
 	) {
 		gamePlayUseCase.equipSkill(authUser.getId(), request);
 
@@ -102,7 +102,7 @@ public class GamePlayController {
 	@PatchMapping("/skills/unequip")
 	public ResponseEntity<Void> unEquipSkill(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody @Validated SkillUnEquipRequest request
+		@RequestBody @Valid SkillUnEquipRequest request
 	) {
 		gamePlayUseCase.unEquipSkill(authUser.getId(), request);
 
@@ -145,7 +145,7 @@ public class GamePlayController {
 	public ResponseEntity<EncounterResponse> encounterChoice(
 		@AuthenticationPrincipal AuthUser authUser,
 		@PathVariable Long encounterId,
-		@RequestBody @Validated EncounterChoiceRequest request
+		@RequestBody @Valid EncounterChoiceRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(gamePlayUseCase.encounterChoice(authUser.getId(), encounterId, request));

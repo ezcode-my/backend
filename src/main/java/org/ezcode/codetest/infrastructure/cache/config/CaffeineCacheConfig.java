@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.persistence.config;
+package org.ezcode.codetest.infrastructure.cache.config;
 
 import java.time.Duration;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Configuration
 @EnableCaching
-public class CacheConfig {
+public class CaffeineCacheConfig {
 
 	@Bean
 	public CacheManager cacheManager() {
