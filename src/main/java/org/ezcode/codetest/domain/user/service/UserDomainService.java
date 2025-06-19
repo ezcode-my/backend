@@ -65,7 +65,7 @@ public class UserDomainService {
 
 	public void userPasswordCheck(String email, String password) {
 		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new AuthException(AuthExceptionCode.USER_NOT_FOUND));;
+			.orElseThrow(() -> new AuthException(AuthExceptionCode.USER_NOT_FOUND));
 
 		if (!passwordEncoder.matches(password, user.getPassword())) {
 			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);

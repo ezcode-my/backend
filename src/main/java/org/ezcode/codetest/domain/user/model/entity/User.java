@@ -2,10 +2,8 @@ package org.ezcode.codetest.domain.user.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
-import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 
@@ -152,9 +150,5 @@ public class User extends BaseEntity {
 
 	public void decreaseReviewToken() {
 		this.reviewToken -= 1;
-	}
-
-	public void updateReviewToken(int token) {
-		this.reviewToken = token;
 	}
 }
