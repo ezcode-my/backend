@@ -88,9 +88,10 @@ public class SubmissionController {
 	@PostMapping("/problems/{problemId}/review")
 	public ResponseEntity<CodeReviewResponse> getCodeReview(
 		@Parameter(description = "문제 ID", required = true) @PathVariable Long problemId,
-		@RequestBody @Valid CodeReviewRequest request) {
+		@RequestBody @Valid CodeReviewRequest request,
+		@AuthenticationPrincipal AuthUser authUser) {
 		return ResponseEntity
 			.status(HttpStatus.OK)
-			.body(submissionService.getCodeReview(problemId, request));
+			.body(submissionService.getCodeReview(problemId, request, authUser));
 	}
 }
