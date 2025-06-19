@@ -34,7 +34,7 @@ public class UserAuthType {
 	private User user;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private AuthType authType;
 
 	@Builder
