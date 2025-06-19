@@ -76,10 +76,6 @@ public class UserDomainService {
 		return passwordEncoder.encode(password);
 	}
 
-	// public User getOAuthUser(String email, String provider) {
-	// 	return userRepository.findByEmailAndProvider(email, provider);
-	// }
-
 	//유저의 AuthType을 리스트형태로 반환
 	public List<AuthType> getUserAuthTypes(User user) {
 		return userAuthTypeRepository.getUserAuthType(user);

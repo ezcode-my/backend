@@ -35,6 +35,8 @@ jobs:
       REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
       SPRING_MONGODB_URI: ${{ secrets.SPRING_MONGODB_URI}}
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      EZ_EMAIL : ${{ secrets.EZ_EMAIL }}
+      APP_PASSWORD : ${{ secrets.APP_PASSWORD }}
 
     steps:
       - name: Checkout Repository

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -60,7 +61,10 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.logout(authUser.getId(), token));
 	}
 
-	@Operation(summary = "토큰 재발급", description = "리프레시 토큰을 이용하여 새로운 액세스 토큰을 발급합니다.")
+	@Operation(summary = "토큰 재발급", description = "리프레시 토큰을 이용하여 새로운 액세스 토큰을 발급합니다.",
+	parameters = {
+		@Parameter(name = "Authorization", description = "Bearer {refreshToken}", required = true)
+	})
 	@PostMapping("/auth/refresh")
 	public ResponseEntity<RefreshTokenResponse> refresh(HttpServletRequest request) {
 
