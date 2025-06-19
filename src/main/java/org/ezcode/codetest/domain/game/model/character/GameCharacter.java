@@ -65,7 +65,7 @@ public class GameCharacter extends BaseEntity {
 	private String defenceId;
 	private String accessoryId;
 
-	private Long gold;
+	private long gold;
 
 	public GameCharacter(User user) {
 

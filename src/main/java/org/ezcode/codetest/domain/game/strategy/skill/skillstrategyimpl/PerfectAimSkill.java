@@ -24,6 +24,7 @@ public class PerfectAimSkill extends AbstractSkill {
 		log.add("%s의 정밀 조준! 전투 종료 시까지 명중률이 %s배 상승합니다.", attacker.getName(), String.valueOf(multiplier));
 
 		if (!rollHit(attacker, defender, log)) return true;
+
 		boolean isCrit = RNG.nextDouble() * 100 < attacker.getCrit();
 		double rawDamage = attacker.getAtk() * (isCrit ? CRIT_MULTIPLIER : 1.0);
 		double damageDealt = Math.max(rawDamage - defender.getDef(), 0.0);

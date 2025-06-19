@@ -1,7 +1,6 @@
 package org.ezcode.codetest.domain.game.service;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
@@ -131,8 +130,4 @@ public class GameShopDomainService {
 		return skill;
 	}
 
-	public void sellingItemForGold(GameCharacter character) {
-
-		character.earnGold(25L);
-	}
 }

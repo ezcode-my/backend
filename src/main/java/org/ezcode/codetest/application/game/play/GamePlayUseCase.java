@@ -8,7 +8,7 @@ import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
-import org.ezcode.codetest.application.game.dto.response.encounter.EncounterResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.EncounterResultResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.MatchingBattleResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.MatchingEncounterResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
@@ -31,8 +31,8 @@ import org.ezcode.codetest.domain.game.service.GameShopDomainService;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -145,6 +145,7 @@ public class GamePlayUseCase {
 	public BattleHistoryResponse randomBattle(Long playerId) {
 
 		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+
 		GameCharacter enemyCharacter = encounterDomainService.getRandomEnemyCharacter(playerId);
 
 		BattleLog log = encounterDomainService.battle(playerCharacter, enemyCharacter);
@@ -184,7 +185,7 @@ public class GamePlayUseCase {
 	}
 
 	@Transactional
-	public EncounterResponse encounterChoice(Long userId, Long encounterId, EncounterChoiceRequest request) {
+	public EncounterResultResponse encounterChoice(Long userId, Long encounterId, EncounterChoiceRequest request) {
 
 		GameCharacter player = characterService.getGameCharacter(userId);
 
@@ -193,7 +194,7 @@ public class GamePlayUseCase {
 
 		EncounterHistory history = encounterDomainService.createEncounterHistory(player, resultLog);
 
-		return EncounterResponse.from(history);
+		return EncounterResultResponse.from(history);
 	}
 
 }

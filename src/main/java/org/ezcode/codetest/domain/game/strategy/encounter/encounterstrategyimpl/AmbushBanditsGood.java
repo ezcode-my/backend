@@ -38,9 +38,9 @@ public class AmbushBanditsGood implements EncounterStrategy {
 			character.earnGold(100L);
 			realStat.applyCritChange(0.5);
 			log.add("%s(은)는 날카로운 일격으로 도적의 허점을 정확히 찌릅니다!", playerContext.getName());
-			log.add("도적이 비틀거리며 쓰러진 순간, %s(은)는 빠르게 주머니를 뒤져 100골드를 확보합니다.", playerContext.getName());
+			log.add("도적이 비틀거리며 쓰러진 순간, %s(은)는 빠르게 시체를 뒤져서 100골드를 확보했습니다.", playerContext.getName());
 			log.add("숨결이 거칠게 오가지만, 승리의 여운이 온 몸에 전해집니다.");
-			log.add("%s(은)는 전투 경험으로 예리해진 감각을 실감합니다. (치명타 확률 +0.5)", playerContext.getName());
+			log.add("%s(은)는 전투 경험으로 감각이 한층 더 예리해졌습니다. (치명타 확률 +0.5)", playerContext.getName());
 			log.setIsPositive(true);
 		} else {
 			long lost = character.getGold() / 2;

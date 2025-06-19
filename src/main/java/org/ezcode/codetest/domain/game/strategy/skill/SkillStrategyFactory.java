@@ -15,11 +15,14 @@ import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.BurstAttack
 import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.ButterflyDecorator;
 import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.CounterAttackDecorator;
 import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.DefenceDecorator;
+import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.DefencePenetrationDecorator;
 import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.HealDecorator;
+import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.IllusionDecorator;
 import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.InstantKillDecorator;
 import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.LifeStealDecorator;
 import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.MentalDestroyDecorator;
 import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.PerfectAimDecorator;
+import org.ezcode.codetest.domain.game.strategy.skill.skilldecorator.ReflexDamageDecorator;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,16 +44,17 @@ public class SkillStrategyFactory {
 		return switch (effect) {
 			case LIFE_STEAL -> new LifeStealDecorator(strategy, grade, skillName);
 			case COUNTER_ATTACK -> new CounterAttackDecorator(strategy, grade, skillName);
-			//case REFLEX_DAMAGE -> new ReflexDamageDecorator(strategy, grade, skillName);
+			case REFLEX_DAMAGE -> new ReflexDamageDecorator(strategy, grade, skillName);
 			case HEAL -> new HealDecorator(strategy, grade, skillName);
 			case BURST_ATTACK -> new BurstAttackDecorator(strategy, grade, skillName);
 			case INSTANT_KILL -> new InstantKillDecorator(strategy, grade, skillName);
 			case BLOODY_MESS -> new BloodyMessDecorator(strategy, grade, skillName);
 			case DEFENCE -> new DefenceDecorator(strategy, grade, skillName);
-			//case ILLUSION -> new IllusionDecorator(strategy, grade, skillName);
+			case ILLUSION -> new IllusionDecorator(strategy, grade, skillName);
 			case PERFECT_AIM -> new PerfectAimDecorator(strategy, grade, skillName);
 			case BUTTERFLY -> new ButterflyDecorator(strategy, grade, skillName);
 			case MENTAL_DESTROY -> new MentalDestroyDecorator(strategy, grade, skillName);
+			case DEFENCE_PENETRATION -> new DefencePenetrationDecorator(strategy, grade, skillName);
 			case NO_SKILL -> strategy;
 		};
 	}

@@ -137,8 +137,11 @@ public class GameEncounterDomainService {
 	public boolean compareStrength(GameCharacter player, GameCharacter opponent) {
 
 		CharacterRealStat playerStats = new CharacterRealStat(player.getRealStat());
+
 		CharacterRealStat opponentStats = new CharacterRealStat(opponent.getRealStat());
+
 		playerStats.applyItemRealStat(characterEquipService.loadEquippedItems(player));
+
 		opponentStats.applyItemRealStat(characterEquipService.loadEquippedItems(opponent));
 
 		return playerStats.statSummary() < opponentStats.statSummary();

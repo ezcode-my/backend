@@ -1,7 +1,6 @@
 package org.ezcode.codetest.domain.game.strategy.encounter.encounterstrategyimpl;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;

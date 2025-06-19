@@ -12,8 +12,9 @@ public record ChatRoomSaveRequest(
 
 	@Schema(description = "생성할 채팅방 제목")
 	@NotBlank(message = "채팅방 제목은 비어있을 수 없습니다")
-	@Size(message = "채팅방 이름 길이는 1~15자 사이로 작성해주세요", min = 1, max = 15)
+	@Size(message = "채팅방 이름 길이는 25자 이내 작성해주세요", max = 25)
 	String title
+
 ) {
 
 	public ChatRoom toEntity(User user) {

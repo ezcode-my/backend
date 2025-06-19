@@ -1,6 +1,5 @@
 package org.ezcode.codetest.domain.game.strategy.skill.skillstrategyimpl;
 
-
 import java.util.Random;
 
 import org.ezcode.codetest.domain.game.model.item.WeaponType;
@@ -23,7 +22,8 @@ public class NoSkill implements SkillStrategy {
 	}
 
 	@Override
-	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log, WeaponType attackerWeapon) {
+	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log,
+		WeaponType attackerWeapon) {
 
 		attacker.consumeActionPoints();
 
@@ -51,7 +51,8 @@ public class NoSkill implements SkillStrategy {
 			log.add("스턴 효과! %s의 행동력이 1 감소했습니다. 현재 행동력: %d", defender.getName(), defender.getAp());
 		}
 
-		log.add("[%s] HP: %,.1f, [%s] HP: %,.1f", attacker.getName(), attacker.getHp(), defender.getName(), defender.getHp());
+		log.add("[%s] HP: %,.1f, [%s] HP: %,.1f", attacker.getName(), attacker.getHp(), defender.getName(),
+			defender.getHp());
 
 		if (!alive) {
 			log.add("%s이(가) %s를 쓰러뜨렸습니다!", attacker.getName(), defender.getName());
