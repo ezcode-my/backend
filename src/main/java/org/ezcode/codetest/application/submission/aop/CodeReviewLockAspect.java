@@ -39,6 +39,10 @@ public class CodeReviewLockAspect {
 			}
 		}
 
+		if (problemId == null || userId == null) {
+			throw new CodeReviewException(CodeReviewExceptionCode.REQUIRED_ARGS_NOT_FOUND);
+		}
+
 		boolean locked = lockManager.tryLock(prefix, userId, problemId);
 		if (!locked) {
 			throw new CodeReviewException(CodeReviewExceptionCode.ALREADY_REVIEWING);

@@ -14,7 +14,9 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 public class WeeklyTokenResetScheduler {
 
@@ -37,12 +39,18 @@ public class WeeklyTokenResetScheduler {
 		);
 
 		scheduler.schedule(() -> {
-			LocalDate lastMonday = LocalDate.now(ZoneId.of("Asia/Seoul"))
-				.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-			LocalDateTime startDateTime = lastMonday.atStartOfDay();
-			LocalDateTime endDateTime = lastMonday.plusDays(7).atStartOfDay();
+			try {
+				log.info("주간 토큰 리셋을 시작합니다.");
+				LocalDate lastMonday = LocalDate.now(ZoneId.of("Asia/Seoul"))
+					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+				LocalDateTime startDateTime = lastMonday.atStartOfDay();
+				LocalDateTime endDateTime = lastMonday.plusDays(7).atStartOfDay();
 
-			userService.resetAllUsersTokensWeekly(startDateTime, endDateTime);
+				userService.resetAllUsersTokensWeekly(startDateTime, endDateTime);
+				log.info("주간 토큰 리셋을 성공적으로 완료했습니다.");
+			} catch (Exception e) {
+				log.error("주간 토큰 리셋에 실패했습니다.", e);
+			}
 		}, trigger);
 	}
 }

@@ -127,7 +127,7 @@ public class SubmissionService {
 			exceptionNotificationHelper(e);
 		} finally {
 			emitterStore.remove(msg.emitterKey());
-			lockManager.releaseLock("submission-", msg.userId(), msg.problemId());
+			lockManager.releaseLock("submission", msg.userId(), msg.problemId());
 		}
     }
 
