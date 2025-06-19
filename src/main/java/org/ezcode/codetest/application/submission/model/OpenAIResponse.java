@@ -15,7 +15,7 @@ public record OpenAIResponse(
 	public String getReviewContent() {
 		return Optional.ofNullable(choices)
 			.flatMap(list -> list.stream().findFirst())
-			.map(choice -> choice.message.content)
+			.map(choice -> choice.message().content())
 			.orElse("");
 	}
 }
