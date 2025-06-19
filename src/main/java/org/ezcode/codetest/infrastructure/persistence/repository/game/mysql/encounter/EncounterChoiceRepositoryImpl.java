@@ -34,6 +34,12 @@ public class EncounterChoiceRepositoryImpl implements EncounterChoiceRepository 
 	}
 
 	@Override
+	public List<EncounterChoice> findChoiceByPlayerDecision(Long encounterId, boolean playerDecision) {
+
+		return encounterRepository.findByEncounterIdAndPlayerDecision(encounterId, playerDecision);
+	}
+
+	@Override
 	public EncounterChoice save(EncounterChoice encounter) {
 
 		return encounterRepository.save(encounter);

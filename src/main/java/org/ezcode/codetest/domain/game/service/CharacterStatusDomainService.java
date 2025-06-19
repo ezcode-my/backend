@@ -4,17 +4,20 @@ import static org.ezcode.codetest.domain.game.constant.GameConstants.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.character.Stat;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.character.Inventory;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
+import org.ezcode.codetest.domain.game.util.StatUpdateUtil;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class CharacterStatusDomainService {
 	private final InventoryRepository inventoryRepository;
 	private final ItemRepository itemRepository;
 	private final CharacterEquipService characterLoadService;
+	private final StatUpdateUtil statUpdateUtil;
 
 	public GameCharacter createGameCharacter(GameCharacter character) {
 
@@ -44,6 +48,19 @@ public class CharacterStatusDomainService {
 
 		return characterRepository.findByUserId(userId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.CHARACTER_NOT_FOUND));
+	}
+
+	public void gameCharacterLevelUp(Long userId, boolean isProblemSolved, String problemCategory) {
+
+		if (!isProblemSolved)
+			return;
+
+		Map<Stat, Double> increaseStatRate = statUpdateUtil.getStatIncreasePerProblem(problemCategory);
+
+		GameCharacter character = characterRepository.findByUserId(userId)
+			.orElseThrow(() -> new GameException(GameExceptionCode.CHARACTER_NOT_FOUND));
+
+		character.applyIncreaseStats(increaseStatRate);
 	}
 
 	public List<Item> inventoryOpen(Long characterId) {

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.ezcode.codetest.domain.user.exception.AuthException;
-import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
+import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;

@@ -1,11 +1,10 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.game.mysql.character;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
 import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -29,10 +28,27 @@ public class GameCharacterRepositoryImpl implements GameCharacterRepository {
 	}
 
 	@Override
-	public List<GameCharacter> findRandomCharacter(Long userId) {
+	public Optional<GameCharacter> findRandomCharacter(Long userId) {
 
-		return characterRepository.findRandomCharacter(userId, PageRequest.of(0, 1));
+		long count = characterRepository.count();
+		if (count == 0) return Optional.empty();
+
+		for (int i = 0; i < 5; i++) {
+
+			long randomId = ThreadLocalRandom.current().nextLong(1, count + 1);
+
+			Optional<GameCharacter> optional = characterRepository.findById(randomId);
+
+			if (optional.isEmpty()) continue;
+
+			GameCharacter character = optional.get();
+
+			if (!character.getUser().getId().equals(userId)) {
+				return Optional.of(character);
+			}
+		}
+
+		return Optional.empty();
 	}
-
 
 }

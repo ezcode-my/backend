@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.user.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -15,4 +16,7 @@ public interface UserRepository {
 
 	boolean existsByNickname(String nickname);
 
+	void decreaseReviewToken(User user);
+
+	void updateReviewTokens(List<Long> ids , int newToken);
 }

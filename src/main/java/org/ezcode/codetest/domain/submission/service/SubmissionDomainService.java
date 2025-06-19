@@ -1,9 +1,11 @@
 package org.ezcode.codetest.domain.submission.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
+import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
@@ -73,6 +75,12 @@ public class SubmissionDomainService {
 
 	public List<Submission> getSubmissions(Long userId) {
 		return submissionRepository.findSubmissionsByUserId(userId);
+	}
+
+	public List<WeeklySolveCount> getWeeklySolveCounts(
+		LocalDateTime startDateTime, LocalDateTime endDateTime
+	) {
+		return submissionRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
 	}
 
 	private AnswerEvaluation evaluate(

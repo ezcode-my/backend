@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.game.service;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
@@ -33,12 +34,9 @@ public class GameShopDomainService {
 
 		character.useGoldForGamble();
 
-		//TODO : 나중에 REDIS 에 캐싱해서 DB IO 를 줄이는 방법으로 수정 (레디스에 전체 리스트 사이즈랑 전체 필드 저장)
 		List<Item> weaponList = itemRepository.findAllByItemCategory(ItemCategory.WEAPON);
 
-		Random random = new Random();
-
-		int randomIndex = random.nextInt(weaponList.size());
+		int randomIndex = ThreadLocalRandom.current().nextInt(weaponList.size());
 
 		Item item = weaponList.get(randomIndex);
 
@@ -61,9 +59,7 @@ public class GameShopDomainService {
 
 		List<Item> defenceList = itemRepository.findAllByItemCategory(ItemCategory.DEFENCE);
 
-		Random random = new Random();
-
-		int randomIndex = random.nextInt(defenceList.size());
+		int randomIndex = ThreadLocalRandom.current().nextInt(defenceList.size());
 
 		Item item = defenceList.get(randomIndex);
 
@@ -86,9 +82,7 @@ public class GameShopDomainService {
 
 		List<Item> accessoryList = itemRepository.findAllByItemCategory(ItemCategory.ACCESSORY);
 
-		Random random = new Random();
-
-		int randomIndex = random.nextInt(accessoryList.size());
+		int randomIndex = ThreadLocalRandom.current().nextInt(accessoryList.size());
 
 		Item item = accessoryList.get(randomIndex);
 
@@ -110,11 +104,8 @@ public class GameShopDomainService {
 		character.useGoldForGamble();
 
 		List<Skill> skillList = skillRepository.findAll();
-		//TODO : 나중에 REDIS 에 캐싱해서 DB IO 를 줄이는 방법으로 수정 (레디스에 전체 리스트 사이즈랑 전체 필드 저장)
 
-		Random random = new Random();
-
-		int randomIndex = random.nextInt(skillList.size());
+		int randomIndex = ThreadLocalRandom.current().nextInt(skillList.size());
 
 		Skill skill = skillList.get(randomIndex);
 

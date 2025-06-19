@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.model.item.ItemCategory;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,36 +37,42 @@ public class ItemRepositoryImpl implements ItemRepository {
 	}
 
 	@Override
+	@CacheEvict(value = "itemsByCategory", allEntries = true)
 	public Item save(Item item) {
 
 		return itemRepository.save(item);
 	}
 
 	@Override
+	@CacheEvict(value = "itemsByCategory", allEntries = true)
 	public List<Item> saveAll(List<Item> items) {
 
 		return itemRepository.saveAll(items);
 	}
 
 	@Override
+	@CacheEvict(value = "itemsByCategory", allEntries = true)
 	public void delete(Item item) {
 
 		itemRepository.delete(item);
 	}
 
 	@Override
+	@CacheEvict(value = "itemsByCategory", allEntries = true)
 	public void deleteByName(String name) {
 
 		itemRepository.deleteByName(name);
 	}
 
 	@Override
+	@Cacheable(value = "itemsByCategory", key = "'all'")
 	public List<Item> findAll() {
 
 		return itemRepository.findAll();
 	}
 
 	@Override
+	@Cacheable(value = "itemsByCategory", key = "#category")
 	public List<Item> findAllByItemCategory(ItemCategory category) {
 
 		return itemRepository.findAllByItemCategory(category);

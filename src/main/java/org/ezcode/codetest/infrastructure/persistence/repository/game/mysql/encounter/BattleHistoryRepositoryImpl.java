@@ -51,7 +51,6 @@ public class BattleHistoryRepositoryImpl implements BattleHistoryRepository {
 		battleHistoryRepository.delete(battleHistory);
 	}
 
-
 	@Override
 	public List<BattleHistory> findAll() {
 

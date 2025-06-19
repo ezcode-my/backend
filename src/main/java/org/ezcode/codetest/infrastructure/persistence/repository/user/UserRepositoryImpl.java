@@ -1,9 +1,9 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.user;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.user.model.entity.User;
-import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
@@ -37,5 +37,14 @@ public class UserRepositoryImpl implements UserRepository {
 		return userJpaRepository.existsByNickname(nickname);
 	}
 
+	@Override
+	public void decreaseReviewToken(User user) {
+		user.decreaseReviewToken();
+	}
+
+	@Override
+	public void updateReviewTokens(List<Long> ids, int newToken) {
+		userJpaRepository.updateReviewTokens(ids, newToken);
+	}
 
 }

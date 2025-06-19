@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.game.model.skill.Skill;
 import org.ezcode.codetest.domain.game.repository.SkillRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -40,24 +42,28 @@ public class SkillRepositoryImpl implements SkillRepository {
 	}
 
 	@Override
+	@CacheEvict(value = "skill", allEntries = true)
 	public Skill save(Skill skill) {
 
 		return skillRepository.save(skill);
 	}
 
 	@Override
+	@CacheEvict(value = "skill", allEntries = true)
 	public void delete(Skill skill) {
 
 		skillRepository.delete(skill);
 	}
 
 	@Override
+	@CacheEvict(value = "skill", allEntries = true)
 	public void deleteByName(String name) {
 
 		skillRepository.deleteByName(name);
 	}
 
 	@Override
+	@Cacheable(value = "skill", key = "'all'")
 	public List<Skill> findAll() {
 
 		return skillRepository.findAll();

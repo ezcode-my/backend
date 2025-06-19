@@ -10,7 +10,7 @@ import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupReq
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
-import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
+import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
@@ -91,6 +91,8 @@ public class AuthService {
 				existUser.getNickname(),
 				existUser.getTier());
 		}
+
+
 
 		return SignupResponse.from(bearToken);
 	}

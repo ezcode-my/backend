@@ -1,16 +1,14 @@
 package org.ezcode.codetest.application.game.dto.request.item;
 
+import org.ezcode.codetest.common.validation.EnumValidator;
+import org.ezcode.codetest.domain.game.model.item.ItemCategory;
+
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 public record ItemGamblingRequest(
 
 	@NotBlank(message = "아이템 타입을 결정해주세요(weapon, defence, accessory)")
-	@Pattern(
-		regexp = "weapon|defence|accessory",
-		flags = Pattern.Flag.CASE_INSENSITIVE,
-		message = "아이템 타입은 weapon, defence, accessory 중 하나여야 합니다."
-	)
+	@EnumValidator(enumClass = ItemCategory.class)
 	String itemCategory
 
 ) {

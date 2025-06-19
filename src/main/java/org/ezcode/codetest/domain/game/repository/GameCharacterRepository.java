@@ -1,6 +1,5 @@
 package org.ezcode.codetest.domain.game.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
@@ -11,5 +10,5 @@ public interface GameCharacterRepository {
 
 	Optional<GameCharacter> findByUserId(Long userId);
 
-	List<GameCharacter> findRandomCharacter(Long userId);
+	Optional<GameCharacter> findRandomCharacter(Long userId);
 }

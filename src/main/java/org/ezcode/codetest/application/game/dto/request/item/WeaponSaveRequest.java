@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.game.dto.request.item;
 
+import org.ezcode.codetest.common.validation.EnumValidator;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.model.item.Weapon;
 import org.ezcode.codetest.domain.game.model.item.Grade;
@@ -10,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 @JsonTypeName("weapon")
@@ -18,11 +18,7 @@ import lombok.Getter;
 public class WeaponSaveRequest extends ItemSaveRequest {
 
 	@NotBlank(message = "무기 타입은 공백일 수 없습니다.")
-	@Pattern(
-		regexp = "SHOT_GUN|RIFLE|PISTOL|LONG_SWORD|SHORT_SWORD|SPEAR|BOW|MAGIC_BOOK",
-		flags = Pattern.Flag.CASE_INSENSITIVE,
-		message = "무기 타입은 SHOT_GUN, RIFLE, PISTOL, LONG_SWORD, SHORT_SWORD, SPEAR, BOW, MAGIC_BOOK 중 하나여야 합니다."
-	)
+	@EnumValidator(enumClass = WeaponType.class)
 	private final String weaponType;
 
 	@NotNull

@@ -1,12 +1,13 @@
 package org.ezcode.codetest.application.game.dto.request.item;
 
+import org.ezcode.codetest.common.validation.EnumValidator;
+import org.ezcode.codetest.domain.game.model.item.Grade;
 import org.ezcode.codetest.domain.game.model.item.Item;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 @JsonTypeInfo(
@@ -23,11 +24,7 @@ import lombok.Getter;
 public abstract class ItemSaveRequest {
 
 	@NotBlank
-	@Pattern(
-		regexp = "LEGENDARY|UNIQUE|RARE|UNCOMMON|COMMON|TRASH",
-		flags = Pattern.Flag.CASE_INSENSITIVE,
-		message = "아이템 등급은 LEGENDARY, UNIQUE, RARE, UNCOMMON, COMMON, TRASH 중 하나여야 합니다."
-	)
+	@EnumValidator(enumClass = Grade.class)
 	private final String grade;
 
 	@NotBlank

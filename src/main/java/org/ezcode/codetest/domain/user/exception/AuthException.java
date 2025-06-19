@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.user.exception;
 
 import org.ezcode.codetest.common.base.exception.BaseException;
 import org.ezcode.codetest.common.base.exception.ResponseCode;
+import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.springframework.http.HttpStatus;
 
 import lombok.Getter;

@@ -2,10 +2,8 @@ package org.ezcode.codetest.domain.user.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
-import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 
@@ -64,6 +62,9 @@ public class User extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	private Tier tier;
+
+	@Column(name = "review_token")
+	private int reviewToken;
 
 	private boolean isDeleted;
 
@@ -145,5 +146,9 @@ public class User extends BaseEntity {
 
 	public void modifyPassword(String newPassword) {
 		this.password = newPassword;
+	}
+
+	public void decreaseReviewToken() {
+		this.reviewToken -= 1;
 	}
 }

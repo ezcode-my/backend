@@ -11,13 +11,13 @@ import org.ezcode.codetest.application.game.dto.request.skill.SkillSaveRequest;
 import org.ezcode.codetest.application.game.management.GameAdminUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,7 +29,7 @@ public class GameManagementController {
 
 	@PostMapping("/items")
 	public ResponseEntity<Void> createItem(
-		@RequestBody @Validated ItemSaveRequest request
+		@RequestBody @Valid ItemSaveRequest request
 	) {
 		gameAdminUseCase.createItem(request);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -37,7 +37,7 @@ public class GameManagementController {
 
 	@DeleteMapping("/items")
 	public ResponseEntity<Void> deleteItem(
-		@RequestBody @Validated ItemDeleteRequest request
+		@RequestBody @Valid ItemDeleteRequest request
 	) {
 		gameAdminUseCase.deleteItem(request);
 		return ResponseEntity.status(HttpStatus.OK).build();
@@ -45,7 +45,7 @@ public class GameManagementController {
 
 	@PostMapping("/skills")
 	public ResponseEntity<Void> createSkill(
-		@RequestBody @Validated SkillSaveRequest request
+		@RequestBody @Valid SkillSaveRequest request
 	) {
 		gameAdminUseCase.createSkill(request);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -53,7 +53,7 @@ public class GameManagementController {
 
 	@DeleteMapping("/skills")
 	public ResponseEntity<Void> deleteSkill(
-		@RequestBody @Validated SkillDeleteRequest request
+		@RequestBody @Valid SkillDeleteRequest request
 	) {
 		gameAdminUseCase.deleteSkill(request);
 		return ResponseEntity.status(HttpStatus.OK).build();
@@ -61,7 +61,7 @@ public class GameManagementController {
 
 	@PostMapping("/encounters")
 	public ResponseEntity<Void> createRandomEncounter(
-		@RequestBody @Validated RandomEncounterSaveRequest request
+		@RequestBody @Valid RandomEncounterSaveRequest request
 	) {
 		gameAdminUseCase.createRandomEncounter(request);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -69,7 +69,7 @@ public class GameManagementController {
 
 	@DeleteMapping("/encounters")
 	public ResponseEntity<Void> deleteRandomEncounter(
-		@RequestBody @Validated RandomEncounterDeleteRequest request
+		@RequestBody @Valid RandomEncounterDeleteRequest request
 	) {
 		gameAdminUseCase.deleteRandomEncounter(request);
 		return ResponseEntity.status(HttpStatus.OK).build();
@@ -77,7 +77,7 @@ public class GameManagementController {
 
 	@PostMapping("/choices")
 	public ResponseEntity<Void> createEncounterChoice(
-		@RequestBody @Validated EncounterChoiceSaveRequest request
+		@RequestBody @Valid EncounterChoiceSaveRequest request
 	) {
 		gameAdminUseCase.createEncounterChoice(request);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -85,7 +85,7 @@ public class GameManagementController {
 
 	@DeleteMapping("/choices")
 	public ResponseEntity<Void> deleteEncounterChoice(
-		@RequestBody @Validated EncounterChoiceDeleteRequest request
+		@RequestBody @Valid EncounterChoiceDeleteRequest request
 	) {
 		gameAdminUseCase.deleteEncounterChoice(request);
 		return ResponseEntity.status(HttpStatus.OK).build();
