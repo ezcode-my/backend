@@ -73,6 +73,11 @@
     <label>문제 ID:</label>
     <input type="number" id="problemId" placeholder="문제 ID" />
 
+    <label>
+        <input type="checkbox" id="isCorrectCheckbox" />
+        테스트케이스를 모두 통과했나요?
+    </label>
+
     <button type="button" onclick="submitCode()">코드 제출</button>
     <button type="button" onclick="requestCodeReview()">코드 리뷰</button>
 </div>
@@ -132,7 +137,7 @@
         const reviewBox = document.getElementById('reviewResult');
         reviewBox.textContent = '';
 
-        const isCorrect = true; // 필요 시 동적으로 설정하세요
+        const isCorrect = document.getElementById('isCorrectCheckbox').checked;
 
         fetch(`/api/problems/${problemId}/review`, {
             method: 'POST',
