@@ -65,6 +65,9 @@ public class User extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Tier tier;
 
+	@Column(name = "review_token")
+	private int reviewToken;
+
 	private boolean isDeleted;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -145,5 +148,13 @@ public class User extends BaseEntity {
 
 	public void modifyPassword(String newPassword) {
 		this.password = newPassword;
+	}
+
+	public void decreaseReviewToken() {
+		this.reviewToken -= 1;
+	}
+
+	public void updateReviewToken(int token) {
+		this.reviewToken = token;
 	}
 }

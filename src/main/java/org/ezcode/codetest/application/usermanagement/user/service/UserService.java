@@ -1,12 +1,19 @@
 package org.ezcode.codetest.application.usermanagement.user.service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
+import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
+import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ModifyUserInfoRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserInfoResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.WithdrawUserResponse;
+import org.ezcode.codetest.domain.submission.service.SubmissionDomainService;
 import org.ezcode.codetest.domain.user.exception.AuthException;
-import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
+import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
@@ -16,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
 	private final UserDomainService userDomainService;
+	private final SubmissionDomainService submissionDomainService;
 	private final RedisTemplate<String, String> redisTemplate;
 
 	@Transactional(readOnly = true)
@@ -59,7 +66,6 @@ public class UserService {
 			modifyUserInfoRequest.introduction(),
 			modifyUserInfoRequest.age());
 
-
 		return UserInfoResponse.builder()
 			.username(user.getUsername())
 			.age(user.getAge())
@@ -75,7 +81,8 @@ public class UserService {
 	}
 
 	@Transactional
-	public ChangeUserPasswordResponse modifyUserPassword(AuthUser authUser, ChangeUserPasswordRequest changeUserPasswordRequest) {
+	public ChangeUserPasswordResponse modifyUserPassword(AuthUser authUser,
+		ChangeUserPasswordRequest changeUserPasswordRequest) {
 		User user = userDomainService.getUserById(authUser.getId());
 
 		//소셜로그인 회원은 변경 불가
@@ -95,7 +102,6 @@ public class UserService {
 		return new ChangeUserPasswordResponse("비밀번호를 성공적으로 변경했습니다");
 	}
 
-
 	@Transactional
 	public WithdrawUserResponse withdrawUser(AuthUser authUser) {
 		User user = userDomainService.getUserById(authUser.getId());
@@ -104,8 +110,17 @@ public class UserService {
 
 		user.setDeleted();
 
-		redisTemplate.delete("RefreshToken:"+authUser.getId());
+		redisTemplate.delete("RefreshToken:" + authUser.getId());
 
 		return new WithdrawUserResponse("탈퇴가 완료되었습니다");
+	}
+
+	@Transactional
+	public void resetAllUsersTokensWeekly(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+
+		List<WeeklySolveCount> counts = submissionDomainService.getWeeklySolveCounts(startDateTime, endDateTime);
+		long weekLength = ChronoUnit.DAYS.between(startDateTime, endDateTime);
+
+		userDomainService.resetReviewTokensForUsers(UsersByWeek.from(counts, weekLength));
 	}
 }
