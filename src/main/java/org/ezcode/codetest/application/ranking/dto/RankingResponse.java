@@ -6,6 +6,6 @@ import lombok.Builder;
 public record RankingResponse(
         Long userId,
         String nickname, // 사용자 이름
-        int rank,
+        int ranks,
         int score
 ) {}

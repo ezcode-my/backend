@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface RankingRepository extends JpaRepository<Ranking, Long> {
 
-    List<Ranking> findByTypeAndRankingDateOrderByRankAsc(RankingType type, LocalDate date);
+    List<Ranking> findByTypeAndRankingDateOrderByRanksAsc(RankingType type, LocalDate date);
 }
