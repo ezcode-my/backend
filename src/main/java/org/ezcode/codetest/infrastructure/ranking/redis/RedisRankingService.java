@@ -59,7 +59,7 @@ public class RedisRankingService {
             return RankingResponse.builder()
                     .userId(userId)
                     .nickname(nickname)
-                    .rank(rank[0]++)
+                    .ranks(rank[0]++)
                     .score(tuple.getScore().intValue())
                     .build();
         }).collect(Collectors.toList());

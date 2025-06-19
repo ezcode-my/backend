@@ -24,16 +24,16 @@ public class Ranking extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RankingType type; // WEEKLY, MONTHLY, ALL_TIME
 
-    private int rank;
+    private int ranks;
     private int score;
 
     private LocalDate rankingDate; // 기준 날짜
 
     @Builder
-    public Ranking(Long userId, RankingType type, int rank, int score, LocalDate rankingDate) {
+    public Ranking(Long userId, RankingType type, int ranks, int score, LocalDate rankingDate) {
         this.userId = userId;
         this.type = type;
-        this.rank = rank;
+        this.ranks = ranks;
         this.score = score;
         this.rankingDate = rankingDate;
     }
