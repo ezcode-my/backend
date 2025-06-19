@@ -6,9 +6,7 @@ import org.ezcode.codetest.domain.game.model.item.Grade;
 import org.ezcode.codetest.domain.game.model.item.WeaponType;
 import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.ezcode.codetest.domain.game.strategy.skill.SkillStrategy;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ReflexDamageDecorator implements SkillStrategy {
 
 	private final SkillStrategy delegate;
