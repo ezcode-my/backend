@@ -14,22 +14,22 @@ public class RedisLockManager implements LockManager {
 
 	private final StringRedisTemplate redisTemplate;
 
-	private static final String LOCK_KEY_FORMAT = "submission-lock:user:%d:problem:%d";
+	private static final String LOCK_KEY_FORMAT = "%s-lock:user:%d:problem:%d";
 	private static final Duration LOCK_DURATION = Duration.ofMinutes(5);
 
 	@Override
-	public boolean tryLock(Long userId, Long problemId) {
-		String key = getKey(userId, problemId);
+	public boolean tryLock(String prefix, Long userId, Long problemId) {
+		String key = getKey(prefix, userId, problemId);
 		Boolean success = redisTemplate.opsForValue().setIfAbsent(key, "LOCKED", LOCK_DURATION);
 		return Boolean.TRUE.equals(success);
 	}
 
 	@Override
-	public void releaseLock(Long userId, Long problemId) {
-		redisTemplate.delete(getKey(userId, problemId));
+	public void releaseLock(String prefix, Long userId, Long problemId) {
+		redisTemplate.delete(getKey(prefix, userId, problemId));
 	}
 
-	private String getKey(Long userId, Long problemId) {
-		return LOCK_KEY_FORMAT.formatted(userId, problemId);
+	private String getKey(String prefix, Long userId, Long problemId) {
+		return LOCK_KEY_FORMAT.formatted(prefix, userId, problemId);
 	}
 }

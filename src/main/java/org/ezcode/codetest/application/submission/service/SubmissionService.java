@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
+import org.ezcode.codetest.application.submission.aop.CodeReviewLock;
 import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewRequest;
 import org.ezcode.codetest.application.submission.dto.request.review.ReviewPayload;
 import org.ezcode.codetest.application.submission.dto.response.review.CodeReviewResponse;
@@ -67,7 +68,7 @@ public class SubmissionService {
 
 	public SseEmitter enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
 
-		boolean acquired = lockManager.tryLock(authUser.getId(), problemId);
+		boolean acquired = lockManager.tryLock("submission", authUser.getId(), problemId);
 
 		if (!acquired) {
 			throw new SubmissionException(SubmissionExceptionCode.ALREADY_JUDGING);
@@ -126,7 +127,7 @@ public class SubmissionService {
 			exceptionNotificationHelper(e);
 		} finally {
 			emitterStore.remove(msg.emitterKey());
-			lockManager.releaseLock(msg.userId(), msg.problemId());
+			lockManager.releaseLock("submission", msg.userId(), msg.problemId());
 		}
     }
 
@@ -138,8 +139,13 @@ public class SubmissionService {
         return GroupedSubmissionResponse.groupByProblem(submissions);
     }
 
-    public CodeReviewResponse getCodeReview(Long problemId, CodeReviewRequest request) {
-        Problem problem = problemDomainService.getProblem(problemId);
+	@Transactional
+	@CodeReviewLock(prefix = "review")
+    public CodeReviewResponse getCodeReview(Long problemId, CodeReviewRequest request, AuthUser authUser) {
+		User user = userDomainService.getUserById(authUser.getId());
+		userDomainService.decreaseReviewToken(user);
+
+		Problem problem = problemDomainService.getProblem(problemId);
         Language language = languageDomainService.getLanguage(request.languageId());
 
         ReviewResult reviewResult = reviewClient.requestReview(ReviewPayload.of(problem, language, request));

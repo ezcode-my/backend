@@ -3,12 +3,15 @@ package org.ezcode.codetest.domain.user.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
+import org.ezcode.codetest.domain.user.exception.UserException;
+import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.Adjective;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.model.enums.Noun;
 import org.ezcode.codetest.domain.user.exception.AuthException;
-import org.ezcode.codetest.domain.user.exception.AuthExceptionCode;
+import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.repository.UserAuthTypeRepository;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
@@ -17,8 +20,6 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,7 +65,7 @@ public class UserDomainService {
 
 	public void userPasswordCheck(String email, String password) {
 		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new AuthException(AuthExceptionCode.USER_NOT_FOUND));;
+			.orElseThrow(() -> new AuthException(AuthExceptionCode.USER_NOT_FOUND));
 
 		if (!passwordEncoder.matches(password, user.getPassword())) {
 			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);
@@ -104,6 +105,20 @@ public class UserDomainService {
 			}
 		}
 		throw new IllegalStateException("중복된 닉네임 생성 불가");
+	}
+
+	public void decreaseReviewToken(User user) {
+
+		if (user.getReviewToken() <= 0) {
+			throw new UserException(UserExceptionCode.NOT_ENOUGH_TOKEN);
+		}
+
+		userRepository.decreaseReviewToken(user);
+	}
+
+	public void resetReviewTokensForUsers(UsersByWeek users) {
+		userRepository.updateReviewTokens(users.fullWeek(), 40);
+		userRepository.updateReviewTokens(users.partialWeek(), 20);
 	}
 
 	private static String generateRandomNickname() {
