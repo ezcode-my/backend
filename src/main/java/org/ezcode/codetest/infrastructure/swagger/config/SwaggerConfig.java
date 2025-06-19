@@ -23,9 +23,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 @SecurityScheme(
 	name = "JWT_REFRESH", // refreshToken용
 	type = SecuritySchemeType.APIKEY,
-	in = SecuritySchemeIn.HEADER,
-	scheme = "bearer",
-	bearerFormat = "JWT"
+	in = SecuritySchemeIn.HEADER
 )
 public class SwaggerConfig {
 }
