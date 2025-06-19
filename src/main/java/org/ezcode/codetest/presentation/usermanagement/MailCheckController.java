@@ -27,10 +27,8 @@ public class MailCheckController {
 
 		try {
 			number = mailService.sendMail(authUser.getEmail());
-			String num = String.valueOf(number);
 
 			map.put("success", Boolean.TRUE);
-			map.put("number", num);
 		} catch (Exception e) {
 			map.put("success", Boolean.FALSE);
 			map.put("error", e.getMessage());

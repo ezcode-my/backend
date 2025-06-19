@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.user.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MailService {
 	private final JavaMailSender javaMailSender;
-	private static final String senderEmail= "contact.ezcode@gmail.com";
+	@Value("${spring.mail.username}")
+	private String senderEmail;
 	private static int number;
 
 	// 랜덤으로 숫자 생성
