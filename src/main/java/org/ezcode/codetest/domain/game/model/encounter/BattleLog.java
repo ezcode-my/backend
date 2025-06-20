@@ -20,4 +20,7 @@ public class BattleLog {
 		messages.add(String.format(format, args));
 	}
 
+	public String asText() {
+		return String.join("\n", messages);
+	}
 }

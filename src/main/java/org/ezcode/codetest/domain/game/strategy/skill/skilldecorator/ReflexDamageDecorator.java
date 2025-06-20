@@ -7,13 +7,13 @@ import org.ezcode.codetest.domain.game.model.item.WeaponType;
 import org.ezcode.codetest.domain.game.model.skill.SkillEffect;
 import org.ezcode.codetest.domain.game.strategy.skill.SkillStrategy;
 
-public class LifeStealDecorator implements SkillStrategy {
+public class ReflexDamageDecorator implements SkillStrategy {
 
 	private final SkillStrategy delegate;
 	private final Grade grade;
 	private final String skillName;
 
-	public LifeStealDecorator(SkillStrategy delegate, Grade grade, String skillName) {
+	public ReflexDamageDecorator(SkillStrategy delegate, Grade grade, String skillName) {
 		this.delegate = delegate;
 		this.grade = grade;
 		this.skillName = skillName;
@@ -25,24 +25,29 @@ public class LifeStealDecorator implements SkillStrategy {
 	}
 
 	@Override
-	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log,
+	public boolean useSkill(CharacterContext attacker,
+		CharacterContext defender,
+		BattleLog log,
 		WeaponType weaponType) {
 
-		double atkBuff = switch (grade) {
-			case LEGENDARY -> 0.30;
-			case UNIQUE -> 0.20;
-			case RARE -> 0.15;
-			case UNCOMMON -> 0.10;
-			case COMMON -> 0.05;
+		double buffRatio = switch (grade) {
+			case LEGENDARY -> 0.25;
+			case UNIQUE -> 0.15;
+			case RARE -> 0.06;
+			case UNCOMMON -> 0.04;
+			case COMMON -> 0.02;
 			default -> 0.0;
 		};
 
-		if (atkBuff > 0.0) {
-			attacker.applyAtkBuff(atkBuff * attacker.getAtk());
-			log.add(
-				"[%s] 효과 발동 — 공격력 +%.0f%% 추가 적용.",
-				skillName, atkBuff * 100
-			);
+		if (buffRatio > 0) {
+			double accBuff = attacker.getAccuracy() * buffRatio;
+			double critBuff = attacker.getCrit() * buffRatio;
+
+			attacker.applyAccuracyBuff(accBuff);
+			attacker.applyCritBuff(critBuff);
+
+			log.add("[%s] 효과 발동 — 명중률 +%.0f%%, 치명타 확률 +%.0f%% 동시에 증가. 상대 피를 빼앗는 대신, %s의 몸도 조금씩 부서집니다.", skillName,
+				buffRatio * 100, buffRatio * 100, attacker.getName());
 		}
 
 		return delegate.useSkill(attacker, defender, log, weaponType);

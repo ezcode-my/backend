@@ -1,7 +1,6 @@
 package org.ezcode.codetest.domain.game.strategy.encounter.encounterstrategyimpl;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
@@ -37,15 +36,14 @@ public class AncientRuinsTreasure implements EncounterStrategy {
 	) {
 		String player = context.getName();
 
-		log.add("고대 유적의 어두운 복도를 따라 걷던 중, 햇살이 갈라진 틈새 사이로 찬란하게 빛나며 오래된 벽화를 비춥니다.");
-		log.add(player + "(은)는 무너진 기둥과 깨진 돌더미를 조심스럽게 피해, 고요히 숨겨져 있던 방에 발을 들입니다.");
+		log.add("당신은 밝은 회랑을 선택했습니다. 덜 위협적으로 보인다고요? 그럼 함정은 덜 있겠죠.");
+		log.add("쌓여 있던 잿빛 돌더미 사이로 희미한 빛줄기가 퍼지며, 벽면의 낙서 같은 벽화들이 은은히 드러납니다.");
+		log.add("%s(은)는 신중하게 발걸음을 옮기며, 고요한 공기를 가르고 미지의 방에 들어섭니다.", player);
 
-		log.add("방 중앙에 놓인 정교하게 조각된 고대의 보물 상자는 그 존재 자체로 위엄과 신비로움을 풍기고 있습니다.");
+		log.add("중앙에는 도저히 던전에서 볼 수 없는 고급스러운 상자가 놓여 있습니다. 마치 '플레이어 보상용'이라고 써 있는 것처럼요.");
 
 		List<Item> weaponList = itemRepository.findAllByItemCategory(ItemCategory.WEAPON);
-
 		int randomIndex = ThreadLocalRandom.current().nextInt(weaponList.size());
-
 		Item item = weaponList.get(randomIndex);
 
 		String grade = item.getGrade().getGrade();
@@ -53,14 +51,15 @@ public class AncientRuinsTreasure implements EncounterStrategy {
 
 		if (inventory.getWeapons().contains(item.getId())) {
 			character.earnGold(200L);
-			log.add("상자를 조심스레 열어 보았으나, 그 안에 담긴 무기는 이미 " + player + "의 손에 익숙한 물건이었습니다.");
-			log.add("대신, 무기 아래서 발견된 고대의 황금 주화 더미가 반짝이며 " + player + "의 눈을 사로잡습니다. (+200골드)");
+			log.add("뚜껑을 열자마자, 익숙한 무기. 아마 지난 던전에서도 주웠던 그 녀석입니다.");
+			log.add("고대 상자가 당신에게 묻는 듯합니다. “복붙된 무기는 어때? 대신 골드 200개는 덤이야.”");
 		} else {
 			inventory.addItem(item.getItemType(), item.getId());
-			log.add(player + "(은)는 두근거리는 마음으로 상자의 뚜껑을 천천히 엽니다. 그 순간, (" + grade + " : " + weaponName
-				+ ")이 은은하고 신비한 빛과 함께 모습을 드러냅니다!");
-			log.add("그 희귀한 무기의 광채가 방 전체를 밝히며, " + player + "의 가슴을 기쁨과 흥분으로 가득 채웁니다.");
+			log.add("%s(은)는 숨을 들이쉬고 조심스럽게 상자를 엽니다... (%s: %s) 이 은은한 광채를 뿜으며 등장합니다.",player, grade, weaponName);
+			log.add("그 순간, 배경 음악이 깔리고 화면 중앙에 '획득!'이 떠오를 것만 같습니다.");
+			log.add("누군가는 이 무기를 고대의 유산이라 부르겠지만, 당신은 그냥 '오늘의 운빨'이라 부릅니다.");
 		}
+
 		log.setIsPositive(true);
 	}
 }

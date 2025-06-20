@@ -65,7 +65,7 @@ public class GameCharacter extends BaseEntity {
 	private String defenceId;
 	private String accessoryId;
 
-	private Long gold;
+	private long gold;
 
 	public GameCharacter(User user) {
 
@@ -96,7 +96,7 @@ public class GameCharacter extends BaseEntity {
 		gold -= 50L;
 	}
 
-	public void earnGold(Long gold) {
+	public void earnGold(long gold) {
 
 		this.gold += gold;
 	}

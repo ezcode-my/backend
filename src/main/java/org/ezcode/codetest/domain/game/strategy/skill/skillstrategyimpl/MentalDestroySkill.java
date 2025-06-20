@@ -10,24 +10,23 @@ import org.springframework.stereotype.Component;
 public class MentalDestroySkill extends AbstractSkill {
 
 	@Override
-	public SkillEffect getType() { return SkillEffect.MENTAL_DESTROY; }
+	public SkillEffect getType() {
+		return SkillEffect.MENTAL_DESTROY;
+	}
 
 	@Override
-	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log, WeaponType weaponType) {
+	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log,
+		WeaponType weaponType) {
 
-		double chance = 70.0;
+		attacker.consumeActionPoints();
+
+		double chance = 50.0;
 		if (RNG.nextDouble() * 100 < chance) {
-			int reduced = 0;
-			for (int i = 0; i < 2; i++) {
-				if (defender.consumeActionPoints()) {
-					reduced++;
-				} else {
-					break;
-				}
-			}
-			log.add("%s의 정신 파괴! %s의 행동력이 %d 감소했습니다.", attacker.getName(), defender.getName(), reduced);
+			defender.consumeActionPoints();
+			log.add("%s가 %s의 정신을 조용히 산산조각냈습니다. - AP 1 감소, 남은 AP %d", attacker.getName(),
+				defender.getName(), defender.getAp());
 		} else {
-			log.add("%s의 정신 파괴 시도! 그러나 실패했습니다.", attacker.getName());
+			log.add("%s가 %s의 머리를 두드렸지만, 아직 멀쩡한 모양입니다. 정신 붕괴 실패.", attacker.getName(), defender.getName());
 		}
 		return true;
 	}

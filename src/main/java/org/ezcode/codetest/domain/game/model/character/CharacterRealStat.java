@@ -18,15 +18,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CharacterRealStat {
 
-	private Double atk = 5.0;
-	private Double def = 5.0;
-	private Double speed = 5.0;
-	private Double crit = 5.0;
-	private Double stun = 5.0;
-	private Double evasion = 5.0;
-	private Double accuracy = 5.0;
-	private Double hp = 50.0;
-	private Integer ap = 3;
+	private double atk = 5.0;
+	private double def = 5.0;
+	private double speed = 5.0;
+	private double crit = 5.0;
+	private double stun = 5.0;
+	private double evasion = 5.0;
+	private double accuracy = 5.0;
+	private double hp = 50.0;
+	private int ap = 3;
 
 	public CharacterRealStat(CharacterRealStat source) {
 		this.atk      = source.atk;
@@ -68,7 +68,7 @@ public class CharacterRealStat {
 		);
 	}
 
-	public Double statSummary() {
+	public double statSummary() {
 
 		return atk + def + speed + crit + stun + evasion + accuracy;
 	}
@@ -80,14 +80,14 @@ public class CharacterRealStat {
 	public void increase(Stat stat, double rate) {
 		switch(stat) {
 			case PROBLEM_SOLVING:
-				this.atk += 2 + rate;
+				this.atk += 2.0 + rate;
 				break;
 			case DATA_STRUCTURE:
-				this.def += 1 + rate;
+				this.def += 1.0 + rate;
 				this.atk += 0.5 + rate;
 				break;
 			case SPEED:
-				this.speed += 1 + rate;
+				this.speed += 1.0 + rate;
 				this.atk += rate;
 				break;
 			case DEBUGGING:
@@ -95,54 +95,54 @@ public class CharacterRealStat {
 				this.stun += rate;
 				break;
 			case OPTIMIZATION:
-				this.evasion += 1 + rate;
-				this.accuracy += 1 + rate;
+				this.evasion += 1.0 + rate;
+				this.accuracy += 1.0 + rate;
 				break;
 			default:
 				break;
 		}
 	}
 
-	public void applyAtkChange(Double atk) {
+	public void applyAtkChange(double atk) {
 
 		this.atk += atk;
-		if(this.atk < 0) this.atk = 0.0;
+		if(this.atk < 0.0) this.atk = 0.0;
 	}
 
-	public void applyDefChange(Double def) {
+	public void applyDefChange(double def) {
 
 		this.def += def;
-		if(this.def < 0) this.def = 0.0;
+		if(this.def < 0.0) this.def = 0.0;
 	}
 
-	public void applySpeedChange(Double speed) {
+	public void applySpeedChange(double speed) {
 
 		this.speed += speed;
-		if(this.speed < 0) this.speed = 0.0;
+		if(this.speed < 0.0) this.speed = 0.0;
 	}
 
-	public void applyCritChange(Double crit) {
+	public void applyCritChange(double crit) {
 
 		this.crit += crit;
-		if(this.crit < 0) this.crit = 0.0;
+		if(this.crit < 0.0) this.crit = 0.0;
 	}
 
-	public void applyEvasionChange(Double evasion) {
+	public void applyEvasionChange(double evasion) {
 
 		this.evasion += evasion;
-		if(this.evasion < 0) this.evasion = 0.0;
+		if(this.evasion < 0.0) this.evasion = 0.0;
 	}
 
-	public void applyAccuracyChange(Double accuracy) {
+	public void applyAccuracyChange(double accuracy) {
 
 		this.accuracy += accuracy;
-		if(this.accuracy < 0) this.accuracy = 0.0;
+		if(this.accuracy < 0.0) this.accuracy = 0.0;
 	}
 
-	public void applyStunChange(Double stun) {
+	public void applyStunChange(double stun) {
 
 		this.stun += stun;
-		if(this.stun < 0) this.stun = 0.0;
+		if(this.stun < 0.0) this.stun = 0.0;
 	}
 
 }

@@ -2,12 +2,16 @@ package org.ezcode.codetest.application.game.dto.mapper;
 
 import java.util.List;
 
+import org.ezcode.codetest.application.game.dto.response.encounter.EncounterChoiceResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.EncounterResponse;
 import org.ezcode.codetest.application.game.dto.response.item.AccessoryResponse;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.item.DefenceResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
 import org.ezcode.codetest.application.game.dto.response.item.WeaponResponse;
+import org.ezcode.codetest.domain.game.model.encounter.EncounterChoice;
+import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
 import org.ezcode.codetest.domain.game.model.item.Accessory;
 import org.ezcode.codetest.domain.game.model.character.CharacterRealStat;
 import org.ezcode.codetest.domain.game.model.item.Defence;
@@ -36,6 +40,9 @@ public interface GameMapper {
 	WeaponResponse toItemResponse(Weapon weapon);
 	DefenceResponse toItemResponse(Defence defence);
 	AccessoryResponse toItemResponse(Accessory accessory);
+
+	EncounterResponse toEncounterResponse(RandomEncounter encounter);
+	EncounterChoiceResponse toEncounterChoiceResponse(EncounterChoice choice);
 
 	@Mapping(target = "realStat", ignore = true)
 	@Mapping(target = "items", ignore = true)

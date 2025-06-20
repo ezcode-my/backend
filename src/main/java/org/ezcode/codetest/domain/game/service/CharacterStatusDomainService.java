@@ -60,6 +60,8 @@ public class CharacterStatusDomainService {
 		GameCharacter character = characterRepository.findByUserId(userId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.CHARACTER_NOT_FOUND));
 
+		character.earnGold(500L);
+
 		character.applyIncreaseStats(increaseStatRate);
 	}
 
@@ -88,6 +90,11 @@ public class CharacterStatusDomainService {
 	public List<Item> loadEquippedItems(GameCharacter character) {
 
 		return characterLoadService.loadEquippedItems(character);
+	}
+
+	public List<GameCharacterSkill> loadUnEquippedSkills(GameCharacter character) {
+
+		return characterLoadService.loadUnEquippedSkills(character);
 	}
 
 	public List<GameCharacterSkill> loadEquippedSkills(GameCharacter character) {

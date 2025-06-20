@@ -17,4 +17,9 @@ public interface GameCharacterSkillJpaRepository extends JpaRepository<GameChara
 
 	@EntityGraph(attributePaths = "skill")
 	List<GameCharacterSkill> findByCharacterIdAndSlotTypeNot(Long characterId, SkillSlotType type);
+
+	@EntityGraph(attributePaths = "skill")
+	List<GameCharacterSkill> findByCharacterIdAndSlotType(Long characterId, SkillSlotType type);
+
+	boolean existsByCharacterIdAndSkillId(Long characterId, Long skillId);
 }
