@@ -20,6 +20,9 @@ import lombok.Builder;
 @Schema(description = "캐릭터 스테이터스 조회 응답")
 public record CharacterStatusResponse(
 
+	@Schema(description = "캐릭터 이름")
+	String name,
+
 	@Schema(description = "캐릭터 가상 스텟")
 	Map<Stat, Double> stats,
 
