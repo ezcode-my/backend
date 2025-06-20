@@ -14,40 +14,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LanguageRepositoryImpl implements LanguageRepository {
 
-	private final LanguageJpaRepository languageJpaRepository;
+    private final LanguageJpaRepository languageJpaRepository;
 
-	@Override
-	public boolean existsById(Long languageId) {
-		return languageJpaRepository.existsById(languageId);
-	}
+    @Override
+    public boolean existsById(Long languageId) {
+        return languageJpaRepository.existsById(languageId);
+    }
 
-	@Override
-	public boolean existsByNameAndVersion(String name, String version) {
-		return languageJpaRepository.existsByNameAndVersion(name, version);
-	}
+    @Override
+    public boolean existsByNameAndVersion(String name, String version) {
+        return languageJpaRepository.existsByNameAndVersion(name, version);
+    }
 
-	@Override
-	public Language saveLanguage(Language language) {
-		return languageJpaRepository.save(language);
-	}
+    @Override
+    public Language saveLanguage(Language language) {
+        return languageJpaRepository.save(language);
+    }
 
-	@Override
-	public Optional<Language> findLanguageById(Long languageId) {
-		return languageJpaRepository.findById(languageId);
-	}
+    @Override
+    public Optional<Language> findLanguageById(Long languageId) {
+        return languageJpaRepository.findById(languageId);
+    }
 
-	@Override
-	public List<Language> findLanguages() {
-		return languageJpaRepository.findAll();
-	}
+    @Override
+    public List<Language> findLanguages() {
+        return languageJpaRepository.findAll();
+    }
 
-	@Override
-	public void updateLanguage(Language language, Long judge0Id) {
-		language.updateJudge0Id(judge0Id);
-	}
+    @Override
+    public void updateLanguage(Language language, Long judge0Id) {
+        language.updateJudge0Id(judge0Id);
+    }
 
-	@Override
-	public void deleteLanguage(Long languageId) {
-		languageJpaRepository.deleteById(languageId);
-	}
+    @Override
+    public void deleteLanguage(Long languageId) {
+        languageJpaRepository.deleteById(languageId);
+    }
 }

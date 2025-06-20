@@ -20,52 +20,52 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class DiscordNotifier implements ExceptionNotifier {
 
-	@Value("${discord.webhook.url}")
-	private String webhookUrl;
-	private final RestTemplate restTemplate = new RestTemplate();
-	private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${discord.webhook.url}")
+    private String webhookUrl;
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-	@Override
-	public void sendEmbed(String title, String description, String exception, String methodName) {
-		try {
-			Map<String, Object> embed = Map.of(
-				"title", title,
-				"description", description,
-				"color", 16711680,
-				"fields", List.of(
-					Map.of(
-						"name", "예외 메시지",
-						"value", exception,
-						"inline", false
-					),
-					Map.of(
-						"name", "발생 메서드",
-						"value", methodName,
-						"inline", false
-					),
-					Map.of(
-						"name", "발생 시각",
-						"value", Instant.now().toString(),
-						"inline", false
-					)
-				)
-			);
+    @Override
+    public void sendEmbed(String title, String description, String exception, String methodName) {
+        try {
+            Map<String, Object> embed = Map.of(
+                "title", title,
+                "description", description,
+                "color", 16711680,
+                "fields", List.of(
+                    Map.of(
+                        "name", "예외 메시지",
+                        "value", exception,
+                        "inline", false
+                    ),
+                    Map.of(
+                        "name", "발생 메서드",
+                        "value", methodName,
+                        "inline", false
+                    ),
+                    Map.of(
+                        "name", "발생 시각",
+                        "value", Instant.now().toString(),
+                        "inline", false
+                    )
+                )
+            );
 
-			Map<String, Object> payload = Map.of(
-				"embeds", List.of(embed)
-			);
+            Map<String, Object> payload = Map.of(
+                "embeds", List.of(embed)
+            );
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-			String body = objectMapper.writeValueAsString(payload);
+            String body = objectMapper.writeValueAsString(payload);
 
-			HttpEntity<String> entity = new HttpEntity<>(body, headers);
+            HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
-			restTemplate.postForEntity(webhookUrl, entity, String.class);
-		} catch (Exception e) {
-			log.error("Discord 웹훅 전송 실패", e);
-		}
-	}
+            restTemplate.postForEntity(webhookUrl, entity, String.class);
+        } catch (Exception e) {
+            log.error("Discord 웹훅 전송 실패", e);
+        }
+    }
 }
 

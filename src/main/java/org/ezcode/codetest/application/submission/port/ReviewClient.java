@@ -5,6 +5,6 @@ import org.ezcode.codetest.application.submission.model.ReviewResult;
 
 public interface ReviewClient {
 
-	ReviewResult requestReview(ReviewPayload request);
+    ReviewResult requestReview(ReviewPayload request);
 
 }

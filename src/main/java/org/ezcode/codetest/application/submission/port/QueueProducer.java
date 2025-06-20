@@ -4,6 +4,6 @@ import org.ezcode.codetest.infrastructure.event.dto.SubmissionMessage;
 
 public interface QueueProducer {
 
-	void enqueue(SubmissionMessage submissionMessage);
+    void enqueue(SubmissionMessage submissionMessage);
 
 }

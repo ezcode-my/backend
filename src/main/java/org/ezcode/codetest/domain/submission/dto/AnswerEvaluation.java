@@ -5,18 +5,18 @@ import lombok.Builder;
 @Builder
 public record AnswerEvaluation(
 
-	boolean isCorrect,
+    boolean isCorrect,
 
-	boolean timeEfficient,
+    boolean timeEfficient,
 
-	boolean memoryEfficient,
+    boolean memoryEfficient,
 
-	String expectedOutput,
+    String expectedOutput,
 
-	String actualOutput
+    String actualOutput
 
 ) {
-	public boolean isPassed() {
-		return this.isCorrect() && this.timeEfficient() && this.memoryEfficient();
-	}
+    public boolean isPassed() {
+        return this.isCorrect() && this.timeEfficient() && this.memoryEfficient();
+    }
 }

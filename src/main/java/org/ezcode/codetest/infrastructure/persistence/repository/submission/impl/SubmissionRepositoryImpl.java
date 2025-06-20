@@ -16,21 +16,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubmissionRepositoryImpl implements SubmissionRepository {
 
-	private final SubmissionJpaRepository submissionJpaRepository;
-	private final SubmissionQueryRepository submissionQueryRepository;
+    private final SubmissionJpaRepository submissionJpaRepository;
+    private final SubmissionQueryRepository submissionQueryRepository;
 
-	@Override
-	public void saveSubmission(Submission submission) {
-		submissionJpaRepository.save(submission);
-	}
+    @Override
+    public void saveSubmission(Submission submission) {
+        submissionJpaRepository.save(submission);
+    }
 
-	@Override
-	public List<Submission> findSubmissionsByUserId(Long userId) {
-		return submissionJpaRepository.findAllByUser_Id(userId);
-	}
+    @Override
+    public List<Submission> findSubmissionsByUserId(Long userId) {
+        return submissionJpaRepository.findAllByUser_Id(userId);
+    }
 
-	@Override
-	public List<WeeklySolveCount> fetchWeeklySolveCounts(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-		return submissionQueryRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
-	}
+    @Override
+    public List<WeeklySolveCount> fetchWeeklySolveCounts(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return submissionQueryRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
+    }
 }

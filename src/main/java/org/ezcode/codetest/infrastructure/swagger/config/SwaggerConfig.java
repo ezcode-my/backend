@@ -11,19 +11,19 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @Configuration
 @OpenAPIDefinition(
-	info = @Info(title = "API 문서", version = "v1"),
-	security = @SecurityRequirement(name = "JWT")
+    info = @Info(title = "API 문서", version = "v1"),
+    security = @SecurityRequirement(name = "JWT")
 )
 @SecurityScheme(
-	name = "JWT",
-	type = SecuritySchemeType.HTTP,
-	scheme = "bearer",
-	bearerFormat = "JWT"
+    name = "JWT",
+    type = SecuritySchemeType.HTTP,
+    scheme = "bearer",
+    bearerFormat = "JWT"
 )
 @SecurityScheme(
-	name = "JWT_REFRESH", // refreshToken용
-	type = SecuritySchemeType.APIKEY,
-	in = SecuritySchemeIn.HEADER
+    name = "JWT_REFRESH", // refreshToken용
+    type = SecuritySchemeType.APIKEY,
+    in = SecuritySchemeIn.HEADER
 )
 public class SwaggerConfig {
 }

@@ -10,13 +10,13 @@ import lombok.Getter;
 @Getter
 public class LanguageException extends BaseException {
 
-	private final ResponseCode responseCode;
-	private final HttpStatus httpStatus;
-	private final String message;
+    private final ResponseCode responseCode;
+    private final HttpStatus httpStatus;
+    private final String message;
 
-	public LanguageException(LanguageExceptionCode responseCode) {
-		this.responseCode = responseCode;
-		this.httpStatus = responseCode.getStatus();
-		this.message = responseCode.getMessage();
-	}
+    public LanguageException(LanguageExceptionCode responseCode) {
+        this.responseCode = responseCode;
+        this.httpStatus = responseCode.getStatus();
+        this.message = responseCode.getMessage();
+    }
 }

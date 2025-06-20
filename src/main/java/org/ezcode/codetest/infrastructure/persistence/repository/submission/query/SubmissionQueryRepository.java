@@ -6,7 +6,7 @@ import java.util.List;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 
 public interface SubmissionQueryRepository {
-	List<WeeklySolveCount> fetchWeeklySolveCounts(
-		LocalDateTime startDateTime, LocalDateTime endDateTime
-	);
+    List<WeeklySolveCount> fetchWeeklySolveCounts(
+        LocalDateTime startDateTime, LocalDateTime endDateTime
+    );
 }

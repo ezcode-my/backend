@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class SubmitViewController {
 
-	@GetMapping("/submit-test")
-	public String getView() {
-		return "submit-test";
-	}
+    @GetMapping("/submit-test")
+    public String getView() {
+        return "submit-test";
+    }
 }

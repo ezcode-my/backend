@@ -15,18 +15,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class RedisJudgeQueueProducer implements QueueProducer {
 
-	private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
-	public void enqueue(SubmissionMessage submissionMessage) {
-		log.info("[SSE enqueue] emitterKey: {}", submissionMessage.emitterKey());
-		Map<String, String> map = Map.of(
-			"emitterKey", submissionMessage.emitterKey(),
-			"problemId", submissionMessage.problemId().toString(),
-			"languageId", submissionMessage.languageId().toString(),
-			"userId", submissionMessage.userId().toString(),
-			"sourceCode", submissionMessage.sourceCode()
-		);
+    public void enqueue(SubmissionMessage submissionMessage) {
+        log.info("[SSE enqueue] emitterKey: {}", submissionMessage.emitterKey());
+        Map<String, String> map = Map.of(
+            "emitterKey", submissionMessage.emitterKey(),
+            "problemId", submissionMessage.problemId().toString(),
+            "languageId", submissionMessage.languageId().toString(),
+            "userId", submissionMessage.userId().toString(),
+            "sourceCode", submissionMessage.sourceCode()
+        );
 
-		redisTemplate.opsForStream().add("judge-queue", map);
-	}
+        redisTemplate.opsForStream().add("judge-queue", map);
+    }
 }
