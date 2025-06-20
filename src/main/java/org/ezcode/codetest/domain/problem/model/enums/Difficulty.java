@@ -9,11 +9,13 @@ import lombok.Getter;
 
 @Getter
 public enum Difficulty {
-	BRONZE("브론즈", 20),
-	SILVER("실버", 40),
-	GOLD("골드", 60),
-	PLATINUM("플래티넘", 80),
-	DIAMOND("다이아", 100);
+	LV1("1", 10),
+	LV2("2", 20),
+	LV3("3", 40),
+	LV4("4", 80),
+	LV5("5", 160),
+	LV6("6", 320),
+	LV7("7", 640);
 
 	private final String difficulty;
 
