@@ -2,11 +2,13 @@ package org.ezcode.codetest.presentation.usermanagement;
 
 import java.util.Optional;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.VerifyEmailResponse;
 import org.ezcode.codetest.application.usermanagement.auth.service.AuthService;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
@@ -40,6 +42,11 @@ public class AuthController {
 	@PostMapping("/auth/signup")
 	public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(signupRequest));
+	}
+
+	@PostMapping("/auth/verify-email")
+	public ResponseEntity<VerifyEmailResponse> authMailCdoe(@RequestBody VerifyEmailRequest verifyEmailRequest){
+		return ResponseEntity.status(HttpStatus.CREATED).body(authService.verifyEmailCode(verifyEmailRequest));
 	}
 
 	@Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인하고 토큰을 발급받습니다.")
