@@ -15,6 +15,7 @@ import org.ezcode.codetest.application.game.dto.response.encounter.MatchingEncou
 import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
+import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
 import org.ezcode.codetest.application.game.play.GamePlayUseCase;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.presentation.advice.ResponseMessage;
@@ -71,6 +72,21 @@ public class GamePlayController {
 		@AuthenticationPrincipal AuthUser authUser
 	) {
 		return ResponseEntity.status(HttpStatus.OK).body(gamePlayUseCase.characterStatusOpen(authUser.getId()));
+	}
+
+	@Operation(
+		summary = "캐릭터 보유 스킬 조회 API",
+		description = "현재 캐릭터의 장착하지 않은 보유 스킬들을 조회합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "사용자 스킬 보유 반환")
+		}
+	)
+	@ResponseMessage("정상적으로 캐릭터 보유 스킬이 조회되었습니다.")
+	@GetMapping("/skills/unequipped")
+	public ResponseEntity<List<SkillResponse>> CharacterSkillsOpen(
+		@AuthenticationPrincipal AuthUser authUser
+	) {
+		return ResponseEntity.status(HttpStatus.OK).body(gamePlayUseCase.skillInventoryOpen(authUser.getId()));
 	}
 
 	@Operation(

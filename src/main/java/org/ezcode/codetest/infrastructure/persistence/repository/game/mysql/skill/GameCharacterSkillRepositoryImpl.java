@@ -33,4 +33,16 @@ public class GameCharacterSkillRepositoryImpl implements GameCharacterSkillRepos
 		return gameCharacterSkillRepository.findByCharacterIdAndSlotTypeNot(characterId, SkillSlotType.BACKPACK);
 	}
 
+	@Override
+	public List<GameCharacterSkill> findByCharacterIdAndUnEquipped(Long characterId) {
+
+		return gameCharacterSkillRepository.findByCharacterIdAndSlotType(characterId, SkillSlotType.BACKPACK);
+	}
+
+	@Override
+	public boolean existsByCharacterIdAndSkillId(Long characterId, Long skillId) {
+
+		return gameCharacterSkillRepository.existsByCharacterIdAndSkillId(characterId, skillId);
+	}
+
 }

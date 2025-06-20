@@ -11,4 +11,8 @@ public interface GameCharacterSkillRepository {
 	List<GameCharacterSkill> findByCharacterId(Long characterId);
 
 	List<GameCharacterSkill> findByCharacterIdAndEquipped(Long characterId);
+
+	List<GameCharacterSkill> findByCharacterIdAndUnEquipped(Long characterId);
+
+	boolean existsByCharacterIdAndSkillId(Long characterId, Long skillId);
 }

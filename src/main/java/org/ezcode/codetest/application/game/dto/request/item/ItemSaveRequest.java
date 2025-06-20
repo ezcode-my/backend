@@ -38,7 +38,7 @@ public abstract class ItemSaveRequest {
 	private final String name;
 
 	@NotBlank(message = "아이템 설명란은 필수 입력입니다.")
-	@Size(message = "아이템 설명 입력은 최대 30글자 이내로만 가능합니다.", max = 30)
+	@Size(message = "아이템 설명 입력은 최대 250글자 이내로만 가능합니다.", max = 250)
 	@Schema(description = "저장할 아이템 설명/묘사")
 	private final String description;
 

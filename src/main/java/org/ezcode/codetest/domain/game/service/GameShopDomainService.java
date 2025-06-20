@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.item.Grade;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.character.Inventory;
 import org.ezcode.codetest.domain.game.model.item.Item;
@@ -35,9 +36,21 @@ public class GameShopDomainService {
 
 		List<Item> weaponList = itemRepository.findAllByItemCategory(ItemCategory.WEAPON);
 
-		int randomIndex = ThreadLocalRandom.current().nextInt(weaponList.size());
+		int roll = ThreadLocalRandom.current().nextInt(100);
 
-		Item item = weaponList.get(randomIndex);
+		Grade targetGrade = Grade.fromRoll(roll);
+
+		List<Item> candidates = weaponList.stream()
+			.filter(item -> item.getGrade() == targetGrade)
+			.toList();
+
+		if (candidates.isEmpty()) {
+			candidates = weaponList;
+		}
+
+		int randomIndex = ThreadLocalRandom.current().nextInt(candidates.size());
+
+		Item item = candidates.get(randomIndex);
 
 		Inventory inventory = inventoryRepository.findByGameCharacterId(character.getId())
 			.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
@@ -58,9 +71,21 @@ public class GameShopDomainService {
 
 		List<Item> defenceList = itemRepository.findAllByItemCategory(ItemCategory.DEFENCE);
 
-		int randomIndex = ThreadLocalRandom.current().nextInt(defenceList.size());
+		int roll = ThreadLocalRandom.current().nextInt(100);
 
-		Item item = defenceList.get(randomIndex);
+		Grade targetGrade = Grade.fromRoll(roll);
+
+		List<Item> candidates = defenceList.stream()
+			.filter(item -> item.getGrade() == targetGrade)
+			.toList();
+
+		if (candidates.isEmpty()) {
+			candidates = defenceList;
+		}
+
+		int randomIndex = ThreadLocalRandom.current().nextInt(candidates.size());
+
+		Item item = candidates.get(randomIndex);
 
 		Inventory inventory = inventoryRepository.findByGameCharacterId(character.getId())
 			.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
@@ -71,7 +96,6 @@ public class GameShopDomainService {
 		}
 
 		inventory.addItem(item.getItemType(), item.getId());
-
 		return item;
 	}
 
@@ -81,9 +105,21 @@ public class GameShopDomainService {
 
 		List<Item> accessoryList = itemRepository.findAllByItemCategory(ItemCategory.ACCESSORY);
 
-		int randomIndex = ThreadLocalRandom.current().nextInt(accessoryList.size());
+		int roll = ThreadLocalRandom.current().nextInt(100);
 
-		Item item = accessoryList.get(randomIndex);
+		Grade targetGrade = Grade.fromRoll(roll);
+
+		List<Item> candidates = accessoryList.stream()
+			.filter(item -> item.getGrade() == targetGrade)
+			.toList();
+
+		if (candidates.isEmpty()) {
+			candidates = accessoryList;
+		}
+
+		int randomIndex = ThreadLocalRandom.current().nextInt(candidates.size());
+
+		Item item = candidates.get(randomIndex);
 
 		Inventory inventory = inventoryRepository.findByGameCharacterId(character.getId())
 			.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
@@ -94,7 +130,6 @@ public class GameShopDomainService {
 		}
 
 		inventory.addItem(item.getItemType(), item.getId());
-
 		return item;
 	}
 
@@ -104,30 +139,39 @@ public class GameShopDomainService {
 
 		List<Skill> skillList = skillRepository.findAll();
 
-		int randomIndex = ThreadLocalRandom.current().nextInt(skillList.size());
+		int roll = ThreadLocalRandom.current().nextInt(100);
 
-		Skill skill = skillList.get(randomIndex);
+		Grade targetGrade = Grade.fromRoll(roll);
 
-		List<GameCharacterSkill> characterSkills = characterSkillRepository.findByCharacterId(character.getId());
+		List<Skill> candidates = skillList.stream()
+			.filter(s -> s.getGrade() == targetGrade)
+			.toList();
 
-		boolean alreadyHas = characterSkills.stream()
-			.anyMatch(cs -> cs.getSkill().getId().equals(skill.getId()));
+		if (candidates.isEmpty()) {
+			candidates = skillList;
+		}
+
+		int randomIndex = ThreadLocalRandom.current().nextInt(candidates.size());
+
+		Skill picked = candidates.get(randomIndex);
+
+		boolean alreadyHas = characterSkillRepository.existsByCharacterIdAndSkillId(character.getId(), picked.getId());
 
 		if (alreadyHas) {
 			character.earnGold(25L);
-			return skill;
+			return picked;
 		}
 
 		characterSkillRepository.save(
 			GameCharacterSkill
 				.builder()
-				.skill(skill)
+				.skill(picked)
 				.character(character)
 				.slotType(SkillSlotType.BACKPACK)
 				.build()
 		);
 
-		return skill;
+		return picked;
 	}
 
 }

@@ -30,7 +30,7 @@ public record SkillSaveRequest(
 	String name,
 
 	@NotBlank(message = "스킬 설명을 입력해주세요.")
-	@Size(message = "스킬 설명 입력은 최대 150글자 이내로만 가능합니다.", max = 150)
+	@Size(message = "스킬 설명 입력은 최대 250글자 이내로만 가능합니다.", max = 250)
 	@Schema(description = "저장할 스킬 설명/묘사")
 	String skillDetails
 

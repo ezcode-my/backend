@@ -57,7 +57,7 @@ public class DataLoader {
 					.crit(0)
 					.description("기본 악세서리입니다. 꽝이에용")
 					.stun(0)
-					.type(AccessoryType.MOUSE)
+					.type(AccessoryType.CHARM)
 					.build()
 			));
 		}

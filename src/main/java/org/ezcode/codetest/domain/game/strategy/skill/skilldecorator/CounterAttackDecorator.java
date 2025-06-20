@@ -25,23 +25,44 @@ public class CounterAttackDecorator implements SkillStrategy {
 	}
 
 	@Override
-	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log, WeaponType weaponType) {
+	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log,
+		WeaponType weaponType) {
 
 		double buff = switch (grade) {
-			case LEGENDARY -> 0.10;
-			case UNIQUE    -> 0.08;
-			case RARE      -> 0.06;
-			case UNCOMMON  -> 0.04;
-			case COMMON    -> 0.02;
-			default        -> 0.0;
+			case LEGENDARY -> 0.20;
+			case UNIQUE -> 0.10;
+			case RARE -> 0.06;
+			case UNCOMMON -> 0.04;
+			case COMMON -> 0.02;
+			default -> 0.0;
 		};
 
 		if (buff > 0.0) {
 			attacker.applyCritBuff(buff * attacker.getCrit());
-			log.add("[%s] 효과로 치명타 확률 +%.0f%% 추가 적용", skillName, buff * 100);
-
 			attacker.applyStunBuff(buff * attacker.getStun());
-			log.add("[%s] 효과로 스턴 확률 +%.0f%% 추가 적용", skillName, buff * 100);
+
+			switch (grade) {
+				case LEGENDARY -> log.add(
+					"[%s] 발동. 치명타 +%.1f%%, 스턴 +%.1f%% 증가합니다. 적은 두 번 맞고 한 번 웃습니다. 웃는 쪽은 아닙니다.",
+					skillName, buff * 100, buff * 100
+				);
+				case UNIQUE -> log.add(
+					"[%s] 효과 발동. 치명타 +%.1f%%, 스턴 +%.1f%% 증가합니다. 반격은 인사고, 부작용은 사망입니다.",
+					skillName, buff * 100, buff * 100
+				);
+				case RARE -> log.add(
+					"[%s] 효과 적용. 치명타 +%.1f%%, 스턴 +%.1f%% 증가합니다. 운 좋으면 아픕니다. 운 나쁘면 끝입니다.",
+					skillName, buff * 100, buff * 100
+				);
+				case UNCOMMON -> log.add(
+					"[%s] 발동. 치명타 +%.1f%%, 스턴 +%.1f%% 증가합니다. 병원비는 따로 청구되지 않습니다.",
+					skillName, buff * 100, buff * 100
+				);
+				case COMMON -> log.add(
+					"[%s] 효과 발동. 치명타 +%.1f%%, 스턴 +%.1f%% 증가합니다.",
+					skillName, buff * 100, buff * 100
+				);
+			}
 		}
 		return delegate.useSkill(attacker, defender, log, weaponType);
 	}

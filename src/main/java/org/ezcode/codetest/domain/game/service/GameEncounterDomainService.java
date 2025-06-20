@@ -66,7 +66,7 @@ public class GameEncounterDomainService {
 			.findFirst()
 			.orElse(WeaponType.NOTHING);
 
-		WeaponType opponentWeaponType = opponentItems.stream()
+ 		WeaponType opponentWeaponType = opponentItems.stream()
 			.filter(item -> item instanceof Weapon)
 			.map(item -> (WeaponType) item.getItemType())
 			.findFirst()
@@ -100,6 +100,8 @@ public class GameEncounterDomainService {
 
 			if (!alive) {
 				battleLog.setPlayerWin(attacker == playerContext);
+				player.earnGold(100L);
+				battleLog.add("전투 승리보상으로 100 골드가 지급되었습니다.");
 				return battleLog;
 			}
 
@@ -113,6 +115,8 @@ public class GameEncounterDomainService {
 
 			if (!alive) {
 				battleLog.setPlayerWin(defender == playerContext);
+				player.earnGold(-25L);
+				battleLog.add("전투 패배로 25 골드를 갈취당했습니다.");
 				return battleLog;
 			}
 
@@ -129,7 +133,7 @@ public class GameEncounterDomainService {
 		return battleHistoryRepository.save(BattleHistory.builder()
 			.attacker(player)
 			.defender(opponent)
-			.battleLog(log.getMessages())
+			.battleLog(log.asText())
 			.isAttackerWin(log.getPlayerWin())
 			.build());
 	}
@@ -199,7 +203,7 @@ public class GameEncounterDomainService {
 
 		return encounterHistoryRepository.save(EncounterHistory.builder()
 			.character(player)
-			.resultLog(log.getMessages())
+			.resultLog(log.asText())
 			.isPositive(log.getIsPositive())
 			.build());
 	}

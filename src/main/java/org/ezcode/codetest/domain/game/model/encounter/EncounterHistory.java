@@ -1,19 +1,16 @@
 package org.ezcode.codetest.domain.game.model.encounter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,14 +30,15 @@ public class EncounterHistory extends BaseEntity {
 	@JoinColumn(name = "game_character_id", nullable = false)
 	private GameCharacter character;
 
-	@ElementCollection(fetch = FetchType.LAZY)
-	private List<String> resultLog = new ArrayList<>();
+	@Lob
+	@Column(columnDefinition = "TEXT", nullable = false)
+	private String resultLog;
 
 	@Column(nullable = false)
 	private Boolean isPositive;
 
 	@Builder
-	public EncounterHistory(GameCharacter character, List<String> resultLog, Boolean isPositive) {
+	public EncounterHistory(GameCharacter character, String resultLog, Boolean isPositive) {
 		this.character = character;
 		this.resultLog = resultLog;
 		this.isPositive = isPositive;

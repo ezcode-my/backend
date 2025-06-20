@@ -1,7 +1,5 @@
 package org.ezcode.codetest.application.game.dto.response.encounter;
 
-import java.util.List;
-
 import org.ezcode.codetest.domain.game.model.encounter.EncounterHistory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,17 +8,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record EncounterResultResponse(
 
 	@Schema(description = "인카운터 로그(사용자 캐릭터 결말)")
-	List<String> log,
+	String log,
 
 	@Schema(description = "해당 선택으로 긍정적 혹은 부정정 결과인지 셋팅")
 	boolean isPositive
 
 ) {
-	public static EncounterResultResponse of(List<String> log, boolean isPositive) {
-
-		return new EncounterResultResponse(log, isPositive);
-	}
-
 	public static EncounterResultResponse from(EncounterHistory history) {
 
 		return new EncounterResultResponse(history.getResultLog(), history.getIsPositive());

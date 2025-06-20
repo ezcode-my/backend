@@ -17,7 +17,7 @@ public abstract class AbstractSkill implements SkillStrategy {
 
 		double hitChance = BASE_HIT_RATE + (attacker.getAccuracy() - defender.getEvasion());
 		if (RNG.nextDouble() * 100 >= hitChance) {
-			log.add("%s의 공격! 하지만 %s에게 빗나갔습니다.", attacker.getName(), defender.getName());
+			log.add("%s의 공격. 하지만 %s에게 빗나갔습니다.", attacker.getName(), defender.getName());
 			attacker.consumeActionPoints();
 			return false;
 		}

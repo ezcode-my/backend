@@ -90,6 +90,16 @@ public class GamePlayUseCase {
 	}
 
 	@Transactional
+	public List<SkillResponse> skillInventoryOpen(Long userId) {
+
+		GameCharacter character = characterService.getGameCharacter(userId);
+
+		List<GameCharacterSkill> characterSkills = characterService.loadUnEquippedSkills(character);
+
+		return characterSkills.stream().map(cs -> SkillResponse.from(cs.getSkill())).toList();
+	}
+
+	@Transactional
 	public void equipItem(Long userId, String itemName) {
 
 		GameCharacter character = characterService.getGameCharacter(userId);

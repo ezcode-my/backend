@@ -60,6 +60,11 @@ public class CharacterEquipService {
 		return characterSkill;
 	}
 
+	public List<GameCharacterSkill> loadUnEquippedSkills(GameCharacter character) {
+
+		return characterSkillRepository.findByCharacterIdAndUnEquipped(character.getId());
+	}
+
 	public void equipDefaultItem(GameCharacter character, Inventory savedInventory, String itemName) {
 
 		Item item = itemRepository.findByName(itemName)

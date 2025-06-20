@@ -31,24 +31,23 @@ public class ReflexDamageDecorator implements SkillStrategy {
 		WeaponType weaponType) {
 
 		double buffRatio = switch (grade) {
-			case LEGENDARY -> 0.10;
-			case UNIQUE    -> 0.08;
-			case RARE      -> 0.06;
-			case UNCOMMON  -> 0.04;
-			case COMMON    -> 0.02;
-			default        -> 0.0;
+			case LEGENDARY -> 0.25;
+			case UNIQUE -> 0.15;
+			case RARE -> 0.06;
+			case UNCOMMON -> 0.04;
+			case COMMON -> 0.02;
+			default -> 0.0;
 		};
 
 		if (buffRatio > 0) {
-
 			double accBuff = attacker.getAccuracy() * buffRatio;
-			double critBuff = attacker.getCrit()      * buffRatio;
+			double critBuff = attacker.getCrit() * buffRatio;
 
 			attacker.applyAccuracyBuff(accBuff);
-			log.add("[%s 효과] 명중 +%.0f%% (+%,.1f)", skillName, buffRatio * 100, accBuff);
-
 			attacker.applyCritBuff(critBuff);
-			log.add("[%s 효과] 치명타 +%.0f%% (+%,.1f)", skillName, buffRatio * 100, critBuff);
+
+			log.add("[%s] 효과 발동 — 명중률 +%.0f%%, 치명타 확률 +%.0f%% 동시에 증가. 상대 피를 빼앗는 대신, %s의 몸도 조금씩 부서집니다.", skillName,
+				buffRatio * 100, buffRatio * 100, attacker.getName());
 		}
 
 		return delegate.useSkill(attacker, defender, log, weaponType);

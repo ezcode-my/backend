@@ -22,15 +22,14 @@ public class NoSkill implements SkillStrategy {
 	}
 
 	@Override
-	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log,
-		WeaponType attackerWeapon) {
+	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log, WeaponType attackerWeapon) {
 
 		attacker.consumeActionPoints();
 
 		double hitChance = BASE_HIT_RATE + (attacker.getAccuracy() - defender.getEvasion());
 		boolean isHit = RNG.nextDouble() * 100 < hitChance;
 		if (!isHit) {
-			log.add("%s의 공격! 하지만 %s에게 빗나갔습니다.", attacker.getName(), defender.getName());
+			log.add("%s의 공격이 빗나갔습니다. %s(은)는 멀쩡히 웃고 있습니다.", attacker.getName(), defender.getName());
 			return true;
 		}
 
@@ -41,21 +40,20 @@ public class NoSkill implements SkillStrategy {
 		boolean alive = defender.playerDamaged(rawDamage);
 
 		if (isCrit) {
-			log.add("%s의 치명타! %s에게 %,.1f의 피해를 입혔습니다.", attacker.getName(), defender.getName(), damageDealt);
+			log.add("%s의 치명타. %s에게 깊은 상처를 남겼습니다 — %,.1f 피해.", attacker.getName(), defender.getName(), damageDealt);
 		} else {
-			log.add("%s의 일반 공격! %s에게 %,.1f의 피해를 입혔습니다.", attacker.getName(), defender.getName(), damageDealt);
+			log.add("%s의 공격. %s(은)는 한 대 맞았습니다 — %,.1f 피해.", attacker.getName(), defender.getName(), damageDealt);
 		}
 
 		if (RNG.nextDouble() * 100 < attacker.getStun()) {
-			boolean hasAp = defender.consumeActionPoints();
-			log.add("스턴 효과! %s의 행동력이 1 감소했습니다. 현재 행동력: %d", defender.getName(), defender.getAp());
+			defender.consumeActionPoints();
+			log.add("스턴. %s의 행동력이 1 줄었습니다. 아직 정신은 멀쩡합니다. 남은 AP %d", defender.getName(), defender.getAp());
 		}
 
-		log.add("[%s] HP: %,.1f, [%s] HP: %,.1f", attacker.getName(), attacker.getHp(), defender.getName(),
-			defender.getHp());
+		log.add("[%s] 남은 체력: %,.1f | [%s] 남은 체력: %,.1f", attacker.getName(), attacker.getHp(), defender.getName(), defender.getHp());
 
 		if (!alive) {
-			log.add("%s이(가) %s를 쓰러뜨렸습니다!", attacker.getName(), defender.getName());
+			log.add("%s님이 %s를 눕혔습니다.", attacker.getName(), defender.getName());
 		}
 
 		return alive;
