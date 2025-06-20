@@ -34,7 +34,7 @@ public record ProblemCreateRequest(
 
 	@NotNull(message = "시간 제한을 설정해야 합니다.")
 	@Schema(description = "시간 제한", example = "1000.0")
-	Double timeLimit,
+	Long timeLimit,
 
 	@NotNull(message = "출처를 명시해야 합니다.")
 	@Schema(description = "출처", example = "ORIGINAL")

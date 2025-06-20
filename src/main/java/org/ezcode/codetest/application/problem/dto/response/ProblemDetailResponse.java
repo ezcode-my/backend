@@ -37,7 +37,7 @@ public record ProblemDetailResponse(
 	Long memoryLimit,
 
 	@Schema(description = "시간 제한", example = "1000.0")
-	Double timeLimit,
+	Long timeLimit,
 
 	@Schema(description = "출처", example = "ORIGINAL")
 	Reference reference,
