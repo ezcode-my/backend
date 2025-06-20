@@ -96,7 +96,7 @@ public class GameCharacter extends BaseEntity {
 		gold -= 50L;
 	}
 
-	public void earnGold(Long gold) {
+	public void earnGold(long gold) {
 
 		this.gold += gold;
 	}

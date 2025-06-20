@@ -43,7 +43,7 @@ public class ReflexDamageSkill extends AbstractSkill {
 
 		if (RNG.nextDouble() * 100 < attacker.getStun()) {
 			defender.consumeActionPoints();
-			log.add("스턴 발생. %s의 행동력 1 감소 → %d. 잠시 정신을 놓았나 봅니다. 남은 AP %d", defender.getName(), defender.getAp(), defender.getAp());
+			log.add("스턴 발생. %s의 행동력 1 감소 → %d. 남은 AP %d", defender.getName(), defender.getAp(), defender.getAp());
 		}
 
 		double baseSelf   = defender.getAtk() * 0.5;

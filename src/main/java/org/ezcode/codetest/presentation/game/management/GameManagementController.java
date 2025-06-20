@@ -168,7 +168,7 @@ public class GameManagementController {
 			@ApiResponse(responseCode = "200", description = "조회 결과 반환")
 		}
 	)
-	@ResponseMessage("정상적으로 인카운터가 생성되었습니다.")
+	@ResponseMessage("정상적으로 인카운터가 조회되었습니다.")
 	@GetMapping("/encounters")
 	public ResponseEntity<List<EncounterResponse>> getAllRandomEncounters(
 	) {
@@ -198,7 +198,7 @@ public class GameManagementController {
 			@ApiResponse(responseCode = "200", description = "삭제 후, 여부 반환")
 		}
 	)
-	@ResponseMessage("정상적으로 인카운터 선택지가 생성되었습니다.")
+	@ResponseMessage("정상적으로 인카운터 선택지가 삭제되었습니다.")
 	@DeleteMapping("/choices")
 	public ResponseEntity<Void> deleteEncounterChoice(
 		@RequestBody @Valid EncounterChoiceDeleteRequest request
