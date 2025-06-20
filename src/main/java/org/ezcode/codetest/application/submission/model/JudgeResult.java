@@ -5,15 +5,15 @@ import lombok.Builder;
 @Builder
 public record JudgeResult(
 
-	String actualOutput,
+    String actualOutput,
 
-	double executionTime,
+    double executionTime,
 
-	long memoryUsage,
+    long memoryUsage,
 
-	boolean success,
+    boolean success,
 
-	String message
+    String message
 
 ) {
 }

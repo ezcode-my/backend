@@ -5,27 +5,27 @@ import lombok.Builder;
 @Builder
 public record SubmitProcessResult(
 
-	boolean isCorrect,
+    boolean isCorrect,
 
-	String expectedOutput,
+    String expectedOutput,
 
-	String actualOutput,
+    String actualOutput,
 
-	double executionTime,
+    double executionTime,
 
-	long memoryUsage,
+    long memoryUsage,
 
-	String message
+    String message
 
 ) {
-	public static SubmitProcessResult of(SubmissionData submissionData, AnswerEvaluation evaluation) {
-		return SubmitProcessResult.builder()
-			.isCorrect(evaluation.isCorrect())
-			.expectedOutput(evaluation.expectedOutput())
-			.actualOutput(evaluation.actualOutput())
-			.executionTime(submissionData.executionTime())
-			.memoryUsage(submissionData.memoryUsage())
-			.message(submissionData.message())
-			.build();
-	}
+    public static SubmitProcessResult of(SubmissionData submissionData, AnswerEvaluation evaluation) {
+        return SubmitProcessResult.builder()
+            .isCorrect(evaluation.isCorrect())
+            .expectedOutput(evaluation.expectedOutput())
+            .actualOutput(evaluation.actualOutput())
+            .executionTime(submissionData.executionTime())
+            .memoryUsage(submissionData.memoryUsage())
+            .message(submissionData.message())
+            .build();
+    }
 }

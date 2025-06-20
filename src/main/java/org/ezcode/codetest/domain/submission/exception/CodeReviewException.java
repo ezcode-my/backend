@@ -10,13 +10,13 @@ import lombok.Getter;
 @Getter
 public class CodeReviewException extends BaseException {
 
-	private final ResponseCode responseCode;
-	private final HttpStatus httpStatus;
-	private final String message;
+    private final ResponseCode responseCode;
+    private final HttpStatus httpStatus;
+    private final String message;
 
-	public CodeReviewException(CodeReviewExceptionCode responseCode) {
-		this.responseCode = responseCode;
-		this.httpStatus = responseCode.getStatus();
-		this.message = responseCode.getMessage();
-	}
+    public CodeReviewException(CodeReviewExceptionCode responseCode) {
+        this.responseCode = responseCode;
+        this.httpStatus = responseCode.getStatus();
+        this.message = responseCode.getMessage();
+    }
 }

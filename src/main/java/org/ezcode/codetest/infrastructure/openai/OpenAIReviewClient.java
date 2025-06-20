@@ -29,71 +29,70 @@ import reactor.util.retry.Retry;
 @RequiredArgsConstructor
 public class OpenAIReviewClient implements ReviewClient {
 
-	@Value("${OPEN_API_URL}")
-	private String openApiUrl;
+    @Value("${OPEN_API_URL}")
+    private String openApiUrl;
 
-	@Value("${OPEN_API_KEY}")
-	private String openApiKey;
-	private WebClient webClient;
-	private final OpenAIMessageBuilder openAiMessageBuilder;
-	private final OpenAIResponseValidator openAiResponseValidator;
+    @Value("${OPEN_API_KEY}")
+    private String openApiKey;
+    private WebClient webClient;
+    private final OpenAIMessageBuilder openAiMessageBuilder;
+    private final OpenAIResponseValidator openAiResponseValidator;
 
+    @PostConstruct
+    private void init() {
+        this.webClient = WebClient.builder()
+            .baseUrl(openApiUrl)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + openApiKey)
+            .build();
+    }
 
-	@PostConstruct
-	private void init() {
-		this.webClient = WebClient.builder()
-			.baseUrl(openApiUrl)
-			.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-			.defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + openApiKey)
-			.build();
-	}
+    @Override
+    public ReviewResult requestReview(ReviewPayload reviewPayload) {
+        Map<String, Object> requestBody = openAiMessageBuilder.buildRequestBody(reviewPayload);
 
-	@Override
-	public ReviewResult requestReview(ReviewPayload reviewPayload) {
-		Map<String, Object> requestBody = openAiMessageBuilder.buildRequestBody(reviewPayload);
+        String content;
+        int maxAttempts = 3;
 
-		String content;
-		int maxAttempts = 3;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                content = callChatApi(requestBody);
+            } catch (CodeReviewException e) {
+                log.error("OpenAI API 호출 실패: {}, {}", e.getHttpStatus(), e.getMessage());
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return new ReviewResult(openAiMessageBuilder.buildErrorMessage());
+            }
 
-		for (int attempt = 1; attempt <= maxAttempts; attempt++) {
-			try {
-				content = callChatApi(requestBody);
-			} catch (CodeReviewException e) {
-				log.error("OpenAI API 호출 실패: {}, {}", e.getHttpStatus(), e.getMessage());
-				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-				return new ReviewResult(openAiMessageBuilder.buildErrorMessage());
-			}
+            if (openAiResponseValidator.isValidFormat(content, reviewPayload.isCorrect())) {
+                return new ReviewResult(content);
+            }
+            log.warn("[{}/{}][isCorrect={}] 포맷 검증 실패:\n{}", attempt, maxAttempts, reviewPayload.isCorrect(), content);
+        }
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        return new ReviewResult(openAiMessageBuilder.buildErrorMessage());
+    }
 
-			if (openAiResponseValidator.isValidFormat(content, reviewPayload.isCorrect())) {
-				return new ReviewResult(content);
-			}
-			log.warn("[{}/{}][isCorrect={}] 포맷 검증 실패:\n{}", attempt, maxAttempts, reviewPayload.isCorrect(), content);
-		}
+    private String callChatApi(Map<String, Object> requestBody) {
 
-		return new ReviewResult(openAiMessageBuilder.buildErrorMessage());
-	}
+        OpenAIResponse response = webClient.post()
+            .uri("/v1/chat/completions")
+            .bodyValue(requestBody)
+            .retrieve()
+            .bodyToMono(OpenAIResponse.class)
+            .timeout(Duration.ofSeconds(10))
+            .retryWhen(
+                Retry.backoff(3, Duration.ofSeconds(1))
+                    .maxBackoff(Duration.ofSeconds(5))
+                    .filter(ex -> ex instanceof WebClientResponseException
+                        || ex instanceof TimeoutException)
+                    .onRetryExhaustedThrow((spec, signal) -> signal.failure())
+            )
+            .onErrorMap(WebClientResponseException.class,
+                ex -> new CodeReviewException(CodeReviewExceptionCode.REVIEW_SERVER_ERROR))
+            .onErrorMap(TimeoutException.class,
+                ex -> new CodeReviewException(CodeReviewExceptionCode.REVIEW_TIMEOUT))
+            .block();
 
-	private String callChatApi (Map<String, Object> requestBody){
-
-		OpenAIResponse response = webClient.post()
-			.uri("/v1/chat/completions")
-			.bodyValue(requestBody)
-			.retrieve()
-			.bodyToMono(OpenAIResponse.class)
-			.timeout(Duration.ofSeconds(10))
-			.retryWhen(
-				Retry.backoff(3, Duration.ofSeconds(1))
-					.maxBackoff(Duration.ofSeconds(5))
-					.filter(ex -> ex instanceof WebClientResponseException
-										 || ex instanceof TimeoutException)
-					.onRetryExhaustedThrow((spec, signal) -> signal.failure())
-			)
-			.onErrorMap(WebClientResponseException.class,
-				ex -> new CodeReviewException(CodeReviewExceptionCode.REVIEW_SERVER_ERROR))
-			.onErrorMap(TimeoutException.class,
-				ex -> new CodeReviewException(CodeReviewExceptionCode.REVIEW_TIMEOUT))
-			.block();
-
-		return Objects.requireNonNull(response).getReviewContent();
-	}
+        return Objects.requireNonNull(response).getReviewContent();
+    }
 }

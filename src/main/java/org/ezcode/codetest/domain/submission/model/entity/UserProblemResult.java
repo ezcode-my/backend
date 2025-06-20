@@ -23,29 +23,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserProblemResult extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-	@ManyToOne
-	@JoinColumn(name = "problem_id", nullable = false)
-	private Problem problem;
+    @ManyToOne
+    @JoinColumn(name = "problem_id", nullable = false)
+    private Problem problem;
 
-	@Column(nullable = false)
-	private boolean isCorrect;
+    @Column(nullable = false)
+    private boolean isCorrect;
 
-	@Builder
-	public UserProblemResult(User user, Problem problem, boolean isCorrect) {
-		this.user = user;
-		this.problem = problem;
-		this.isCorrect = isCorrect;
-	}
+    @Builder
+    public UserProblemResult(User user, Problem problem, boolean isCorrect) {
+        this.user = user;
+        this.problem = problem;
+        this.isCorrect = isCorrect;
+    }
 
-	public void updateResult(boolean isCorrect) {
-		this.isCorrect = isCorrect;
-	}
+    public void updateResult(boolean isCorrect) {
+        this.isCorrect = isCorrect;
+    }
 }

@@ -6,17 +6,17 @@ import java.util.Optional;
 import org.ezcode.codetest.domain.language.model.entity.Language;
 
 public interface LanguageRepository {
-	boolean existsById(Long languageId);
+    boolean existsById(Long languageId);
 
-	boolean existsByNameAndVersion(String name, String version);
+    boolean existsByNameAndVersion(String name, String version);
 
-	Language saveLanguage(Language language);
+    Language saveLanguage(Language language);
 
-	Optional<Language> findLanguageById(Long languageId);
+    Optional<Language> findLanguageById(Long languageId);
 
-	List<Language> findLanguages();
+    List<Language> findLanguages();
 
-	void updateLanguage(Language language, Long judge0Id);
+    void updateLanguage(Language language, Long judge0Id);
 
-	void deleteLanguage(Long languageId);
+    void deleteLanguage(Long languageId);
 }

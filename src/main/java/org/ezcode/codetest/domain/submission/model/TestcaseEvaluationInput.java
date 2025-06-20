@@ -5,27 +5,27 @@ import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 
 public record TestcaseEvaluationInput(
 
-        String expectedOutput,
+    String expectedOutput,
 
-        String actualOutput,
+    String actualOutput,
 
-        String resultMessage,
+    String resultMessage,
 
-        boolean success,
+    boolean success,
 
-        double executionTime,
+    double executionTime,
 
-        long memoryUsage
+    long memoryUsage
 
 ) {
-    public static TestcaseEvaluationInput from (Testcase testcase, JudgeResult result) {
+    public static TestcaseEvaluationInput from(Testcase testcase, JudgeResult result) {
         return new TestcaseEvaluationInput(
-                testcase.getOutput(),
-                result.actualOutput(),
-                result.message(),
-                result.success(),
-                result.executionTime(),
-                result.memoryUsage()
+            testcase.getOutput(),
+            result.actualOutput(),
+            result.message(),
+            result.success(),
+            result.executionTime(),
+            result.memoryUsage()
         );
     }
 }

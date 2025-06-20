@@ -8,12 +8,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @Configuration
 public class TaskSchedulerConfig {
 
-	@Bean(name = "appTaskScheduler")
-	public TaskScheduler taskScheduler() {
-		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-		scheduler.setPoolSize(1);
-		scheduler.setThreadNamePrefix("token-reset-scheduler-");
-		scheduler.initialize();
-		return scheduler;
-	}
+    @Bean(name = "appTaskScheduler")
+    public TaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(1);
+        scheduler.setThreadNamePrefix("token-reset-scheduler-");
+        scheduler.initialize();
+        return scheduler;
+    }
 }

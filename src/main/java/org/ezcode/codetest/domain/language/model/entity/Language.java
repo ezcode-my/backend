@@ -15,27 +15,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Language {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
 
-	@Column(nullable = false)
-	private String name;
+    @Column(nullable = false)
+    private String name;
 
-	@Column(nullable = false)
-	private String version;
+    @Column(nullable = false)
+    private String version;
 
-	@Column(name = "judge0_id", nullable = false)
-	private Long judge0Id;
+    @Column(name = "judge0_id", nullable = false)
+    private Long judge0Id;
 
-	@Builder
-	public Language(String name, String version, Long judge0Id) {
-		this.name = name;
-		this.version = version;
-		this.judge0Id = judge0Id;
-	}
+    @Builder
+    public Language(String name, String version, Long judge0Id) {
+        this.name = name;
+        this.version = version;
+        this.judge0Id = judge0Id;
+    }
 
-	public void updateJudge0Id(Long judge0Id) {
-		this.judge0Id = judge0Id;
-	}
+    public void updateJudge0Id(Long judge0Id) {
+        this.judge0Id = judge0Id;
+    }
 }

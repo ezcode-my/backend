@@ -62,73 +62,73 @@ public class SubmissionService {
     private final SubmissionDomainService submissionDomainService;
     private final EmitterStore emitterStore;
     private final QueueProducer queueProducer;
-	private final Executor judgeTestcaseExecutor;
-	private final ExceptionNotifier exceptionNotifier;
-	private final LockManager lockManager;
+    private final Executor judgeTestcaseExecutor;
+    private final ExceptionNotifier exceptionNotifier;
+    private final LockManager lockManager;
 
-	public SseEmitter enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
+    public SseEmitter enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
 
-		boolean acquired = lockManager.tryLock("submission", authUser.getId(), problemId);
+        boolean acquired = lockManager.tryLock("submission", authUser.getId(), problemId);
 
-		if (!acquired) {
-			throw new SubmissionException(SubmissionExceptionCode.ALREADY_JUDGING);
-		}
+        if (!acquired) {
+            throw new SubmissionException(SubmissionExceptionCode.ALREADY_JUDGING);
+        }
 
         SseEmitter emitter = new SseEmitter(10 * 60 * 1000L);
         String emitterKey = authUser.getId() + "_" + UUID.randomUUID();
 
-		log.info("[SSE 저장] emitterKey: {}", emitterKey);
-		emitterStore.saveWithCallbacks(emitterKey, emitter);
+        log.info("[SSE 저장] emitterKey: {}", emitterKey);
+        emitterStore.saveWithCallbacks(emitterKey, emitter);
 
         queueProducer.enqueue(
-			new SubmissionMessage(emitterKey, problemId, request.languageId(), authUser.getId(), request.sourceCode())
-		);
+            new SubmissionMessage(emitterKey, problemId, request.languageId(), authUser.getId(), request.sourceCode())
+        );
 
         return emitter;
     }
 
-	@Async("judgeSubmissionExecutor")
+    @Async("judgeSubmissionExecutor")
     public void submitCodeStream(SubmissionMessage msg) {
-		try {
+        try {
             log.info("[Submission RUN] Thread = {}", Thread.currentThread().getName());
-			log.info("[큐 수신] SubmissionMessage.emitterKey: {}", msg.emitterKey());
-			User user = userDomainService.getUserById(msg.userId());
+            log.info("[큐 수신] SubmissionMessage.emitterKey: {}", msg.emitterKey());
+            User user = userDomainService.getUserById(msg.userId());
             Language language = languageDomainService.getLanguage(msg.languageId());
             ProblemInfo problemInfo = problemDomainService.getProblemInfo(msg.problemId());
             SseEmitter emitter = emitterStore.getOrElseThrow(msg.emitterKey());
 
-			int totalTestcaseCount = problemInfo.getTestcaseCount();
+            int totalTestcaseCount = problemInfo.getTestcaseCount();
             SubmissionContext context = SubmissionContext.initialize(totalTestcaseCount);
 
             for (Testcase tc : problemInfo.testcaseList()) {
-				runTestcaseAsync(tc, msg, language.getJudge0Id(), problemInfo, context, emitter);
-			}
+                runTestcaseAsync(tc, msg, language.getJudge0Id(), problemInfo, context, emitter);
+            }
 
-			if (!context.latch().await(60, TimeUnit.SECONDS)) {
-				emitter.completeWithError(new SubmissionException(SubmissionExceptionCode.TESTCASE_TIMEOUT));
-				return;
-			}
+            if (!context.latch().await(60, TimeUnit.SECONDS)) {
+                emitter.completeWithError(new SubmissionException(SubmissionExceptionCode.TESTCASE_TIMEOUT));
+                return;
+            }
 
-			emitter.send(SseEmitter.event()
-				.name("final")
-				.data(context.toFinalResult(totalTestcaseCount)));
-			emitter.complete();
+            emitter.send(SseEmitter.event()
+                .name("final")
+                .data(context.toFinalResult(totalTestcaseCount)));
+            emitter.complete();
 
             SubmissionData submissionData = SubmissionData.base(
-            	user, problemInfo, language, msg.sourceCode(), context.getCurrentMessage()
+                user, problemInfo, language, msg.sourceCode(), context.getCurrentMessage()
             );
 
             submissionDomainService.finalizeSubmission(
-				submissionData, context.aggregator(), context.getPassedCount()
-			);
+                submissionData, context.aggregator(), context.getPassedCount()
+            );
 
-		} catch (Exception e) {
-			emitterStore.get(msg.emitterKey()).ifPresent(emitter -> emitter.completeWithError(e));
-			exceptionNotificationHelper(e);
-		} finally {
-			emitterStore.remove(msg.emitterKey());
-			lockManager.releaseLock("submission", msg.userId(), msg.problemId());
-		}
+        } catch (Exception e) {
+            emitterStore.get(msg.emitterKey()).ifPresent(emitter -> emitter.completeWithError(e));
+            exceptionNotificationHelper(e);
+        } finally {
+            emitterStore.remove(msg.emitterKey());
+            lockManager.releaseLock("submission", msg.userId(), msg.problemId());
+        }
     }
 
     @Transactional(readOnly = true)
@@ -139,13 +139,13 @@ public class SubmissionService {
         return GroupedSubmissionResponse.groupByProblem(submissions);
     }
 
-	@Transactional
-	@CodeReviewLock(prefix = "review")
+    @Transactional
+    @CodeReviewLock(prefix = "review")
     public CodeReviewResponse getCodeReview(Long problemId, CodeReviewRequest request, AuthUser authUser) {
-		User user = userDomainService.getUserById(authUser.getId());
-		userDomainService.decreaseReviewToken(user);
+        User user = userDomainService.getUserById(authUser.getId());
+        userDomainService.decreaseReviewToken(user);
 
-		Problem problem = problemDomainService.getProblem(problemId);
+        Problem problem = problemDomainService.getProblem(problemId);
         Language language = languageDomainService.getLanguage(request.languageId());
 
         ReviewResult reviewResult = reviewClient.requestReview(ReviewPayload.of(problem, language, request));
@@ -153,58 +153,58 @@ public class SubmissionService {
         return new CodeReviewResponse(reviewResult.reviewContent());
     }
 
-	private void runTestcaseAsync(
-		Testcase tc, SubmissionMessage msg, Long judge0Id,
-		ProblemInfo problemInfo, SubmissionContext context, SseEmitter emitter
-	) {
-		CompletableFuture.runAsync(() -> {
-			try {
-				log.info("[Judge RUN] Thread = {}", Thread.currentThread().getName());
-				String token = judgeClient.submitAndGetToken(
-					new CodeCompileRequest(msg.sourceCode(), judge0Id, tc.getInput())
-				);
-				JudgeResult result = judgeClient.pollUntilDone(token);
+    private void runTestcaseAsync(
+        Testcase tc, SubmissionMessage msg, Long judge0Id,
+        ProblemInfo problemInfo, SubmissionContext context, SseEmitter emitter
+    ) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                log.info("[Judge RUN] Thread = {}", Thread.currentThread().getName());
+                String token = judgeClient.submitAndGetToken(
+                    new CodeCompileRequest(msg.sourceCode(), judge0Id, tc.getInput())
+                );
+                JudgeResult result = judgeClient.pollUntilDone(token);
 
-				AnswerEvaluation evaluation = submissionDomainService.handleEvaluationAndUpdateStats(
-					TestcaseEvaluationInput.from(tc, result), problemInfo, context
-				);
-				emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
-			} catch (Exception e) {
-				if (context.notified().compareAndSet(false, true)) {
-					emitter.completeWithError(e);
-					emitterStore.remove(msg.emitterKey());
-					exceptionNotificationHelper(e);
-				}
-			} finally {
-				context.countDown();
-			}
-		}, judgeTestcaseExecutor);
-	}
+                AnswerEvaluation evaluation = submissionDomainService.handleEvaluationAndUpdateStats(
+                    TestcaseEvaluationInput.from(tc, result), problemInfo, context
+                );
+                emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
+            } catch (Exception e) {
+                if (context.notified().compareAndSet(false, true)) {
+                    emitter.completeWithError(e);
+                    emitterStore.remove(msg.emitterKey());
+                    exceptionNotificationHelper(e);
+                }
+            } finally {
+                context.countDown();
+            }
+        }, judgeTestcaseExecutor);
+    }
 
-	private void exceptionNotificationHelper(Throwable t) {
-		if (t instanceof SubmissionException se) {
-			var code = se.getResponseCode();
-			exceptionNotifier.sendEmbed(
-				"채점 예외",
-				"채점 중 SubmissionException 발생",
-				"""
-					• 성공 여부: %s
-					• 상태코드: %s
-					• 메시지: %s
-					""".formatted(code.isSuccess(), code.getStatus(), code.getMessage()),
-				"submitCodeStream"
-			);
-		} else {
-			exceptionNotifier.sendEmbed(
-				"채점 예외",
-				"채점 중 알 수 없는 예외 발생",
-				"""
-					• 성공 여부: false
-					• 상태코드: 500
-					• 메시지: %s
-				""".formatted(Optional.ofNullable(t.getMessage()).orElse("No message")),
-				"submitCodeStream"
-			);
-		}
-	}
+    private void exceptionNotificationHelper(Throwable t) {
+        if (t instanceof SubmissionException se) {
+            var code = se.getResponseCode();
+            exceptionNotifier.sendEmbed(
+                "채점 예외",
+                "채점 중 SubmissionException 발생",
+                """
+                    • 성공 여부: %s
+                    • 상태코드: %s
+                    • 메시지: %s
+                    """.formatted(code.isSuccess(), code.getStatus(), code.getMessage()),
+                "submitCodeStream"
+            );
+        } else {
+            exceptionNotifier.sendEmbed(
+                "채점 예외",
+                "채점 중 알 수 없는 예외 발생",
+                """
+                    	• 성공 여부: false
+                    	• 상태코드: 500
+                    	• 메시지: %s
+                    """.formatted(Optional.ofNullable(t.getMessage()).orElse("No message")),
+                "submitCodeStream"
+            );
+        }
+    }
 }
