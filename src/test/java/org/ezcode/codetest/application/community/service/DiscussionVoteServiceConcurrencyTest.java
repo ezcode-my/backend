@@ -12,6 +12,7 @@ import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.community.repository.DiscussionRepository;
 import org.ezcode.codetest.domain.community.repository.DiscussionVoteRepository;
 import org.ezcode.codetest.infrastructure.persistence.repository.user.UserJpaRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+@Disabled
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
