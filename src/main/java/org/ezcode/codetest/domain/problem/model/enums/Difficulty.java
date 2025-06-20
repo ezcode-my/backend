@@ -15,7 +15,7 @@ public enum Difficulty {
 	LV4("4", 80),
 	LV5("5", 160),
 	LV6("6", 320),
-	LV7("7",640);
+	LV7("7", 640);
 
 	private final String difficulty;
 
