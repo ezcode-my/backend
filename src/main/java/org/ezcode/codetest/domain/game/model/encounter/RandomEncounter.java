@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +30,8 @@ public class RandomEncounter extends BaseEntity {
 	@Column(nullable = false, unique = true)
 	private String name;
 
-	@Column(nullable = false)
+	@Lob
+	@Column(columnDefinition = "TEXT", nullable = false)
 	private String encounterText;
 
 	@Column(nullable = false)

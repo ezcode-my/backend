@@ -13,7 +13,7 @@ public class BossEncounterGood implements EncounterStrategy {
 
 	@Override
 	public RandomEncounterEffect getEffect() {
-		return RandomEncounterEffect.BOSS_BATTLE_GOOD;
+		return RandomEncounterEffect.BOSS_ESCAPE;
 	}
 
 	@Override
@@ -23,15 +23,17 @@ public class BossEncounterGood implements EncounterStrategy {
 		CharacterContext playerContext,
 		EncounterLog log
 	) {
-		long rewardGold = 350L;
+		long rewardGold = 1000L;
 		character.earnGold(rewardGold);
 
-		log.add("숨조차 가라앉을 만큼 고요한 유적의 가장 깊숙한 곳, 발밑에서 진동처럼 퍼지는 낮은 숨결 소리가 공간을 가릅니다.");
-		log.add("눈앞을 가득 채운 것은 어마어마한 존재감의 고대 드래곤. 그 비늘은 달빛을 받아 찬란하게 빛났고, 눈동자는 마치 별처럼 깊었습니다.");
-		log.add(playerContext.getName() + "(은)는 두려움을 억누른 채 무릎을 꿇었고, 드래곤은 긴 침묵 끝에 입을 열었습니다.");
-		log.add("\"용기 있는 자여, 수많은 시련을 견딘 그대의 발걸음에 존경을 표하노라.\"");
-		log.add("굵고 울림 있는 목소리와 함께, 드래곤은 앞발로 황금과 보석이 가득 담긴 고대의 보물상자를 당신 앞으로 밀어냈습니다.");
-		log.add("그 안에서 " + rewardGold + "골드가 빛을 내며 모습을 드러냅니다. 전설적 존재에게 인정받은 기쁨이 가슴 깊이 파고듭니다.");
+		log.add("당신은 고민 따위는 집에 두고, 본능적으로 금빛 문 안으로 몸을 던졌습니다.");
+		log.add("뒤에서는 골렘이 천천히 고개를 돌리지만, 다행히 이쪽까지는 따라오지 않습니다. 일단은요.");
+		log.add("문 안쪽에는 거대한 방, 그리고 그 중심에—믿기 어렵지만, 고대 드래곤이 있습니다.");
+		log.add("뭐? 드래곤이요? 맞습니다. 당신은 보스전에서 도망쳤다가 더 큰 보스의 방에 들어왔습니다.");
+		log.add(playerContext.getName() + "(은)는 반사적으로 무릎을 꿇습니다. 전투? 말도 안 됩니다. 눈빛 하나에 간장이 얼었거든요.");
+		log.add("드래곤은 흥미롭다는 듯 바라보다, 웅장한 목소리로 말합니다. “비겁함도 용기의 한 형태지.”");
+		log.add("그렇게 황금 상자 하나가 눈앞에 ‘떵’ 하고 떨어집니다. 그냥 받아요. 말 대답은 안 하는 게 좋아 보입니다.");
+		log.add(rewardGold + "골드 획득! 의외로 이쪽이 덜 아프네요.");
 		log.setIsPositive(true);
 	}
 }

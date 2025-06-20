@@ -23,7 +23,6 @@ public record RandomEncounterSaveRequest(
 	String name,
 
 	@NotBlank(message = "설명란은 필수입니다.")
-	@Size(message = "설명 입력은 최대 150글자 이내로만 가능합니다.", max = 150)
 	@Schema(description = "저장할 인카운터의 설명 및 묘사")
 	String encounterText
 
