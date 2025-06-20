@@ -197,7 +197,7 @@ public class LanguageDomainServiceTest {
             // given
             given(languageRepository.findLanguageById(languageId)).willReturn(Optional.empty());
 
-            // when
+            // when & then
             assertThatThrownBy(() -> languageDomainService.getLanguage(languageId))
                 .isInstanceOf(LanguageException.class)
                 .hasMessage(LanguageExceptionCode.LANGUAGE_NOT_FOUND.getMessage());
