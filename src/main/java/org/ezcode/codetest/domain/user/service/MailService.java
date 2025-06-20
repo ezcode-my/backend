@@ -12,14 +12,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MailService {
 	private final JavaMailSender javaMailSender;
+
 	@Value("${spring.mail.username}")
 	private String senderEmail;
 	private static int number;
 
-	// 랜덤으로 숫자 생성
+	// 랜덤으로 인증 번호 생성
 	public static void createNumber() {
 		number = (int)(Math.random() * (90000)) + 100000; //(int) Math.random() * (최댓값-최소값+1) + 최소값
 	}
+
 	public MimeMessage CreateMail(String mail) {
 		createNumber();
 		MimeMessage message = javaMailSender.createMimeMessage();

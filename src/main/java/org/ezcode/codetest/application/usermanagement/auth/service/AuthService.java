@@ -14,9 +14,11 @@ import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
+import org.ezcode.codetest.domain.user.service.MailService;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
@@ -33,68 +35,79 @@ public class AuthService {
 	private final UserDomainService userDomainService;
 	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
-
+	private final MailService mailService;
 
 	/*
 	이메일 회원가입
 	- 이미 가입된 이메일 거절
 	- 비밀번호 암호화
 	 */
-	@Transactional
-	public SignupResponse signup(SignupRequest signupRequest) {
+	public SignupResponse signup(SignupRequest request) {
+		validateRequest(request);
+		User user = userRegisterationProcess(request);
+		sendVeriticationMail(request.getEmail());
+		return generateToken(user);
+	}
 
-		userDomainService.checkEmailUnique(signupRequest.getEmail());
-
-		if (!signupRequest.getPassword().equals(signupRequest.getPasswordConfirm())){
+	//1. 보낸 요청의 비밀번호&비밀번호확인이 일치하는지
+	private void validateRequest(SignupRequest request) {
+		userDomainService.checkEmailUnique(request.getEmail());
+		if (!request.getPassword().equals(request.getPasswordConfirm())){
 			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);
-		}
+		};
+	}
 
-		String encodedPassword = userDomainService.encodePassword(signupRequest.getPassword());
+	//2. 이미 다른 방식으로 회원가입한 유저인지 검증
+	private User userRegisterationProcess(SignupRequest request) {
+		String encodedPassword = userDomainService.encodePassword(request.getPassword());
+		User existUser = userDomainService.getUserByEmail(request.getEmail());
+		return (existUser==null) ?
+			createNewUser(request, encodedPassword) : updateExistingUser(existUser, encodedPassword);
+	}
 
-		User existUser = userDomainService.getUserByEmail(signupRequest.getEmail());
+	//3. 만약 아예 첫 가입 유저일 때
+	private User createNewUser(SignupRequest request, String encodedPassword) {
+		User newUser = User.emailUser(
+			request.getEmail(),
+			encodedPassword,
+			request.getUsername(),
+			request.getNickname(),
+			request.getAge()
+		);
 
-		String bearToken;
+		userDomainService.createUser(newUser);
+		userDomainService.createUserAuthType(new UserAuthType(newUser, AuthType.EMAIL));
 
-		//만약 아예 유저 테이블에 없으면 둘 다 저장
-		if (existUser == null) {
-			User newUser = User.emailUser(
-				signupRequest.getEmail(),
-				encodedPassword,
-				signupRequest.getUsername(),
-				signupRequest.getNickname(),
-				signupRequest.getAge()
-			);
-			UserAuthType userAuthType = new UserAuthType(newUser, AuthType.EMAIL);
-			userDomainService.createUser(newUser);
-			userDomainService.createUserAuthType(userAuthType);
+		return newUser;
+	}
 
-			bearToken = jwtUtil.createToken(
-				newUser.getId(),
-				newUser.getEmail(),
-				newUser.getRole(),
-				newUser.getUsername(),newUser.getNickname(),
-				newUser.getTier());
-		} else {
-			//유저 테이블에는 존재하다면 AuthType만 추가
-			UserAuthType userAuthType = new UserAuthType(existUser, AuthType.EMAIL);
-			userDomainService.createUserAuthType(userAuthType);
+	//4. 만약 이전에 다른 방식으로 가입했었던(소셜) 회원일 때 -> UserAuthType테이블에 인증 방식만 추가
+	private User updateExistingUser(User existUser, String encodedPassword) {
+		//로컬 가입(이메일)은 안되어있는데 소셜은 되어있는 경우이므로, UUID 비번을 사용자가 지정한 비번으로 변경한다.
+		// -> 이후 비번 변경하면 User테이블에서 변경하면됨.
+		existUser.modifyPassword(encodedPassword);
+		UserAuthType userAuthType = new UserAuthType(existUser, AuthType.EMAIL);
+		userDomainService.createUserAuthType(userAuthType);
+		return existUser;
+	}
 
-			//로컬 가입(이메일)은 안되어있는데 소셜은 되어있는 경우이므로, UUID 비번을 사용자가 지정한 비번으로 변경한다. -> 이후 비번 변경하면 User테이블에서 변경하면됨.
-			existUser.modifyPassword(encodedPassword);
-			log.info("유저 타입 저장 완료 {}", userAuthType);
+	//5. 인증 메일 전송하기
+	@Async
+	void sendVeriticationMail(String email) {
+		mailService.sendMail(email);
+	}
 
-			bearToken = jwtUtil.createToken(
-				existUser.getId(),
-				existUser.getEmail(),
-				existUser.getRole(),
-				existUser.getUsername(),
-				existUser.getNickname(),
-				existUser.getTier());
-		}
-
-
-
-		return SignupResponse.from(bearToken);
+	//6. 모든 검증 후, 토큰을 발급
+	private SignupResponse generateToken(User user) {
+		String accessToken = jwtUtil.createToken(
+			user.getId(),
+			user.getEmail(),
+			user.getRole(),
+			user.getUsername(),
+			user.getNickname(),
+			user.getTier()
+		);
+		return SignupResponse.from(accessToken);
 	}
 
 	/*
