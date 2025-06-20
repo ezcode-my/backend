@@ -40,6 +40,8 @@ public abstract class BaseVoteDomainService<T extends BaseVote, R extends BaseVo
 					// 중복 삽입 예외는 “이미 UP 상태”로 간주하고 흐름을 계속
 					// 만약 이 로그가 빈번하게 발생한다면 어떤 이유로 연속 요청(따닥 문제)가 발생하는지 확인해봐야 함
 					log.info("중복 추천 시도 감지 (따닥 문제): voter={} target={}", voter.getId(), targetId);
+
+					prevVoteType = VoteType.UP;
 				}
 			}
 		}
