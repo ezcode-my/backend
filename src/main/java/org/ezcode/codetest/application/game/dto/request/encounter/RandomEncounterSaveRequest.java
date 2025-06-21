@@ -24,7 +24,15 @@ public record RandomEncounterSaveRequest(
 
 	@NotBlank(message = "설명란은 필수입니다.")
 	@Schema(description = "저장할 인카운터의 설명 및 묘사")
-	String encounterText
+	String encounterText,
+
+	@NotBlank(message = "인카운터 선택지 1 입력은 필수입니다.")
+	@Schema(description = "인카운터 선택지 1 메시지")
+	String choice1Text,
+
+	@NotBlank(message = "인카운터 선택지 2 입력은 필수입니다.")
+	@Schema(description = "인카운터 선택지 2 메시지")
+	String choice2Text
 
 ) {
 	public RandomEncounter toRandomEncounter() {
@@ -33,6 +41,8 @@ public record RandomEncounterSaveRequest(
 			.activated(true)
 			.name(name)
 			.encounterText(encounterText)
+			.choice1Text(choice1Text)
+			.choice2Text(choice2Text)
 			.build();
 	}
 }

@@ -22,7 +22,7 @@ public class EncounterLog {
 	}
 
 	public String asText() {
-		return String.join("\n", messages);
+		return String.join(" ", messages);
 	}
 
 }

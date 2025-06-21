@@ -68,7 +68,7 @@ public class AuthService {
 			userDomainService.createUser(newUser);
 			userDomainService.createUserAuthType(userAuthType);
 
-			bearToken = jwtUtil.createToken(
+			bearToken = jwtUtil.createAccessToken(
 				newUser.getId(),
 				newUser.getEmail(),
 				newUser.getRole(),
@@ -83,7 +83,7 @@ public class AuthService {
 			existUser.modifyPassword(encodedPassword);
 			log.info("유저 타입 저장 완료 {}", userAuthType);
 
-			bearToken = jwtUtil.createToken(
+			bearToken = jwtUtil.createAccessToken(
 				existUser.getId(),
 				existUser.getEmail(),
 				existUser.getRole(),
@@ -120,7 +120,7 @@ public class AuthService {
 
 		log.info("비밀번호 체크 완료");
 
-		String bearToken = jwtUtil.createToken(
+		String bearToken = jwtUtil.createAccessToken(
 			loginUser.getId(),
 			loginUser.getEmail(),
 			loginUser.getRole(),
@@ -182,7 +182,7 @@ public class AuthService {
 
 		User user = userDomainService.getUserById(userId);
 		log.info("유저 도메인서비스에서 유저 아이디로 유저 찾아옴");
-		String newAccessToken = jwtUtil.createToken(
+		String newAccessToken = jwtUtil.createAccessToken(
 			user.getId(),
 			user.getEmail(),
 			user.getRole(),

@@ -50,7 +50,7 @@ public class TreasureCacheFound implements EncounterStrategy {
 			character.earnGold(200L);
 			log.add("뚜껑을 열자마자, 익숙한 무기. 아마 지난 던전에서도 주웠던 그 녀석이 눈에 들어옵니다.");
 			log.add("고대 상자가 당신에게 묻는 듯합니다. “복붙된 무기는 어때? 대신 골드 200개는 덤이야.”");
-			log.add("%s(은)는200 골드를 얻었습니다.", player);
+			log.add("%s(은)는 200 골드를 얻었습니다.", player);
 		} else {
 			inventory.addItem(item.getItemType(), item.getId());
 			log.add("그러자 고풍스러운 장식이 새겨진 방어구가 상자 속에서 조심스레 모습을 드러냈습니다.");
