@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.report.model;
 
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 @Getter
@@ -17,6 +18,8 @@ public enum ReportStatus {
 	ReportStatus(String description) {
 		this.description = description;
 	}
+
+	@JsonCreator
 	public static ReportStatus from(String reportStatus) {
 		return Arrays.stream(ReportStatus.values())
 			.filter(r -> r.name().equalsIgnoreCase(reportStatus))

@@ -33,7 +33,7 @@ public class Report extends BaseEntity {
 	private String imageUrl;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(nullable = false, length = 50)
 	private ReportType reportType;
 
 	@Column(nullable = false, length = 50)

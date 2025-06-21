@@ -91,7 +91,7 @@ public class ReportService {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new IllegalArgumentException("신고가 존재하지 않습니다."));
 
-        ReportStatus newStatus = ReportStatus.valueOf(req.newStatus().toUpperCase());
+        ReportStatus newStatus = req.toEnum();
         report.updateStatus(newStatus);
     }
 }
