@@ -23,7 +23,7 @@ public class DefencePenetrationSkill extends AbstractSkill {
 		double penetrationBuff = defender.getDef() * 0.2;
 		attacker.applyAtkBuff(penetrationBuff);
 
-		log.add("%s의 방어력 관통 강화. %s의 20%% 방어력을 추가로 더 무시하고 공격을 시작합니다. 방어구? 그저 속 빈 강정일 뿐입니다.",
+		log.add("%s의 방어력 관통 강화. %s의 20%% 방어력을 추가로 더 무시하고 공격을 시작합니다.",
 			attacker.getName(), defender.getName());
 
 		attacker.consumeActionPoints();

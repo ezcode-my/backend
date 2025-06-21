@@ -19,6 +19,12 @@ public record EncounterResponse(
 	@Schema(description = "인카운터 설명 및 묘사")
 	String encounterText,
 
+	@Schema(description = "인카운터 선택지 1")
+	String choice1Text,
+
+	@Schema(description = "인카운터 선택지 2")
+	String choice2Text,
+
 	@Schema(description = "현재 인카운터 활성 여부")
 	boolean activated
 

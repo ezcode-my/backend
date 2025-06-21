@@ -32,7 +32,7 @@ public class AncientRuinsTrap implements EncounterStrategy {
 		log.add("간신히 벽 틈에 매달리긴 했지만... 허리춤의 금화 주머니는 ‘희생정신’을 발휘해 먼저 탈출했습니다.");
 
 		long lostGold = Math.min(100L, character.getGold());
-		character.earnGold(-lostGold);
+		character.loseGold(lostGold);
 
 		log.add("아래에선 ‘짤랑짤랑’ 소리가 메아리치고, 당신의 %d골드는 이제 유물과 함께 박제될 예정입니다.".formatted(lostGold));
 		log.add("%s(은)는 가까스로 올라왔지만, 어쩐지 어깨는 무겁고 주머니는 가볍습니다.", player);

@@ -45,7 +45,7 @@ public class AmbushBanditsGood implements EncounterStrategy {
 			log.setIsPositive(true);
 		} else {
 			long lost = character.getGold() / 2;
-			character.earnGold(-lost);
+			character.loseGold(lost);
 			realStat.applyDefChange(-1.0);
 			log.add("그러나 결심과는 무색하게 %s(은)는 첫 지팡이에 명치가 눌리고, 두 번째 롤링 핀에 시야가 돌아갑니다.", playerContext.getName());
 			log.add("누군가는 ‘치료용 허브차’를 권했지만, 사실 그건 다시 맞으라는 신호였습니다.");

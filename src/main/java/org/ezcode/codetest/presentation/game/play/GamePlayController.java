@@ -2,6 +2,7 @@ package org.ezcode.codetest.presentation.game.play;
 
 import java.util.List;
 
+import org.ezcode.codetest.application.game.dto.request.encounter.BattleRequest;
 import org.ezcode.codetest.application.game.dto.request.encounter.EncounterChoiceRequest;
 import org.ezcode.codetest.application.game.dto.request.item.ItemEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.item.ItemGamblingRequest;
@@ -200,29 +201,13 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 배틀이 완료되었습니다.")
-	@PostMapping("/battles/{enemyId}")
+	@PostMapping("/battles")
 	public ResponseEntity<BattleHistoryResponse> battle(
 		@AuthenticationPrincipal AuthUser authUser,
-		@PathVariable Long enemyId
+		@RequestBody @Valid BattleRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(gamePlayUseCase.battle(authUser.getId(), enemyId));
-	}
-
-	@Operation(
-		summary = "무작위 배틀 API",
-		description = "무작위로 다른 캐릭터와 배틀을 진행합니다.",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "배틀 진행 후, 결과 반환")
-		}
-	)
-	@ResponseMessage("정상적으로 무작위 배틀이 완료되었습니다.")
-	@PostMapping("/battles")
-	public ResponseEntity<BattleHistoryResponse> randomBattle(
-		@AuthenticationPrincipal AuthUser authUser
-	) {
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(gamePlayUseCase.randomBattle(authUser.getId()));
+			.body(gamePlayUseCase.battle(authUser.getId(), request));
 	}
 
 	@Operation(
@@ -251,9 +236,10 @@ public class GamePlayController {
 	@ResponseMessage("정상적으로 인카운터 매칭에 성공하였습니다.")
 	@GetMapping("/encounters/matching")
 	public ResponseEntity<MatchingEncounterResponse> randomEncounterMatching(
+		@AuthenticationPrincipal AuthUser authUser
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(gamePlayUseCase.randomEncounterMatching());
+			.body(gamePlayUseCase.randomEncounterMatching(authUser.getId()));
 	}
 
 	@Operation(
@@ -263,15 +249,14 @@ public class GamePlayController {
 			@ApiResponse(responseCode = "200", description = "인카운터 선택지에 대한 결과 반환")
 		}
 	)
-	@ResponseMessage("정상적으로 인카운터 선택지가 조회되었습니다.")
-	@PostMapping("/encounters/{encounterId}")
+	@ResponseMessage("정상적으로 인카운터 선택지가 결정되었습니다.")
+	@PostMapping("/encounters/choice")
 	public ResponseEntity<EncounterResultResponse> encounterChoice(
 		@AuthenticationPrincipal AuthUser authUser,
-		@PathVariable Long encounterId,
 		@RequestBody @Valid EncounterChoiceRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(gamePlayUseCase.encounterChoice(authUser.getId(), encounterId, request));
+			.body(gamePlayUseCase.encounterChoice(authUser.getId(), request));
 	}
 
 }

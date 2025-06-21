@@ -3,6 +3,7 @@ package org.ezcode.codetest.application.game.play;
 import java.util.List;
 
 import org.ezcode.codetest.application.game.dto.mapper.GameMapper;
+import org.ezcode.codetest.application.game.dto.request.encounter.BattleRequest;
 import org.ezcode.codetest.application.game.dto.request.encounter.EncounterChoiceRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
@@ -15,6 +16,7 @@ import org.ezcode.codetest.application.game.dto.response.item.ItemGamblingRespon
 import org.ezcode.codetest.application.game.dto.response.item.ItemResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResponse;
 import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
+import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
 import org.ezcode.codetest.domain.game.model.encounter.EncounterHistory;
 import org.ezcode.codetest.domain.game.model.encounter.EncounterLog;
@@ -33,6 +35,7 @@ import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -44,6 +47,7 @@ public class GamePlayUseCase {
 	private final UserDomainService userDomainService;
 	private final GameEncounterDomainService encounterDomainService;
 	private final GameMapper gameMapper;
+	private final JwtUtil jwtUtil;
 
 	@Transactional
 	public void createCharacter(String email) {
@@ -134,9 +138,14 @@ public class GamePlayUseCase {
 	}
 
 	@Transactional
-	public BattleHistoryResponse battle(Long playerId, Long enemyId) {
+	public BattleHistoryResponse battle(Long playerId, BattleRequest request) {
+
+		Claims claims = jwtUtil.extractClaims(request.battleToken());
+
+		Long enemyId = Long.valueOf(claims.getSubject());
 
 		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+
 		GameCharacter enemyCharacter = characterService.getGameCharacter(enemyId);
 
 		BattleLog log = encounterDomainService.battle(playerCharacter, enemyCharacter);
@@ -152,50 +161,56 @@ public class GamePlayUseCase {
 	}
 
 	@Transactional
-	public BattleHistoryResponse randomBattle(Long playerId) {
+	public BattleHistoryResponse randomBattle(Long userId) {
 
-		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+		GameCharacter player = characterService.getGameCharacter(userId);
 
-		GameCharacter enemyCharacter = encounterDomainService.getRandomEnemyCharacter(playerId);
+		GameCharacter enemy = encounterDomainService.getRandomEnemyCharacter(userId, player.getId());
 
-		BattleLog log = encounterDomainService.battle(playerCharacter, enemyCharacter);
+		BattleLog log = encounterDomainService.battle(player, enemy);
 
-		encounterDomainService.createBattleHistory(playerCharacter, enemyCharacter, log);
+		encounterDomainService.createBattleHistory(player, enemy, log);
 
 		return BattleHistoryResponse.of(
-			playerCharacter.getName(),
-			enemyCharacter.getName(),
+			player.getName(),
+			enemy.getName(),
 			log.getMessages(),
 			log.getPlayerWin()
 		);
 	}
 
 	@Transactional
-	public MatchingBattleResponse randomBattleMatching(Long playerId) {
+	public MatchingBattleResponse randomBattleMatching(Long userId) {
 
-		GameCharacter playerCharacter = characterService.getGameCharacter(playerId);
+		GameCharacter player = characterService.getGameCharacter(userId);
 
-		GameCharacter enemyCharacter = encounterDomainService.getRandomEnemyCharacter(playerId);
+		GameCharacter enemy = encounterDomainService.getRandomEnemyCharacter(userId, player.getId());
 
-		boolean checkStrength = encounterDomainService.compareStrength(playerCharacter, enemyCharacter);
+		boolean checkStrength = encounterDomainService.compareStrength(player, enemy);
 
-		String matchMessage = MatchMessageTemplate.random(playerCharacter.getName(), enemyCharacter.getName());
+		String matchMessage = MatchMessageTemplate.random(player.getName(), enemy.getName());
 
-		Long enemyUserId = enemyCharacter.getUser().getId();
+		Long enemyUserId = enemy.getUser().getId();
 
-		return MatchingBattleResponse.of(checkStrength, matchMessage, enemyUserId);
+		return MatchingBattleResponse.of(checkStrength, matchMessage, jwtUtil.createGameToken(enemyUserId));
 	}
 
 	@Transactional
-	public MatchingEncounterResponse randomEncounterMatching() {
+	public MatchingEncounterResponse randomEncounterMatching(Long userId) {
 
-		RandomEncounter encounter = encounterDomainService.getRandomEncounter();
+		GameCharacter playerCharacter = characterService.getGameCharacter(userId);
 
-		return MatchingEncounterResponse.from(encounter);
+		RandomEncounter encounter = encounterDomainService.getRandomEncounter(playerCharacter.getId());
+
+		return MatchingEncounterResponse.from(encounter, jwtUtil.createGameToken(encounter.getId()));
 	}
 
 	@Transactional
-	public EncounterResultResponse encounterChoice(Long userId, Long encounterId, EncounterChoiceRequest request) {
+	public EncounterResultResponse encounterChoice(Long userId, EncounterChoiceRequest request) {
+
+		Claims claims = jwtUtil.extractClaims(request.encounterToken());
+
+		Long encounterId = Long.valueOf(claims.getSubject());
 
 		GameCharacter player = characterService.getGameCharacter(userId);
 

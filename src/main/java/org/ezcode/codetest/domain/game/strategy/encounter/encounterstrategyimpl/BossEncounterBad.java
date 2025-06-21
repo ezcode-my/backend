@@ -27,7 +27,7 @@ public class BossEncounterBad implements EncounterStrategy {
 		EncounterLog log
 	) {
 		CharacterRealStat realStat = character.getRealStat();
-		double playerDef = realStat.getDef();
+		double playerDef = playerContext.getDef();
 
 		int variance = ThreadLocalRandom.current().nextInt(-10, 11);
 		double rawBossAtk = 50 + variance;
@@ -40,6 +40,7 @@ public class BossEncounterBad implements EncounterStrategy {
 		log.add("당신은 한숨을 내쉬며, 문 쪽으로 도망치려던 발걸음을 거둡니다.");
 		log.add("“그래, 한 대 맞고 죽을 운명이면 그것도 나쁘지 않지.” 라는 생각은 대체 왜 드는 걸까요?");
 		log.add("골렘이 기지개를 펴듯 팔을 들고, %s(을)를 향해 그대로 내려찍습니다! 피해: %,.1f", player, rawBossAtk);
+		log.add("※ 남은 체력: %,.1f", playerContext.getHp());
 		if (!alive) {
 			realStat.applyDefChange(-1.0);
 			log.add("방어 자세? 그런 건 애초에 없었습니다. %s(은)는 벽돌처럼 튕겨 나갑니다.", player);

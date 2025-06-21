@@ -44,7 +44,7 @@ public class AmbushBanditsBad implements EncounterStrategy {
 		} else {
 			log.add("당신은 도망을 택했지만... 도망치지 못했습니다.");
 			long lostGold = character.getGold() / 2;
-			character.earnGold(-lostGold);
+			character.loseGold(lostGold);
 			realStat.applyCritChange(-0.5);
 			log.add("첫 번째 지팡이 타격에 정신이 멍해집니다. 뒤이어 날아든 팬케이크 뒤집개가 머리를 스칩니다.");
 			log.add("‘손주 재우기’라는 말 대신 ‘골드 재우기’가 우선이었던 모양입니다.");

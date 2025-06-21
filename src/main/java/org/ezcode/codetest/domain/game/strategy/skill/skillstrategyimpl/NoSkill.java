@@ -29,7 +29,7 @@ public class NoSkill implements SkillStrategy {
 		double hitChance = BASE_HIT_RATE + (attacker.getAccuracy() - defender.getEvasion());
 		boolean isHit = RNG.nextDouble() * 100 < hitChance;
 		if (!isHit) {
-			log.add("%s의 공격이 빗나갔습니다. %s(은)는 멀쩡히 웃고 있습니다.", attacker.getName(), defender.getName());
+			log.add("%s의 공격은 허공만 베었습니다. %s(은)는 고개를 살짝 돌려 그것을 피했습니다. - 공격 명중 실패", attacker.getName(), defender.getName());
 			return true;
 		}
 
@@ -47,7 +47,7 @@ public class NoSkill implements SkillStrategy {
 
 		if (RNG.nextDouble() * 100 < attacker.getStun()) {
 			defender.consumeActionPoints();
-			log.add("스턴. %s의 행동력이 1 줄었습니다. 아직 정신은 멀쩡합니다. 남은 AP %d", defender.getName(), defender.getAp());
+			log.add("스턴. %s의 행동력이 1 줄었습니다. 남은 AP %d", defender.getName(), defender.getAp());
 		}
 
 		log.add("[%s] 남은 체력: %,.1f | [%s] 남은 체력: %,.1f", attacker.getName(), attacker.getHp(), defender.getName(), defender.getHp());

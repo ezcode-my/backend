@@ -11,12 +11,12 @@ public record MatchingBattleResponse(
 	@Schema(description = "두 플레이어 간 조우했을 시 상황묘사")
 	String message,
 
-	@Schema(description = "적 플레이어의 캐릭터 ID")
-	Long enemyId
+	@Schema(description = "적 플레이어의 캐릭터(jwtToken) ID")
+	String enemyIdToken
 
 ) {
-	public static MatchingBattleResponse of(boolean isEnemyStrongThanMe, String message, Long enemyId) {
+	public static MatchingBattleResponse of(boolean isEnemyStrongThanMe, String message, String enemyIdToken) {
 
-		return new MatchingBattleResponse(isEnemyStrongThanMe, message, enemyId);
+		return new MatchingBattleResponse(isEnemyStrongThanMe, message, enemyIdToken);
 	}
 }

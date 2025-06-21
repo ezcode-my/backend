@@ -35,6 +35,12 @@ public class RandomEncounter extends BaseEntity {
 	private String encounterText;
 
 	@Column(nullable = false)
+	private String choice1Text;
+
+	@Column(nullable = false)
+	private String choice2Text;
+
+	@Column(nullable = false)
 	private boolean activated;
 
 	@Builder
@@ -42,11 +48,15 @@ public class RandomEncounter extends BaseEntity {
 		EncounterCategory encounterCategory,
 		String name,
 		String encounterText,
+		String choice1Text,
+		String choice2Text,
 		boolean activated
 	) {
 		this.encounterCategory = encounterCategory;
 		this.name = name;
 		this.encounterText = encounterText;
+		this.choice1Text = choice1Text;
+		this.choice2Text = choice2Text;
 		this.activated = activated;
 	}
 
