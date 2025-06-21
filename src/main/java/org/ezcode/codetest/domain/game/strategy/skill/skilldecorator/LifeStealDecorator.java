@@ -25,20 +25,26 @@ public class LifeStealDecorator implements SkillStrategy {
 	}
 
 	@Override
-	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log, WeaponType weaponType) {
+	public boolean useSkill(CharacterContext attacker, CharacterContext defender, BattleLog log,
+		WeaponType weaponType) {
 
 		double atkBuff = switch (grade) {
-			case LEGENDARY -> 0.20;
-			case UNIQUE    -> 0.15;
-			case RARE      -> 0.10;
-			case UNCOMMON  -> 0.05;
-			case COMMON    -> 0.00;
-			default        -> 0.0;
+			case LEGENDARY -> 0.30;
+			case UNIQUE -> 0.20;
+			case RARE -> 0.15;
+			case UNCOMMON -> 0.10;
+			case COMMON -> 0.05;
+			default -> 0.0;
 		};
+
 		if (atkBuff > 0.0) {
 			attacker.applyAtkBuff(atkBuff * attacker.getAtk());
-			log.add("[%s] 효과로 공격력 +%.0f%% 추가 적용", skillName, atkBuff * 100);
+			log.add(
+				"[%s] 효과 발동 — 공격력 +%.0f%% 추가 적용.",
+				skillName, atkBuff * 100
+			);
 		}
+
 		return delegate.useSkill(attacker, defender, log, weaponType);
 	}
 }

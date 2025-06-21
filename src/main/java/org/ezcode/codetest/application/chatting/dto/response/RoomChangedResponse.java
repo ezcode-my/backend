@@ -21,8 +21,8 @@ public record RoomChangedResponse(
 
 	@Schema(description = "이벤트 타입(삭제, 변경, 생성)")
 	String eventType
-) {
 
+) {
 	public static RoomChangedResponse from(ChatRoom room, String eventType, Long headCount) {
 
 		return RoomChangedResponse.builder()

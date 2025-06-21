@@ -29,12 +29,12 @@ public record ProblemCreateRequest(
 	Difficulty difficulty,
 
 	@NotNull(message = "메모리 제한을 설정해야 합니다.")
-	@Schema(description = "메모리 제한", example = "30000")
+	@Schema(description = "메모리 제한(KB)", example = "30000")
 	Long memoryLimit,
 
 	@NotNull(message = "시간 제한을 설정해야 합니다.")
-	@Schema(description = "시간 제한", example = "1000.0")
-	Double timeLimit,
+	@Schema(description = "시간 제한(ms)", example = "1000")
+	Long timeLimit,
 
 	@NotNull(message = "출처를 명시해야 합니다.")
 	@Schema(description = "출처", example = "ORIGINAL")

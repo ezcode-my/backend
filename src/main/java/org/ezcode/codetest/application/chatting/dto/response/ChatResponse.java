@@ -20,6 +20,7 @@ public record ChatResponse(
 
 	@Schema(description = "채팅 메시지")
 	String message
+
 ) {
 	public static ChatResponse from(Chat chat) {
 

@@ -1,11 +1,10 @@
 package org.ezcode.codetest.domain.submission.dto;
 
-
 public record WeeklySolveCount(
 
-	Long userId,
+    Long userId,
 
-	long solveDayCount
+    long solveDayCount
 
 ) {
 

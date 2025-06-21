@@ -17,7 +17,12 @@ public class EncounterLog {
 	private Boolean isPositive;
 
 	public void add(String format, Object... args) {
+
 		messages.add(String.format(format, args));
+	}
+
+	public String asText() {
+		return String.join("\n", messages);
 	}
 
 }

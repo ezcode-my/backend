@@ -39,7 +39,6 @@ public class GameCharacterSkill extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = LAZY)
-	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "game_character_id", nullable = false)
 	private GameCharacter character;
 

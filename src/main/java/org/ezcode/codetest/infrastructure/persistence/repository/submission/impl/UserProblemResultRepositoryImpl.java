@@ -15,27 +15,26 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserProblemResultRepositoryImpl implements UserProblemResultRepository {
 
-	private final UserProblemResultJpaRepository userProblemResultJpaRepository;
+    private final UserProblemResultJpaRepository userProblemResultJpaRepository;
 
-	@Override
-	public Optional<UserProblemResult> findUserProblemResultByUserIdAndProblemId(Long userId, Long problemId) {
-		return userProblemResultJpaRepository.findByUserIdAndProblemId(userId, problemId);
-	}
+    @Override
+    public Optional<UserProblemResult> findUserProblemResultByUserIdAndProblemId(Long userId, Long problemId) {
+        return userProblemResultJpaRepository.findByUserIdAndProblemId(userId, problemId);
+    }
 
-	@Override
-	public void saveUserProblemResult(UserProblemResult userProblemResult) {
-		userProblemResultJpaRepository.save(userProblemResult);
-	}
+    @Override
+    public void saveUserProblemResult(UserProblemResult userProblemResult) {
+        userProblemResultJpaRepository.save(userProblemResult);
+    }
 
-	@Override
-	public void updateUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
-		userProblemResult.updateResult(isCorrect);
-	}
+    @Override
+    public void updateUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
+        userProblemResult.updateResult(isCorrect);
+    }
 
-	@Override
-	public List<Object[]> findScoresBetween(LocalDateTime start, LocalDateTime end) {
-		return userProblemResultJpaRepository.findScoresBetween(start, end);
-	}
-
+    @Override
+    public List<Object[]> findScoresBetween(LocalDateTime start, LocalDateTime end) {
+        return userProblemResultJpaRepository.findScoresBetween(start, end);
+    }
 
 }

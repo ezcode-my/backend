@@ -58,7 +58,7 @@ public class Problem extends BaseEntity {
 	private Long memoryLimit;
 
 	@Column(nullable = false)
-	private Double timeLimit;
+	private Long timeLimit;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -72,7 +72,7 @@ public class Problem extends BaseEntity {
 
 	@Builder
 	public Problem(User creator, Category category, String title, String description, int score, String difficulty,
-		Long memoryLimit, Double timeLimit, Reference reference) {
+		Long memoryLimit, Long timeLimit, Reference reference) {
 		this.creator = creator;
 		this.category = category;
 		this.title = title;
@@ -87,7 +87,7 @@ public class Problem extends BaseEntity {
 
 	// 여러개를 하나의 객체로 만드는 것
 	public static Problem of(User creator, Category category, String title, String description, int score, String difficulty,
-		Long memoryLimit, Double timeLimit, Reference reference) {
+		Long memoryLimit, Long timeLimit, Reference reference) {
 
 		return Problem.builder()
 			.creator(creator)
@@ -104,7 +104,7 @@ public class Problem extends BaseEntity {
 
 	// 문제 수정 로직
 	public void update(User creator, Category category, String title, String description, Difficulty difficulty,
-		Long memoryLimit, Double timeLimit, Reference reference) {
+		Long memoryLimit, Long timeLimit, Reference reference) {
 
 		if (creator != null) this.creator = creator;
 		if (category != null) this.category = category;

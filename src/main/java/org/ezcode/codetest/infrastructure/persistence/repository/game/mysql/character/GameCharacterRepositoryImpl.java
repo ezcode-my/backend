@@ -33,7 +33,7 @@ public class GameCharacterRepositoryImpl implements GameCharacterRepository {
 		long count = characterRepository.count();
 		if (count == 0) return Optional.empty();
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 10; i++) {
 
 			long randomId = ThreadLocalRandom.current().nextLong(1, count + 1);
 

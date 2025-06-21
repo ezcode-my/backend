@@ -29,8 +29,8 @@ public class ButterflyDecorator implements SkillStrategy {
 		WeaponType weaponType) {
 
 		double buff = switch (grade) {
-			case LEGENDARY -> 0.10;
-			case UNIQUE -> 0.08;
+			case LEGENDARY -> 0.20;
+			case UNIQUE -> 0.12;
 			case RARE -> 0.06;
 			case UNCOMMON -> 0.04;
 			case COMMON -> 0.02;
@@ -39,10 +39,19 @@ public class ButterflyDecorator implements SkillStrategy {
 
 		if (buff > 0.0) {
 			attacker.applyAtkBuff(buff * attacker.getAtk());
-			log.add("[%s] 효과로 공격력 +%.0f%% 추가 적용", skillName, buff * 100);
-
 			attacker.applyEvasionBuff(buff * attacker.getEvasion());
-			log.add("[%s] 효과로 회피율 +%.0f%% 추가 적용", skillName, buff * 100);
+
+			switch (grade) {
+				case LEGENDARY -> {
+					log.add("[%s] 효과 발동 — 공격력 +%.0f%%, 회피율 +%.0f%% 추가 증가.", skillName, buff * 100, buff * 100);
+					log.add("※ 적이 화려함에 모욕감을 느꼈습니다.");
+				}
+				case UNIQUE, RARE, UNCOMMON, COMMON -> {
+					log.add("[%s] 효과 발동 — 공격력 +%.0f%%, 회피율 +%.0f%% 추가 증가.", skillName, buff * 100, buff * 100);
+				}
+				default -> {
+				}
+			}
 		}
 		return delegate.useSkill(attacker, defender, log, weaponType);
 	}

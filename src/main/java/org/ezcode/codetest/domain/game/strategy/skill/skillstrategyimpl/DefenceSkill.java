@@ -20,7 +20,7 @@ public class DefenceSkill implements SkillStrategy {
 		WeaponType weaponType) {
 		attacker.consumeActionPoints();
 		attacker.applyDefBuff(attacker.getDef());
-		log.add("%s가 방어 모드! 방어력이 2배로 상승했습니다.", attacker.getName());
+		log.add("%s의 방어 모드: 방어력이 두 배로 증가했습니다.", attacker.getName());
 		return true;
 	}
 }

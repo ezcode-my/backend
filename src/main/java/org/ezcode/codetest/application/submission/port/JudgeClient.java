@@ -5,8 +5,8 @@ import org.ezcode.codetest.application.submission.model.JudgeResult;
 
 public interface JudgeClient {
 
-	String submitAndGetToken(CodeCompileRequest request);
+    String submitAndGetToken(CodeCompileRequest request);
 
-	JudgeResult pollUntilDone(String token);
+    JudgeResult pollUntilDone(String token);
 
 }

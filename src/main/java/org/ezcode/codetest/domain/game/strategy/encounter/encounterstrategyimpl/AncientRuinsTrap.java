@@ -25,17 +25,17 @@ public class AncientRuinsTrap implements EncounterStrategy {
 	) {
 		String player = context.getName();
 
-		log.add("오래된 유적의 복도를 조심스레 걸어가던 순간, 돌벽에 새겨진 고대 문자가 희미하게 빛납니다.");
-		log.add("갑자기 발밑의 돌바닥에서 묵직한 진동이 느껴지며, 먼지가 사방으로 퍼집니다!");
+		log.add("“탐험가의 본능 +1”… 그런 건 없습니다. 당신은 어두운 통로 쪽이 더 ‘진짜’ 같다고 판단했습니다.");
+		log.add("하지만 첫걸음을 내딛는 순간, 발밑에서 ‘딸깍’ 하는 음산한 소리와 함께 진동이 퍼집니다.");
 
-		log.add(player + "(은)는 본능적으로 몸을 뒤틀며 피하려 했지만, 이미 발밑의 바닥은 깊은 어둠 속으로 사라져버립니다.");
-		log.add("빠르게 손을 뻗어 가까스로 벽의 틈새를 붙잡았으나, 허리춤에 달려 있던 금화 주머니가 풀려 어둠 속으로 떨어져 사라집니다...");
+		log.add("%s(은)는 반사적으로 몸을 틀었지만, 발밑의 바닥은 이미 어디론가 휙 사라지고 있었습니다.", player);
+		log.add("간신히 벽 틈에 매달리긴 했지만... 허리춤의 금화 주머니는 ‘희생정신’을 발휘해 먼저 탈출했습니다.");
 
 		long lostGold = Math.min(100L, character.getGold());
 		character.earnGold(-lostGold);
 
-		log.add("깊은 구덩이 아래에서 희미한 금속 소리가 울려 퍼지고, 당신의 소중한 금화 " + lostGold + "개가 유적의 어둠 속으로 영원히 사라졌습니다.");
-		log.add(player + "(은)는 팔에 힘을 주어 겨우 올라왔지만, 마음속에 남은 충격과 손실감은 쉽게 가시지 않을 것입니다.");
+		log.add("아래에선 ‘짤랑짤랑’ 소리가 메아리치고, 당신의 %d골드는 이제 유물과 함께 박제될 예정입니다.".formatted(lostGold));
+		log.add("%s(은)는 가까스로 올라왔지만, 어쩐지 어깨는 무겁고 주머니는 가볍습니다.", player);
 
 		log.setIsPositive(false);
 	}

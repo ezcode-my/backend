@@ -16,38 +16,38 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LanguageService {
 
-	private final LanguageDomainService languageDomainService;
+    private final LanguageDomainService languageDomainService;
 
-	@Transactional
-	public LanguageResponse createLanguage(LanguageCreateRequest request) {
+    @Transactional
+    public LanguageResponse createLanguage(LanguageCreateRequest request) {
 
-		languageDomainService.validateLanguageNotDuplicated(request.name(), request.version());
+        languageDomainService.validateLanguageNotDuplicated(request.name(), request.version());
 
-		Language language = languageDomainService.createLanguage(LanguageCreateRequest.toEntity(request));
+        Language language = languageDomainService.createLanguage(LanguageCreateRequest.toEntity(request));
 
-		return LanguageResponse.from(language);
-	}
+        return LanguageResponse.from(language);
+    }
 
-	@Transactional(readOnly = true)
-	public List<LanguageResponse> getLanguages() {
-		return languageDomainService.getLanguages()
-			.stream()
-			.map(LanguageResponse::from)
-			.toList();
-	}
+    @Transactional(readOnly = true)
+    public List<LanguageResponse> getLanguages() {
+        return languageDomainService.getLanguages()
+            .stream()
+            .map(LanguageResponse::from)
+            .toList();
+    }
 
-	@Transactional
-	public LanguageResponse modifyLanguage(Long languageId, LanguageUpdateRequest request) {
-		Language language = languageDomainService.getLanguage(languageId);
-		languageDomainService.modifyLanguage(language, request.judge0Id());
+    @Transactional
+    public LanguageResponse modifyLanguage(Long languageId, LanguageUpdateRequest request) {
+        Language language = languageDomainService.getLanguage(languageId);
+        languageDomainService.modifyLanguage(language, request.judge0Id());
 
-		return LanguageResponse.from(language);
-	}
+        return LanguageResponse.from(language);
+    }
 
-	@Transactional
-	public void removeLanguage(Long languageId) {
+    @Transactional
+    public void removeLanguage(Long languageId) {
 
-		languageDomainService.validateLanguageExists(languageId);
-		languageDomainService.removeLanguage(languageId);
-	}
+        languageDomainService.validateLanguageExists(languageId);
+        languageDomainService.removeLanguage(languageId);
+    }
 }

@@ -20,38 +20,38 @@ import lombok.RequiredArgsConstructor;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CodeReviewLockAspect {
 
-	private final LockManager lockManager;
+    private final LockManager lockManager;
 
-	@Around("@annotation(org.ezcode.codetest.application.submission.aop.CodeReviewLock)")
-	public Object lock(ProceedingJoinPoint joinPoint) throws Throwable {
-		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-		String prefix = signature.getMethod().getAnnotation(CodeReviewLock.class).prefix();
-		Object[] args = joinPoint.getArgs();
+    @Around("@annotation(org.ezcode.codetest.application.submission.aop.CodeReviewLock)")
+    public Object lock(ProceedingJoinPoint joinPoint) throws Throwable {
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        String prefix = signature.getMethod().getAnnotation(CodeReviewLock.class).prefix();
+        Object[] args = joinPoint.getArgs();
 
-		Long problemId = null;
-		Long userId = null;
+        Long problemId = null;
+        Long userId = null;
 
-		for (Object arg : args) {
-			if (arg instanceof Long) {
-				problemId = (Long) arg;
-			} else if (arg instanceof AuthUser) {
-				userId = ((AuthUser)arg).getId();
-			}
-		}
+        for (Object arg : args) {
+            if (arg instanceof Long) {
+                problemId = (Long)arg;
+            } else if (arg instanceof AuthUser) {
+                userId = ((AuthUser)arg).getId();
+            }
+        }
 
-		if (problemId == null || userId == null) {
-			throw new CodeReviewException(CodeReviewExceptionCode.REQUIRED_ARGS_NOT_FOUND);
-		}
+        if (problemId == null || userId == null) {
+            throw new CodeReviewException(CodeReviewExceptionCode.REQUIRED_ARGS_NOT_FOUND);
+        }
 
-		boolean locked = lockManager.tryLock(prefix, userId, problemId);
-		if (!locked) {
-			throw new CodeReviewException(CodeReviewExceptionCode.ALREADY_REVIEWING);
-		}
+        boolean locked = lockManager.tryLock(prefix, userId, problemId);
+        if (!locked) {
+            throw new CodeReviewException(CodeReviewExceptionCode.ALREADY_REVIEWING);
+        }
 
-		try {
-			return joinPoint.proceed();
-		} finally {
-			lockManager.releaseLock(prefix, userId, problemId);
-		}
-	}
+        try {
+            return joinPoint.proceed();
+        } finally {
+            lockManager.releaseLock(prefix, userId, problemId);
+        }
+    }
 }

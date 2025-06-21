@@ -7,7 +7,9 @@ import org.ezcode.codetest.domain.game.model.item.Item;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @JsonTypeInfo(
@@ -21,16 +23,23 @@ import lombok.Getter;
 	@JsonSubTypes.Type(value = AccessorySaveRequest.class, name = "accessory")
 })
 @Getter
+@Schema(description = "아이템 저장 요청(무기, 악세서리, 방어구의 최상위 클래스)")
 public abstract class ItemSaveRequest {
 
-	@NotBlank
+	@NotBlank(message = "아이템 등급은 필수 입력입니다.")
+	@Size(message = "아이템 등급 입력은 최대 30글자 이내로만 가능합니다.", max = 30)
 	@EnumValidator(enumClass = Grade.class)
+	@Schema(description = "저장할 아이템 등급")
 	private final String grade;
 
-	@NotBlank
+	@NotBlank(message = "아이템 이름은 필수 입력입니다.")
+	@Size(message = "아이템 이름 입력은 최대 30글자 이내로만 가능합니다.", max = 30)
+	@Schema(description = "저장할 아이템 이름")
 	private final String name;
 
-	@NotBlank
+	@NotBlank(message = "아이템 설명란은 필수 입력입니다.")
+	@Size(message = "아이템 설명 입력은 최대 250글자 이내로만 가능합니다.", max = 250)
+	@Schema(description = "저장할 아이템 설명/묘사")
 	private final String description;
 
 	protected ItemSaveRequest(String grade, String name, String description) {

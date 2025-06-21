@@ -19,30 +19,30 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class RedisJudgeQueueConsumer implements StreamListener<String, MapRecord<String, String, String>> {
 
-	private final SubmissionService submissionService;
-	private final StringRedisTemplate redisTemplate;
+    private final SubmissionService submissionService;
+    private final StringRedisTemplate redisTemplate;
 
-	@Override
-	public void onMessage(MapRecord<String, String, String> message) {
-		Map<String, String> values = message.getValue();
+    @Override
+    public void onMessage(MapRecord<String, String, String> message) {
+        Map<String, String> values = message.getValue();
 
-		SubmissionMessage msg = new SubmissionMessage(
-			values.get("emitterKey"),
-			Long.valueOf(values.get("problemId")),
-			Long.valueOf(values.get("languageId")),
-			Long.valueOf(values.get("userId")),
-			values.get("sourceCode")
-		);
+        SubmissionMessage msg = new SubmissionMessage(
+            values.get("emitterKey"),
+            Long.valueOf(values.get("problemId")),
+            Long.valueOf(values.get("languageId")),
+            Long.valueOf(values.get("userId")),
+            values.get("sourceCode")
+        );
 
-		try {
-			log.info("[컨슈머 수신] {}", msg.emitterKey());
-			submissionService.submitCodeStream(msg);
+        try {
+            log.info("[컨슈머 수신] {}", msg.emitterKey());
+            submissionService.submitCodeStream(msg);
 
-			log.info("[컨슈머 ACK] messageId={}", message.getId());
-			redisTemplate.opsForStream().acknowledge("judge-group", message);
-		} catch (Exception e) {
-			log.error("채점 메시지 처리 실패: {}", message.getId(), e);
-			throw new SubmissionException(SubmissionExceptionCode.REDIS_SERVER_ERROR);
-		}
-	}
+            log.info("[컨슈머 ACK] messageId={}", message.getId());
+            redisTemplate.opsForStream().acknowledge("judge-group", message);
+        } catch (Exception e) {
+            log.error("채점 메시지 처리 실패: {}", message.getId(), e);
+            throw new SubmissionException(SubmissionExceptionCode.REDIS_SERVER_ERROR);
+        }
+    }
 }
