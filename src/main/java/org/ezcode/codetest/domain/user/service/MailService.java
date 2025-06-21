@@ -75,7 +75,7 @@ public class MailService {
 
 
 	/*
-	번호 입력한 인증
+	입력한 번호 인증
 	 */
 	public boolean verifyCode(Long userId, String inputCode) {
 		String key = "VERIFY_CODE:" + userId;

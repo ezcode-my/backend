@@ -111,9 +111,7 @@ public class AuthService {
 		User user = userDomainService.getUserById(userId);
 		if (isMatch){
 			user.setVerified();
-			String accessToken = createAccessToken(user);
-			String refreshToken = createRefreshToken(user);
-			return VerifyEmailCodeResponse.from(accessToken, refreshToken);
+			return VerifyEmailCodeResponse.from("인증되었습니다");
 		} else {
 			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
 		}
@@ -159,9 +157,7 @@ public class AuthService {
 
 		userDomainService.userPasswordCheck(signinRequest.getEmail(), signinRequest.getPassword());
 
-
 		String accessToken = createAccessToken(loginUser);
-
 
 		//refresh 토큰 발급
 		String refreshToken = createRefreshToken(loginUser);
@@ -197,16 +193,14 @@ public class AuthService {
 
 		Long userId = jwtUtil.getUserId(token);
 
-		log.info("유저 아이디 가져옴 id : {}", userId);
 		String savedToken = redisTemplate.opsForValue().get("RefreshToken:" + userId);
-		log.info("저장된 토큰 가져옴 {}", savedToken);
+
 		if (savedToken==null || !savedToken.equals(token)){
-			log.error("저장된 토큰 없음");
 			throw new AuthException(AuthExceptionCode.INVALID_REFRESH_TOKEN);
 		}
 
 		User user = userDomainService.getUserById(userId);
-		log.info("유저 도메인서비스에서 유저 아이디로 유저 찾아옴");
+
 		String newAccessToken = jwtUtil.createToken(
 			user.getId(),
 			user.getEmail(),
