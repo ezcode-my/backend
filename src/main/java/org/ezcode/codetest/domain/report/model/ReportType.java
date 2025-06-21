@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public enum ReportType {
-	PROBELM_ERROR("문제 오류"),
+	PROBLEM_ERROR("문제 오류"),
 	PROFANITY("욕설/비속어"),
 	SPAM("스팸/도배"),
 	SEXUAL_CONTENT("음란성 표현"),
