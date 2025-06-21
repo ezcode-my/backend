@@ -6,6 +6,7 @@ import java.time.Instant;
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -36,9 +37,13 @@ public class GameCharacterMatchTokenBucket {
 	@JoinColumn(name = "game_character_id", nullable = false, unique = true)
 	private GameCharacter character;
 
+	@Column(nullable = false)
 	private int remainingBattleMatchTokens;
+
+	@Column(nullable = false)
 	private int remainingEncounterMatchTokens;
 
+	@Column(nullable = false)
 	private Instant lastRefillTime;
 
 	public GameCharacterMatchTokenBucket(GameCharacter character) {
@@ -49,15 +54,19 @@ public class GameCharacterMatchTokenBucket {
 		lastRefillTime = Instant.now();
 	}
 
-	public void consumeBattleToken() {
-
+	private void refillTokensIfNeeded() {
 		Instant now = Instant.now();
-
 		Duration sinceLastRefill = Duration.between(lastRefillTime, now);
+
 		if (sinceLastRefill.compareTo(REFILL_INTERVAL) >= 0) {
 			remainingBattleMatchTokens = MAX_BATTLE_TOKENS;
+			remainingEncounterMatchTokens = MAX_ENCOUNTER_TOKENS;
 			lastRefillTime = now;
 		}
+	}
+
+	public void consumeBattleToken() {
+		refillTokensIfNeeded();
 
 		if (remainingBattleMatchTokens <= 0) {
 			throw new GameException(GameExceptionCode.BATTLE_TOKEN_EXHAUSTED);
@@ -67,14 +76,7 @@ public class GameCharacterMatchTokenBucket {
 	}
 
 	public void consumeEncounterToken() {
-
-		Instant now = Instant.now();
-
-		Duration sinceLastRefill = Duration.between(lastRefillTime, now);
-		if (sinceLastRefill.compareTo(REFILL_INTERVAL) >= 0) {
-			remainingBattleMatchTokens = MAX_BATTLE_TOKENS;
-			lastRefillTime = now;
-		}
+		refillTokensIfNeeded();
 
 		if (remainingEncounterMatchTokens <= 0) {
 			throw new GameException(GameExceptionCode.ENCOUNTER_TOKEN_EXHAUSTED);

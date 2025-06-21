@@ -14,11 +14,13 @@ public class MatchTokenBucketRepositoryImpl implements MatchTokenBucketRepositor
 
 	private final MatchTokenBucketJpaRepository matchTokenBucketRepository;
 
+	@Override
 	public GameCharacterMatchTokenBucket save(GameCharacterMatchTokenBucket bucket) {
 
 		return matchTokenBucketRepository.save(bucket);
 	}
 
+	@Override
 	public Optional<GameCharacterMatchTokenBucket> findByCharacterId(Long characterId) {
 
 		return matchTokenBucketRepository.findByCharacterId(characterId);
