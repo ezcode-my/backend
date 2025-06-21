@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AuthService {
 
 	private final UserDomainService userDomainService;
@@ -166,6 +165,7 @@ public class AuthService {
 	}
 
 
+	@Transactional
 	public LogoutResponse logout(Long userId, String token) {
 
 		Long expiration = jwtUtil.getRemainingTime(token);
@@ -188,6 +188,7 @@ public class AuthService {
 	}
 
 	//토큰 재발급
+	@Transactional
 	public RefreshTokenResponse refreshToken(String token) {
 		log.info("서비스 입장");
 

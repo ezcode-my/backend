@@ -80,8 +80,18 @@ public class MailService {
 	public boolean verifyCode(Long userId, String inputCode) {
 		String key = "VERIFY_CODE:" + userId;
 		String storedCode = redisTemplate.opsForValue().get(key);
-		log.info("inputCode {}", inputCode);
-		log.info("storedCode:{}", storedCode);
-        return inputCode.trim().equals(storedCode);
+
+		if (storedCode == null) {
+			log.warn("인증코드 발급이 안된 유저임 : {}", userId);
+			return false;
+		}
+
+		boolean isMatch = inputCode != null && inputCode.trim().equals(storedCode);
+
+		//번호 검증되면 삭제하기
+		if (isMatch) {
+			redisTemplate.delete(key);
+		}
+        return isMatch;
 	}
 }
