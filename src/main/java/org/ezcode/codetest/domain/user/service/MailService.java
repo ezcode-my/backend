@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.user.service;
 
+import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -67,12 +68,10 @@ public class MailService {
 
 	// 6자리 랜덤 인증번호 생성
 	private String generateRandomCode() {
-		int min = 100000;
-		int max = 999999;
-		int randomNum = (int)(Math.random() * (max - min + 1)) + min;
+		SecureRandom secureRandom = new SecureRandom();
+		int randomNum = secureRandom.nextInt(900000) + 100000;
 		return String.valueOf(randomNum);
 	}
-
 
 	/*
 	입력한 번호 인증
