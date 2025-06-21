@@ -114,7 +114,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 스킬 뽑기에 성공하였습니다.")
-	@PostMapping("/characters/skills/gambling")
+	@PostMapping("/characters/skills/gamble")
 	public ResponseEntity<SkillGamblingResponse> gamblingForSkill(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
