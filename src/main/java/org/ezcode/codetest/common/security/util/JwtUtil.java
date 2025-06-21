@@ -71,7 +71,7 @@ public class JwtUtil {
 
 		return Jwts.builder()
 			.setSubject(String.valueOf(eventId))
-			.setExpiration(new Date(date.getTime() + GAME_TOKEN_EXPIRATION_TIME * 1000L))
+			.setExpiration(new Date(date.getTime() + GAME_TOKEN_EXPIRATION_TIME * 2000L))
 			.setIssuedAt(date)
 			.signWith(key, signatureAlgorithm)
 			.compact();

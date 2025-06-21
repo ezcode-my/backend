@@ -11,7 +11,7 @@ import lombok.Builder;
 public record MatchingEncounterResponse(
 
 	@Schema(description = "인카운터 ID(jwt 토큰)")
-	String id,
+	String encounterId,
 
 	@Schema(description = "인카운터 카테고리")
 	EncounterCategory encounterCategory,
@@ -33,7 +33,7 @@ public record MatchingEncounterResponse(
 
 		return MatchingEncounterResponse.builder()
 			.encounterCategory(encounter.getEncounterCategory())
-			.id(encounterIdToken)
+			.encounterId(encounterIdToken)
 			.name(encounter.getName())
 			.encounterText(encounter.getEncounterText())
 			.choice1Text(encounter.getChoice1Text())
