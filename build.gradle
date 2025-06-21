@@ -110,7 +110,8 @@ dependencies {
     //email-smtp
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-
+    // S3 SDK
+    implementation 'software.amazon.awssdk:s3'
 }
 
 tasks.named('test') {
