@@ -71,6 +71,8 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UserAuthType> userAuthTypes = new ArrayList<>();
 
+	private boolean verified; //이메일 인증 여부
+
 
 
 	/*
@@ -88,6 +90,7 @@ public class User extends BaseEntity {
 			.tier(Tier.NEWBIE)
 			.role(UserRole.ADMIN) // 테스트용
 			.isDeleted(false)
+			.verified(false)
 			.build();
 	}
 
@@ -104,13 +107,14 @@ public class User extends BaseEntity {
 			.nickname(nickname) //닉네임 자동 생성
 			.password(password)
 			.isDeleted(false)
+			.verified(false)
 			.build();
 	}
 
 
 	@Builder
 	public User(String email, String password, String username, String nickname,
-		Integer age, Tier tier, UserRole role, boolean isDeleted) {
+		Integer age, Tier tier, UserRole role, boolean isDeleted, boolean verified) {
 		this.email = email;
 		this.password = password;
 		this.username = username;
@@ -119,6 +123,7 @@ public class User extends BaseEntity {
 		this.tier = tier;
 		this.role = role;
 		this.isDeleted = isDeleted;
+		this.verified = verified;
 	}
 
 	/*
@@ -146,6 +151,10 @@ public class User extends BaseEntity {
 
 	public void modifyPassword(String newPassword) {
 		this.password = newPassword;
+	}
+
+	public void setVerified(){
+		this.verified = true;
 	}
 
 	public void decreaseReviewToken() {

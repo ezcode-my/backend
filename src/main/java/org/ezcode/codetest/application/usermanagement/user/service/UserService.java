@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.VerifyEmailCodeResponse;
 import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
@@ -13,16 +16,20 @@ import org.ezcode.codetest.application.usermanagement.user.dto.response.UserInfo
 import org.ezcode.codetest.application.usermanagement.user.dto.response.WithdrawUserResponse;
 import org.ezcode.codetest.domain.submission.service.SubmissionDomainService;
 import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
+import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
+import org.ezcode.codetest.domain.user.service.MailService;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +41,7 @@ public class UserService {
 	private final UserDomainService userDomainService;
 	private final SubmissionDomainService submissionDomainService;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final MailService mailService;
 
 	@Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(AuthUser authUser) {
@@ -123,4 +131,5 @@ public class UserService {
 
 		userDomainService.resetReviewTokensForUsers(UsersByWeek.from(counts, weekLength));
 	}
+
 }

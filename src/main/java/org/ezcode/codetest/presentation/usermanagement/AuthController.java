@@ -2,13 +2,14 @@ package org.ezcode.codetest.presentation.usermanagement;
 
 import java.util.Optional;
 
-import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
-import org.ezcode.codetest.application.usermanagement.auth.dto.response.VerifyEmailResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.VerifyEmailCodeResponse;
 import org.ezcode.codetest.application.usermanagement.auth.service.AuthService;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,11 +44,6 @@ public class AuthController {
 	@PostMapping("/auth/signup")
 	public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(signupRequest));
-	}
-
-	@PostMapping("/auth/verify-email")
-	public ResponseEntity<VerifyEmailResponse> authMailCdoe(@RequestBody VerifyEmailRequest verifyEmailRequest){
-		return ResponseEntity.status(HttpStatus.CREATED).body(authService.verifyEmailCode(verifyEmailRequest));
 	}
 
 	@Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인하고 토큰을 발급받습니다.")
@@ -80,5 +77,22 @@ public class AuthController {
 
 		log.info("Refresh token 추출 : {}", token);
 		return ResponseEntity.status(HttpStatus.OK).body(authService.refreshToken(token));
+	}
+
+	@Operation(summary = "이메일 인증 코드 전송", description = "현재 로그인된 회원의 이메일로 인증 코드를 전송합니다.")
+	@PostMapping("/email/send")
+	public ResponseEntity<SendEmailCodeResponse> sendMailCode(
+		@AuthenticationPrincipal AuthUser authUser
+	){
+		return ResponseEntity.status(HttpStatus.CREATED).body(authService.sendEmailCode(authUser.getId(), authUser.getEmail()));
+	}
+
+	@Operation(summary = "이메일 코드 입력 및 인증", description = "이메일로 받은 코드를 입력하여 이메일 인증된 회원으로 전환합니다")
+	@PutMapping("/email/verify")
+	public ResponseEntity<VerifyEmailCodeResponse> verifyEmailCode(
+		@AuthenticationPrincipal AuthUser authUser,
+		@Valid @RequestBody VerifyEmailCodeRequest verifyEmailCodeRequest
+	){
+		return ResponseEntity.status(HttpStatus.OK).body(authService.verifyEmailCode(authUser.getId(), verifyEmailCodeRequest));
 	}
 }

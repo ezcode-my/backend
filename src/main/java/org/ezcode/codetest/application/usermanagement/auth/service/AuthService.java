@@ -3,14 +3,19 @@ package org.ezcode.codetest.application.usermanagement.auth.service;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.VerifyEmailCodeResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
+import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
@@ -18,7 +23,6 @@ import org.ezcode.codetest.domain.user.service.MailService;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
@@ -30,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
 
 	private final UserDomainService userDomainService;
@@ -42,11 +47,12 @@ public class AuthService {
 	- 이미 가입된 이메일 거절
 	- 비밀번호 암호화
 	 */
+	@Transactional
 	public SignupResponse signup(SignupRequest request) {
 		validateRequest(request);
-		User user = userRegisterationProcess(request);
-		sendVeriticationMail(request.getEmail());
-		return generateToken(user);
+		userRegisterationProcess(request);
+
+		return SignupResponse.from("회원가입이 완료되었습니다.");
 	}
 
 	//1. 보낸 요청의 비밀번호&비밀번호확인이 일치하는지
@@ -58,15 +64,18 @@ public class AuthService {
 	}
 
 	//2. 이미 다른 방식으로 회원가입한 유저인지 검증
-	private User userRegisterationProcess(SignupRequest request) {
+	private void userRegisterationProcess(SignupRequest request) {
 		String encodedPassword = userDomainService.encodePassword(request.getPassword());
 		User existUser = userDomainService.getUserByEmail(request.getEmail());
-		return (existUser==null) ?
-			createNewUser(request, encodedPassword) : updateExistingUser(existUser, encodedPassword);
+		if ((existUser == null)) {
+			createNewUser(request, encodedPassword);
+		} else {
+			updateExistingUser(existUser, encodedPassword);
+		}
 	}
 
 	//3. 만약 아예 첫 가입 유저일 때
-	private User createNewUser(SignupRequest request, String encodedPassword) {
+	private void createNewUser(SignupRequest request, String encodedPassword) {
 		User newUser = User.emailUser(
 			request.getEmail(),
 			encodedPassword,
@@ -78,36 +87,55 @@ public class AuthService {
 		userDomainService.createUser(newUser);
 		userDomainService.createUserAuthType(new UserAuthType(newUser, AuthType.EMAIL));
 
-		return newUser;
 	}
 
 	//4. 만약 이전에 다른 방식으로 가입했었던(소셜) 회원일 때 -> UserAuthType테이블에 인증 방식만 추가
-	private User updateExistingUser(User existUser, String encodedPassword) {
+	private void updateExistingUser(User existUser, String encodedPassword) {
 		//로컬 가입(이메일)은 안되어있는데 소셜은 되어있는 경우이므로, UUID 비번을 사용자가 지정한 비번으로 변경한다.
 		// -> 이후 비번 변경하면 User테이블에서 변경하면됨.
 		existUser.modifyPassword(encodedPassword);
 		UserAuthType userAuthType = new UserAuthType(existUser, AuthType.EMAIL);
 		userDomainService.createUserAuthType(userAuthType);
-		return existUser;
 	}
 
-	//5. 인증 메일 전송하기
-	@Async
-	void sendVeriticationMail(String email) {
-		mailService.sendMail(email);
+	@Transactional
+	public SendEmailCodeResponse sendEmailCode(Long userId, String email) {
+		mailService.sendMail(userId, email);
+		return SendEmailCodeResponse.from("인증 코드를 전송했습니다.");
 	}
 
-	//6. 모든 검증 후, 토큰을 발급
-	private SignupResponse generateToken(User user) {
-		String accessToken = jwtUtil.createToken(
+	@Transactional
+	public VerifyEmailCodeResponse verifyEmailCode(Long userId, VerifyEmailCodeRequest verifyEmailCodeRequest) {
+		boolean isMatch = mailService.verifyCode(userId, verifyEmailCodeRequest.getVerificationCode());
+
+		User user = userDomainService.getUserById(userId);
+		if (isMatch){
+			user.setVerified();
+			String accessToken = createAccessToken(user);
+			String refreshToken = createRefreshToken(user);
+			return VerifyEmailCodeResponse.from(accessToken, refreshToken);
+		} else {
+			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
+		}
+	}
+
+	private String createAccessToken(User user) {
+		return jwtUtil.createToken(
 			user.getId(),
 			user.getEmail(),
 			user.getRole(),
 			user.getUsername(),
 			user.getNickname(),
-			user.getTier()
-		);
-		return SignupResponse.from(accessToken);
+			user.getTier());
+	}
+	private String createRefreshToken(User user) {
+		String refreshToken = jwtUtil.createRefreshToken(user.getId());
+		redisTemplate.opsForValue().set(
+			"RefreshToken:" + user.getId(),
+			refreshToken,
+			jwtUtil.getExpiration(refreshToken),
+			TimeUnit.MILLISECONDS);
+		return refreshToken;
 	}
 
 	/*
@@ -131,30 +159,14 @@ public class AuthService {
 
 		userDomainService.userPasswordCheck(signinRequest.getEmail(), signinRequest.getPassword());
 
-		log.info("비밀번호 체크 완료");
 
-		String bearToken = jwtUtil.createToken(
-			loginUser.getId(),
-			loginUser.getEmail(),
-			loginUser.getRole(),
-			loginUser.getUsername(),
-			loginUser.getNickname(),
-			loginUser.getTier());
+		String accessToken = createAccessToken(loginUser);
 
-		log.info("토큰 발급 완료");
 
 		//refresh 토큰 발급
-		String refreshToken = jwtUtil.createRefreshToken(loginUser.getId());
-		log.info("refresh token 발급 완료");
+		String refreshToken = createRefreshToken(loginUser);
 
-		//redis에 RefreshToken : {} 형식으로 저장
-		redisTemplate.opsForValue().set(
-			"RefreshToken:" + loginUser.getId(),
-			refreshToken,
-			jwtUtil.getExpiration(refreshToken),
-			TimeUnit.MILLISECONDS);
-
-		return SigninResponse.from(bearToken, refreshToken);
+		return SigninResponse.from(accessToken, refreshToken);
 	}
 
 
@@ -206,4 +218,5 @@ public class AuthService {
 
 		return RefreshTokenResponse.from(newAccessToken);
 	}
+
 }

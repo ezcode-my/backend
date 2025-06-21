@@ -6,8 +6,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class VerifyEmailRequest {
+public class VerifyEmailCodeRequest {
 
 	@NotBlank(message = "인증 번호는 공백일 수 없습니다")
-	private int verificationCode;
+	private String verificationCode;
 }
