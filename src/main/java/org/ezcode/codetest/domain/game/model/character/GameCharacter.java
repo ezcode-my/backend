@@ -91,7 +91,8 @@ public class GameCharacter extends BaseEntity {
 
 	public void useGoldForGamble() {
 
-		if(gold < 50L) throw new GameException(GameExceptionCode.NOT_ENOUGH_GOLD);
+		if (gold < 50L)
+			throw new GameException(GameExceptionCode.NOT_ENOUGH_GOLD);
 
 		gold -= 50L;
 	}
@@ -101,7 +102,11 @@ public class GameCharacter extends BaseEntity {
 		this.gold += gold;
 	}
 
-	public void equipItem(ItemType item , String newItem) {
+	public void loseGold(long gold) {
+		this.gold = Math.max(0L, this.gold - gold);
+	}
+
+	public void equipItem(ItemType item, String newItem) {
 
 		if (item instanceof WeaponType) {
 			weaponId = newItem;

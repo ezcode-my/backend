@@ -7,6 +7,7 @@ import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 import org.ezcode.codetest.domain.game.model.character.CharacterRealStat;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.character.GameCharacterMatchTokenBucket;
 import org.ezcode.codetest.domain.game.model.character.Inventory;
 import org.ezcode.codetest.domain.game.model.encounter.BattleHistory;
 import org.ezcode.codetest.domain.game.model.encounter.EncounterChoice;
@@ -24,6 +25,7 @@ import org.ezcode.codetest.domain.game.repository.EncounterChoiceRepository;
 import org.ezcode.codetest.domain.game.repository.EncounterHistoryRepository;
 import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
+import org.ezcode.codetest.domain.game.repository.MatchTokenBucketRepository;
 import org.ezcode.codetest.domain.game.repository.RandomEncounterRepository;
 import org.ezcode.codetest.domain.game.strategy.encounter.EncounterStrategy;
 import org.ezcode.codetest.domain.game.strategy.encounter.EncounterStrategyFactory;
@@ -48,6 +50,7 @@ public class GameEncounterDomainService {
 	private final InventoryRepository inventoryRepository;
 	private final RandomEncounterRepository encounterRepository;
 	private final EncounterChoiceRepository choiceRepository;
+	private final MatchTokenBucketRepository matchTokenBucketRepository;
 
 	public BattleLog battle(GameCharacter player, GameCharacter opponent) {
 
@@ -100,8 +103,15 @@ public class GameEncounterDomainService {
 
 			if (!alive) {
 				battleLog.setPlayerWin(attacker == playerContext);
-				player.earnGold(100L);
-				battleLog.add("전투 승리보상으로 100 골드가 지급되었습니다.");
+
+				if (attacker == playerContext) {
+					player.earnGold(100L);
+					battleLog.add("전투 승리보상으로 100 골드가 지급되었습니다.");
+				} else {
+					player.loseGold(25L);
+					battleLog.add("패배하여 25 골드를 갈취당했습니다.");
+				}
+
 				return battleLog;
 			}
 
@@ -115,8 +125,15 @@ public class GameEncounterDomainService {
 
 			if (!alive) {
 				battleLog.setPlayerWin(defender == playerContext);
-				player.earnGold(-25L);
-				battleLog.add("전투 패배로 25 골드를 갈취당했습니다.");
+
+				if (defender == playerContext) {
+					player.earnGold(100L);
+					battleLog.add("전투 승리보상으로 100 골드가 지급되었습니다.");
+				} else {
+					player.loseGold(25L);
+					battleLog.add("패배하여 25 골드를 갈취당했습니다.");
+				}
+
 				return battleLog;
 			}
 
@@ -156,13 +173,23 @@ public class GameEncounterDomainService {
 		return battleHistoryRepository.findByCharacterId(character.getId());
 	}
 
-	public GameCharacter getRandomEnemyCharacter(Long userId) {
+	public GameCharacter getRandomEnemyCharacter(Long userId, Long playerId) {
+
+		GameCharacterMatchTokenBucket playerTokenBucket =  matchTokenBucketRepository.findByCharacterId(playerId)
+			.orElseThrow(() -> new GameException(GameExceptionCode.PLAYER_TOKEN_BUCKET_NOT_EXISTS));
+
+		playerTokenBucket.consumeBattleToken();
 
 		return characterRepository.findRandomCharacter(userId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.RANDOM_CHARACTER_MATCHING_FAIL));
 	}
 
-	public RandomEncounter getRandomEncounter() {
+	public RandomEncounter getRandomEncounter(Long playerId) {
+
+		GameCharacterMatchTokenBucket playerTokenBucket =  matchTokenBucketRepository.findByCharacterId(playerId)
+			.orElseThrow(() -> new GameException(GameExceptionCode.PLAYER_TOKEN_BUCKET_NOT_EXISTS));
+
+		playerTokenBucket.consumeEncounterToken();
 
 		List<RandomEncounter> encounters = encounterRepository.findAllEncounters();
 

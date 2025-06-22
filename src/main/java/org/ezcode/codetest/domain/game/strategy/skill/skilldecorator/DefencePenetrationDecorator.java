@@ -42,7 +42,7 @@ public class DefencePenetrationDecorator implements SkillStrategy {
 
 			switch (grade) {
 				case LEGENDARY -> log.add(
-					"[%s] 발동 — 방어력 관통력 +%.0f%% 추가 상승. 방어구는 허울뿐, %s의 공격은 철갑을 꿰뚫습니다. 맞으면 바로 병원행.",
+					"[%s] 발동 — 방어력 관통력 +%.0f%% 추가 상승. 방어구는 허울뿐, %s의 공격은 철갑을 꿰뚫습니다.",
 					skillName, buff * 100, attacker.getName()
 				);
 				case UNIQUE -> log.add(
