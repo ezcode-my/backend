@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 
 public interface UserProblemResultRepository {
     Optional<UserProblemResult> findUserProblemResultByUserIdAndProblemId(Long userId, Long problemId);
@@ -24,4 +26,6 @@ public interface UserProblemResultRepository {
             GROUP BY upr.user.id
         """)
     List<Object[]> findScoresBetween(LocalDateTime start, LocalDateTime end);
+
+    Optional<Integer> sumScoreByUserId(@Param("userId") Long userId);
 }
