@@ -3,17 +3,23 @@ package org.ezcode.codetest.application.usermanagement.auth.service;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.VerifyEmailCodeResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
+import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
+import org.ezcode.codetest.domain.user.service.MailService;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,7 +39,7 @@ public class AuthService {
 	private final UserDomainService userDomainService;
 	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
-
+	private final MailService mailService;
 
 	/*
 	이메일 회원가입
@@ -41,60 +47,92 @@ public class AuthService {
 	- 비밀번호 암호화
 	 */
 	@Transactional
-	public SignupResponse signup(SignupRequest signupRequest) {
+	public SignupResponse signup(SignupRequest request) {
+		validateRequest(request);
+		userRegisterationProcess(request);
 
-		userDomainService.checkEmailUnique(signupRequest.getEmail());
+		return SignupResponse.from("회원가입이 완료되었습니다.");
+	}
 
-		if (!signupRequest.getPassword().equals(signupRequest.getPasswordConfirm())){
+	//1. 보낸 요청의 비밀번호&비밀번호확인이 일치하는지
+	private void validateRequest(SignupRequest request) {
+		userDomainService.checkEmailUnique(request.getEmail());
+		if (!request.getPassword().equals(request.getPasswordConfirm())){
 			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);
-		}
+		};
+	}
 
-		String encodedPassword = userDomainService.encodePassword(signupRequest.getPassword());
-
-		User existUser = userDomainService.getUserByEmail(signupRequest.getEmail());
-
-		String bearToken;
-
-		//만약 아예 유저 테이블에 없으면 둘 다 저장
-		if (existUser == null) {
-			User newUser = User.emailUser(
-				signupRequest.getEmail(),
-				encodedPassword,
-				signupRequest.getUsername(),
-				signupRequest.getNickname(),
-				signupRequest.getAge()
-			);
-			UserAuthType userAuthType = new UserAuthType(newUser, AuthType.EMAIL);
-			userDomainService.createUser(newUser);
-			userDomainService.createUserAuthType(userAuthType);
-
-			bearToken = jwtUtil.createAccessToken(
-				newUser.getId(),
-				newUser.getEmail(),
-				newUser.getRole(),
-				newUser.getUsername(),newUser.getNickname(),
-				newUser.getTier());
+	//2. 이미 다른 방식으로 회원가입한 유저인지 검증
+	private void userRegisterationProcess(SignupRequest request) {
+		String encodedPassword = userDomainService.encodePassword(request.getPassword());
+		User existUser = userDomainService.getUserByEmail(request.getEmail());
+		if ((existUser == null)) {
+			createNewUser(request, encodedPassword);
 		} else {
-			//유저 테이블에는 존재하다면 AuthType만 추가
-			UserAuthType userAuthType = new UserAuthType(existUser, AuthType.EMAIL);
-			userDomainService.createUserAuthType(userAuthType);
-
-			//로컬 가입(이메일)은 안되어있는데 소셜은 되어있는 경우이므로, UUID 비번을 사용자가 지정한 비번으로 변경한다. -> 이후 비번 변경하면 User테이블에서 변경하면됨.
-			existUser.modifyPassword(encodedPassword);
-			log.info("유저 타입 저장 완료 {}", userAuthType);
-
-			bearToken = jwtUtil.createAccessToken(
-				existUser.getId(),
-				existUser.getEmail(),
-				existUser.getRole(),
-				existUser.getUsername(),
-				existUser.getNickname(),
-				existUser.getTier());
+			updateExistingUser(existUser, encodedPassword);
 		}
+	}
 
+	//3. 만약 아예 첫 가입 유저일 때
+	private void createNewUser(SignupRequest request, String encodedPassword) {
+		User newUser = User.emailUser(
+			request.getEmail(),
+			encodedPassword,
+			request.getUsername(),
+			request.getNickname(),
+			request.getAge()
+		);
 
+		userDomainService.createUser(newUser);
+		userDomainService.createUserAuthType(new UserAuthType(newUser, AuthType.EMAIL));
 
-		return SignupResponse.from(bearToken);
+	}
+
+	//4. 만약 이전에 다른 방식으로 가입했었던(소셜) 회원일 때 -> UserAuthType테이블에 인증 방식만 추가
+	private void updateExistingUser(User existUser, String encodedPassword) {
+		//로컬 가입(이메일)은 안되어있는데 소셜은 되어있는 경우이므로, UUID 비번을 사용자가 지정한 비번으로 변경한다.
+		// -> 이후 비번 변경하면 User테이블에서 변경하면됨.
+		existUser.modifyPassword(encodedPassword);
+		UserAuthType userAuthType = new UserAuthType(existUser, AuthType.EMAIL);
+		userDomainService.createUserAuthType(userAuthType);
+	}
+
+	@Transactional
+	public SendEmailCodeResponse sendEmailCode(Long userId, String email) {
+		mailService.sendMail(userId, email);
+		return SendEmailCodeResponse.from("인증 코드를 전송했습니다.");
+	}
+
+	@Transactional
+	public VerifyEmailCodeResponse verifyEmailCode(Long userId, VerifyEmailCodeRequest verifyEmailCodeRequest) {
+		boolean isMatch = mailService.verifyCode(userId, verifyEmailCodeRequest.getVerificationCode());
+
+		User user = userDomainService.getUserById(userId);
+		if (isMatch){
+			user.setVerified();
+			return VerifyEmailCodeResponse.from("인증되었습니다");
+		} else {
+			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
+		}
+	}
+
+	private String createAccessToken(User user) {
+		return jwtUtil.createAccessToken(
+			user.getId(),
+			user.getEmail(),
+			user.getRole(),
+			user.getUsername(),
+			user.getNickname(),
+			user.getTier());
+	}
+	private String createRefreshToken(User user) {
+		String refreshToken = jwtUtil.createRefreshToken(user.getId());
+		redisTemplate.opsForValue().set(
+			"RefreshToken:" + user.getId(),
+			refreshToken,
+			jwtUtil.getExpiration(refreshToken),
+			TimeUnit.MILLISECONDS);
+		return refreshToken;
 	}
 
 	/*
@@ -118,33 +156,16 @@ public class AuthService {
 
 		userDomainService.userPasswordCheck(signinRequest.getEmail(), signinRequest.getPassword());
 
-		log.info("비밀번호 체크 완료");
-
-		String bearToken = jwtUtil.createAccessToken(
-			loginUser.getId(),
-			loginUser.getEmail(),
-			loginUser.getRole(),
-			loginUser.getUsername(),
-			loginUser.getNickname(),
-			loginUser.getTier());
-
-		log.info("토큰 발급 완료");
+		String accessToken = createAccessToken(loginUser);
 
 		//refresh 토큰 발급
-		String refreshToken = jwtUtil.createRefreshToken(loginUser.getId());
-		log.info("refresh token 발급 완료");
+		String refreshToken = createRefreshToken(loginUser);
 
-		//redis에 RefreshToken : {} 형식으로 저장
-		redisTemplate.opsForValue().set(
-			"RefreshToken:" + loginUser.getId(),
-			refreshToken,
-			jwtUtil.getExpiration(refreshToken),
-			TimeUnit.MILLISECONDS);
-
-		return SigninResponse.from(bearToken, refreshToken);
+		return SigninResponse.from(accessToken, refreshToken);
 	}
 
 
+	@Transactional
 	public LogoutResponse logout(Long userId, String token) {
 
 		Long expiration = jwtUtil.getRemainingTime(token);
@@ -167,30 +188,23 @@ public class AuthService {
 	}
 
 	//토큰 재발급
+	@Transactional
 	public RefreshTokenResponse refreshToken(String token) {
 		log.info("서비스 입장");
 
 		Long userId = jwtUtil.getUserId(token);
 
-		log.info("유저 아이디 가져옴 id : {}", userId);
 		String savedToken = redisTemplate.opsForValue().get("RefreshToken:" + userId);
-		log.info("저장된 토큰 가져옴 {}", savedToken);
+
 		if (savedToken==null || !savedToken.equals(token)){
-			log.error("저장된 토큰 없음");
 			throw new AuthException(AuthExceptionCode.INVALID_REFRESH_TOKEN);
 		}
 
 		User user = userDomainService.getUserById(userId);
-		log.info("유저 도메인서비스에서 유저 아이디로 유저 찾아옴");
-		String newAccessToken = jwtUtil.createAccessToken(
-			user.getId(),
-			user.getEmail(),
-			user.getRole(),
-			user.getUsername(),
-			user.getNickname(),
-			user.getTier()
-		);
+
+		String newAccessToken = createAccessToken(user);
 
 		return RefreshTokenResponse.from(newAccessToken);
 	}
+
 }

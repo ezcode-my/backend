@@ -1,5 +1,8 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.VerifyEmailCodeResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ModifyUserInfoRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
@@ -12,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,7 +59,6 @@ public class UserController {
 	){
 		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserPassword(authUser, changeUserPasswordRequest));
 	}
-
 
 	@Operation(summary = "회원 탈퇴", description = "현재 로그인된 사용자를 탈퇴 처리합니다.")
 	@DeleteMapping("/users/withdraw")
