@@ -46,11 +46,11 @@ public class AmbushBanditsGood implements EncounterStrategy {
 		} else {
 			long lost = character.getGold() / 2;
 			character.loseGold(lost);
-			realStat.applyDefChange(-1.0);
+			realStat.applyDefChange(-0.2);
 			log.add("그러나 결심과는 무색하게 %s(은)는 첫 지팡이에 명치가 눌리고, 두 번째 롤링 핀에 시야가 돌아갑니다.", playerContext.getName());
 			log.add("누군가는 ‘치료용 허브차’를 권했지만, 사실 그건 다시 맞으라는 신호였습니다.");
 			log.add("정신을 차려보니 골드 %d이 사라지고, 무릎엔 ‘할머니파이맛’이라는 딱지가 붙어 있습니다.", lost);
-			log.add("%s(은)는 이번 싸움이 육체보다 자존심에 더 큰 데미지를 줬음을 느끼며, 방어력이 1 감소했습니다. (방어력 -1)", playerContext.getName());
+			log.add("%s(은)는 이번 싸움이 육체보다 자존심에 더 큰 데미지를 줬음을 느끼며, 방어력이 0.2 감소했습니다. (방어력 -0.2)", playerContext.getName());
 			log.setIsPositive(false);
 		}
 	}
