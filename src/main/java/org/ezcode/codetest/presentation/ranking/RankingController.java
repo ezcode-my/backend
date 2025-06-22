@@ -1,9 +1,11 @@
 package org.ezcode.codetest.presentation.ranking;
 
 import lombok.RequiredArgsConstructor;
+import org.ezcode.codetest.application.ranking.dto.PointResponse;
 import org.ezcode.codetest.application.ranking.dto.RankingResponse;
 import org.ezcode.codetest.application.ranking.service.RankingFacadeService;
 import org.ezcode.codetest.infrastructure.ranking.scheduler.RankingSyncScheduler;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
