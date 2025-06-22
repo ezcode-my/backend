@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "인카운터 조회 요청에 대한 응답")
 public record EncounterResponse(
 
-	@Schema(description = "인카운터 ID")
+	@Schema(description = "인카운터 ID(jwt token)")
 	Long encounterId,
 
 	@Schema(description = "인카운터 카테고리")

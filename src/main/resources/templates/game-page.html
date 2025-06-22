@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vault Boy Walk</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            margin: 0;
+            background-color: black;
+            overflow: hidden;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .vault-boy, .button-container, .side-panel-right, .side-panel-left {
+            display: none;
+        }
+
+        .main-visible .vault-boy,
+        .main-visible .button-container {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            grid-template-rows: repeat(2, auto);
+            gap: 18px;
+            justify-content: center;
+        }
+
+        .vault-boy {
+            position: absolute;
+            top: 50%;
+            left: -180px;
+            transform: translateY(-50%);
+            width: 180px;
+            animation: enterAndStay 2s ease-out forwards;
+        }
+
+        @keyframes enterAndStay {
+            0% {
+                left: -180px;
+            }
+            100% {
+                left: calc(50% - 90px);
+            }
+        }
+
+        .button-container {
+            position: absolute;
+            top: 65%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .menu-button {
+            padding: 15px 36px;
+            background-color: #111;
+            color: #0f0;
+            border: 3px solid #0f0;
+            font-size: 30px;
+            cursor: pointer;
+            text-shadow: 0 0 3px #0f0;
+            box-shadow: 0 0 7px #0f0;
+            transition: transform 0.2s;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .menu-button:hover {
+            transform: scale(1.05);
+        }
+
+        .token-form {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 20;
+        }
+
+        .token-input {
+            width: 300px;
+            padding: 6px 10px;
+            font-size: 16px;
+            border: 2px solid #0f0;
+            background-color: #111;
+            color: #0f0;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .submit-button {
+            padding: 6px 16px;
+            font-size: 16px;
+            background-color: #111;
+            color: #0f0;
+            border: 2px solid #0f0;
+            cursor: pointer;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        /* Right-side panels: STATUS, INVENTORY, SKILLS */
+        .side-panel-right {
+            position: absolute;
+            top: 10%;
+            right: -800px;
+            width: 600px;
+            height: 800px;
+            background-color: #111;
+            border: 4px solid #0f0;
+            color: #0f0;
+            padding: 40px;
+            box-shadow: 0 0 20px #0f0;
+            font-size: 24px;
+            transition: right 0.5s ease;
+            font-family: 'Press Start 2P', monospace;
+            overflow-y: auto;
+            line-height: 2.2;
+            z-index: 5;
+        }
+
+        .side-panel-right.active {
+            display: block;
+            right: 40px;
+        }
+
+        .side-panel-right .vaultboy-background {
+            position: absolute;
+            top: 330px;
+            right: -300px;
+            width: 850px;
+            opacity: 0.07;
+            filter: grayscale(1) brightness(1.1) contrast(1.2);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .side-panel-right > *:not(.vaultboy-background) {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Left-side panels: ADVENTURE, BATTLE, GAMBLE */
+        .side-panel-left {
+            position: absolute;
+            top: 10%;
+            left: -800px;
+            width: 600px;
+            height: 800px;
+            background-color: #111;
+            border: 4px solid #0f0;
+            color: #0f0;
+            padding: 40px;
+            box-shadow: 0 0 20px #0f0;
+            font-size: 24px;
+            transition: left 0.5s ease;
+            font-family: 'Press Start 2P', monospace;
+            overflow-y: auto;
+            line-height: 2.2;
+            z-index: 5;
+        }
+
+        .side-panel-left.active {
+            display: block;
+            left: 40px;
+        }
+
+        .side-panel-left .vaultboy-background {
+            position: absolute;
+            top: 330px;
+            right: -300px;
+            width: 850px;
+            opacity: 0.07;
+            filter: grayscale(1) brightness(1.1) contrast(1.2);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .side-panel-left > *:not(.vaultboy-background) {
+            position: relative;
+            z-index: 1;
+        }
+
+        .side-panel-right ul li, .side-panel-left ul li {
+            color: #0f0;
+        }
+
+        .side-panel-right ul li::before,
+        .side-panel-left ul li::before {
+            content: attr(data-key) ": ";
+            color: white;
+        }
+
+        /* Text colors */
+        .status-item-name {
+            color: orange;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .item-name {
+            color: orange;
+            cursor: pointer;
+        }
+
+        .skill-name {
+            color: pink;
+            cursor: pointer;
+        }
+
+        .slot-type {
+            color: #00f;
+            font-family: 'Press Start 2P', monospace;
+            margin-left: 8px;
+            pointer-events: none;
+        }
+
+        .equip-popup {
+            position: absolute;
+            background: #111;
+            border: 3px solid #0f0;
+            padding: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 0 10px #0f0;
+            font-family: 'Press Start 2P', monospace;
+            z-index: 1000;
+        }
+
+        .equip-popup button {
+            background: #000;
+            border: 2px solid #0f0;
+            color: #0f0;
+            font-size: 16px;
+            padding: 10px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .equip-popup button:hover {
+            background: #0f0;
+            color: #000;
+        }
+
+        .retro-message {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111;
+            border: 3px solid #0f0;
+            color: #0f0;
+            font-family: 'Press Start 2P', monospace;
+            padding: 14px 24px;
+            font-size: 18px;
+            box-shadow: 0 0 10px #0f0;
+            z-index: 2000;
+            display: none;
+        }
+
+        /* 추가: 빨간 매칭 버튼 스타일 */
+        .match-button {
+            background-color: #300;
+            border: 3px solid #f00;
+            color: #f00;
+            text-shadow: 0 0 3px #f00;
+            box-shadow: 0 0 7px #f00;
+            padding: 15px 36px;
+            font-size: 30px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .side-panel-left .battle-log li {
+            color: #fff !important;
+            margin-bottom: 8px;
+        }
+
+        .match-button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body id="main-container">
+<form class="token-form" onsubmit="saveToken(event)">
+    <input type="text" class="token-input" id="jwt-token" placeholder="Enter JWT Token">
+    <button type="submit" class="submit-button">Submit</button>
+</form>
+
+<img src="/images/vault_boy_transparent.gif" alt="Vault Boy Walking" class="vault-boy">
+
+<div class="button-container">
+    <button class="menu-button" onclick="showPanel('status')">STATUS</button>
+    <button class="menu-button" onclick="showPanel('inventory')">INVENTORY</button>
+    <button class="menu-button" onclick="showPanel('skills')">SKILLS</button>
+    <button class="menu-button" onclick="showPanel('battle')">BATTLE</button>
+    <button class="menu-button" onclick="showPanel('gamble')">GAMBLE</button>
+    <button class="menu-button" onclick="showPanel('adventure')">ADVENTURE</button>
+</div>
+
+<!-- Right-side panels -->
+<div id="status-panel" class="side-panel-right">
+    <img src="/images/15328_green_noisy_nobg.gif" alt="Vault Boy HUD" class="vaultboy-background">
+</div>
+<div id="inventory-panel" class="side-panel-right">
+    <img src="/images/15328_green_noisy_nobg.gif" alt="Vault Boy HUD" class="vaultboy-background">
+</div>
+<div id="skills-panel" class="side-panel-right">
+    <img src="/images/15328_green_noisy_nobg.gif" alt="Vault Boy HUD" class="vaultboy-background">
+</div>
+
+<!-- Left-side panels -->
+<div id="battle-panel" class="side-panel-left">
+    <img src="/images/15328_green_noisy_nobg.gif" alt="Vault Boy HUD" class="vaultboy-background">
+</div>
+<div id="gamble-panel" class="side-panel-left">
+    <img src="/images/15328_green_noisy_nobg.gif" alt="Vault Boy HUD" class="vaultboy-background">
+</div>
+<div id="adventure-panel" class="side-panel-left">
+    <img src="/images/15328_green_noisy_nobg.gif" alt="Vault Boy HUD" class="vaultboy-background">
+</div>
+
+<div id="popup" class="equip-popup"></div>
+<div id="retro-message" class="retro-message"></div>
+
+<script>
+    let savedToken = '';
+    let encounterTimerInterval = null;
+    let battleMatchingTimeout = null;
+    let battleCountdownInterval = null;
+
+    function showRetroMessage(message) {
+        const msgBox = document.getElementById('retro-message');
+        msgBox.innerText = message;
+        msgBox.style.display = 'block';
+        setTimeout(() => msgBox.style.display = 'none', 2000);
+    }
+
+    function formatNum1(v) {
+        if (typeof v === 'number' && !isNaN(v)) {
+            // toFixed는 문자열 반환하므로, 필요에 따라 parseFloat(...) 으로 숫자로 바꿀 수 있음
+            return parseFloat(v.toFixed(1));
+        }
+        return v;
+    }
+
+    function saveToken(event) {
+        event.preventDefault();
+        savedToken = document.getElementById('jwt-token').value;
+        if (savedToken) {
+            document.getElementById('main-container').classList.add('main-visible');
+            document.querySelector('.token-form').style.display = 'none';
+        }
+    }
+
+    async function showPanel(panelId) {
+        const isRight = ['status', 'inventory', 'skills'].includes(panelId);
+        const sideClass = isRight ? '.side-panel-right' : '.side-panel-left';
+        document.querySelectorAll(sideClass).forEach(p => p.classList.remove('active'));
+
+        const panel = document.getElementById(panelId + '-panel');
+        panel.classList.add('active');
+        panel.scrollTop = 0;
+        panel.innerHTML = `<img src="/images/15328_green_noisy_nobg.gif" class="vaultboy-background" alt="Vault Boy HUD">`;
+
+        // 왼쪽 패널: BATTLE, GAMBLE, ADVENTURE
+        if (!isRight) {
+            const titles = {
+                battle: '⚔️ BATTLE',
+                gamble: '🎲 GAMBLE',
+                adventure: '🗺️ ADVENTURE'
+            };
+            panel.innerHTML += `<h2>${titles[panelId]}</h2>`;
+
+            // BATTLE 분기
+            if (panelId === 'battle') {
+                panel.innerHTML += `
+        <p style="color:orange; line-height:1.4; margin:16px 0;">
+          전투 매칭 시스템이 활성화되었습니다. 시스템은 유저의 능력치를 기준으로 '적절히 불공정한' 상대를 찾아드립니다.
+        </p>
+      `;
+                panel.innerHTML += `<button class="match-button" id="battle-match-btn">BATTLE MATCHING</button>`;
+                document.getElementById('battle-match-btn')
+                    .addEventListener('click', matchingBattle);
+            }
+
+            // GAMBLE 분기
+            if (panelId === 'gamble') {
+                panel.innerHTML += `
+    <p style="color:orange; line-height:1.4; margin:16px 0;">
+      여기는 등록된 합법 도박 상점입니다. 유저의 골드를 빠르게 소각하며, 낮은 확률로 장비 혹은 스킬을 지급합니다.
+      환불, 책임, 위로는 제공되지 않습니다. 뽑기 결과는 즉시 적용됩니다. 후회는 선택사항입니다.
+      시스템은 감정을 고려하지 않으며, 통계는 당신 편이 아닙니다. 그래도 시도하시겠습니까?
+    </p>
+  `;
+                // ITEM GAMBLE 버튼만 남깁니다.
+                panel.innerHTML += `
+    <button class="menu-button" id="item-gamble-btn">GAMBLE</button>
+  `;
+                document.getElementById('item-gamble-btn')
+                    .addEventListener('click', openItemGamblePopup);
+                // 더 이상 별도 SKILL GAMBLE 버튼은 없음.
+            }
+
+            // ADVENTURE 분기
+            if (panelId === 'adventure') {
+                // 1) 경고 문구 추가 (흰색)
+                panel.innerHTML += `
+    <p style="color:orange; line-height:1.4; margin:16px 0;">
+      무작위 인카운터는 시스템에 의해 자동으로 배정됩니다.<br/>
+      실패 확률, 부상 가능성, 트라우마는 포함되지만 사전 고지는 생략됩니다.<br/>
+      그래도 버튼을 누른 건 당신입니다—책임은 시스템이 지지 않습니다.
+      (부정적 결과 발생 시 영구적인 능력치 하락 및 골드 분실이 일어날 수 있습니다)
+    </p>
+  `;
+                // 2) 매칭 버튼
+                panel.innerHTML += `
+    <button class="match-button" id="adventure-match-btn" style="background-color:#300; border:3px solid #f00; color:#f00;">
+      ADVENTURE MATCHING
+    </button>
+  `;
+                document.getElementById('adventure-match-btn')
+                    .addEventListener('click', matchingAdventure);
+            }
+
+            return;
+        }
+
+        // 오른쪽 패널: STATUS, INVENTORY, SKILLS
+        const urlMap = {
+            status: '/api/games/characters',
+            inventory: '/api/games/characters/inventories',
+            skills: '/api/games/characters/skills/unequipped'
+        };
+        const res = await fetch(urlMap[panelId], {headers: {'Authorization': 'Bearer ' + savedToken}});
+        const json = await res.json();
+
+        if (panelId === 'status') {
+            const r = json.result;
+            panel.innerHTML += `
+      <h2>👤 ${r.name}</h2><hr>
+      <h3>🧠 Stats</h3>
+      <ul>${Object.entries(r.stats).map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}</ul>
+      <h3>⚔️ Real Stats</h3>
+      <ul>${Object.entries(r.realStat).map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}</ul>
+      <h3>💰 Gold</h3><p>${formatNum1(r.gold)}</p>
+      <h3>🎒 Items</h3>
+      ${r.items.map(item => `
+        <div style="margin-bottom:32px;">
+          <strong class="status-item-name">${item.name}</strong> [${item.grade} ${item.itemCategory}-${item.itemType}]<br>
+          <em>${item.description}</em>
+          <ul>${Object.entries(item)
+                .filter(([k]) => !['name', 'description', 'itemCategory', 'itemType', 'grade'].includes(k))
+                .map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('')}
+      <h3>📚 Skills</h3>
+      ${r.skills.map(skill => `
+        <div style="margin-bottom:32px;" data-skill="${skill.name}">
+          <strong class="skill-name" onclick="unequipSkill('${skill.name}')">${skill.name}</strong>
+          [${skill.grade}-${skill.skillEffect}]
+          <span class="slot-type">${skill.slotType}</span><br>
+          <em>${skill.skillDetails}</em>
+        </div>
+      `).join('')}
+    `;
+        } else if (panelId === 'inventory') {
+            panel.innerHTML += `<h2>📦 INVENTORY</h2>`;
+            (json.result || []).forEach(item => {
+                panel.innerHTML += `
+        <div style="margin-bottom:32px;">
+          <strong class="item-name" onclick="equipItem('${item.name}')">${item.name}</strong>
+          [${item.grade} ${item.itemCategory}-${item.itemType}]<br>
+          <em>${item.description}</em>
+          <ul>${Object.entries(item)
+                    .filter(([k]) => !['name', 'description', 'itemCategory', 'itemType', 'grade'].includes(k))
+                    .map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+            });
+        } else { // skills
+            panel.innerHTML += `<h2>🧠 SKILLS</h2>`;
+            json.result.forEach(skill => {
+                panel.innerHTML += `
+        <div style="margin-bottom:32px;" data-skill="${skill.name}">
+          <strong class="skill-name" onclick="openEquipPopup(event,'${skill.name}')">${skill.name}</strong>
+          [${skill.grade}-${skill.skillEffect}]<br>
+          <em>${skill.skillDetails}</em>
+        </div>
+      `;
+            });
+        }
+    }
+
+    async function matchingAdventure() {
+        const pop = document.getElementById('popup');
+        // 매칭 중 표시
+        pop.innerHTML = `<p style="color:#0f0;">인카운터 매칭 중…</p>`;
+        pop.style.display = 'flex';
+        pop.style.left = '50%';
+        pop.style.top = '50%';
+        pop.style.transform = 'translate(-50%, -50%)';
+
+        try {
+            const res = await fetch('/api/games/characters/encounters/matching', {
+                headers: {'Authorization': 'Bearer ' + savedToken}
+            });
+            const data = await res.json();
+            if (!data.success) {
+                pop.innerHTML = `
+        <div style="color:#f00; text-align:center;">
+          <p>인카운터 매칭에 실패했습니다.</p>
+          <button id="close-encounter-popup-fail"
+                  style="margin-top:12px; padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+            닫기
+          </button>
+        </div>`;
+                document.getElementById('close-encounter-popup-fail')
+                    .addEventListener('click', () => pop.style.display = 'none');
+                return;
+            }
+
+            const enc = data.result;
+            // 서버가 내려주는 토큰 필드명에 맞춰 사용 (예: enc.id 또는 enc.encounterId)
+            const encounterToken = enc.id || enc.encounterId;
+            if (!encounterToken) {
+                pop.innerHTML = `
+        <div style="color:#f00; text-align:center;">
+          <p>유효한 인카운터 토큰이 없습니다.</p>
+          <button id="close-encounter-popup-invalid"
+                  style="margin-top:12px; padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+            닫기
+          </button>
+        </div>`;
+                document.getElementById('close-encounter-popup-invalid')
+                    .addEventListener('click', () => pop.style.display = 'none');
+                return;
+            }
+            // activated 체크가 필요하면 추가
+            if (enc.activated === false) {
+                pop.innerHTML = `
+        <div style="color:#f00; text-align:center;">
+          <p>현재 선택 가능한 인카운터가 아닙니다.</p>
+          <button id="close-encounter-popup-notactive"
+                  style="margin-top:12px; padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+            닫기
+          </button>
+        </div>`;
+                document.getElementById('close-encounter-popup-notactive')
+                    .addEventListener('click', () => pop.style.display = 'none');
+                return;
+            }
+
+            // 팝업에 인카운터 정보 및 선택지만 렌더링 (포기/닫기 버튼은 없음)
+            pop.innerHTML = `
+      <div style="color:#0f0; max-width:500px; text-align:left;">
+        <h3 style="color:#fff; margin-bottom:8px;">${enc.name}</h3>
+        <p style="color:#fff; margin-bottom:12px;">${enc.encounterText}</p>
+        <div id="encounter-timer" style="color:#fff; font-weight:bold; margin-bottom:12px;">
+          남은 시간: 60초
+        </div>
+        <button id="choice1-btn" style="margin-right:8px; padding:8px; border:2px solid #f00; background:#300; color:#f00; cursor:pointer;">
+          ${enc.choice1Text}
+        </button>
+        <button id="choice2-btn" style="padding:8px; border:2px solid #f00; background:#300; color:#f00; cursor:pointer;">
+          ${enc.choice2Text}
+        </button>
+      </div>`;
+
+            // 60초 카운트다운
+            let remaining = 60;
+            const timerEl = document.getElementById('encounter-timer');
+            if (encounterTimerInterval) clearInterval(encounterTimerInterval);
+            encounterTimerInterval = setInterval(() => {
+                remaining--;
+                if (timerEl) timerEl.innerText = `남은 시간: ${remaining}초`;
+                if (remaining <= 0) {
+                    clearInterval(encounterTimerInterval);
+                    // 자동 선택: 랜덤 true/false
+                    const autoDecision = Math.random() < 0.5;
+                    // 자동 선택 메시지 잠깐 보여주기
+                    pop.innerHTML = `
+          <div style="color:#f00; text-align:center; max-width:400px;">
+            <p>시간이 초과되어 자동으로 선택됩니다:<br/>
+               ${autoDecision ? enc.choice1Text : enc.choice2Text}
+            </p>
+          </div>`;
+                    // 1초 뒤 자동 전송 및 결과 팝업 렌더링
+                    setTimeout(() => {
+                        sendEncounterChoice(encounterToken, autoDecision);
+                        // sendEncounterChoice 내부에서 결과 렌더링 후 닫기 버튼을 제공하므로, 여기서는 팝업을 곧바로 닫지 않음
+                    }, 1000);
+                }
+            }, 1000);
+
+            // 사용자가 직접 선택한 경우
+            document.getElementById('choice1-btn')
+                .addEventListener('click', () => {
+                    clearInterval(encounterTimerInterval);
+                    sendEncounterChoice(encounterToken, true);
+                });
+            document.getElementById('choice2-btn')
+                .addEventListener('click', () => {
+                    clearInterval(encounterTimerInterval);
+                    sendEncounterChoice(encounterToken, false);
+                });
+
+        } catch (err) {
+            console.error("[matchingAdventure] 오류:", err);
+            pop.innerHTML = `
+      <div style="color:#f00; text-align:center;">
+        <p>인카운터 매칭 중 오류가 발생했습니다.</p>
+        <button id="close-encounter-popup-error"
+                style="margin-top:12px; padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+          닫기
+        </button>
+      </div>`;
+            document.getElementById('close-encounter-popup-error')
+                .addEventListener('click', () => pop.style.display = 'none');
+        }
+    }
+
+    // Encounter 선택 POST 및 결과 처리
+    async function sendEncounterChoice(encounterToken, playerDecision) {
+        const pop = document.getElementById('popup');
+        pop.innerHTML = `<p style="color:#0f0;">결과 처리 중…</p>`;
+        pop.style.display = 'flex';
+        pop.style.left = '50%';
+        pop.style.top = '50%';
+        pop.style.transform = 'translate(-50%, -50%)';
+
+        try {
+            const res = await fetch('/api/games/characters/encounters/choice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + savedToken
+                },
+                body: JSON.stringify({
+                    encounterToken: encounterToken,
+                    playerDecision: playerDecision
+                })
+            });
+            const data = await res.json();
+            if (!data.success) {
+                pop.innerHTML = `
+        <div style="color:#f00; text-align:center; max-width:400px;">
+          <p>인카운터 선택 전송에 실패했습니다.</p>
+          <button id="close-encounter-result-popup"
+                  style="margin-top:12px; padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+            닫기
+          </button>
+        </div>
+      `;
+                document.getElementById('close-encounter-result-popup')
+                    .addEventListener('click', () => pop.style.display = 'none');
+                return;
+            }
+
+            const {log, isPositive} = data.result;
+            const resultColor = isPositive ? '#0f0' : '#f00';
+            const resultText = isPositive ? '긍정적 결과' : '부정적 결과';
+
+            pop.innerHTML = `
+      <div style="max-width:500px; text-align:left;">
+        <p style="color:${resultColor}; font-weight:bold; margin-bottom:8px;">
+          ${resultText}
+        </p>
+        <div style="color:#fff; white-space:pre-wrap; margin-bottom:12px;">
+          ${log}
+        </div>
+        <button id="close-encounter-result-popup"
+                style="padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+          닫기
+        </button>
+      </div>
+    `;
+            document.getElementById('close-encounter-result-popup')
+                .addEventListener('click', () => pop.style.display = 'none');
+
+        } catch (err) {
+            console.error(err);
+            pop.innerHTML = `
+      <div style="color:#f00; text-align:center;">
+        <p>인카운터 선택 처리 중 오류가 발생했습니다.</p>
+        <button id="close-encounter-error-popup"
+                style="margin-top:12px; padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+          닫기
+        </button>
+      </div>
+    `;
+            document.getElementById('close-encounter-error-popup')
+                .addEventListener('click', () => pop.style.display = 'none');
+        }
+    }
+
+    async function matchingBattle() {
+        const res = await fetch('/api/games/characters/battles/matching', {
+            headers: {'Authorization': 'Bearer ' + savedToken}
+        });
+        const data = await res.json();
+        const panel = document.getElementById('battle-panel');
+
+        // 이전 매칭 UI나 타이머가 있으면 제거/클리어
+        if (battleMatchingTimeout) {
+            clearTimeout(battleMatchingTimeout);
+            battleMatchingTimeout = null;
+        }
+        if (battleCountdownInterval) {
+            clearInterval(battleCountdownInterval);
+            battleCountdownInterval = null;
+        }
+        const prevContainer = document.getElementById('battle-matching-container');
+        if (prevContainer) prevContainer.remove();
+
+        // 새 컨테이너 생성
+        const container = document.createElement('div');
+        container.id = 'battle-matching-container';
+        const {isEnemyStrongThanMe, message, enemyIdToken} = data.result;
+
+        // 컨테이너 내부에 타이머 표시용 div 추가
+        container.innerHTML = `
+    <p>상대: <strong>${isEnemyStrongThanMe ? '강함' : '약함'}</strong></p>
+    <p>${message}</p>
+    <div id="battle-timer" style="color:orange; margin:8px 0; font-weight:bold;">남은 시간: 60초</div>
+    <button class="menu-button" id="battle-accept-btn">수락</button>
+  `;
+        panel.appendChild(container);
+
+        // 남은 시간 카운트다운
+        let remaining = 60;
+        const timerEl = document.getElementById('battle-timer');
+        battleCountdownInterval = setInterval(() => {
+            remaining--;
+            if (timerEl) {
+                timerEl.innerText = `남은 시간: ${remaining}초`;
+            }
+            if (remaining <= 0) {
+                clearInterval(battleCountdownInterval);
+                battleCountdownInterval = null;
+            }
+        }, 1000);
+
+        // 60초 후 자동 제거
+        battleMatchingTimeout = setTimeout(() => {
+            // 타이머 클리어
+            if (battleCountdownInterval) {
+                clearInterval(battleCountdownInterval);
+                battleCountdownInterval = null;
+            }
+            // 컨테이너 제거
+            const cnt = document.getElementById('battle-matching-container');
+            if (cnt) {
+                cnt.remove();
+                showRetroMessage('Battle matching 시간이 초과되어 창이 닫혔습니다.');
+            }
+            battleMatchingTimeout = null;
+        }, 60000);
+
+        // 수락 버튼 클릭 시: 타이머 클리어 후 acceptBattle 호출
+        const acceptBtn = document.getElementById('battle-accept-btn');
+        if (acceptBtn) {
+            acceptBtn.addEventListener('click', () => {
+                if (battleMatchingTimeout) {
+                    clearTimeout(battleMatchingTimeout);
+                    battleMatchingTimeout = null;
+                }
+                if (battleCountdownInterval) {
+                    clearInterval(battleCountdownInterval);
+                    battleCountdownInterval = null;
+                }
+                container.remove();
+                acceptBattle(enemyIdToken);
+            });
+        }
+    }
+
+    async function acceptBattle(token) {
+        const res = await fetch('/api/games/characters/battles', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + savedToken
+            },
+            body: JSON.stringify({battleToken: token})
+        });
+        const data = await res.json();
+        const {playerNickName, enemyNickName, battleLog, isPlayerWin} = data.result;
+
+        const panel = document.getElementById('battle-panel');
+        panel.innerHTML = `
+    <h2>⚔️ 전투 결과</h2>
+    <p>플레이어: <strong>${playerNickName}</strong></p>
+    <p>상대: <strong>${enemyNickName}</strong></p>
+    <h3>📜 전투 로그</h3>
+    <ul class="battle-log" style="line-height:1.5; padding-left:20px;">
+      ${battleLog
+            .map(entry => `<li>${entry}</li><br/>`)
+            .join('')}
+    </ul>
+    <p style="font-size:24px; margin-top:20px;">
+      결과: <strong>${isPlayerWin ? '승리!' : '아무튼 이기진 못했네요...'}</strong>
+    </p>
+  `;
+    }
+
+    async function unequipSkill(name) {
+        const res = await fetch('/api/games/characters/skills/unequip', {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + savedToken},
+            body: JSON.stringify({name})
+        });
+        const r = await res.json();
+        if (r.success) {
+            const el = document.querySelector(`#status-panel div[data-skill="${name}"]`);
+            if (el) el.remove();
+            showRetroMessage('Skill unequip success?');
+        } else {
+            showRetroMessage('Skill unequip fail');
+        }
+    }
+
+    function openEquipPopup(ev, name) {
+        const pop = document.getElementById('popup');
+        pop.innerHTML = `<span style="color:#0f0;margin-bottom:10px;">Choose Slot</span>` +
+            [1, 2, 3].map(n => `<button onclick="equipSkill('${name}',${n})">${n}</button>`).join('');
+        pop.style.display = 'flex';
+        pop.style.left = ev.pageX + 'px';
+        pop.style.top = ev.pageY + 'px';
+    }
+
+    async function equipSkill(name, slot) {
+        document.getElementById('popup').style.display = 'none';
+        const res = await fetch('/api/games/characters/skills/equip', {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + savedToken},
+            body: JSON.stringify({name, slotNumber: slot})
+        });
+        const r = await res.json();
+        if (r.success) {
+            const el = document.querySelector(`#skills-panel div[data-skill="${name}"]`);
+            if (el) el.remove();
+            showRetroMessage('Skill equip success?');
+        } else {
+            showRetroMessage('Duplicated equip fail');
+        }
+    }
+
+    async function equipItem(name) {
+        const res = await fetch('/api/games/characters/items/equip', {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + savedToken},
+            body: JSON.stringify({name})
+        });
+        const r = await res.json();
+        showRetroMessage(r.success ? 'Item equip success?' : 'Item equip fail');
+    }
+
+    function openItemGamblePopup() {
+        const pop = document.getElementById('popup');
+        pop.innerHTML = `
+    <span style="color:#0f0; margin-bottom:10px;">Choose Category</span><br/>
+    <button onclick="gambleItem('WEAPON')" style="margin:4px;">WEAPON</button>
+    <button onclick="gambleItem('DEFENCE')" style="margin:4px;">DEFENCE</button>
+    <button onclick="gambleItem('ACCESSORY')" style="margin:4px;">ACCESSORY</button>
+    <hr style="border-color:#0f0; width:80%; margin:12px auto;">
+    <button onclick="gambleSkill()" style="margin:4px; color:#f90; border:2px solid #f90; background:#111;">
+      SKILL GAMBLE
+    </button>
+  `;
+        pop.style.display = 'flex';
+        pop.style.flexDirection = 'column';
+        pop.style.alignItems = 'center';
+        pop.style.left = '50%';
+        pop.style.top = '50%';
+        pop.style.transform = 'translate(-50%, -50%)';
+    }
+
+    async function gambleSkill() {
+        const pop = document.getElementById('popup');
+        // 1) 로딩 표시
+        pop.innerHTML = `<p style="color:#0f0;">스킬 뽑는 중…</p>`;
+        pop.style.display = 'flex';
+        pop.style.left = '50%';
+        pop.style.top = '50%';
+        pop.style.transform = 'translate(-50%, -50%)';
+
+        try {
+            // 2) 요청 보내기
+            const res = await fetch('/api/games/characters/skills/gamble', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + savedToken
+                }
+                // body: 없음
+            });
+            const data = await res.json();
+
+            // 3) 응답 처리
+            if (!data.success) {
+                // 실패 시 메시지
+                pop.innerHTML = `
+      <div style="color:#f00; text-align:center;">
+        <p>뽑기에 실패했습니다.</p>
+        <p>주머니에 돈이 있는지부터 확인하세요?</p>
+        <button id="close-skill-gamble-popup"
+                style="margin-top:12px; padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+          닫기
+        </button>
+      </div>`;
+                document.getElementById('close-skill-gamble-popup')
+                    .addEventListener('click', () => pop.style.display = 'none');
+                return;
+            }
+            // 성공 처리
+            // 응답 포맷 예시:
+            // {
+            //   "success": true,
+            //   "status": 201,
+            //   "message": "정상적으로 스킬 뽑기에 성공하였습니다.",
+            //   "result": {
+            //     "response": {
+            //       "skillEffect": "COUNTER_ATTACK",
+            //       "grade": "UNCOMMON",
+            //       "name": "반사 신경",
+            //       "skillDetails": "..."
+            //     },
+            //     "message": "축하합니다! 뽑기에 성공하셨습니다."
+            //   }
+            // }
+            const resp = data.result.response;
+            const userMsg = data.result.message || data.message || '축하합니다!';
+
+            // 4) 팝업에 스킬 정보 렌더링
+            pop.innerHTML = `
+    <div style="color:#0f0; max-width:400px; text-align:left;">
+      <p>${userMsg}</p>
+      <p><span style="color:#fff">이름:</span> ${resp.name}</p>
+      <p><span style="color:#fff">등급:</span> ${resp.grade}</p>
+      <p><span style="color:#fff">효과:</span> ${resp.skillEffect}</p>
+      <p><span style="color:#fff">설명:</span> ${resp.skillDetails}</p>
+      <button id="close-skill-gamble-popup"
+              style="margin-top:12px; padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+        닫기
+      </button>
+    </div>`;
+            document.getElementById('close-skill-gamble-popup')
+                .addEventListener('click', () => pop.style.display = 'none');
+
+        } catch (err) {
+            console.error('gambleSkill error:', err);
+            pop.innerHTML = `
+    <div style="color:#f00; text-align:center;">
+      <p>스킬 뽑기 중 오류가 발생했습니다.</p>
+      <button id="close-skill-gamble-popup-error"
+              style="margin-top:12px; padding:8px; border:2px solid #0f0; background:#111; color:#0f0; cursor:pointer;">
+        닫기
+      </button>
+    </div>`;
+            document.getElementById('close-skill-gamble-popup-error')
+                .addEventListener('click', () => pop.style.display = 'none');
+        }
+    }
+
+    async function gambleItem(category) {
+        const pop = document.getElementById('popup');
+        // 팝업 열고 로딩 표시
+        pop.innerHTML = `<p style="color:#0f0;">뽑는 중…</p>`;
+        pop.style.display = 'flex';
+        pop.style.left = '50%';
+        pop.style.top = '50%';
+        pop.style.transform = 'translate(-50%, -50%)';
+
+        // 요청
+        const res = await fetch('/api/games/characters/items/gamble', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + savedToken
+            },
+            body: JSON.stringify({itemCategory: category})
+        });
+        const data = await res.json();
+
+        // 실패 처리
+        if (!data.success) {
+            pop.innerHTML = `
+      <div style="color:#0f0; text-align:center;">
+        <p style="color:#f00;">뽑기에 실패했습니다.</p>
+        <p>주머니에 돈이 있는지부터 확인하세요?</p>
+        <button id="close-gamble-popup"
+                style="margin-top:12px; padding:8px;
+                       border:2px solid #0f0; background:#111; color:#0f0;
+                       cursor:pointer;">
+          닫기
+        </button>
+      </div>
+    `;
+            document
+                .getElementById('close-gamble-popup')
+                .addEventListener('click', () => pop.style.display = 'none');
+            return;
+        }
+
+        // 성공 처리
+        const {itemResponse, message} = data.result;
+
+        // 스탯 HTML 조립
+        let statsHtml = '';
+        if (itemResponse.atk !== undefined) {
+            // WeaponResponse
+            statsHtml += `<p><span style="color:#fff">공격력:</span> ${itemResponse.atk}</p>`;
+            statsHtml += `<p><span style="color:#fff">속도:</span> ${itemResponse.speed}</p>`;
+            statsHtml += `<p><span style="color:#fff">크리티컬:</span> ${itemResponse.crit}</p>`;
+            statsHtml += `<p><span style="color:#fff">스턴:</span> ${itemResponse.stun}</p>`;
+            statsHtml += `<p><span style="color:#fff">정확도:</span> ${itemResponse.accuracy}</p>`;
+            // evasion 은 무기에는 없으므로 제외
+        } else if (itemResponse.def !== undefined) {
+            // DefenceResponse
+            statsHtml += `<p><span style="color:#fff">방어력:</span> ${itemResponse.def}</p>`;
+            statsHtml += `<p><span style="color:#fff">속도:</span> ${itemResponse.speed}</p>`;
+            statsHtml += `<p><span style="color:#fff">회피:</span> ${itemResponse.evasion}</p>`;
+        } else {
+            // AccessoryResponse
+            statsHtml += `<p><span style="color:#fff">속도:</span> ${itemResponse.speed}</p>`;
+            statsHtml += `<p><span style="color:#fff">크리티컬:</span> ${itemResponse.crit}</p>`;
+            statsHtml += `<p><span style="color:#fff">스턴:</span> ${itemResponse.stun}</p>`;
+            statsHtml += `<p><span style="color:#fff">회피:</span> ${itemResponse.evasion}</p>`;
+            statsHtml += `<p><span style="color:#fff">정확도:</span> ${itemResponse.accuracy}</p>`;
+        }
+
+        // 최종 팝업 렌더링 (성공)
+        pop.innerHTML = `
+    <div style="color:#0f0; max-width:400px; text-align:left;">
+      <p>${message}</p>
+      <p><span style="color:#fff">이름:</span> ${itemResponse.name}</p>
+      <p><span style="color:#fff">등급:</span> ${itemResponse.grade}</p>
+      <p><span style="color:#fff">설명:</span> ${itemResponse.description}</p>
+      ${statsHtml}
+      <button id="close-gamble-popup"
+              style="margin-top:12px; padding:8px;
+                     border:2px solid #0f0; background:#111; color:#0f0;
+                     cursor:pointer;">
+        닫기
+      </button>
+    </div>
+  `;
+
+        document
+            .getElementById('close-gamble-popup')
+            .addEventListener('click', () => pop.style.display = 'none');
+    }
+
+</script>
+</body>
+</html>

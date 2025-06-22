@@ -66,7 +66,7 @@ public class CharacterStatusDomainService {
 		GameCharacter character = characterRepository.findByUserId(userId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.CHARACTER_NOT_FOUND));
 
-		character.earnGold(500L);
+		character.earnGold(300L);
 
 		character.applyIncreaseStats(increaseStatRate);
 	}

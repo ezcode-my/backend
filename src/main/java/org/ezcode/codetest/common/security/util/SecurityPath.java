@@ -24,6 +24,7 @@ public class SecurityPath {
 		"/webjars/**",
 		"/searching",
 		"/css/**", //html 화면 구성 접근
-		"/images/**"
+		"/images/**",
+		"/gaming"
 	};
 }

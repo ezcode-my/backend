@@ -25,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,7 +82,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 캐릭터 보유 스킬이 조회되었습니다.")
-	@GetMapping("/skills/unequipped")
+	@GetMapping("/characters/skills/unequipped")
 	public ResponseEntity<List<SkillResponse>> CharacterSkillsOpen(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -98,7 +97,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 아이템 뽑기에 성공하였습니다.")
-	@PostMapping("/items/gambling")
+	@PostMapping("/characters/items/gamble")
 	public ResponseEntity<ItemGamblingResponse> gamblingForItem(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid ItemGamblingRequest request
@@ -115,7 +114,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 스킬 뽑기에 성공하였습니다.")
-	@PostMapping("/skills/gambling")
+	@PostMapping("/characters/skills/gamble")
 	public ResponseEntity<SkillGamblingResponse> gamblingForSkill(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -131,7 +130,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 인벤토리가 조회되었습니다.")
-	@GetMapping("/inventories")
+	@GetMapping("/characters/inventories")
 	public ResponseEntity<List<ItemResponse>> inventoryOpen(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -147,7 +146,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 아이템이 장착되었습니다.")
-	@PatchMapping("/items/equip")
+	@PatchMapping("/characters/items/equip")
 	public ResponseEntity<Void> equipItem(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid ItemEquipRequest request
@@ -165,7 +164,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 스킬이 장착되었습니다.")
-	@PatchMapping("/skills/equip")
+	@PatchMapping("/characters/skills/equip")
 	public ResponseEntity<Void> equipSkill(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid SkillEquipRequest request
@@ -183,7 +182,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 스킬 장착이 해제되었습니다.")
-	@PatchMapping("/skills/unequip")
+	@PatchMapping("/characters/skills/unequip")
 	public ResponseEntity<Void> unEquipSkill(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid SkillUnEquipRequest request
@@ -201,7 +200,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 배틀이 완료되었습니다.")
-	@PostMapping("/battles")
+	@PostMapping("/characters/battles")
 	public ResponseEntity<BattleHistoryResponse> battle(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid BattleRequest request
@@ -218,7 +217,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 배틀 매칭에 성공하였습니다.")
-	@GetMapping("/battles/matching")
+	@GetMapping("/characters/battles/matching")
 	public ResponseEntity<MatchingBattleResponse> randomBattleMatching(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -234,7 +233,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 인카운터 매칭에 성공하였습니다.")
-	@GetMapping("/encounters/matching")
+	@GetMapping("/characters/encounters/matching")
 	public ResponseEntity<MatchingEncounterResponse> randomEncounterMatching(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -250,7 +249,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 인카운터 선택지가 결정되었습니다.")
-	@PostMapping("/encounters/choice")
+	@PostMapping("/characters/encounters/choice")
 	public ResponseEntity<EncounterResultResponse> encounterChoice(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid EncounterChoiceRequest request
