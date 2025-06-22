@@ -27,5 +27,5 @@ public interface UserProblemResultRepository {
         """)
     List<Object[]> findScoresBetween(LocalDateTime start, LocalDateTime end);
 
-    Optional<Integer> sumScoreByUserId(@Param("userId") Long userId);
+    Optional<Integer> sumPointByUserId(@Param("userId") Long userId);
 }

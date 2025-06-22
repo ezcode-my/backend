@@ -11,7 +11,7 @@ public class PointService {
     private final UserProblemResultRepository userProblemResultRepository;
 
     public int getTotalPoints(Long userId) {
-        return userProblemResultRepository.sumScoreByUserId(userId).orElse(0);
+        return userProblemResultRepository.sumPointByUserId(userId).orElse(0);
     }
 
 }

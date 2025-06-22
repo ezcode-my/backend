@@ -38,7 +38,7 @@ public class UserProblemResultRepositoryImpl implements UserProblemResultReposit
     }
 
     @Override
-    public Optional<Integer> sumScoreByUserId(Long userId) {
+    public Optional<Integer> sumPointByUserId(Long userId) {
         return userProblemResultJpaRepository.sumScoreByUserId(userId);
     }
 
