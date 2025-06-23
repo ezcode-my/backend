@@ -9,6 +9,7 @@ import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.DefenceBattleHistoryResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.EncounterResultResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.MatchingBattleResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.MatchingEncounterResponse;
@@ -18,6 +19,7 @@ import org.ezcode.codetest.application.game.dto.response.skill.SkillGamblingResp
 import org.ezcode.codetest.application.game.dto.response.skill.SkillResponse;
 import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.encounter.BattleHistory;
 import org.ezcode.codetest.domain.game.model.encounter.EncounterHistory;
 import org.ezcode.codetest.domain.game.model.encounter.EncounterLog;
 import org.ezcode.codetest.domain.game.model.encounter.MatchMessageTemplate;
@@ -161,25 +163,6 @@ public class GamePlayUseCase {
 	}
 
 	@Transactional
-	public BattleHistoryResponse randomBattle(Long userId) {
-
-		GameCharacter player = characterService.getGameCharacter(userId);
-
-		GameCharacter enemy = encounterDomainService.getRandomEnemyCharacter(userId, player.getId());
-
-		BattleLog log = encounterDomainService.battle(player, enemy);
-
-		encounterDomainService.createBattleHistory(player, enemy, log);
-
-		return BattleHistoryResponse.of(
-			player.getName(),
-			enemy.getName(),
-			log.getMessages(),
-			log.getPlayerWin()
-		);
-	}
-
-	@Transactional
 	public MatchingBattleResponse randomBattleMatching(Long userId) {
 
 		GameCharacter player = characterService.getGameCharacter(userId);
@@ -220,6 +203,16 @@ public class GamePlayUseCase {
 		EncounterHistory history = encounterDomainService.createEncounterHistory(player, resultLog);
 
 		return EncounterResultResponse.from(history);
+	}
+
+	@Transactional
+	public List<DefenceBattleHistoryResponse> getPlayerDefenceHistory(Long userId) {
+
+		GameCharacter playerCharacter = characterService.getGameCharacter(userId);
+
+		List<BattleHistory> history = encounterDomainService.getCharacterBattleHistory(playerCharacter);
+
+		return history.stream().map(DefenceBattleHistoryResponse::from).toList();
 	}
 
 }

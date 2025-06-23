@@ -39,7 +39,7 @@ public class LifeStealSkill extends AbstractSkill {
 
 		if (RNG.nextDouble() * 100 < attacker.getStun()) {
 			defender.consumeActionPoints();
-			log.add("스턴! %s가 잠시 머리를 잃었습니다 — 행동력 1 감소 → 남은 AP %d", defender.getName(), defender.getAp());
+			log.add("스턴! %s(이)가 잠시 정신을 잃었습니다 — 행동력 1 감소 → 남은 AP %d", defender.getName(), defender.getAp());
 		}
 
 		log.add("[%s] 남은 체력: %,.1f | [%s] 남은 체력: %,.1f", attacker.getName(), attacker.getHp(), defender.getName(), defender.getHp());

@@ -10,6 +10,7 @@ import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.DefenceBattleHistoryResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.EncounterResultResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.MatchingBattleResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.MatchingEncounterResponse;
@@ -207,6 +208,22 @@ public class GamePlayController {
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(gamePlayUseCase.battle(authUser.getId(), request));
+	}
+
+	@Operation(
+		summary = "방어 PVP 기록 조회 API",
+		description = "상대방이 자신을 대상으로 한 PVP 기록을 조회합니다.(24시간전까지만)",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "PVP 결과 반환")
+		}
+	)
+	@ResponseMessage("정상적으로 PVP 기록 조회에 성공하였습니다.")
+	@GetMapping("/characters/battles")
+	public ResponseEntity<List<DefenceBattleHistoryResponse>> getDefenceBattleHistory(
+		@AuthenticationPrincipal AuthUser authUser
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(gamePlayUseCase.getPlayerDefenceHistory(authUser.getId()));
 	}
 
 	@Operation(

@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class GameEncounterDomainService {
 
 	private final CharacterEquipService characterEquipService;
-	private final SkillStrategyFactory  skillStrategyFactory;
+	private final SkillStrategyFactory skillStrategyFactory;
 	private final EncounterStrategyFactory encounterFactory;
 
 	private final BattleHistoryRepository battleHistoryRepository;
@@ -65,13 +65,13 @@ public class GameEncounterDomainService {
 
 		WeaponType playerWeaponType = playerItems.stream()
 			.filter(item -> item instanceof Weapon)
-			.map(item -> (WeaponType) item.getItemType())
+			.map(item -> (WeaponType)item.getItemType())
 			.findFirst()
 			.orElse(WeaponType.NOTHING);
 
- 		WeaponType opponentWeaponType = opponentItems.stream()
+		WeaponType opponentWeaponType = opponentItems.stream()
 			.filter(item -> item instanceof Weapon)
-			.map(item -> (WeaponType) item.getItemType())
+			.map(item -> (WeaponType)item.getItemType())
 			.findFirst()
 			.orElse(WeaponType.NOTHING);
 
@@ -106,10 +106,12 @@ public class GameEncounterDomainService {
 
 				if (attacker == playerContext) {
 					player.earnGold(100L);
-					battleLog.add("전투 승리보상으로 100 골드가 지급되었습니다.");
+					battleLog.add("%s(이)가 전투 승리보상으로 100 골드가 지급되었습니다.", playerContext.getName());
 				} else {
 					player.loseGold(25L);
-					battleLog.add("패배하여 25 골드를 갈취당했습니다.");
+					opponent.earnGold(25L);
+					battleLog.add("%s님이 %s님에게 패배하여 25 골드를 갈취당했습니다.", playerContext.getName(),
+						opponentContext.getName());
 				}
 
 				return battleLog;
@@ -128,10 +130,12 @@ public class GameEncounterDomainService {
 
 				if (defender == playerContext) {
 					player.earnGold(100L);
-					battleLog.add("전투 승리보상으로 100 골드가 지급되었습니다.");
+					battleLog.add("%s님에게 전투 승리보상으로 100 골드가 지급되었습니다.", playerContext.getName());
 				} else {
 					player.loseGold(25L);
-					battleLog.add("패배하여 25 골드를 갈취당했습니다.");
+					opponent.earnGold(25L);
+					battleLog.add("%s님이 %s님에게 패배하여 25 골드를 갈취당했습니다.", playerContext.getName(),
+						opponentContext.getName());
 				}
 
 				return battleLog;
@@ -140,7 +144,7 @@ public class GameEncounterDomainService {
 			currentSkillIndex = (currentSkillIndex + 1) % 3;
 		}
 
-		battleLog.add("전투가 종료되었습니다. 양쪽 모두 살아남았습니다. 무승부입니다!");
+		battleLog.add("전투가 종료되었습니다. 양쪽 모두 살아남았습니다. 무승부입니다.");
 		battleLog.setPlayerWin(false);
 		return battleLog;
 	}
@@ -175,7 +179,7 @@ public class GameEncounterDomainService {
 
 	public GameCharacter getRandomEnemyCharacter(Long userId, Long playerId) {
 
-		GameCharacterMatchTokenBucket playerTokenBucket =  matchTokenBucketRepository.findByCharacterId(playerId)
+		GameCharacterMatchTokenBucket playerTokenBucket = matchTokenBucketRepository.findByCharacterId(playerId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.PLAYER_TOKEN_BUCKET_NOT_EXISTS));
 
 		playerTokenBucket.consumeBattleToken();
@@ -186,7 +190,7 @@ public class GameEncounterDomainService {
 
 	public RandomEncounter getRandomEncounter(Long playerId) {
 
-		GameCharacterMatchTokenBucket playerTokenBucket =  matchTokenBucketRepository.findByCharacterId(playerId)
+		GameCharacterMatchTokenBucket playerTokenBucket = matchTokenBucketRepository.findByCharacterId(playerId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.PLAYER_TOKEN_BUCKET_NOT_EXISTS));
 
 		playerTokenBucket.consumeEncounterToken();
@@ -217,7 +221,7 @@ public class GameEncounterDomainService {
 		CharacterContext playerContext = CharacterContext.from(player.getName(), playerStats);
 
 		Inventory playerInventory = inventoryRepository.findByGameCharacterId(player.getId())
-				.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
+			.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
 
 		EncounterLog resultLog = new EncounterLog();
 
@@ -233,6 +237,11 @@ public class GameEncounterDomainService {
 			.resultLog(log.asText())
 			.isPositive(log.getIsPositive())
 			.build());
+	}
+
+	public List<BattleHistory> getCharacterBattleHistory(GameCharacter player) {
+
+		return battleHistoryRepository.findCreatedInLast24Hours(player.getId());
 	}
 
 }

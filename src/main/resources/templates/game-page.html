@@ -363,7 +363,7 @@
         panel.scrollTop = 0;
         panel.innerHTML = `<img src="/images/15328_green_noisy_nobg.gif" class="vaultboy-background" alt="Vault Boy HUD">`;
 
-        // 왼쪽 패널: BATTLE, GAMBLE, ADVENTURE
+        // ← LEFT panels: BATTLE, GAMBLE, ADVENTURE
         if (!isRight) {
             const titles = {
                 battle: '⚔️ BATTLE',
@@ -372,53 +372,119 @@
             };
             panel.innerHTML += `<h2>${titles[panelId]}</h2>`;
 
-            // BATTLE 분기
+            // BATTLE panel
             if (panelId === 'battle') {
                 panel.innerHTML += `
-        <p style="color:orange; line-height:1.4; margin:16px 0;">
-          전투 매칭 시스템이 활성화되었습니다. 시스템은 유저의 능력치를 기준으로 '적절히 불공정한' 상대를 찾아드립니다.
-        </p>
-      `;
-                panel.innerHTML += `<button class="match-button" id="battle-match-btn">BATTLE MATCHING</button>`;
+<p style="color:orange; line-height:1.4; margin-bottom:16px;">
+  전투 매칭 시스템이 활성화되었습니다. 시스템은 유저의 능력치를 기준으로 '적절히 불공정한' 상대를 찾아드립니다.
+</p>
+<div style="display:flex; gap:12px; margin-bottom:16px;">
+  <button class="match-button" id="battle-match-btn">BATTLE MATCHING</button>
+  <button class="menu-button" id="defence-log-btn">DEFENCE LOG</button>
+</div>
+`;
                 document.getElementById('battle-match-btn')
                     .addEventListener('click', matchingBattle);
+
+                document.getElementById('defence-log-btn')
+                    .addEventListener('click', async () => {
+                        // 1) fetch defence history
+                        const res = await fetch('/api/games/characters/battles', {
+                            headers: {'Authorization': 'Bearer ' + savedToken}
+                        });
+                        const data = await res.json();
+                        if (!data.success) {
+                            panel.innerHTML = `<p style="color:#f00;">Failed to load defence log.</p>`;
+                            return;
+                        }
+                        const list = data.result;
+
+                        // 2) back button & count
+                        const backHtml = `
+<button id="back-to-battle" class="menu-button" style="margin-bottom:12px;">
+  ← 뒤로 가기
+</button>`;
+                        const countHtml = `
+<p style="color:#0f0; margin-bottom:12px;">
+  총 ${list.length}건의 방어 로그가 조회되었습니다.
+</p>`;
+
+                        // 3) assemble history HTML
+                        let historyHtml = `
+<h2>🛡️ Defence Battle History</h2>
+<ul style="padding-left:20px;">`;
+                        list.forEach((item, idx) => {
+                            const color = item.isDefenderWin ? '#0f0' : '#f00';
+                            const when = new Date(item.battleCreatedAt).toLocaleString();
+                            const lines = item.battleLog.split('\n');
+                            historyHtml += `
+  <li style="margin-bottom:16px;">
+    <div class="defence-item-header" data-idx="${idx}"
+         style="cursor:pointer; color:${color}; font-weight:bold; user-select:none;">
+      • ${item.attackerNickName} vs ${item.PlayerNickName}
+    </div>
+    <div style="font-size:12px; color:#999; margin:4px 0;">
+      (${when})
+    </div>
+    <div id="dtl-${idx}" style="display:none; padding-left:16px; color:#fff; margin-top:4px;">
+      <ul style="margin:0; list-style:disc; margin-left:16px;">
+        ${lines.map(line => `<li>${line}</li>`).join('')}
+      </ul>
+      <p style="color:${color}; font-weight:bold; margin-top:8px;">
+        ${item.isDefenderWin ? '방어에 성공하였습니다!' : '방어에 실패했습니다!'}
+      </p>
+    </div>
+  </li>
+  <hr style="border-color:#0f0; opacity:0.2;">
+`;
+                        });
+                        historyHtml += `</ul>`;
+
+                        // 4) render all at once
+                        panel.innerHTML = backHtml + countHtml + historyHtml;
+
+                        // 5) bind back button
+                        document.getElementById('back-to-battle')
+                            .addEventListener('click', () => showPanel('battle'));
+
+                        // 6) bind toggles
+                        document.querySelectorAll('.defence-item-header').forEach(header => {
+                            header.addEventListener('click', () => {
+                                const idx = header.dataset.idx;
+                                const detail = document.getElementById(`dtl-${idx}`);
+                                detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+                            });
+                        });
+                    });
             }
 
-            // GAMBLE 분기
+            // GAMBLE panel (unchanged)
             if (panelId === 'gamble') {
                 panel.innerHTML += `
-    <p style="color:orange; line-height:1.4; margin:16px 0;">
-      여기는 등록된 합법 도박 상점입니다. 유저의 골드를 빠르게 소각하며, 낮은 확률로 장비 혹은 스킬을 지급합니다.
-      환불, 책임, 위로는 제공되지 않습니다. 뽑기 결과는 즉시 적용됩니다. 후회는 선택사항입니다.
-      시스템은 감정을 고려하지 않으며, 통계는 당신 편이 아닙니다. 그래도 시도하시겠습니까?
-    </p>
-  `;
-                // ITEM GAMBLE 버튼만 남깁니다.
-                panel.innerHTML += `
-    <button class="menu-button" id="item-gamble-btn">GAMBLE</button>
-  `;
+<p style="color:orange; line-height:1.4; margin:16px 0;">
+  여기는 등록된 합법 도박 상점입니다. 유저의 골드를 빠르게 소각하며, 낮은 확률로 장비 혹은 스킬을 지급합니다.
+  환불, 책임, 위로는 제공되지 않습니다. 뽑기 결과는 즉시 적용됩니다. 후회는 선택사항입니다.
+  시스템은 감정을 고려하지 않으며, 통계는 당신 편이 아닙니다. 그래도 시도하시겠습니까?
+</p>
+<button class="menu-button" id="item-gamble-btn">GAMBLE</button>
+`;
                 document.getElementById('item-gamble-btn')
                     .addEventListener('click', openItemGamblePopup);
-                // 더 이상 별도 SKILL GAMBLE 버튼은 없음.
             }
 
-            // ADVENTURE 분기
+            // ADVENTURE panel (unchanged)
             if (panelId === 'adventure') {
-                // 1) 경고 문구 추가 (흰색)
                 panel.innerHTML += `
-    <p style="color:orange; line-height:1.4; margin:16px 0;">
-      무작위 인카운터는 시스템에 의해 자동으로 배정됩니다.<br/>
-      실패 확률, 부상 가능성, 트라우마는 포함되지만 사전 고지는 생략됩니다.<br/>
-      그래도 버튼을 누른 건 당신입니다—책임은 시스템이 지지 않습니다.
-      (부정적 결과 발생 시 영구적인 능력치 하락 및 골드 분실이 일어날 수 있습니다)
-    </p>
-  `;
-                // 2) 매칭 버튼
-                panel.innerHTML += `
-    <button class="match-button" id="adventure-match-btn" style="background-color:#300; border:3px solid #f00; color:#f00;">
-      ADVENTURE MATCHING
-    </button>
-  `;
+<p style="color:orange; line-height:1.4; margin:16px 0;">
+  무작위 인카운터는 시스템에 의해 자동으로 배정됩니다.<br/>
+  실패 확률, 부상 가능성, 트라우마는 포함되지만 사전 고지는 생략됩니다.<br/>
+  그래도 버튼을 누른 건 당신입니다—책임은 시스템이 지지 않습니다.
+  (부정적 결과 발생 시 영구적인 능력치 하락 및 골드 분실이 일어날 수 있습니다)
+</p>
+<button class="match-button" id="adventure-match-btn" style="background-color:#300; border:3px solid #f00; color:#f00;">
+  ADVENTURE MATCHING
+</button>
+`;
                 document.getElementById('adventure-match-btn')
                     .addEventListener('click', matchingAdventure);
             }
@@ -426,70 +492,71 @@
             return;
         }
 
-        // 오른쪽 패널: STATUS, INVENTORY, SKILLS
+        // → RIGHT panels: STATUS, INVENTORY, SKILLS
         const urlMap = {
             status: '/api/games/characters',
             inventory: '/api/games/characters/inventories',
             skills: '/api/games/characters/skills/unequipped'
         };
-        const res = await fetch(urlMap[panelId], {headers: {'Authorization': 'Bearer ' + savedToken}});
+        const res = await fetch(urlMap[panelId], {
+            headers: {'Authorization': 'Bearer ' + savedToken}
+        });
         const json = await res.json();
 
         if (panelId === 'status') {
             const r = json.result;
             panel.innerHTML += `
-      <h2>👤 ${r.name}</h2><hr>
-      <h3>🧠 Stats</h3>
-      <ul>${Object.entries(r.stats).map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}</ul>
-      <h3>⚔️ Real Stats</h3>
-      <ul>${Object.entries(r.realStat).map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}</ul>
-      <h3>💰 Gold</h3><p>${formatNum1(r.gold)}</p>
-      <h3>🎒 Items</h3>
-      ${r.items.map(item => `
-        <div style="margin-bottom:32px;">
-          <strong class="status-item-name">${item.name}</strong> [${item.grade} ${item.itemCategory}-${item.itemType}]<br>
-          <em>${item.description}</em>
-          <ul>${Object.entries(item)
+<h2>👤 ${r.name}</h2><hr>
+<h3>🧠 Stats</h3>
+<ul>${Object.entries(r.stats).map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}</ul>
+<h3>⚔️ Real Stats</h3>
+<ul>${Object.entries(r.realStat).map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}</ul>
+<h3>💰 Gold</h3><p>${formatNum1(r.gold)}</p>
+<h3>🎒 Items</h3>
+${r.items.map(item => `
+  <div style="margin-bottom:32px;">
+    <strong class="status-item-name">${item.name}</strong> [${item.grade} ${item.itemCategory}-${item.itemType}]<br>
+    <em>${item.description}</em>
+    <ul>${Object.entries(item)
                 .filter(([k]) => !['name', 'description', 'itemCategory', 'itemType', 'grade'].includes(k))
                 .map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}
-          </ul>
-        </div>
-      `).join('')}
-      <h3>📚 Skills</h3>
-      ${r.skills.map(skill => `
-        <div style="margin-bottom:32px;" data-skill="${skill.name}">
-          <strong class="skill-name" onclick="unequipSkill('${skill.name}')">${skill.name}</strong>
-          [${skill.grade}-${skill.skillEffect}]
-          <span class="slot-type">${skill.slotType}</span><br>
-          <em>${skill.skillDetails}</em>
-        </div>
-      `).join('')}
-    `;
+    </ul>
+  </div>
+`).join('')}
+<h3>📚 Skills</h3>
+${r.skills.map(skill => `
+  <div style="margin-bottom:32px;" data-skill="${skill.name}">
+    <strong class="skill-name" onclick="unequipSkill('${skill.name}')">${skill.name}</strong>
+    [${skill.grade}-${skill.skillEffect}]<span class="slot-type">${skill.slotType}</span><br>
+    <em>${skill.skillDetails}</em>
+  </div>
+`).join('')}
+`;
         } else if (panelId === 'inventory') {
             panel.innerHTML += `<h2>📦 INVENTORY</h2>`;
             (json.result || []).forEach(item => {
                 panel.innerHTML += `
-        <div style="margin-bottom:32px;">
-          <strong class="item-name" onclick="equipItem('${item.name}')">${item.name}</strong>
-          [${item.grade} ${item.itemCategory}-${item.itemType}]<br>
-          <em>${item.description}</em>
-          <ul>${Object.entries(item)
+<div style="margin-bottom:32px;">
+  <strong class="item-name" onclick="equipItem('${item.name}')">${item.name}</strong>
+  [${item.grade} ${item.itemCategory}-${item.itemType}]<br>
+  <em>${item.description}</em>
+  <ul>${Object.entries(item)
                     .filter(([k]) => !['name', 'description', 'itemCategory', 'itemType', 'grade'].includes(k))
                     .map(([k, v]) => `<li data-key="${k}">${formatNum1(v)}</li>`).join('')}
-          </ul>
-        </div>
-      `;
+  </ul>
+</div>
+`;
             });
         } else { // skills
             panel.innerHTML += `<h2>🧠 SKILLS</h2>`;
             json.result.forEach(skill => {
                 panel.innerHTML += `
-        <div style="margin-bottom:32px;" data-skill="${skill.name}">
-          <strong class="skill-name" onclick="openEquipPopup(event,'${skill.name}')">${skill.name}</strong>
-          [${skill.grade}-${skill.skillEffect}]<br>
-          <em>${skill.skillDetails}</em>
-        </div>
-      `;
+<div style="margin-bottom:32px;" data-skill="${skill.name}">
+  <strong class="skill-name" onclick="openEquipPopup(event,'${skill.name}')">${skill.name}</strong>
+  [${skill.grade}-${skill.skillEffect}]<br>
+  <em>${skill.skillDetails}</em>
+</div>
+`;
             });
         }
     }
