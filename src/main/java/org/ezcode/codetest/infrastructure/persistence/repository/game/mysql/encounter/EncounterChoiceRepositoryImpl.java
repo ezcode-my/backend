@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.game.model.encounter.EncounterChoice;
 import org.ezcode.codetest.domain.game.repository.EncounterChoiceRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class EncounterChoiceRepositoryImpl implements EncounterChoiceRepository 
 	}
 
 	@Override
+	@Cacheable(value = "choices", key = "#encounterId + '-' + #playerDecision")
 	public List<EncounterChoice> findChoiceByPlayerDecision(Long encounterId, boolean playerDecision) {
 
 		return encounterRepository.findByEncounterIdAndPlayerDecision(encounterId, playerDecision);

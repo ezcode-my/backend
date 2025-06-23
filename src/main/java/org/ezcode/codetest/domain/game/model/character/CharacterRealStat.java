@@ -86,12 +86,12 @@ public class CharacterRealStat {
 			case DATA_STRUCTURE:
 				this.def += rate / 10;
 				this.atk += rate / 10;
-				this.accuracy += rate / 10;
+				this.accuracy += rate / 5;
 				break;
 			case SPEED:
-				this.speed += rate / 10;
+				this.speed += rate / 5;
 				this.atk += rate / 10;
-				this.accuracy += rate / 10;
+				this.accuracy += rate / 5;
 				break;
 			case DEBUGGING:
 				this.crit += rate / 5;
@@ -101,7 +101,7 @@ public class CharacterRealStat {
 			case OPTIMIZATION:
 				this.evasion += rate / 5;
 				this.def += rate / 10;
-				this.accuracy += rate / 10;
+				this.accuracy += rate / 5;
 				break;
 			default:
 				break;

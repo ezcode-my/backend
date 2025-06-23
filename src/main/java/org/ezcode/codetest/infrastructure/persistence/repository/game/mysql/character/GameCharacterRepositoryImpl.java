@@ -31,7 +31,7 @@ public class GameCharacterRepositoryImpl implements GameCharacterRepository {
 	public Optional<GameCharacter> findRandomCharacter(Long userId) {
 
 		long count = characterRepository.count();
-		if (count == 0) return Optional.empty();
+		if (count == 0 || count == 1) return Optional.empty();
 
 		for (int i = 0; i < 10; i++) {
 

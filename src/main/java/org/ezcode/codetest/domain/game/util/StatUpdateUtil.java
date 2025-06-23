@@ -111,7 +111,6 @@ public class StatUpdateUtil {
 	}
 
 	public Map<Stat, Double> getStatIncreasePerProblem(String categoryDescription) {
-		//TODO : 나중에 NULL 처리하기
 		return increasedStatRate.get(categoryDescription).asImmutableMap();
 	}
 
