@@ -54,5 +54,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		registry.setApplicationDestinationPrefixes("/chat");
 		registry.setUserDestinationPrefix("/user");
 	}
+
 }
 
