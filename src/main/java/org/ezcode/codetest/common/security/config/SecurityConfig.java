@@ -48,7 +48,7 @@ public class SecurityConfig {
 
 		return http
 			// CSRF, Form 로그인, HTTP Basic 인증 비활성화
-			.cors(Customizer.withDefaults()) // CORS 설정 추가
+			.cors(cors -> corsConfigurationSource()) // CORS 설정 추가
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
@@ -133,15 +133,15 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		configuration.setAllowedOrigins(List.of("*")); // 다 허용
+		configuration.setAllowedOriginPatterns(List.of("*"));  // patterns 를 써야됨
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*"));
-		configuration.setAllowCredentials(false);
+		configuration.setExposedHeaders(List.of("*"));
+		configuration.setAllowCredentials(true);  // true 옵션 필요
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
-
 
 }
