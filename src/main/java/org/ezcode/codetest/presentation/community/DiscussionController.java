@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -44,11 +45,16 @@ public class DiscussionController {
 	@GetMapping
 	public ResponseEntity<Page<DiscussionResponse>> getDiscussions(
 		@PathVariable Long problemId,
-		@PageableDefault Pageable pageable
+		@RequestParam(defaultValue = "best") String sortBy,
+		@PageableDefault Pageable pageable,
+		@AuthenticationPrincipal AuthUser authUser
 	) {
+
+		Long currentUserId = (authUser != null ? authUser.getId() : null);
+
 		return ResponseEntity
 			.ok()
-			.body(discussionService.getDiscussions(problemId, pageable));
+			.body(discussionService.getDiscussions(problemId, sortBy, currentUserId, pageable));
 	}
 
 	@PutMapping("/{discussionId}")

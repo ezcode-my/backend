@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.community.service;
 
+import org.ezcode.codetest.domain.community.dto.DiscussionQueryResult;
 import org.ezcode.codetest.domain.community.exception.CommunityException;
 import org.ezcode.codetest.domain.community.exception.CommunityExceptionCode;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
@@ -36,9 +37,9 @@ public class DiscussionDomainService {
 		return discussion;
 	}
 
-	public Page<Discussion> getAllDiscussionsByProblemId(Long problemId, Pageable pageable) {
+	public Page<DiscussionQueryResult> getAllDiscussionsByProblemId(Long problemId, String sortBy, Long userId, Pageable pageable) {
 
-		return discussionRepository.findAllByProblemId(problemId, pageable);
+		return discussionRepository.findAllByProblemId(problemId, sortBy, userId, pageable);
 	}
 
 	public Discussion modify(Long discussionId, Long problemId, Long userId, Language language, String content) {

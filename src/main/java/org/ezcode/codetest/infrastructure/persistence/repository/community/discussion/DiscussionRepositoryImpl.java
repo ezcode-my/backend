@@ -2,6 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.community.disc
 
 import java.util.Optional;
 
+import org.ezcode.codetest.domain.community.dto.DiscussionQueryResult;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.repository.DiscussionRepository;
 import org.ezcode.codetest.domain.language.model.entity.Language;
@@ -31,9 +32,9 @@ public class DiscussionRepositoryImpl implements DiscussionRepository {
 	}
 
 	@Override
-	public Page<Discussion> findAllByProblemId(Long problemId, Pageable pageable) {
+	public Page<DiscussionQueryResult> findAllByProblemId(Long problemId, String sortBy, Long userId, Pageable pageable) {
 
-		return discussionJpaRepository.findAllByProblemId(problemId, pageable);
+		return discussionJpaRepository.findAllByProblemId(problemId, sortBy, userId, pageable);
 	}
 
 	@Override
