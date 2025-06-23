@@ -3,7 +3,9 @@ package org.ezcode.codetest.application.usermanagement.auth.service;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.FindPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.FindPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
@@ -215,4 +217,31 @@ public class AuthService {
 		return RefreshTokenResponse.from(newAccessToken);
 	}
 
+	//비밀번호 찾기 메일 전송
+	@Transactional
+	public FindPasswordResponse findPassword(FindPasswordRequest request) {
+
+		User user = userDomainService.getUserByEmail(request.getEmail());
+		if(user == null || user.isDeleted()){
+			throw new AuthException(AuthExceptionCode.USER_NOT_FOUND);
+		}
+
+		mailService.sendPasswordMail(user.getId(), request.getEmail());
+
+		return FindPasswordResponse.from("이메일로 전송되었습니다.");
+	}
+
+	//메일로 받은 링크를 통해 비번 변경
+	public FindPasswordResponse changePasswordByEmail(String email, String key) {
+
+		User user = userDomainService.getUserByEmail(email);
+
+		boolean isMatch = mailService.verifyCode(user.getId(), key);
+
+		if (isMatch){
+			return FindPasswordResponse.from("인증되었습니다");
+		} else {
+			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
+		}
+	}
 }

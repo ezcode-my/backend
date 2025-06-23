@@ -2,7 +2,9 @@ package org.ezcode.codetest.presentation.usermanagement;
 
 import java.util.Optional;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.FindPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.FindPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,6 +92,7 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(authService.sendEmailCode(authUser.getId(), authUser.getEmail()));
 	}
 
+	//이메일에서 버튼 클릭하면 자동으로 연결
 	@Operation(summary = "이메일 코드 입력 및 인증", description = "이메일로 받은 코드를 입력하여 이메일 인증된 회원으로 전환합니다")
 	@GetMapping("/auth/verify")
 	public ResponseEntity<VerifyEmailCodeResponse> verifyEmailCode(
@@ -96,5 +100,21 @@ public class AuthController {
 		@RequestParam String key
 	){
 		return ResponseEntity.status(HttpStatus.OK).body(authService.verifyEmailCode(email, key));
+	}
+
+
+	@PostMapping("/auth/find-password")
+	public ResponseEntity<FindPasswordResponse> findPassword(
+		@RequestBody FindPasswordRequest request
+	){
+		return ResponseEntity.status(HttpStatus.OK).body(authService.findPassword(request));
+	}
+
+	@GetMapping("/auth/verify-password-code")
+	public ResponseEntity<FindPasswordResponse> changePasswordByEmail(
+		@RequestParam String email,
+		@RequestParam String key
+	){
+		return ResponseEntity.status(HttpStatus.OK).body(authService.changePasswordByEmail(email, key));
 	}
 }
