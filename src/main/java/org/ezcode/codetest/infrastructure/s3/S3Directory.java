@@ -7,6 +7,7 @@ public enum S3Directory {
 	PROBLEM("problem"),
 	PROFILE("profile");
 
+	// 소문자로 패키지 관리 하기 위해 dir추가
 	private final String dir;
 
 	S3Directory(String dir) {
