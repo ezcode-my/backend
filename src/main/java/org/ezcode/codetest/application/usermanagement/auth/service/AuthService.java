@@ -3,7 +3,9 @@ package org.ezcode.codetest.application.usermanagement.auth.service;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.FindPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.FindPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
@@ -99,15 +101,16 @@ public class AuthService {
 
 	@Transactional
 	public SendEmailCodeResponse sendEmailCode(Long userId, String email) {
-		mailService.sendMail(userId, email);
+		mailService.sendButtonMail(userId, email);
 		return SendEmailCodeResponse.from("인증 코드를 전송했습니다.");
 	}
 
 	@Transactional
-	public VerifyEmailCodeResponse verifyEmailCode(Long userId, VerifyEmailCodeRequest verifyEmailCodeRequest) {
-		boolean isMatch = mailService.verifyCode(userId, verifyEmailCodeRequest.getVerificationCode());
+	public VerifyEmailCodeResponse verifyEmailCode(String email, String key) {
+		User user = userDomainService.getUserByEmail(email);
 
-		User user = userDomainService.getUserById(userId);
+		boolean isMatch = mailService.verifyCode(user.getId(), key);
+
 		if (isMatch){
 			user.setVerified();
 			return VerifyEmailCodeResponse.from("인증되었습니다");
@@ -202,9 +205,43 @@ public class AuthService {
 
 		User user = userDomainService.getUserById(userId);
 
-		String newAccessToken = createAccessToken(user);
+		String newAccessToken = jwtUtil.createAccessToken(
+			user.getId(),
+			user.getEmail(),
+			user.getRole(),
+			user.getUsername(),
+			user.getNickname(),
+			user.getTier()
+		);
 
 		return RefreshTokenResponse.from(newAccessToken);
 	}
 
+	//비밀번호 찾기 메일 전송
+	@Transactional
+	public FindPasswordResponse findPassword(FindPasswordRequest request) {
+
+		User user = userDomainService.getUserByEmail(request.getEmail());
+		if(user == null || user.isDeleted()){
+			throw new AuthException(AuthExceptionCode.USER_NOT_FOUND);
+		}
+
+		mailService.sendPasswordMail(user.getId(), request.getEmail());
+
+		return FindPasswordResponse.from("이메일로 전송되었습니다.");
+	}
+
+	//메일로 받은 링크를 통해 비번 변경
+	public FindPasswordResponse changePasswordByEmail(String email, String key) {
+
+		User user = userDomainService.getUserByEmail(email);
+
+		boolean isMatch = mailService.verifyCode(user.getId(), key);
+
+		if (isMatch){
+			return FindPasswordResponse.from("인증되었습니다");
+		} else {
+			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
+		}
+	}
 }
