@@ -23,6 +23,11 @@ public class CaffeineCacheConfig {
 				.expireAfterWrite(Duration.ofMinutes(1))
 				.build());
 
+		CaffeineCache historyCache = new CaffeineCache("histories",
+			Caffeine.newBuilder()
+				.expireAfterWrite(Duration.ofMinutes(1))
+				.build());
+
 		CaffeineCache skillCache = new CaffeineCache("skill",
 			Caffeine.newBuilder()
 				.expireAfterWrite(Duration.ofMinutes(10))
@@ -38,8 +43,14 @@ public class CaffeineCacheConfig {
 				.expireAfterWrite(Duration.ofMinutes(10))
 				.build());
 
+		CaffeineCache choiceCache = new CaffeineCache("choices",
+			Caffeine.newBuilder()
+				.expireAfterWrite(Duration.ofMinutes(10))
+				.build());
+
 		SimpleCacheManager manager = new SimpleCacheManager();
-		manager.setCaches(List.of(skillCache, itemsByCategoryCache, encountersCache, countCache));
+		manager.setCaches(
+			List.of(skillCache, itemsByCategoryCache, encountersCache, countCache, historyCache, choiceCache));
 		return manager;
 	}
 }

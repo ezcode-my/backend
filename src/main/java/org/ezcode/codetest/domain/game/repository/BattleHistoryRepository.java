@@ -20,4 +20,6 @@ public interface BattleHistoryRepository {
 	void delete(BattleHistory battleHistory);
 
 	List<BattleHistory> findAll();
+
+	List<BattleHistory> findCreatedInLast24Hours(Long playerId);
 }

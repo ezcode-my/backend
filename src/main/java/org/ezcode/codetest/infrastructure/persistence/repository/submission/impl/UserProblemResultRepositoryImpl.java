@@ -37,4 +37,9 @@ public class UserProblemResultRepositoryImpl implements UserProblemResultReposit
         return userProblemResultJpaRepository.findScoresBetween(start, end);
     }
 
+    @Override
+    public Optional<Integer> sumPointByUserId(Long userId) {
+        return userProblemResultJpaRepository.sumScoreByUserId(userId);
+    }
+
 }

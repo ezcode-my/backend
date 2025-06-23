@@ -21,7 +21,7 @@ public class GamblingBad implements EncounterStrategy {
 
 		String player = context.getName();
 		long lossGold = Math.min(200L, character.getGold());
-		character.earnGold(-lossGold);
+		character.loseGold(lossGold);
 
 		log.add("%s(은)는 3을 골랐습니다. 주사위는 그 선택을 무시하며, 딴 곳에서 한가롭게 굴러갑니다.", player);
 		log.add("‘3’은커녕 주사위는 ‘3’ 근처에도 가지 않았습니다. 마치 자기 일 아닌 듯 행동하네요.");

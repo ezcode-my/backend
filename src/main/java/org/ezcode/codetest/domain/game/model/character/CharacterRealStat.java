@@ -29,15 +29,15 @@ public class CharacterRealStat {
 	private int ap = 3;
 
 	public CharacterRealStat(CharacterRealStat source) {
-		this.atk      = source.atk;
-		this.def      = source.def;
-		this.speed    = source.speed;
-		this.crit     = source.crit;
-		this.stun     = source.stun;
-		this.evasion  = source.evasion;
+		this.atk = source.atk;
+		this.def = source.def;
+		this.speed = source.speed;
+		this.crit = source.crit;
+		this.stun = source.stun;
+		this.evasion = source.evasion;
 		this.accuracy = source.accuracy;
-		this.hp       = source.hp;
-		this.ap       = source.ap;
+		this.hp = source.hp;
+		this.ap = source.ap;
 	}
 
 	public void applyItemRealStat(List<Item> equippedItems) {
@@ -47,17 +47,17 @@ public class CharacterRealStat {
 		}
 
 		equippedItems.forEach(item -> {
-				if(item instanceof Weapon weapon) {
+				if (item instanceof Weapon weapon) {
 					this.atk += weapon.getAtk();
 					this.speed += weapon.getSpeed();
 					this.crit += weapon.getCrit();
 					this.stun += weapon.getStun();
 					this.accuracy += weapon.getAccuracy();
-				} else if(item instanceof Defence defence) {
+				} else if (item instanceof Defence defence) {
 					this.def += defence.getDef();
 					this.speed += defence.getSpeed();
 					this.evasion += defence.getEvasion();
-				} else if(item instanceof Accessory accessory) {
+				} else if (item instanceof Accessory accessory) {
 					this.speed += accessory.getSpeed();
 					this.crit += accessory.getCrit();
 					this.stun += accessory.getStun();
@@ -78,25 +78,30 @@ public class CharacterRealStat {
 	}
 
 	public void increase(Stat stat, double rate) {
-		switch(stat) {
+		switch (stat) {
 			case PROBLEM_SOLVING:
-				this.atk += 2.0 + rate;
+				this.atk += rate / 10;
+				this.accuracy += rate / 10;
 				break;
 			case DATA_STRUCTURE:
-				this.def += 1.0 + rate;
-				this.atk += 0.5 + rate;
+				this.def += rate / 10;
+				this.atk += rate / 10;
+				this.accuracy += rate / 5;
 				break;
 			case SPEED:
-				this.speed += 1.0 + rate;
-				this.atk += rate;
+				this.speed += rate / 5;
+				this.atk += rate / 10;
+				this.accuracy += rate / 5;
 				break;
 			case DEBUGGING:
-				this.crit += rate;
-				this.stun += rate;
+				this.crit += rate / 5;
+				this.def += rate / 10;
+				this.stun += rate / 10;
 				break;
 			case OPTIMIZATION:
-				this.evasion += 1.0 + rate;
-				this.accuracy += 1.0 + rate;
+				this.evasion += rate / 5;
+				this.def += rate / 10;
+				this.accuracy += rate / 5;
 				break;
 			default:
 				break;
@@ -106,43 +111,50 @@ public class CharacterRealStat {
 	public void applyAtkChange(double atk) {
 
 		this.atk += atk;
-		if(this.atk < 0.0) this.atk = 0.0;
+		if (this.atk < 0.0)
+			this.atk = 0.0;
 	}
 
 	public void applyDefChange(double def) {
 
 		this.def += def;
-		if(this.def < 0.0) this.def = 0.0;
+		if (this.def < 0.0)
+			this.def = 0.0;
 	}
 
 	public void applySpeedChange(double speed) {
 
 		this.speed += speed;
-		if(this.speed < 0.0) this.speed = 0.0;
+		if (this.speed < 0.0)
+			this.speed = 0.0;
 	}
 
 	public void applyCritChange(double crit) {
 
 		this.crit += crit;
-		if(this.crit < 0.0) this.crit = 0.0;
+		if (this.crit < 0.0)
+			this.crit = 0.0;
 	}
 
 	public void applyEvasionChange(double evasion) {
 
 		this.evasion += evasion;
-		if(this.evasion < 0.0) this.evasion = 0.0;
+		if (this.evasion < 0.0)
+			this.evasion = 0.0;
 	}
 
 	public void applyAccuracyChange(double accuracy) {
 
 		this.accuracy += accuracy;
-		if(this.accuracy < 0.0) this.accuracy = 0.0;
+		if (this.accuracy < 0.0)
+			this.accuracy = 0.0;
 	}
 
 	public void applyStunChange(double stun) {
 
 		this.stun += stun;
-		if(this.stun < 0.0) this.stun = 0.0;
+		if (this.stun < 0.0)
+			this.stun = 0.0;
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface UserProblemResultJpaRepository extends JpaRepository<UserProblemResult, Long> {
     Optional<UserProblemResult> findByUserIdAndProblemId(Long userId, Long problemId);
@@ -21,5 +22,15 @@ public interface UserProblemResultJpaRepository extends JpaRepository<UserProble
             GROUP BY upr.user.id
         """)
     List<Object[]> findScoresBetween(LocalDateTime start, LocalDateTime end);
+
+    @Query("""
+    SELECT SUM(p.score)
+    FROM UserProblemResult upr
+    JOIN upr.problem p
+    WHERE upr.user.id = :userId
+      AND upr.isCorrect = true
+""")
+    Optional<Integer> sumScoreByUserId(@Param("userId") Long userId);
+
 
 }

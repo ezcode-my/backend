@@ -7,6 +7,7 @@ import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 import org.ezcode.codetest.domain.game.model.character.CharacterRealStat;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.character.GameCharacterMatchTokenBucket;
 import org.ezcode.codetest.domain.game.model.character.Inventory;
 import org.ezcode.codetest.domain.game.model.encounter.BattleHistory;
 import org.ezcode.codetest.domain.game.model.encounter.EncounterChoice;
@@ -24,6 +25,7 @@ import org.ezcode.codetest.domain.game.repository.EncounterChoiceRepository;
 import org.ezcode.codetest.domain.game.repository.EncounterHistoryRepository;
 import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
+import org.ezcode.codetest.domain.game.repository.MatchTokenBucketRepository;
 import org.ezcode.codetest.domain.game.repository.RandomEncounterRepository;
 import org.ezcode.codetest.domain.game.strategy.encounter.EncounterStrategy;
 import org.ezcode.codetest.domain.game.strategy.encounter.EncounterStrategyFactory;
@@ -38,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class GameEncounterDomainService {
 
 	private final CharacterEquipService characterEquipService;
-	private final SkillStrategyFactory  skillStrategyFactory;
+	private final SkillStrategyFactory skillStrategyFactory;
 	private final EncounterStrategyFactory encounterFactory;
 
 	private final BattleHistoryRepository battleHistoryRepository;
@@ -48,6 +50,7 @@ public class GameEncounterDomainService {
 	private final InventoryRepository inventoryRepository;
 	private final RandomEncounterRepository encounterRepository;
 	private final EncounterChoiceRepository choiceRepository;
+	private final MatchTokenBucketRepository matchTokenBucketRepository;
 
 	public BattleLog battle(GameCharacter player, GameCharacter opponent) {
 
@@ -62,13 +65,13 @@ public class GameEncounterDomainService {
 
 		WeaponType playerWeaponType = playerItems.stream()
 			.filter(item -> item instanceof Weapon)
-			.map(item -> (WeaponType) item.getItemType())
+			.map(item -> (WeaponType)item.getItemType())
 			.findFirst()
 			.orElse(WeaponType.NOTHING);
 
- 		WeaponType opponentWeaponType = opponentItems.stream()
+		WeaponType opponentWeaponType = opponentItems.stream()
 			.filter(item -> item instanceof Weapon)
-			.map(item -> (WeaponType) item.getItemType())
+			.map(item -> (WeaponType)item.getItemType())
 			.findFirst()
 			.orElse(WeaponType.NOTHING);
 
@@ -100,8 +103,17 @@ public class GameEncounterDomainService {
 
 			if (!alive) {
 				battleLog.setPlayerWin(attacker == playerContext);
-				player.earnGold(100L);
-				battleLog.add("전투 승리보상으로 100 골드가 지급되었습니다.");
+
+				if (attacker == playerContext) {
+					player.earnGold(100L);
+					battleLog.add("%s(이)가 전투 승리보상으로 100 골드가 지급되었습니다.", playerContext.getName());
+				} else {
+					player.loseGold(25L);
+					opponent.earnGold(25L);
+					battleLog.add("%s님이 %s님에게 패배하여 25 골드를 갈취당했습니다.", playerContext.getName(),
+						opponentContext.getName());
+				}
+
 				return battleLog;
 			}
 
@@ -115,15 +127,24 @@ public class GameEncounterDomainService {
 
 			if (!alive) {
 				battleLog.setPlayerWin(defender == playerContext);
-				player.earnGold(-25L);
-				battleLog.add("전투 패배로 25 골드를 갈취당했습니다.");
+
+				if (defender == playerContext) {
+					player.earnGold(100L);
+					battleLog.add("%s님에게 전투 승리보상으로 100 골드가 지급되었습니다.", playerContext.getName());
+				} else {
+					player.loseGold(25L);
+					opponent.earnGold(25L);
+					battleLog.add("%s님이 %s님에게 패배하여 25 골드를 갈취당했습니다.", playerContext.getName(),
+						opponentContext.getName());
+				}
+
 				return battleLog;
 			}
 
 			currentSkillIndex = (currentSkillIndex + 1) % 3;
 		}
 
-		battleLog.add("전투가 종료되었습니다. 양쪽 모두 살아남았습니다. 무승부입니다!");
+		battleLog.add("전투가 종료되었습니다. 양쪽 모두 살아남았습니다. 무승부입니다.");
 		battleLog.setPlayerWin(false);
 		return battleLog;
 	}
@@ -156,13 +177,23 @@ public class GameEncounterDomainService {
 		return battleHistoryRepository.findByCharacterId(character.getId());
 	}
 
-	public GameCharacter getRandomEnemyCharacter(Long userId) {
+	public GameCharacter getRandomEnemyCharacter(Long userId, Long playerId) {
+
+		GameCharacterMatchTokenBucket playerTokenBucket = matchTokenBucketRepository.findByCharacterId(playerId)
+			.orElseThrow(() -> new GameException(GameExceptionCode.PLAYER_TOKEN_BUCKET_NOT_EXISTS));
+
+		playerTokenBucket.consumeBattleToken();
 
 		return characterRepository.findRandomCharacter(userId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.RANDOM_CHARACTER_MATCHING_FAIL));
 	}
 
-	public RandomEncounter getRandomEncounter() {
+	public RandomEncounter getRandomEncounter(Long playerId) {
+
+		GameCharacterMatchTokenBucket playerTokenBucket = matchTokenBucketRepository.findByCharacterId(playerId)
+			.orElseThrow(() -> new GameException(GameExceptionCode.PLAYER_TOKEN_BUCKET_NOT_EXISTS));
+
+		playerTokenBucket.consumeEncounterToken();
 
 		List<RandomEncounter> encounters = encounterRepository.findAllEncounters();
 
@@ -190,7 +221,7 @@ public class GameEncounterDomainService {
 		CharacterContext playerContext = CharacterContext.from(player.getName(), playerStats);
 
 		Inventory playerInventory = inventoryRepository.findByGameCharacterId(player.getId())
-				.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
+			.orElseThrow(() -> new GameException(GameExceptionCode.INVENTORY_NOT_FOUND));
 
 		EncounterLog resultLog = new EncounterLog();
 
@@ -206,6 +237,11 @@ public class GameEncounterDomainService {
 			.resultLog(log.asText())
 			.isPositive(log.getIsPositive())
 			.build());
+	}
+
+	public List<BattleHistory> getCharacterBattleHistory(GameCharacter player) {
+
+		return battleHistoryRepository.findCreatedInLast24Hours(player.getId());
 	}
 
 }

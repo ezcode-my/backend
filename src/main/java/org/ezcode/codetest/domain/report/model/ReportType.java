@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public enum ReportType {
+	PROBLEM_ERROR("문제 오류"),
 	PROFANITY("욕설/비속어"),
 	SPAM("스팸/도배"),
 	SEXUAL_CONTENT("음란성 표현"),
@@ -23,10 +24,10 @@ public enum ReportType {
 		this.description = description;
 	}
 
-	public static ReportType from(String reportType) {
-		return Arrays.stream(ReportType.values())
-			.filter(r -> r.name().equalsIgnoreCase(reportType))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("Invalid reportType input : " + reportType));
+	public static ReportType from(String value) {
+		return Arrays.stream(values())
+				.filter(r -> r.name().equalsIgnoreCase(value))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("목록에 없는 신고 타입입니다. : " + value));
 	}
 }

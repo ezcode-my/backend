@@ -46,7 +46,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		User loginUser = userDomainService.getUserByEmail(customUserDetails.getEmail());
 		log.info("loginUser: {}", loginUser);
 
-		String accessToken = jwtUtil.createToken(
+		String accessToken = jwtUtil.createAccessToken(
 			loginUser.getId(),
 			loginUser.getEmail(),
 			loginUser.getRole(),

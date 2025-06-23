@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import org.ezcode.codetest.domain.game.exception.GameException;
 import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.character.GameCharacterMatchTokenBucket;
 import org.ezcode.codetest.domain.game.model.character.Stat;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
 import org.ezcode.codetest.domain.game.model.character.Inventory;
@@ -17,6 +18,7 @@ import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.repository.GameCharacterRepository;
 import org.ezcode.codetest.domain.game.repository.InventoryRepository;
 import org.ezcode.codetest.domain.game.repository.ItemRepository;
+import org.ezcode.codetest.domain.game.repository.MatchTokenBucketRepository;
 import org.ezcode.codetest.domain.game.util.StatUpdateUtil;
 import org.springframework.stereotype.Service;
 
@@ -30,16 +32,20 @@ public class CharacterStatusDomainService {
 	private final InventoryRepository inventoryRepository;
 	private final ItemRepository itemRepository;
 	private final CharacterEquipService characterLoadService;
+	private final MatchTokenBucketRepository matchTokenBucketRepository;
 	private final StatUpdateUtil statUpdateUtil;
 
 	public GameCharacter createGameCharacter(GameCharacter character) {
 
 		GameCharacter savedCharacter = characterRepository.save(character);
+
 		Inventory savedInventory = inventoryRepository.save(new Inventory(savedCharacter));
 
 		characterLoadService.equipDefaultItem(savedCharacter, savedInventory, DEFAULT_WEAPON);
 		characterLoadService.equipDefaultItem(savedCharacter, savedInventory, DEFAULT_DEFENCE);
 		characterLoadService.equipDefaultItem(savedCharacter, savedInventory, DEFAULT_ACCESSORY);
+
+		matchTokenBucketRepository.save(new GameCharacterMatchTokenBucket(savedCharacter));
 
 		return savedCharacter;
 	}
@@ -60,7 +66,7 @@ public class CharacterStatusDomainService {
 		GameCharacter character = characterRepository.findByUserId(userId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.CHARACTER_NOT_FOUND));
 
-		character.earnGold(500L);
+		character.earnGold(300L);
 
 		character.applyIncreaseStats(increaseStatRate);
 	}

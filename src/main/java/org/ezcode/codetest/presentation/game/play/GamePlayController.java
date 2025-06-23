@@ -2,6 +2,7 @@ package org.ezcode.codetest.presentation.game.play;
 
 import java.util.List;
 
+import org.ezcode.codetest.application.game.dto.request.encounter.BattleRequest;
 import org.ezcode.codetest.application.game.dto.request.encounter.EncounterChoiceRequest;
 import org.ezcode.codetest.application.game.dto.request.item.ItemEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.item.ItemGamblingRequest;
@@ -9,6 +10,7 @@ import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
+import org.ezcode.codetest.application.game.dto.response.encounter.DefenceBattleHistoryResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.EncounterResultResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.MatchingBattleResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.MatchingEncounterResponse;
@@ -24,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,7 +83,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 캐릭터 보유 스킬이 조회되었습니다.")
-	@GetMapping("/skills/unequipped")
+	@GetMapping("/characters/skills/unequipped")
 	public ResponseEntity<List<SkillResponse>> CharacterSkillsOpen(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -97,7 +98,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 아이템 뽑기에 성공하였습니다.")
-	@PostMapping("/items/gambling")
+	@PostMapping("/characters/items/gamble")
 	public ResponseEntity<ItemGamblingResponse> gamblingForItem(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid ItemGamblingRequest request
@@ -114,7 +115,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 스킬 뽑기에 성공하였습니다.")
-	@PostMapping("/skills/gambling")
+	@PostMapping("/characters/skills/gamble")
 	public ResponseEntity<SkillGamblingResponse> gamblingForSkill(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -130,7 +131,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 인벤토리가 조회되었습니다.")
-	@GetMapping("/inventories")
+	@GetMapping("/characters/inventories")
 	public ResponseEntity<List<ItemResponse>> inventoryOpen(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -146,7 +147,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 아이템이 장착되었습니다.")
-	@PatchMapping("/items/equip")
+	@PatchMapping("/characters/items/equip")
 	public ResponseEntity<Void> equipItem(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid ItemEquipRequest request
@@ -164,7 +165,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 스킬이 장착되었습니다.")
-	@PatchMapping("/skills/equip")
+	@PatchMapping("/characters/skills/equip")
 	public ResponseEntity<Void> equipSkill(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid SkillEquipRequest request
@@ -182,7 +183,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 스킬 장착이 해제되었습니다.")
-	@PatchMapping("/skills/unequip")
+	@PatchMapping("/characters/skills/unequip")
 	public ResponseEntity<Void> unEquipSkill(
 		@AuthenticationPrincipal AuthUser authUser,
 		@RequestBody @Valid SkillUnEquipRequest request
@@ -200,29 +201,29 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 배틀이 완료되었습니다.")
-	@PostMapping("/battles/{enemyId}")
+	@PostMapping("/characters/battles")
 	public ResponseEntity<BattleHistoryResponse> battle(
 		@AuthenticationPrincipal AuthUser authUser,
-		@PathVariable Long enemyId
+		@RequestBody @Valid BattleRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(gamePlayUseCase.battle(authUser.getId(), enemyId));
+			.body(gamePlayUseCase.battle(authUser.getId(), request));
 	}
 
 	@Operation(
-		summary = "무작위 배틀 API",
-		description = "무작위로 다른 캐릭터와 배틀을 진행합니다.",
+		summary = "방어 PVP 기록 조회 API",
+		description = "상대방이 자신을 대상으로 한 PVP 기록을 조회합니다.(24시간전까지만)",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "배틀 진행 후, 결과 반환")
+			@ApiResponse(responseCode = "200", description = "PVP 결과 반환")
 		}
 	)
-	@ResponseMessage("정상적으로 무작위 배틀이 완료되었습니다.")
-	@PostMapping("/battles")
-	public ResponseEntity<BattleHistoryResponse> randomBattle(
+	@ResponseMessage("정상적으로 PVP 기록 조회에 성공하였습니다.")
+	@GetMapping("/characters/battles")
+	public ResponseEntity<List<DefenceBattleHistoryResponse>> getDefenceBattleHistory(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(gamePlayUseCase.randomBattle(authUser.getId()));
+			.body(gamePlayUseCase.getPlayerDefenceHistory(authUser.getId()));
 	}
 
 	@Operation(
@@ -233,7 +234,7 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 배틀 매칭에 성공하였습니다.")
-	@GetMapping("/battles/matching")
+	@GetMapping("/characters/battles/matching")
 	public ResponseEntity<MatchingBattleResponse> randomBattleMatching(
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -249,11 +250,12 @@ public class GamePlayController {
 		}
 	)
 	@ResponseMessage("정상적으로 인카운터 매칭에 성공하였습니다.")
-	@GetMapping("/encounters/matching")
+	@GetMapping("/characters/encounters/matching")
 	public ResponseEntity<MatchingEncounterResponse> randomEncounterMatching(
+		@AuthenticationPrincipal AuthUser authUser
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(gamePlayUseCase.randomEncounterMatching());
+			.body(gamePlayUseCase.randomEncounterMatching(authUser.getId()));
 	}
 
 	@Operation(
@@ -263,15 +265,14 @@ public class GamePlayController {
 			@ApiResponse(responseCode = "200", description = "인카운터 선택지에 대한 결과 반환")
 		}
 	)
-	@ResponseMessage("정상적으로 인카운터 선택지가 조회되었습니다.")
-	@PostMapping("/encounters/{encounterId}")
+	@ResponseMessage("정상적으로 인카운터 선택지가 결정되었습니다.")
+	@PostMapping("/characters/encounters/choice")
 	public ResponseEntity<EncounterResultResponse> encounterChoice(
 		@AuthenticationPrincipal AuthUser authUser,
-		@PathVariable Long encounterId,
 		@RequestBody @Valid EncounterChoiceRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(gamePlayUseCase.encounterChoice(authUser.getId(), encounterId, request));
+			.body(gamePlayUseCase.encounterChoice(authUser.getId(), request));
 	}
 
 }

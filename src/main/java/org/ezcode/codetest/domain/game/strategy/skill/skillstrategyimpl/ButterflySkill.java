@@ -37,7 +37,7 @@ public class ButterflySkill extends AbstractSkill {
 			double damageDealt = Math.max(rawDamage, 0.0);
 			aliveOverall = defender.playerDamaged(rawDamage + defender.getDef());
 			log.add(isCrit
-					? "%s의 나비의 일격 %d타(치명)! 실루엣만 스친 줄 알았는데 내장이 나왔습니다 — %s에게 %,.1f 피해."
+					? "%s의 나비의 일격 %d타(치명)! 실루엣만 스친 줄 알았는데 내장이 삐져 나왔습니다 — %s에게 %,.1f 피해."
 					: "%s의 나비의 일격 %d타 칼짓 하나로 %s의 신체 구조를 재구성했습니다 — %,.1f 피해.",
 				attacker.getName(), i, defender.getName(), damageDealt
 			);
