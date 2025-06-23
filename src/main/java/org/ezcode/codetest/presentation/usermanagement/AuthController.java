@@ -95,7 +95,6 @@ public class AuthController {
 		@RequestParam String email,
 		@RequestParam String key
 	){
-		log.info("인증 진입");
 		return ResponseEntity.status(HttpStatus.OK).body(authService.verifyEmailCode(email, key));
 	}
 }
