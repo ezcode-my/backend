@@ -120,7 +120,7 @@ public class AuthService {
 	}
 
 	private String createAccessToken(User user) {
-		return jwtUtil.createToken(
+		return jwtUtil.createAccessToken(
 			user.getId(),
 			user.getEmail(),
 			user.getRole(),
@@ -205,7 +205,7 @@ public class AuthService {
 
 		User user = userDomainService.getUserById(userId);
 
-		String newAccessToken = jwtUtil.createToken(
+		String newAccessToken = jwtUtil.createAccessToken(
 			user.getId(),
 			user.getEmail(),
 			user.getRole(),
