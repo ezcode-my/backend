@@ -23,12 +23,38 @@ public class MailService {
 	@Value("${spring.mail.username}")
 	private String senderEmail;
 
-	private static final long EXPIRATION_MINUTES = 3;
+	private static final long EXPIRATION_MINUTES = 10;
 
-	public void sendMail(Long userId, String mail) {
+	public void sendCodeMail(Long userId, String mail) {
 		MimeMessage message = CreateMail(userId, mail);
 		javaMailSender.send(message);
 	}
+
+	public void sendButtonMail(Long userId, String mail) {
+		MimeMessage message = CreateButtonMail(userId, mail);
+		javaMailSender.send(message);
+	}
+
+	public MimeMessage CreateButtonMail(Long userId, String mail) {
+		MimeMessage message = javaMailSender.createMimeMessage();
+		String key = createNumber(userId); //radis에 유저id&코드로 저장 (10분)
+
+		try {
+			message.setFrom(senderEmail);
+			message.setRecipients(MimeMessage.RecipientType.TO, mail);
+			message.setSubject("EZcode 이메일 인증");
+			String body = "";
+			body += "<h3>" + "아래 버튼을 클릭하여 이메일 인증을 완료해 주세요" + "</h3>";
+			// 이메일 버튼
+			body += "<a href='http://localhost:8080/api/auth/verify?email="+ mail + "&key=" + key + "' target='_blenk'>이메일 인증 확인</a>";
+			body += "<h3>" + "감사합니다." + "</h3>";
+			message.setText(body,"UTF-8", "html");
+		} catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+
+		return message;
+    }
 
 	//메일 보내기
 	public MimeMessage CreateMail(Long userId, String mail) {

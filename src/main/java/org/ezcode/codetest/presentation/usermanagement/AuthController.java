@@ -18,10 +18,12 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -88,11 +90,12 @@ public class AuthController {
 	}
 
 	@Operation(summary = "이메일 코드 입력 및 인증", description = "이메일로 받은 코드를 입력하여 이메일 인증된 회원으로 전환합니다")
-	@PutMapping("/email/verify")
+	@GetMapping("/auth/verify")
 	public ResponseEntity<VerifyEmailCodeResponse> verifyEmailCode(
-		@AuthenticationPrincipal AuthUser authUser,
-		@Valid @RequestBody VerifyEmailCodeRequest verifyEmailCodeRequest
+		@RequestParam String email,
+		@RequestParam String key
 	){
-		return ResponseEntity.status(HttpStatus.OK).body(authService.verifyEmailCode(authUser.getId(), verifyEmailCodeRequest));
+		log.info("인증 진입");
+		return ResponseEntity.status(HttpStatus.OK).body(authService.verifyEmailCode(email, key));
 	}
 }

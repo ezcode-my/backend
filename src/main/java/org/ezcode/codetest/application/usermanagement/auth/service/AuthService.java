@@ -99,15 +99,16 @@ public class AuthService {
 
 	@Transactional
 	public SendEmailCodeResponse sendEmailCode(Long userId, String email) {
-		mailService.sendMail(userId, email);
+		mailService.sendButtonMail(userId, email);
 		return SendEmailCodeResponse.from("인증 코드를 전송했습니다.");
 	}
 
 	@Transactional
-	public VerifyEmailCodeResponse verifyEmailCode(Long userId, VerifyEmailCodeRequest verifyEmailCodeRequest) {
-		boolean isMatch = mailService.verifyCode(userId, verifyEmailCodeRequest.getVerificationCode());
+	public VerifyEmailCodeResponse verifyEmailCode(String email, String key) {
+		User user = userDomainService.getUserByEmail(email);
 
-		User user = userDomainService.getUserById(userId);
+		boolean isMatch = mailService.verifyCode(user.getId(), key);
+
 		if (isMatch){
 			user.setVerified();
 			return VerifyEmailCodeResponse.from("인증되었습니다");
