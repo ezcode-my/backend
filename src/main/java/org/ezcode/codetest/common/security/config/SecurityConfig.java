@@ -48,7 +48,7 @@ public class SecurityConfig {
 
 		return http
 			// CSRF, Form 로그인, HTTP Basic 인증 비활성화
-			.cors(Customizer.withDefaults()) // CORS 설정 추가
+			.cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
