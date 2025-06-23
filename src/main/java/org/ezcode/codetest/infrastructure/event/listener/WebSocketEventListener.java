@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class WebSocketEventListener implements ApplicationListener<SessionDisconnectEvent> {
@@ -29,23 +31,27 @@ public class WebSocketEventListener implements ApplicationListener<SessionDiscon
 	@Override
 	public void onApplicationEvent(SessionDisconnectEvent event) {
 
-		StompHeaderAccessor h = StompHeaderAccessor.wrap(event.getMessage());
-		String sessionId = h.getSessionId();
+		try {
+			StompHeaderAccessor h = StompHeaderAccessor.wrap(event.getMessage());
+			String sessionId = h.getSessionId();
 
-		String email = h.getUser().getName();
-		String nickName = userDomainService.getUser(email).getNickname();
+			String email = h.getUser().getName();
+			String nickName = userDomainService.getUser(email).getNickname();
 
-		RoomSessionInfo roomData = sessionService.removeSessionCount(sessionId);
-		ChatRoom chatRoom = chattingDomainService.getChatRoom(roomData.roomId());
+			RoomSessionInfo roomData = sessionService.removeSessionCount(sessionId);
+			ChatRoom chatRoom = chattingDomainService.getChatRoom(roomData.roomId());
 
-		Map<String, Object> payload = new HashMap<>();
-		payload.put("roomId", chatRoom.getId());
-		payload.put("title", chatRoom.getTitle());
-		payload.put("headCount", roomData.headCount());
-		payload.put("eventType", "UPDATE");
+			Map<String, Object> payload = new HashMap<>();
+			payload.put("roomId", chatRoom.getId());
+			payload.put("title", chatRoom.getTitle());
+			payload.put("headCount", roomData.headCount());
+			payload.put("eventType", "UPDATE");
 
-		messageService.handleChatRoomParticipantCountChange(payload);
-		messageService.handleChatRoomEntryExitMessage(ChatMessageTemplate.CHAT_ROOM_LEFT.format(nickName),
-			chatRoom.getId());
+			messageService.handleChatRoomParticipantCountChange(payload);
+			messageService.handleChatRoomEntryExitMessage(ChatMessageTemplate.CHAT_ROOM_LEFT.format(nickName),
+				chatRoom.getId());
+		} catch (Exception e) {
+			log.warn("SessionDisconnectEvent 처리 중 예외 발생, 채팅 관련 웹소켓 세션이 아닙니다.", e);
+		}
 	}
 }
