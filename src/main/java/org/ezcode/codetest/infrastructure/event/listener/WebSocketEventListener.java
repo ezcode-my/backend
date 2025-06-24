@@ -51,7 +51,7 @@ public class WebSocketEventListener implements ApplicationListener<SessionDiscon
 			messageService.handleChatRoomEntryExitMessage(ChatMessageTemplate.CHAT_ROOM_LEFT.format(nickName),
 				chatRoom.getId());
 		} catch (Exception e) {
-			log.warn("SessionDisconnectEvent 처리 중 예외 발생, 채팅 관련 웹소켓 세션이 아닙니다.", e);
+			log.info("SessionDisconnectEvent 처리 중 예외 발생, 채팅 관련 웹소켓 세션이 아닙니다.", e);
 		}
 	}
 }
