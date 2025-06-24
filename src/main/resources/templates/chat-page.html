@@ -189,185 +189,197 @@
         const socket = new SockJS('/ws?token=' + encodeURIComponent(token));
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({}, () => {
-            const messagesEl = document.getElementById('messages');
-            const roomListEl = document.getElementById('roomList');
-            const receiptId = 'sub-1';
+        // ─── Heartbeat 5분(300,000ms) 설정 ───
+        stompClient.heartbeat.outgoing = 300000; // 클라이언트→서버 heartbeat 전송 간격
+        stompClient.heartbeat.incoming = 300000; // 서버→클라이언트 heartbeat 수신 허용 최대 간격
+        const hbHeader = {'heart-beat': '300000,300000'};
+        // ────────────────────────────────────
 
-            stompClient.subscribe('/user/queue/notification', msg => {
-                console.log(msg);
-            });
+        stompClient.connect(
+            hbHeader,
+            () => {
+                const messagesEl = document.getElementById('messages');
+                const roomListEl = document.getElementById('roomList');
+                const receiptId = 'sub-1';
 
-            stompClient.subscribe('/user/queue/notifications', msg => {
-                console.log(msg);
-            });
-
-            // 채팅방 목록 초기 구독 및 오름차순 정렬
-            stompClient.subscribe('/user/queue/chatrooms', msg => {
-                let rooms;
-                try { rooms = JSON.parse(msg.body); } catch { return; }
-                // roomId 기준 오름차순 정렬
-                rooms.sort((a, b) => Number(a.roomId) - Number(b.roomId));
-                roomListEl.innerHTML = '';
-                rooms.forEach(r => {
-                    const li = document.createElement('li');
-                    li.textContent = `${r.title} (${r.roomId}) — ${r.headCount}명`;
-                    li.dataset.roomId = r.roomId;
-                    roomListEl.appendChild(li);
+                stompClient.subscribe('/user/queue/notification', msg => {
+                    console.log(msg);
                 });
-            }, { receipt: receiptId });
 
-            // onreceipt 처리: 입장 메시지 전송
-            stompClient.onreceipt = frame => {
-                if (frame.headers['receipt-id'] === receiptId) {
-                    stompClient.send('/chat/enter', {}, '경오');
-                }
-            };
-
-            // 채팅 메시지 구독
-            stompClient.subscribe('/user/queue/chat', msg => {
-                messagesEl.innerHTML = '';
-                let chats;
-                try { chats = JSON.parse(msg.body); } catch { return; }
-                chats.forEach(c => {
-                    const time = new Date(c.time)
-                        .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    const li = document.createElement('li');
-                    li.textContent = `[${time}] ${c.name} (${c.tier}): ${c.message}`;
-                    messagesEl.appendChild(li);
+                stompClient.subscribe('/user/queue/notifications', msg => {
+                    console.log(msg);
                 });
-                messagesEl.scrollTop = messagesEl.scrollHeight;
-            });
 
-            // 채팅방 목록 변경 브로드캐스트 구독 (업데이트 시 오름차순 정렬 유지)
-            stompClient.subscribe('/topic/chatrooms', msg => {
-                let room;
-                try { room = JSON.parse(msg.body); } catch { return; }
-
-                if (room.eventType === 'CREATE') {
-                    // 신규 방 append (중복 방지)
-                    if (!roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`)) {
+                // 채팅방 목록 초기 구독 및 오름차순 정렬
+                stompClient.subscribe('/user/queue/chatrooms', msg => {
+                    let rooms;
+                    try { rooms = JSON.parse(msg.body); } catch { return; }
+                    // roomId 기준 오름차순 정렬
+                    rooms.sort((a, b) => Number(a.roomId) - Number(b.roomId));
+                    roomListEl.innerHTML = '';
+                    rooms.forEach(r => {
                         const li = document.createElement('li');
-                        li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
-                        li.dataset.roomId = room.roomId;
+                        li.textContent = `${r.title} (${r.roomId}) — ${r.headCount}명`;
+                        li.dataset.roomId = r.roomId;
                         roomListEl.appendChild(li);
-                    }
-                    // 오름차순 정렬
-                    const reordered = Array.from(roomListEl.children).sort((a, b) =>
-                        Number(a.dataset.roomId) - Number(b.dataset.roomId)
-                    );
-                    roomListEl.innerHTML = '';
-                    reordered.forEach(li => roomListEl.appendChild(li));
-                } else if (room.eventType === 'UPDATE') {
-                    // 방 정보 변경, 없으면 추가
-                    let li = roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`);
-                    if (li) {
-                        li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
-                    } else {
-                        li = document.createElement('li');
-                        li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
-                        li.dataset.roomId = room.roomId;
-                        roomListEl.appendChild(li);
-                    }
-                    // 오름차순 정렬
-                    const reordered = Array.from(roomListEl.children).sort((a, b) =>
-                        Number(a.dataset.roomId) - Number(b.dataset.roomId)
-                    );
-                    roomListEl.innerHTML = '';
-                    reordered.forEach(li => roomListEl.appendChild(li));
-                } else if (room.eventType === 'DELETE') {
-                    // 삭제
-                    const li = roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`);
-                    if (li) li.remove();
-                } else if (room.eventType === 'GET') {
-                    // 전체 교체 (room.rooms는 방 목록 배열)
-                    if (!Array.isArray(room.rooms)) return;
-                    roomListEl.innerHTML = '';
-                    room.rooms
-                        .sort((a, b) => Number(a.roomId) - Number(b.roomId))
-                        .forEach(r => {
-                            const li = document.createElement('li');
-                            li.textContent = `${r.title} (${r.roomId}) — ${r.headCount}명`;
-                            li.dataset.roomId = r.roomId;
-                            roomListEl.appendChild(li);
-                        });
-                }
-            });
-
-            // 채팅방 클릭 핸들러
-            roomListEl.addEventListener('click', e => {
-                const li = e.target;
-                const nr = li.dataset.roomId;
-                if (!nr || currentRoomId === nr) return;
-                if (chatSubscription && currentRoomId) {
-                    stompClient.send(`/chat/room/${currentRoomId}/left`, {}, currentRoomId);
-                    chatSubscription.unsubscribe();
-                }
-                currentRoomId = nr;
-                roomListEl.querySelectorAll('li').forEach(el => el.classList.remove('active'));
-                li.classList.add('active');
-                messagesEl.innerHTML = '';
-
-                setTimeout(() => {
-                    chatSubscription = stompClient.subscribe(`/topic/chat/${nr}`, m => {
-                        setTimeout(() => {
-                            let p;
-                            try { p = JSON.parse(m.body); } catch {
-                                const lf = document.createElement('li');
-                                lf.textContent = m.body;
-                                messagesEl.appendChild(lf);
-                                messagesEl.scrollTop = messagesEl.scrollHeight;
-                                return;
-                            }
-                            const { time, name, tier, message } = p;
-                            const ft = new Date(time)
-                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            const liB = document.createElement('li');
-                            liB.textContent = `[${ft}] ${name} (${tier}): ${message}`;
-                            messagesEl.appendChild(liB);
-                            messagesEl.scrollTop = messagesEl.scrollHeight;
-                        }, 100);
                     });
-                    setTimeout(() => {
-                        stompClient.send(`/chat/room/${nr}/enter`, {}, nr);
-                    }, 100);
-                }, 100);
-            });
+                }, { receipt: receiptId });
 
-            // 전송 버튼 클릭 시 fetch 호출
-            const sendBtn = document.getElementById('sendBtn');
-            const msgInput = document.getElementById('msg');
-            msgInput.addEventListener('keydown', e => {
-                if (e.key === 'Enter') { e.preventDefault(); sendBtn.click(); }
-            });
-            sendBtn.addEventListener('click', () => {
-                if (!currentRoomId) return;
-                const m = msgInput.value.trim();
-                if (!m) return;
-                fetch(`/api/room/${currentRoomId}/chat`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify({ message: m })
-                })
-                    .then(res => {
-                        if (!res.ok) throw new Error('메시지 전송 실패');
-                        return res.json();
-                    })
-                    .then(d => {
-                        const t = new Date(d.time)
+                // onreceipt 처리: 입장 메시지 전송
+                stompClient.onreceipt = frame => {
+                    if (frame.headers['receipt-id'] === receiptId) {
+                        stompClient.send('/chat/enter', {}, '경오');
+                    }
+                };
+
+                // 채팅 메시지 구독
+                stompClient.subscribe('/user/queue/chat', msg => {
+                    messagesEl.innerHTML = '';
+                    let chats;
+                    try { chats = JSON.parse(msg.body); } catch { return; }
+                    chats.forEach(c => {
+                        const time = new Date(c.time)
                             .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                         const li = document.createElement('li');
-                        li.textContent = `[${t}] ${d.name} (${d.tier}): ${d.message}`;
+                        li.textContent = `[${time}] ${c.name} (${c.tier}): ${c.message}`;
                         messagesEl.appendChild(li);
-                        messagesEl.scrollTop = messagesEl.scrollHeight;
+                    });
+                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                });
+
+                // 채팅방 목록 변경 브로드캐스트 구독 (업데이트 시 오름차순 정렬 유지)
+                stompClient.subscribe('/topic/chatrooms', msg => {
+                    let room;
+                    try { room = JSON.parse(msg.body); } catch { return; }
+
+                    if (room.eventType === 'CREATE') {
+                        // 신규 방 append (중복 방지)
+                        if (!roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`)) {
+                            const li = document.createElement('li');
+                            li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
+                            li.dataset.roomId = room.roomId;
+                            roomListEl.appendChild(li);
+                        }
+                        // 오름차순 정렬
+                        const reordered = Array.from(roomListEl.children).sort((a, b) =>
+                            Number(a.dataset.roomId) - Number(b.dataset.roomId)
+                        );
+                        roomListEl.innerHTML = '';
+                        reordered.forEach(li => roomListEl.appendChild(li));
+                    } else if (room.eventType === 'UPDATE') {
+                        // 방 정보 변경, 없으면 추가
+                        let li = roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`);
+                        if (li) {
+                            li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
+                        } else {
+                            li = document.createElement('li');
+                            li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
+                            li.dataset.roomId = room.roomId;
+                            roomListEl.appendChild(li);
+                        }
+                        // 오름차순 정렬
+                        const reordered = Array.from(roomListEl.children).sort((a, b) =>
+                            Number(a.dataset.roomId) - Number(b.dataset.roomId)
+                        );
+                        roomListEl.innerHTML = '';
+                        reordered.forEach(li => roomListEl.appendChild(li));
+                    } else if (room.eventType === 'DELETE') {
+                        // 삭제
+                        const li = roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`);
+                        if (li) li.remove();
+                    } else if (room.eventType === 'GET') {
+                        // 전체 교체 (room.rooms는 방 목록 배열)
+                        if (!Array.isArray(room.rooms)) return;
+                        roomListEl.innerHTML = '';
+                        room.rooms
+                            .sort((a, b) => Number(a.roomId) - Number(b.roomId))
+                            .forEach(r => {
+                                const li = document.createElement('li');
+                                li.textContent = `${r.title} (${r.roomId}) — ${r.headCount}명`;
+                                li.dataset.roomId = r.roomId;
+                                roomListEl.appendChild(li);
+                            });
+                    }
+                });
+
+                // 채팅방 클릭 핸들러
+                roomListEl.addEventListener('click', e => {
+                    const li = e.target;
+                    const nr = li.dataset.roomId;
+                    if (!nr || currentRoomId === nr) return;
+                    if (chatSubscription && currentRoomId) {
+                        stompClient.send(`/chat/room/${currentRoomId}/left`, {}, currentRoomId);
+                        chatSubscription.unsubscribe();
+                    }
+                    currentRoomId = nr;
+                    roomListEl.querySelectorAll('li').forEach(el => el.classList.remove('active'));
+                    li.classList.add('active');
+                    messagesEl.innerHTML = '';
+
+                    setTimeout(() => {
+                        chatSubscription = stompClient.subscribe(`/topic/chat/${nr}`, m => {
+                            setTimeout(() => {
+                                let p;
+                                try { p = JSON.parse(m.body); } catch {
+                                    const lf = document.createElement('li');
+                                    lf.textContent = m.body;
+                                    messagesEl.appendChild(lf);
+                                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                                    return;
+                                }
+                                const { time, name, tier, message } = p;
+                                const ft = new Date(time)
+                                    .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                const liB = document.createElement('li');
+                                liB.textContent = `[${ft}] ${name} (${tier}): ${message}`;
+                                messagesEl.appendChild(liB);
+                                messagesEl.scrollTop = messagesEl.scrollHeight;
+                            }, 100);
+                        });
+                        setTimeout(() => {
+                            stompClient.send(`/chat/room/${nr}/enter`, {}, nr);
+                        }, 100);
+                    }, 100);
+                });
+
+                // 전송 버튼 클릭 시 fetch 호출
+                const sendBtn = document.getElementById('sendBtn');
+                const msgInput = document.getElementById('msg');
+                msgInput.addEventListener('keydown', e => {
+                    if (e.key === 'Enter') { e.preventDefault(); sendBtn.click(); }
+                });
+                sendBtn.addEventListener('click', () => {
+                    if (!currentRoomId) return;
+                    const m = msgInput.value.trim();
+                    if (!m) return;
+                    fetch(`/api/room/${currentRoomId}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify({ message: m })
                     })
-                    .catch(err => console.error(err));
-                msgInput.value = '';
-            });
-        });
+                        .then(res => {
+                            if (!res.ok) throw new Error('메시지 전송 실패');
+                            return res.json();
+                        })
+                        .then(d => {
+                            const t = new Date(d.time)
+                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            const li = document.createElement('li');
+                            li.textContent = `[${t}] ${d.name} (${d.tier}): ${d.message}`;
+                            messagesEl.appendChild(li);
+                            messagesEl.scrollTop = messagesEl.scrollHeight;
+                        })
+                        .catch(err => console.error(err));
+                    msgInput.value = '';
+                });
+            },
+            error => {
+                console.error('STOMP 연결 에러', error);
+            }
+        );
     }
 </script>
 </body>
