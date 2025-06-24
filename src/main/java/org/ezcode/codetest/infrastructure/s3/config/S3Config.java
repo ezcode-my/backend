@@ -11,7 +11,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 import lombok.RequiredArgsConstructor;
 
-/*
+/**
 * S3 연동
 * */
 @Configuration
