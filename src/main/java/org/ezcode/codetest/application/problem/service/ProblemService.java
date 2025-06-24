@@ -6,14 +6,18 @@ import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import org.ezcode.codetest.domain.problem.model.entity.ProblemImage;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
+import org.ezcode.codetest.infrastructure.s3.S3Directory;
+import org.ezcode.codetest.infrastructure.s3.S3Uploader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,16 +27,23 @@ public class ProblemService {
 
 	private final ProblemDomainService problemDomainService;
 	private final UserDomainService userDomainService;
+	private final S3Uploader s3Uploader;
 
 	// 문제 생성 ( 관리자 )
 	@Transactional
-	public ProblemDetailResponse createProblem(ProblemCreateRequest requestDto, AuthUser authUser) {
+	public ProblemDetailResponse createProblem(ProblemCreateRequest requestDto, MultipartFile image, AuthUser authUser) {
 
 		User user = userDomainService.getUserById(authUser.getId());
 
-		Problem savedProblem = problemDomainService.createProblem(
-			ProblemCreateRequest.toEntity(requestDto, user)
-		);
+		Problem problem = ProblemCreateRequest.toEntity(requestDto, user);
+		Problem savedProblem = problemDomainService.createProblem(problem);
+
+		// 문제 이미지 있다면?
+		if (image != null && !image.isEmpty()) {
+			String imageUrl = s3Uploader.upload(image, S3Directory.PROBLEM.getDir());
+			ProblemImage problemImage = new ProblemImage(savedProblem, imageUrl);
+			savedProblem.addImage(problemImage);
+		}
 
 		return ProblemDetailResponse.from(savedProblem);
 	}
