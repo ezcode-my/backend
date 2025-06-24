@@ -8,8 +8,6 @@ public interface ChatRepository {
 
 	Chat save(Chat chat);
 
-	List<Chat> findAll();
-
 	List<Chat> findChatsFromLastHour(Long roomId);
 
 }

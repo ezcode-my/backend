@@ -6,7 +6,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.ezcode.codetest.application.chatting.dto.request.ChatRoomDeleteRequest;
@@ -168,7 +167,7 @@ class ChattingUseCaseTest {
 			// then
 			verify(userDomainService).getUser(TEST_EMAIL);
 			verify(chattingDomainService).getChatRoom(TEST_ROOM_ID);
-			verify(chattingDomainService).isChatRoomOwner(chatRoom1, user.getId());
+			verify(chattingDomainService).checkChatRoomOwnerOrAdmin(chatRoom1, user);
 			verify(chattingDomainService).removeChatRoom(chatRoom1);
 
 			ArgumentCaptor<ChatRoomCache> cacheCaptor = ArgumentCaptor.forClass(ChatRoomCache.class);

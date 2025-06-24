@@ -1,4 +1,4 @@
-package org.ezcode.codetest.presentation.chattingmanagement.chatting.controller;
+package org.ezcode.codetest.presentation.chatting.chatting.controller;
 
 import org.ezcode.codetest.application.chatting.dto.request.ChatRoomDeleteRequest;
 import org.ezcode.codetest.application.chatting.dto.request.ChatRoomSaveRequest;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/chatrooms")
+@RequestMapping("/api/rooms")
 public class ChatRoomController {
 
 	private final ChattingUseCase chatUseCase;

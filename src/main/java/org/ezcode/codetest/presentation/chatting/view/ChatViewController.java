@@ -1,4 +1,4 @@
-package org.ezcode.codetest.presentation.chattingmanagement.view;
+package org.ezcode.codetest.presentation.chatting.view;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -308,7 +308,7 @@
                     const nr = li.dataset.roomId;
                     if (!nr || currentRoomId === nr) return;
                     if (chatSubscription && currentRoomId) {
-                        stompClient.send(`/chat/room/${currentRoomId}/left`, {}, currentRoomId);
+                        stompClient.send(`/chat/rooms/${currentRoomId}/left`, {}, currentRoomId);
                         chatSubscription.unsubscribe();
                     }
                     currentRoomId = nr;
@@ -337,7 +337,7 @@
                             }, 100);
                         });
                         setTimeout(() => {
-                            stompClient.send(`/chat/room/${nr}/enter`, {}, nr);
+                            stompClient.send(`/chat/rooms/${nr}/enter`, {}, nr);
                         }, 100);
                     }, 100);
                 });
@@ -352,7 +352,7 @@
                     if (!currentRoomId) return;
                     const m = msgInput.value.trim();
                     if (!m) return;
-                    fetch(`/api/room/${currentRoomId}/chat`, {
+                    fetch(`/api/rooms/${currentRoomId}/chat`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

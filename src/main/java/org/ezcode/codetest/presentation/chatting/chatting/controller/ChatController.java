@@ -1,4 +1,4 @@
-package org.ezcode.codetest.presentation.chattingmanagement.chatting.controller;
+package org.ezcode.codetest.presentation.chatting.chatting.controller;
 
 import org.ezcode.codetest.application.chatting.dto.request.ChatSaveRequest;
 import org.ezcode.codetest.application.chatting.service.ChattingUseCase;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/api/room/{roomId}/chat")
+@RequestMapping("/api/rooms/{roomId}/chat")
 @RequiredArgsConstructor
 public class ChatController {
 

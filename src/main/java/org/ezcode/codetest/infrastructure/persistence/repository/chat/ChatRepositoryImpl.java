@@ -22,12 +22,6 @@ public class ChatRepositoryImpl implements ChatRepository {
 	}
 
 	@Override
-	public List<Chat> findAll() {
-
-		return chatRepository.findAll();
-	}
-
-	@Override
 	public List<Chat> findChatsFromLastHour(Long roomId) {
 
 		LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);

@@ -20,6 +20,7 @@ import org.ezcode.codetest.domain.game.model.encounter.RandomEncounter;
 import org.ezcode.codetest.domain.game.model.item.Item;
 import org.ezcode.codetest.domain.game.model.skill.Skill;
 import org.ezcode.codetest.domain.game.service.GameManagementDomainService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class GameAdminUseCase {
 
 	private final GameManagementDomainService managementService;
