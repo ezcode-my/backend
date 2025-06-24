@@ -70,6 +70,9 @@ public class Problem extends BaseEntity {
 	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Testcase> testcases = new ArrayList<>();
 
+	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ProblemImage> images = new ArrayList<>();
+
 	@Builder
 	public Problem(User creator, Category category, String title, String description, int score, String difficulty,
 		Long memoryLimit, Long timeLimit, Reference reference) {
@@ -121,5 +124,11 @@ public class Problem extends BaseEntity {
 
 	public void softDelete() {
 		this.isDeleted = true;
+	}
+
+	// 이미지 추가 메소드
+	public void addImage(ProblemImage image) {
+		images.add(image);
+		image.setProblem(this);
 	}
 }
