@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.FindPasswordRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.ResetPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.FindPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
@@ -100,9 +100,9 @@ public class AuthService {
 	}
 
 	@Transactional
-	public SendEmailCodeResponse sendEmailCode(Long userId, String email) {
-		mailService.sendButtonMail(userId, email);
-		return SendEmailCodeResponse.from("인증 코드를 전송했습니다.");
+	public SendEmailResponse sendEmailCode(Long userId, String email, String redirectUrl) {
+		mailService.sendButtonMail(userId, email, redirectUrl);
+		return SendEmailResponse.from("인증 코드를 전송했습니다.");
 	}
 
 	@Transactional
@@ -226,20 +226,22 @@ public class AuthService {
 			throw new AuthException(AuthExceptionCode.USER_NOT_FOUND);
 		}
 
-		mailService.sendPasswordMail(user.getId(), request.getEmail());
+		mailService.sendPasswordMail(user.getId(), request.getEmail(), request.getRedirectUrl());
 
 		return FindPasswordResponse.from("이메일로 전송되었습니다.");
 	}
 
 	//메일로 받은 링크를 통해 비번 변경
-	public FindPasswordResponse changePasswordByEmail(String email, String key) {
+	public FindPasswordResponse resetPassword(ResetPasswordRequest request) {
 
-		User user = userDomainService.getUserByEmail(email);
+		User user = userDomainService.getUserByEmail(request.getEmail());
 
-		boolean isMatch = mailService.verifyCode(user.getId(), key);
+		boolean isMatch = mailService.verifyPasswordCode(user.getId(), request.getToken());
 
 		if (isMatch){
-			return FindPasswordResponse.from("인증되었습니다");
+			String encodedPassword = userDomainService.encodePassword(request.getNewPassword());
+			user.modifyPassword(encodedPassword);
+			return FindPasswordResponse.from("비밀번호가 변경되었습니다.");
 		} else {
 			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
 		}
