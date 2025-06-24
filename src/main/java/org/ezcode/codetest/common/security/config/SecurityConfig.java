@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -71,6 +72,10 @@ public class SecurityConfig {
 					.requestMatchers(new DispatcherTypeRequestMatcher(DispatcherType.ASYNC)).permitAll()
 					.requestMatchers(
 						SecurityPath.PUBLIC_PATH).permitAll()
+					.requestMatchers(HttpMethod.GET,
+						"/api/problems/*/discussions",
+						"/api/problems/{problemId}/discussions/{discussionId}/replies",
+						"/api/problems/{problemId}/discussions/{discussionId}/replies/**").permitAll()
 					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.anyRequest().authenticated() //나머지는 일반 인증
 			)
