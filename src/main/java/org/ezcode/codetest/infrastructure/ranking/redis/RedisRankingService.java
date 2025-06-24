@@ -3,6 +3,7 @@ package org.ezcode.codetest.infrastructure.ranking.redis;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ezcode.codetest.application.ranking.dto.RankingResponse;
+import org.ezcode.codetest.application.ranking.dto.TargetRankingResponse;
 import org.ezcode.codetest.infrastructure.persistence.repository.user.UserJpaRepository;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -63,6 +64,40 @@ public class RedisRankingService {
                     .score(tuple.getScore().intValue())
                     .build();
         }).collect(Collectors.toList());
+    }
+
+    public List<TargetRankingResponse> getRanking(String key, Long userId) {
+        Long myRank = redisTemplate.opsForZSet().reverseRank(key, userId.toString());
+        if (myRank == null) return List.of();
+
+        long start = Math.max(0, myRank - 1);
+        long end = myRank + 1;
+
+        Set<ZSetOperations.TypedTuple<String>> range = redisTemplate.opsForZSet()
+                .reverseRangeWithScores(key, start, end);
+
+        if (range == null || range.isEmpty()) return List.of();
+
+        List<String> ids = range.stream().map(ZSetOperations.TypedTuple::getValue).toList();
+        Map<Long, String> nicknameMap = userJpaRepository.findAllById(
+                ids.stream().map(Long::parseLong).toList()
+        ).stream().collect(Collectors.toMap(
+                u -> u.getId(),
+                u -> u.getNickname()
+        ));
+
+        return range.stream().map(tuple -> {
+            Long id = Long.parseLong(tuple.getValue());
+            Long rank = redisTemplate.opsForZSet().reverseRank(key, tuple.getValue());
+
+            return new TargetRankingResponse(
+                    id,
+                    nicknameMap.getOrDefault(id, "알 수 없음"),
+                    rank != null ? rank.intValue() + 1 : -1,
+                    tuple.getScore() != null ? tuple.getScore().intValue() : 0,
+                    id.equals(userId)
+            );
+        }).sorted(Comparator.comparingInt(TargetRankingResponse::ranks)).toList();
     }
 
 }
