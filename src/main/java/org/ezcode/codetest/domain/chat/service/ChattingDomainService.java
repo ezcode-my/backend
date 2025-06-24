@@ -8,6 +8,8 @@ import org.ezcode.codetest.domain.chat.model.Chat;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.repository.ChatRepository;
 import org.ezcode.codetest.domain.chat.repository.ChatRoomRepository;
+import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -29,9 +31,9 @@ public class ChattingDomainService {
 		chatRoomRepository.delete(room);
 	}
 
-	public void isChatRoomOwner(ChatRoom room, Long userId) {
+	public void checkChatRoomOwnerOrAdmin(ChatRoom room, User user) {
 
-		if(!room.isOwner(userId)) {
+		if (!room.isOwner(user.getId()) && user.getRole() != UserRole.ADMIN) {
 			throw new ChattingException(ChattingExceptionCode.CHATROOM_NOT_OWNER);
 		}
 	}

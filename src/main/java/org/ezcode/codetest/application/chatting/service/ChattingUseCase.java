@@ -56,7 +56,7 @@ public class ChattingUseCase {
 
 		ChatRoom removedRoom = chattingDomainService.getChatRoom(request.roomId());
 
-		chattingDomainService.isChatRoomOwner(removedRoom, user.getId());
+		chattingDomainService.checkChatRoomOwnerOrAdmin(removedRoom, user);
 
 		chattingDomainService.removeChatRoom(removedRoom);
 

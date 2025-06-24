@@ -1,4 +1,4 @@
-package org.ezcode.codetest.presentation.chattingmanagement.chatting.interceptor;
+package org.ezcode.codetest.presentation.chatting.chatting.interceptor;
 
 import java.util.Map;
 

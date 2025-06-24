@@ -41,6 +41,7 @@ class ChattingDomainServiceTest {
 	private ChatRoom chatRoom;
 
 	private User user;
+	private User wrongUser;
 	private Chat chat;
 
 	private static final Long TEST_ROOM_ID = 1L;
@@ -61,7 +62,18 @@ class ChattingDomainServiceTest {
 			.age(22)
 			.build();
 
+		wrongUser = User.builder()
+			.email(TEST_EMAIL)
+			.username("익명2")
+			.password("P@ssw0rd12252")
+			.nickname("익명 닉네임22")
+			.tier(Tier.NEWBIE)
+			.age(22)
+			.build();
+
 		ReflectionTestUtils.setField(user, "id", TEST_ROOM_ID);
+
+		ReflectionTestUtils.setField(wrongUser, "id", WRONG_USER_ID);
 
 		chatRoom = ChatRoom.builder()
 			.title(TEMP_TITLE_1)
@@ -114,11 +126,11 @@ class ChattingDomainServiceTest {
 			doReturn(true).when(chatRoom).isOwner(user.getId());
 
 			// when
-			chattingDomainService.isChatRoomOwner(chatRoom, user.getId());
+			chattingDomainService.checkChatRoomOwnerOrAdmin(chatRoom, user);
 
 			// then
 			assertDoesNotThrow(() ->
-				chattingDomainService.isChatRoomOwner(chatRoom, user.getId())
+				chattingDomainService.checkChatRoomOwnerOrAdmin(chatRoom, user)
 			);
 		}
 
@@ -184,7 +196,7 @@ class ChattingDomainServiceTest {
 
 			// when
 			ChattingException exception = assertThrows(ChattingException.class,
-				() -> chattingDomainService.isChatRoomOwner(chatRoom, WRONG_USER_ID));
+				() -> chattingDomainService.checkChatRoomOwnerOrAdmin(chatRoom, wrongUser));
 
 			// then
 			assertAll(

@@ -1,4 +1,4 @@
-package org.ezcode.codetest.presentation.chattingmanagement.event;
+package org.ezcode.codetest.presentation.chatting.event;
 
 import java.security.Principal;
 
@@ -25,7 +25,7 @@ public class EventHandleController {
 		chatUseCase.getChatRoomList(principal.getName(), sessionId);
 	}
 
-	@MessageMapping("/room/{roomId}/enter")
+	@MessageMapping("/rooms/{roomId}/enter")
 	public void handleGetChattingHistory(
 		Principal principal,
 		@DestinationVariable Long roomId,
@@ -35,7 +35,7 @@ public class EventHandleController {
 		chatUseCase.getChattingHistory(sessionId, principal.getName(), principal.getName(), roomId);
 	}
 
-	@MessageMapping("/room/{roomId}/left")
+	@MessageMapping("/rooms/{roomId}/left")
 	public void handleChatRoomLeft(
 		Principal principal,
 		@DestinationVariable Long roomId,

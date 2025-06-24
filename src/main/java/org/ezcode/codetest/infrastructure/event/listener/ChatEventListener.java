@@ -5,7 +5,7 @@ import org.ezcode.codetest.infrastructure.event.dto.ChatRoomListLoadEvent;
 import org.ezcode.codetest.infrastructure.event.dto.ChatRoomParticipantCountChangeEvent;
 import org.ezcode.codetest.infrastructure.event.dto.ChatRoomEntryExitMessageEvent;
 import org.ezcode.codetest.infrastructure.event.dto.ChatRoomHistoryLoadEvent;
-import org.ezcode.codetest.infrastructure.event.service.StompMessageService;
+import org.ezcode.codetest.infrastructure.event.publisher.StompMessageService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
