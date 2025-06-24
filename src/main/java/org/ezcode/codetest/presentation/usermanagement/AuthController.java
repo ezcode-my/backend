@@ -3,11 +3,12 @@ package org.ezcode.codetest.presentation.usermanagement;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.FindPasswordRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.request.VerifyEmailCodeRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.ResetPasswordRequest;
+import org.ezcode.codetest.application.usermanagement.auth.dto.request.SendEmailRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.FindPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailCodeResponse;
+import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
@@ -22,11 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,10 +85,11 @@ public class AuthController {
 
 	@Operation(summary = "이메일 인증 코드 전송", description = "현재 로그인된 회원의 이메일로 인증 코드를 전송합니다.")
 	@PostMapping("/email/send")
-	public ResponseEntity<SendEmailCodeResponse> sendMailCode(
-		@AuthenticationPrincipal AuthUser authUser
+	public ResponseEntity<SendEmailResponse> sendMailCode(
+		@AuthenticationPrincipal AuthUser authUser,
+		@RequestBody SendEmailRequest request
 	){
-		return ResponseEntity.status(HttpStatus.CREATED).body(authService.sendEmailCode(authUser.getId(), authUser.getEmail()));
+		return ResponseEntity.status(HttpStatus.CREATED).body(authService.sendEmailCode(authUser.getId(), authUser.getEmail(), request.getRedirectUrl()));
 	}
 
 	//이메일에서 버튼 클릭하면 자동으로 연결
@@ -110,11 +110,10 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.findPassword(request));
 	}
 
-	@GetMapping("/auth/verify-password-code")
-	public ResponseEntity<FindPasswordResponse> changePasswordByEmail(
-		@RequestParam String email,
-		@RequestParam String key
+	@PostMapping("/auth/reset-password")
+	public ResponseEntity<FindPasswordResponse> resetPassword(
+		@RequestBody ResetPasswordRequest request
 	){
-		return ResponseEntity.status(HttpStatus.OK).body(authService.changePasswordByEmail(email, key));
+		return ResponseEntity.status(HttpStatus.OK).body(authService.resetPassword(request));
 	}
 }

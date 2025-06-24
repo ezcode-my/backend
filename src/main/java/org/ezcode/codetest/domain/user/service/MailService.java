@@ -30,17 +30,17 @@ public class MailService {
 		javaMailSender.send(message);
 	}
 
-	public void sendButtonMail(Long userId, String email) {
-		MimeMessage message = CreateButtonMail(userId, email);
+	public void sendButtonMail(Long userId, String email, String redirectUrl) {
+		MimeMessage message = CreateButtonMail(userId, email, redirectUrl);
 		javaMailSender.send(message);
 	}
 
-	public void sendPasswordMail(Long userId, String email) {
-		MimeMessage message = CreatePasswordMail(userId, email);
+	public void sendPasswordMail(Long userId, String email, String redirectUrl) {
+		MimeMessage message = CreatePasswordMail(userId, email, redirectUrl);
 		javaMailSender.send(message);
 	}
 
-	public MimeMessage CreateButtonMail(Long userId, String email) {
+	public MimeMessage CreateButtonMail(Long userId, String email, String redirectUrl) {
 		MimeMessage message = javaMailSender.createMimeMessage();
 		String key = createNumber(userId); //radis에 유저id&코드로 저장 (10분)
 
@@ -51,7 +51,7 @@ public class MailService {
 			String body = "";
 			body += "<h3>" + "아래 버튼을 클릭하여 이메일 인증을 완료해 주세요" + "</h3>";
 			// 이메일 버튼
-			body += "<a href='http://localhost:8080/api/auth/verify?email="+ email + "&key=" + key + "' target='_blenk'>이메일 인증 확인</a>";
+			body += "<a href='" + redirectUrl + "/api/auth/verify?email="+ email + "&key=" + key + "' target='_blenk'>이메일 인증 확인</a>";
 			body += "<h3>" + "감사합니다." + "</h3>";
 			message.setText(body,"UTF-8", "html");
 		} catch (MessagingException e) {
@@ -61,7 +61,7 @@ public class MailService {
 		return message;
     }
 
-	public MimeMessage CreatePasswordMail(Long userId, String email){
+	public MimeMessage CreatePasswordMail(Long userId, String email, String redirectUrl){
 		MimeMessage message = javaMailSender.createMimeMessage();
 
 		String redisKey = "PASSWORD_KEY:" + userId;
@@ -81,7 +81,7 @@ public class MailService {
 			String body = "";
 			body += "<h3>" + "아래 버튼을 클릭하여 비밀번호 변경을 완료해 주세요" + "</h3>";
 			// 이메일 버튼
-			body += "<a href='http://localhost:8080/api/auth/password?email="+ email + "&key=" + verificationCode + "' target='_blenk'>비밀번호 변경하기</a>";
+			body += "<a href='"+redirectUrl+"/api/auth/reset-password?email="+ email + "&key=" + verificationCode + "' target='_blenk'>비밀번호 변경하기</a>";
 			body += "<h3>" + "감사합니다." + "</h3>";
 			message.setText(body,"UTF-8", "html");
 		} catch (MessagingException e) {
@@ -153,6 +153,24 @@ public class MailService {
 			redisTemplate.delete(key);
 		}
         return isMatch;
+	}
+
+	// 비밀번호 검증
+	public boolean verifyPasswordCode(Long userId, String inputCode) {
+		String key = "PASSWORD_KEY:" + userId;
+		String storedCode = redisTemplate.opsForValue().get(key);
+
+		if (storedCode == null) {
+			log.warn("비밀번호 재설정 코드가 없음 : {}", userId);
+			return false;
+		}
+
+		boolean isMatch = inputCode != null && inputCode.trim().equals(storedCode);
+
+		if (isMatch) {
+			redisTemplate.delete(key);
+		}
+		return isMatch;
 	}
 
 }
