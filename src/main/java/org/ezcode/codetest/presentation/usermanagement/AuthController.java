@@ -102,7 +102,7 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.verifyEmailCode(email, key));
 	}
 
-
+	//미완성 -> 메일 전송까지는 성공
 	@PostMapping("/auth/find-password")
 	public ResponseEntity<FindPasswordResponse> findPassword(
 		@RequestBody FindPasswordRequest request
