@@ -2,6 +2,7 @@ package org.ezcode.codetest.application.ranking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.ezcode.codetest.application.ranking.dto.RankingResponse;
+import org.ezcode.codetest.application.ranking.dto.TargetRankingResponse;
 import org.ezcode.codetest.infrastructure.ranking.redis.RedisRankingService;
 import org.springframework.stereotype.Service;
 
@@ -28,4 +29,18 @@ public class RankingFacadeService {
     public List<RankingResponse> getAllTimeRanking() {
         return redisRankingService.getTopRankings("ranking:all", 10);
     }
+
+    //랭킹 조회
+    public List<TargetRankingResponse> getRanking(String period, Long userId) {
+        LocalDate baseMonday = LocalDate.now().with(DayOfWeek.MONDAY);
+        String key = switch (period) {
+            case "weekly" -> "ranking:weekly:" + baseMonday;
+            case "last-week" -> "ranking:weekly:" + baseMonday.minusWeeks(1);
+            case "all-time" -> "ranking:all";
+            default -> throw new IllegalArgumentException("기간은 weekly, last-week, all-time 만 가능합니다.");
+        };
+
+        return redisRankingService.getRanking(key, userId);
+    }
+
 }
