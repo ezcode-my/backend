@@ -97,6 +97,7 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 
 		JPAQuery<Long> countQuery = jpaQueryFactory
 			.select(discussion.count())
+			.from(discussion)
 			.where(discussion.problem.id.eq(problemId));
 
 		return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
