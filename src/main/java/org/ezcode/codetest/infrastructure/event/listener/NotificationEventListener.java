@@ -7,7 +7,7 @@ import org.ezcode.codetest.application.notification.event.NotificationListReques
 import org.ezcode.codetest.application.notification.event.NotificationReadEvent;
 import org.ezcode.codetest.infrastructure.event.dto.NotificationRecord;
 import org.ezcode.codetest.infrastructure.event.dto.NotificationResponse;
-import org.ezcode.codetest.infrastructure.event.service.StompMessageService;
+import org.ezcode.codetest.infrastructure.event.publisher.StompMessageService;
 import org.ezcode.codetest.infrastructure.persistence.repository.notification.NotificationRepository;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;

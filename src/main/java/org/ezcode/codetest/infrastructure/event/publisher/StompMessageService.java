@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.event.service;
+package org.ezcode.codetest.infrastructure.event.publisher;
 
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;

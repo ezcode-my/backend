@@ -8,7 +8,7 @@ import org.ezcode.codetest.application.chatting.service.ChatMessageTemplate;
 import org.ezcode.codetest.domain.chat.model.ChatRoom;
 import org.ezcode.codetest.domain.chat.service.ChattingDomainService;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
-import org.ezcode.codetest.infrastructure.event.service.StompMessageService;
+import org.ezcode.codetest.infrastructure.event.publisher.StompMessageService;
 import org.ezcode.codetest.infrastructure.session.service.RedisSessionCountService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;

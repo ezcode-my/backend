@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.event.service;
+package org.ezcode.codetest.infrastructure.event.publisher;
 
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.event.NotificationListRequestEvent;

@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.event.service;
+package org.ezcode.codetest.infrastructure.event.publisher;
 
 import java.time.Instant;
 import java.util.List;
