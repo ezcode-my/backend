@@ -13,9 +13,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class S3Uploader {
 
 	private final AmazonS3 amazonS3;
@@ -32,8 +34,9 @@ public class S3Uploader {
 			metadata.setContentType(multipartFile.getContentType());
 
 			amazonS3.putObject(bucket, fileName, multipartFile.getInputStream(), metadata);
-
-			return amazonS3.getUrl(bucket, fileName).toString(); // 업로드 파일 URL로 변환 ( 문자열 )
+			String result = amazonS3.getUrl(bucket, fileName).toString(); // 업로드 파일 URL로 변환 ( 문자열 )
+			log.info("S3 버킷 이미지 업로드 완료 {}", result);
+			return result;
 
 		} catch (IOException e) {
 			throw new S3Exception(
