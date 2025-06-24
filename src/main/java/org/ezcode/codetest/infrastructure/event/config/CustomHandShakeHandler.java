@@ -28,8 +28,17 @@ public class CustomHandShakeHandler extends DefaultHandshakeHandler {
 		String query = uri.getQuery();
 		String tokenParam = null;
 
-		if (query != null && query.startsWith("token=")) {
+		if (query == null) {
+			throw new IllegalArgumentException("WebSocket 연결에 필요한 토큰이 없습니다.");
+		}
+
+		if (query.startsWith("token=")) {
 			tokenParam = query.substring(6);
+		} else if (query.startsWith("chat-token=")) {
+			tokenParam = query.substring(11);
+			attributes.put("isChattingWebsocket", true);
+		} else {
+			throw new IllegalArgumentException("허용되지 않은 토큰 파라미터: " + query);
 		}
 
 		Claims claims = jwtUtil.extractClaims(tokenParam);

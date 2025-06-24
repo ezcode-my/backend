@@ -186,7 +186,7 @@
     });
 
     function initChat() {
-        const socket = new SockJS('/ws?token=' + encodeURIComponent(token));
+        const socket = new SockJS('/ws?chat-token=' + encodeURIComponent(token));
         stompClient = Stomp.over(socket);
 
         // ─── Heartbeat 5분(300,000ms) 설정 ───
