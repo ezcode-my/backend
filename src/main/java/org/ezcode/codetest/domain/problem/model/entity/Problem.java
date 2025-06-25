@@ -11,9 +11,11 @@ import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -67,8 +69,17 @@ public class Problem extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean isDeleted;
 
+	@Column(nullable = false)
+	private Long totalSubmissions;
+
+	@Column(nullable = false)
+	private Long correctSubmissions;
+
 	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Testcase> testcases = new ArrayList<>();
+
+	@ElementCollection(fetch = FetchType.LAZY)
+	private List<String> imageUrl = new ArrayList<>();
 
 	@Builder
 	public Problem(User creator, Category category, String title, String description, int score, String difficulty,
@@ -83,6 +94,8 @@ public class Problem extends BaseEntity {
 		this.timeLimit = timeLimit;
 		this.reference = reference;
 		isDeleted = false;
+		this.totalSubmissions = 0L;
+		this.correctSubmissions = 0L;
 	}
 
 	// 여러개를 하나의 객체로 만드는 것
@@ -122,4 +135,18 @@ public class Problem extends BaseEntity {
 	public void softDelete() {
 		this.isDeleted = true;
 	}
+
+	// 이미지 추가
+	public void addImage(String image) {
+		if (image == null || image.trim().isEmpty()) {
+			throw new IllegalArgumentException("이미지 URL을 찾을수 없습니다");
+		}
+
+		if (imageUrl.contains(image)) {
+			return; // 중복된 URL 무시
+		}
+
+		imageUrl.add(image);
+	}
+
 }
