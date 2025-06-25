@@ -4,7 +4,7 @@ public record GameLevelUpEvent(
 
 	Long userId,
 
-	boolean isProblemSolved,
+	boolean isSolved,
 
 	String problemCategory
 
