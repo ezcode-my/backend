@@ -11,9 +11,11 @@ import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -70,8 +72,8 @@ public class Problem extends BaseEntity {
 	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Testcase> testcases = new ArrayList<>();
 
-	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ProblemImage> images = new ArrayList<>();
+	@ElementCollection(fetch = FetchType.LAZY)
+	private List<String> imageUrl = new ArrayList<>();
 
 	@Builder
 	public Problem(User creator, Category category, String title, String description, int score, String difficulty,
@@ -126,9 +128,9 @@ public class Problem extends BaseEntity {
 		this.isDeleted = true;
 	}
 
-	// 이미지 추가 메소드
-	public void addImage(ProblemImage image) {
-		images.add(image);
-		image.setProblem(this);
+	// 이미지 추가
+	public void addImage(String image) {
+		imageUrl.add(image);
 	}
+
 }
