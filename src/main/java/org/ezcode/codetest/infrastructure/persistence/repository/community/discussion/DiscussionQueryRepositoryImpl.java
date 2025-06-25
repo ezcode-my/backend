@@ -1,34 +1,27 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.community.discussion;
 
-import org.ezcode.codetest.application.usermanagement.user.dto.response.SimpleUserInfoResponse;
-import org.ezcode.codetest.domain.community.dto.DiscussionQueryResult;
-import org.ezcode.codetest.domain.community.dto.QDiscussionQueryResult;
-import org.ezcode.codetest.domain.community.model.entity.QDiscussionVote;
-import org.ezcode.codetest.domain.community.model.enums.VoteType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
-
-import static org.ezcode.codetest.domain.community.model.entity.QDiscussion.discussion;
-import static org.ezcode.codetest.domain.community.model.entity.QDiscussionVote.discussionVote;
-import static org.ezcode.codetest.domain.community.model.entity.QReply.reply;
+import static org.ezcode.codetest.domain.community.model.entity.QDiscussion.*;
+import static org.ezcode.codetest.domain.community.model.entity.QDiscussionVote.*;
+import static org.ezcode.codetest.domain.community.model.entity.QReply.*;
 import static org.ezcode.codetest.domain.user.model.entity.QUser.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ezcode.codetest.application.usermanagement.user.dto.response.SimpleUserInfoResponse;
+import org.ezcode.codetest.domain.community.dto.DiscussionQueryResult;
+import org.ezcode.codetest.domain.community.dto.QDiscussionQueryResult;
+import org.ezcode.codetest.domain.community.model.enums.VoteType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
 import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
-import com.querydsl.core.types.dsl.NumberOperation;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -39,74 +32,20 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 
 	private final JPAQueryFactory jpaQueryFactory;
 
-	public Page<DiscussionQueryResult> findAllByProblemId(Long problemId, String sortBy, Long currentUserId, Pageable pageable) {
-
-		JPQLQuery<Long> upvoteCount = getVoteCount(VoteType.UP);
-		JPQLQuery<Long> downvoteCount = getVoteCount(VoteType.DOWN);
-
-		NumberOperation<Long> bestScore = Expressions.numberOperation(
-			Long.class,
-			Ops.SUB,
-			upvoteCount,
-			downvoteCount
-		);
-
-		JPQLQuery<Long> replyCount = JPAExpressions
-			.select(reply.count())
-			.from(reply)
-			.where(reply.discussion.eq(discussion));
-
-		Expression<VoteType> userVoteType = getUserVoteTypeExpression(currentUserId);
-
-		List<DiscussionQueryResult> results = jpaQueryFactory
-			.select(new QDiscussionQueryResult(
-				discussion.id,
-				Projections.constructor(SimpleUserInfoResponse.class,
-					user.id,
-					user.nickname,
-					user.tier,
-					user.profileImageUrl
-				),
-				discussion.problem.id,
-				discussion.content,
-				discussion.createdAt,
-				upvoteCount,
-				downvoteCount,
-				replyCount,
-				userVoteType
-			))
-			.from(discussion)
-			.where(discussion.problem.id.eq(problemId))
-			.orderBy(getOrderSpecifier(sortBy, bestScore, upvoteCount))
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.fetch();
-
-		JPAQuery<Long> countQuery = jpaQueryFactory
-			.select(discussion.count())
-			.from(discussion)
-			.where(discussion.problem.id.eq(problemId));
-
-		return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
-	}
-
 	@Override
-	public List<Long> findDiscussionIdsByProblemIdWithSubquery(Long problemId, String sortBy, Pageable pageable) {
+	public List<Long> findDiscussionIdsByProblemId(Long problemId, String sortBy, Pageable pageable) {
 
-		JPQLQuery<Long> upvoteCount = getVoteCount(VoteType.UP);
-		JPQLQuery<Long> downvoteCount = getVoteCount(VoteType.DOWN);
+		NumberExpression<Long> upvoteCount = getVoteCount(VoteType.UP);
+		NumberExpression<Long> downvoteCount = getVoteCount(VoteType.DOWN);
 
-		NumberOperation<Long> bestScore = Expressions.numberOperation(
-			Long.class,
-			Ops.SUB,
-			upvoteCount,
-			downvoteCount
-		);
+		NumberExpression<Long> bestScore = upvoteCount.subtract(downvoteCount);
 
 		return jpaQueryFactory
 			.select(discussion.id)
 			.from(discussion)
+			.leftJoin(discussionVote).on(discussionVote.discussion.eq(discussion))
 			.where(discussion.problem.id.eq(problemId))
+			.groupBy(discussion.id)
 			.orderBy(getOrderSpecifier(sortBy, bestScore, upvoteCount))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -114,27 +53,25 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 	}
 
 	@Override
-	public List<DiscussionQueryResult> findDiscussionsByIdsWithSubquery(List<Long> discussionIds, Long currentUserId) {
+	public List<DiscussionQueryResult> findDiscussionsByIds(List<Long> discussionIds, Long currentUserId) {
+
 		if (discussionIds == null || discussionIds.isEmpty()) {
 			return new ArrayList<>();
 		}
 
-		JPQLQuery<Long> upvoteCount = getVoteCount(VoteType.UP);
-		JPQLQuery<Long> downvoteCount = getVoteCount(VoteType.DOWN);
+		NumberExpression<Long> upvoteCount = getVoteCount(VoteType.UP);
+		NumberExpression<Long> downvoteCount = getVoteCount(VoteType.DOWN);
 
-		NumberOperation<Long> bestScore = Expressions.numberOperation(
-			Long.class,
-			Ops.SUB,
-			upvoteCount,
-			downvoteCount
-		);
+		Expression<Long> replyCount = reply.id.countDistinct();
 
-		JPQLQuery<Long> replyCount = JPAExpressions
-			.select(reply.count())
-			.from(reply)
-			.where(reply.discussion.eq(discussion));
-
-		Expression<VoteType> userVoteType = getUserVoteTypeExpression(currentUserId);
+		Expression<VoteType> userVoteType;
+		if (currentUserId != null) {
+			userVoteType = new CaseBuilder()
+				.when(discussionVote.voter.id.eq(currentUserId)).then(discussionVote.voteType)
+				.otherwise(Expressions.nullExpression(VoteType.class)).max();
+		} else {
+			userVoteType = Expressions.nullExpression(VoteType.class);
+		}
 
 		return jpaQueryFactory
 			.select(new QDiscussionQueryResult(
@@ -153,18 +90,33 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 				replyCount,
 				userVoteType
 			))
-			.from(discussion)
+            .from(discussion)
+			.join(discussion.user, user)
+			.leftJoin(discussionVote).on(discussionVote.discussion.eq(discussion))
+			.leftJoin(reply).on(reply.discussion.eq(discussion))
 			.where(discussion.id.in(discussionIds))
-			.fetch();
+			.groupBy(discussion.id)
+            .fetch();
 	}
 
-	private JPQLQuery<Long> getVoteCount(VoteType voteType) {
+	@Override
+	public Long countByProblemId(Long problemId) {
 
-		return JPAExpressions
-			.select(discussionVote.count())
-			.from(discussionVote)
-			.where(discussionVote.discussion.eq(discussion)
-				.and(discussionVote.voteType.eq(voteType)));
+		Long count = jpaQueryFactory
+			.select(discussion.count())
+			.from(discussion)
+			.where(discussion.problem.id.eq(problemId))
+			.fetchOne();
+
+		return count != null ? count : 0L;
+	}
+
+
+	private NumberExpression<Long> getVoteCount(VoteType voteType) {
+		return new CaseBuilder()
+			.when(discussionVote.voteType.eq(voteType)).then(discussionVote.id)
+			.otherwise((Long) null)
+			.countDistinct();
 	}
 
 	private OrderSpecifier<?>[] getOrderSpecifier(String sort, NumberExpression<Long> bestScore, Expression<Long> upvoteCount) {
@@ -184,17 +136,5 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 		OrderSpecifier<?> secondarySort = new OrderSpecifier<>(Order.DESC, discussion.id);
 
 		return new OrderSpecifier<?>[] { primarySort, secondarySort };
-	}
-
-	private Expression<VoteType> getUserVoteTypeExpression(Long currentUserId) {
-		if (currentUserId == null) {
-			return Expressions.nullExpression(VoteType.class);
-		}
-		QDiscussionVote discussionVoteForUser = new QDiscussionVote("discussionVoteForUser");
-		return JPAExpressions
-			.select(discussionVoteForUser.voteType)
-			.from(discussionVoteForUser)
-			.where(discussionVoteForUser.discussion.eq(discussion)
-				.and(discussionVoteForUser.voter.id.eq(currentUserId)));
 	}
 }
