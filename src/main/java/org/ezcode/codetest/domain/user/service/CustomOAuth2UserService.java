@@ -86,7 +86,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 	private void updateExistingUser(User user, OAuth2Response response, AuthType authType, String provider) {
 		if (!userDomainService.getUserAuthTypes(user).contains(authType)) {
-			user.setVerified();
+			if (!user.isVerified()) {
+				user.setVerified();
+				user.setReviewToken(20);
+			}
 			userAuthTypeRepository.createUserAuthType(new UserAuthType(user, authType));
 			updateGithubUrl(user, response, provider);
 		}
