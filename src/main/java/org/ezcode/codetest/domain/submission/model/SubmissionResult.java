@@ -18,8 +18,8 @@ public record SubmissionResult(
 ) {
 	public static SubmissionResult from(UserProblemResult result, boolean hasBeenSolved) {
 		return SubmissionResult.builder()
-			.userId(result.getUser().getId())
-			.problemCategory(result.getProblem().getCategory().getDescription())
+			.userId(result.getUserId())
+			.problemCategory(result.getProblemCategoryDescription())
 			.isSolved(result.isCorrect())
 			.hasBeenSolved(hasBeenSolved)
 			.build();

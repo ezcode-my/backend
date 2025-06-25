@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.submission.model.entity;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.Column;
@@ -47,5 +48,15 @@ public class UserProblemResult extends BaseEntity {
 
     public void updateResult(boolean isCorrect) {
         this.isCorrect = isCorrect;
+    }
+
+    public String getProblemCategoryDescription() {
+
+        return this.problem.getCategory().getDescription();
+    }
+
+    public Long getUserId() {
+
+        return this.user.getId();
     }
 }
