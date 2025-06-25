@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
+import org.ezcode.codetest.domain.submission.model.SubmissionResult;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
 import org.ezcode.codetest.domain.submission.dto.AnswerEvaluation;
@@ -28,7 +29,7 @@ public class SubmissionDomainService {
     private final UserProblemResultRepository userProblemResultRepository;
 
     @Transactional
-    public UserProblemResult finalizeSubmission(
+    public SubmissionResult finalizeSubmission(
         SubmissionData submissionData,
         SubmissionAggregator aggregator,
         int passedCount) {
@@ -39,23 +40,24 @@ public class SubmissionDomainService {
             )
         );
 
-        boolean allPassed = passedCount == submissionData.getTestCaseSize();
+        boolean allPassed = (passedCount == submissionData.getTestCaseSize());
 
         return getUserProblemResult(submissionData.getUserId(), submissionData.getProblemId()).map(
                 result -> {
                     if (!result.isCorrect() && allPassed) {
                         modifyUserProblemResult(result, true);
-                        return result;
+                        return SubmissionResult.from(result, false);
                     }
-                    return result;
+                    return SubmissionResult.from(result, true);
                 })
-            .orElseGet(() -> createUserProblemResult(
+            .orElseGet(() -> SubmissionResult.from(createUserProblemResult(
                 UserProblemResult.builder()
                     .user(submissionData.user())
                     .problem(submissionData.problem())
                     .isCorrect(allPassed)
                     .build()
-            ));
+                ),false)
+            );
     }
 
     public AnswerEvaluation handleEvaluationAndUpdateStats(

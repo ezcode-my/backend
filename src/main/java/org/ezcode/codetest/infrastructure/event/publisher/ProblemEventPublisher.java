@@ -1,7 +1,7 @@
 package org.ezcode.codetest.infrastructure.event.publisher;
 
 import org.ezcode.codetest.application.submission.port.ProblemEventService;
-import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
+import org.ezcode.codetest.domain.submission.model.SubmissionResult;
 import org.ezcode.codetest.infrastructure.event.dto.GameLevelUpEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -14,12 +14,14 @@ public class ProblemEventPublisher implements ProblemEventService {
 
 	private final ApplicationEventPublisher publisher;
 
-	public void publishProblemSolveEvent(UserProblemResult event) {
+	public void publishProblemSolveEvent(SubmissionResult event) {
 
-		Long userId = event.getUser().getId();
-		boolean isCorrect = event.isCorrect();
-		String problemCategory = event.getProblem().getCategory().getDescription();
+		if(event.hasBeenSolved()) return;
 
-		publisher.publishEvent(new GameLevelUpEvent(userId, isCorrect, problemCategory));
+		Long userId = event.userId();
+		String problemCategory = event.problemCategory();
+		boolean isSolved = event.isSolved();
+
+		publisher.publishEvent(new GameLevelUpEvent(userId, isSolved, problemCategory));
 	}
 }

@@ -28,8 +28,8 @@ import org.ezcode.codetest.application.submission.port.QueueProducer;
 import org.ezcode.codetest.application.submission.port.SubmissionEventService;
 import org.ezcode.codetest.domain.submission.exception.SubmissionException;
 import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
+import org.ezcode.codetest.domain.submission.model.SubmissionResult;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
-import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
 import org.ezcode.codetest.infrastructure.event.dto.submission.SubmissionMessage;
 import org.ezcode.codetest.application.submission.port.ReviewClient;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
@@ -125,11 +125,11 @@ public class SubmissionService {
                 user, problemInfo, language, msg.sourceCode(), context.getCurrentMessage()
             );
 
-            UserProblemResult userProblemResult = submissionDomainService.finalizeSubmission(
+            SubmissionResult submissionResult = submissionDomainService.finalizeSubmission(
                 submissionData, context.aggregator(), context.getPassedCount()
             );
 
-            problemEventService.publishProblemSolveEvent(userProblemResult);
+            problemEventService.publishProblemSolveEvent(submissionResult);
         } catch (Exception e) {
             submissionEventService.publishSubmissionError(new SubmissionErrorEvent(msg.sessionKey(), e));
             exceptionNotificationHelper(e);
