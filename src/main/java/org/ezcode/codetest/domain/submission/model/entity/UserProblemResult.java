@@ -55,8 +55,4 @@ public class UserProblemResult extends BaseEntity {
         return this.problem.getCategory().getDescription();
     }
 
-    public Long getUserId() {
-
-        return this.user.getId();
-    }
 }
