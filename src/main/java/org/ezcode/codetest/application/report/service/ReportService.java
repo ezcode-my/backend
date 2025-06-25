@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReportService {
@@ -92,6 +94,14 @@ public class ReportService {
                 .orElseThrow(() -> new IllegalArgumentException("신고가 존재하지 않습니다."));
 
         ReportStatus newStatus = req.toEnum();
-        report.updateStatus(newStatus);
+        report.updateStatus(newStatus, req.resultMessage());
     }
+
+    @Transactional(readOnly = true)
+    public List<ReportMyResponse> getMyReports(Long userId) {
+        return reportRepository.findByReporterIdOrderByCreatedAtDesc(userId).stream()
+                .map(ReportMyResponse::from)
+                .toList();
+    }
+
 }
