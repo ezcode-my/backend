@@ -3,6 +3,7 @@ package org.ezcode.codetest.domain.user.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.ezcode.codetest.application.usermanagement.user.dto.response.GithubOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Response;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
@@ -40,49 +41,29 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		//가져온 인증 정보가 구글인지, 깃헙인지 알아내기 위한 변수
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-		OAuth2Response oAuth2Response = null;
+		//google, github에 따라 다르게 반환
+		OAuth2Response oAuth2Response = switch (registrationId.toLowerCase()) {
+			case "google" -> new GoogleOAuth2Response(oAuth2User.getAttributes());
+			case "github" -> new GithubOAuth2Response(oAuth2User.getAttributes());
+			default -> throw new OAuth2AuthenticationException("Unsupported provider");
+		};
 
-		//인증 정보를 제공하는 플랫폼마다 형식이 다르기 때문에 이에 맞게 가져와야한다.
-		if (registrationId.equals("google")) {
-			//인증 정보가 구글일 때
-			//구글 dto구현체에서 정보 가져오기
-			oAuth2Response = new GoogleOAuth2Response(oAuth2User.getAttributes());
-		} else {
-			// if (registrationId.equals("github")) {
-			// 	//인증 정보가 github 일 때
-			// }
-			return null;
-		}
-
-		String username = oAuth2Response.getName();
-
-		User findUser = userRepository.getUserByEmail(oAuth2Response.getEmail());
+		String email = oAuth2Response.getEmail();
+		User findUser = userRepository.getUserByEmail(email);
+		AuthType authType = AuthType.from(oAuth2Response.getProvider().toUpperCase());
 
 		if (findUser == null) {
 			String nickname = userDomainService.generateUniqueNickname();
-			//아예 처음 가입을 소셜로하는 회원이면, 비번을 UUID로 설정
-			User newUser = User.socialUser(oAuth2Response.getEmail(), username, nickname, UUID.randomUUID().toString());
-			log.info("newUser: {} 새로운 유저", newUser);
-			try {
-				userRepository.createUser(newUser);
-				UserAuthType userAuthType = new UserAuthType(newUser, AuthType.GOOGLE);
-				userAuthTypeRepository.createUserAuthType(userAuthType);
-			} catch (IllegalStateException e) {
-				throw new OAuth2AuthenticationException("닉네임 생성 실패입니다");
-			} catch (Exception e) {
-				log.error("OAuth 사용자 생성 실패 : {}", e.getMessage());
-				throw new OAuth2AuthenticationException("사용자 생성 실패입니다");
-			}
-
+			User newUser = User.socialUser(email, oAuth2Response.getName(), nickname, UUID.randomUUID().toString());
+			userRepository.createUser(newUser);
+			userAuthTypeRepository.createUserAuthType(new UserAuthType(newUser, authType));
 		} else {
-			if (!userDomainService.getUserAuthTypes(findUser).contains(AuthType.GOOGLE)) {
-				UserAuthType userAuthType = new UserAuthType(findUser, AuthType.GOOGLE);
-				userAuthTypeRepository.createUserAuthType(userAuthType);
-			} else {
-				log.info("이메일, 소셜 모두 가입 유저");
+			if (!userDomainService.getUserAuthTypes(findUser).contains(authType)) {
+				userAuthTypeRepository.createUserAuthType(new UserAuthType(findUser, authType));
 			}
 		}
 
 		return new CustomOAuth2User(oAuth2Response);
 	}
+
 }
