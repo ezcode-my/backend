@@ -157,7 +157,7 @@ public class AuthService {
 			throw new AuthException(AuthExceptionCode.AUTH_TYPE_MISMATCH);
 		}
 
-		// userDomainService.userPasswordCheck(signinRequest.getEmail(), signinRequest.getPassword());
+		userDomainService.userPasswordCheck(signinRequest.getEmail(), signinRequest.getPassword());
 
 		String accessToken = createAccessToken(loginUser);
 

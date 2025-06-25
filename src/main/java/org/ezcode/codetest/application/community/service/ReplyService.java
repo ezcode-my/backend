@@ -7,6 +7,7 @@ import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
+import org.ezcode.codetest.domain.community.dto.ReplyQueryResult;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.model.entity.Reply;
 import org.ezcode.codetest.domain.community.service.DiscussionDomainService;
@@ -58,13 +59,13 @@ public class ReplyService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<ReplyResponse> getReplies(Long problemId, Long discussionId, Pageable pageable) {
+	public Page<ReplyResponse> getReplies(Long problemId, Long discussionId, Long currentUserId, Pageable pageable) {
 
 		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Page<Reply> replies = replyDomainService.getRepliesByDiscussionId(discussion, pageable);
+		Page<ReplyQueryResult> replies = replyDomainService.getRepliesByDiscussionId(discussion, currentUserId, pageable);
 
-		return replies.map(ReplyResponse::fromEntity);
+		return replies.map(ReplyResponse::from);
 	}
 
 	@Transactional(readOnly = true)
@@ -72,14 +73,16 @@ public class ReplyService {
 		Long problemId,
 		Long discussionId,
 		Long parentReplyId,
+		Long currentUserId,
 		Pageable pageable
 	) {
 
 		Discussion discussion = discussionDomainService.getDiscussionForProblem(discussionId, problemId);
 
-		Page<Reply> replies = replyDomainService.getRepliesByParentReplyId(parentReplyId, discussion, pageable);
+		Page<ReplyQueryResult> childReplies =
+			replyDomainService.getRepliesByParentReplyId(parentReplyId, discussion, currentUserId, pageable);
 
-		return replies.map(ReplyResponse::fromEntity);
+		return childReplies.map(ReplyResponse::from);
 	}
 
 	@Transactional

@@ -10,13 +10,15 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 @Getter
-public class DiscussionQueryResult {
+public class ReplyQueryResult {
 
-	private final Long discussionId;
+	private final Long replyId;
 
 	private final SimpleUserInfoResponse userInfo;
 
-	private final Long problemId;
+	private final Long parentReplyId;
+
+	private final Long discussionId;
 
 	private final String content;
 
@@ -26,31 +28,33 @@ public class DiscussionQueryResult {
 
 	private final Long downvoteCount;
 
-	private final Long replyCount;
+	private final Long childReplyCount;
 
 	private final VoteType voteStatus;
 
 	@QueryProjection
-	public DiscussionQueryResult(
-		Long discussionId,
+	public ReplyQueryResult(
+		Long replyId,
 		SimpleUserInfoResponse userInfo,
-		Long problemId,
+		Long parentReplyId,
+		Long discussionId,
 		String content,
 		LocalDateTime createdAt,
 		Long upvoteCount,
 		Long downvoteCount,
-		Long replyCount,
+		Long childReplyCount,
 		VoteType voteType
 	) {
 
-		this.discussionId = discussionId;
+		this.replyId = replyId;
 		this.userInfo = userInfo;
-		this.problemId = problemId;
+		this.parentReplyId = parentReplyId;
+		this.discussionId = discussionId;
 		this.content = content;
 		this.createdAt = createdAt;
 		this.upvoteCount = upvoteCount;
 		this.downvoteCount = downvoteCount;
-		this.replyCount = replyCount;
+		this.childReplyCount = childReplyCount;
 
 		if (voteType == null) {
 			this.voteStatus = VoteType.NONE;
