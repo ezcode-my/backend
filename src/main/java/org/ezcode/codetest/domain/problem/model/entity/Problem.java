@@ -69,6 +69,12 @@ public class Problem extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean isDeleted;
 
+	@Column(nullable = false)
+	private Long totalSubmissions;
+
+	@Column(nullable = false)
+	private Long correctSubmissions;
+
 	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Testcase> testcases = new ArrayList<>();
 
@@ -88,6 +94,8 @@ public class Problem extends BaseEntity {
 		this.timeLimit = timeLimit;
 		this.reference = reference;
 		isDeleted = false;
+		this.totalSubmissions = 0L;
+		this.correctSubmissions = 0L;
 	}
 
 	// 여러개를 하나의 객체로 만드는 것
