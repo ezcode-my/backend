@@ -31,11 +31,7 @@ public class S3Uploader {
 			// MIME 타입 검사 (png, jpeg, jpg, webp 만 가능)
 			String contentType = multipartFile.getContentType();
 			if (contentType == null || !contentType.startsWith("image/")) {
-				throw new S3Exception(
-					S3ExceptionCode.S3_INVALID_FILE_TYPE,
-					S3ExceptionCode.S3_INVALID_FILE_TYPE.getStatus(),
-					S3ExceptionCode.S3_INVALID_FILE_TYPE.getMessage()
-				);
+				throw new S3Exception(S3ExceptionCode.S3_INVALID_FILE_TYPE);
 			}
 
 			// S3 파일명 지정 ( 디렉토리/UUID-원본파일명 )
@@ -53,25 +49,13 @@ public class S3Uploader {
 
 		} catch (IOException e) {
 			log.error("S3 업로드 중 IO 오류 발생",e);
-			throw new S3Exception(
-				S3ExceptionCode.S3_UPLOAD_FAILED,
-				S3ExceptionCode.S3_UPLOAD_FAILED.getStatus(),
-				S3ExceptionCode.S3_UPLOAD_FAILED.getMessage()
-			);
+			throw new S3Exception(S3ExceptionCode.S3_UPLOAD_FAILED);
 		} catch (AmazonS3Exception e) {
 			log.error("S3 서비스 오류 발생: {}", e.getErrorMessage(), e);
-			throw new S3Exception(
-				S3ExceptionCode.S3_UPLOAD_FAILED,
-				S3ExceptionCode.S3_UPLOAD_FAILED.getStatus(),
-				S3ExceptionCode.S3_UPLOAD_FAILED.getMessage()
-			);
+			throw new S3Exception(S3ExceptionCode.S3_UPLOAD_FAILED);
 		} catch (Exception e) {
 			log.error("예상치 못한 업로드 오류 발생", e);
-			throw new S3Exception(
-				S3ExceptionCode.S3_UPLOAD_FAILED,
-				S3ExceptionCode.S3_UPLOAD_FAILED.getStatus(),
-				S3ExceptionCode.S3_UPLOAD_FAILED.getMessage()
-			);
+			throw new S3Exception(S3ExceptionCode.S3_UPLOAD_FAILED);
 		}
 	}
 }
