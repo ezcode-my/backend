@@ -30,6 +30,8 @@ public record DiscussionResponse(
 
 	Long upvoteCount,
 
+	Long downvoteCount,
+
 	Long replyCount,
 
 	VoteType voteStatus
@@ -45,6 +47,7 @@ public record DiscussionResponse(
 			discussion.getCreatedAt(),
 			null,
 			null,
+			null,
 			null
 		);
 	}
@@ -57,6 +60,7 @@ public record DiscussionResponse(
 			result.getContent(),
 			result.getCreatedAt(),
 			result.getUpvoteCount(),
+			result.getDownvoteCount(),
 			result.getReplyCount(),
 			result.getVoteStatus()
 		);
