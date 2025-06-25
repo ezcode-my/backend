@@ -48,17 +48,38 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			default -> throw new OAuth2AuthenticationException("Unsupported provider");
 		};
 
+		User findUser;
 		String email = oAuth2Response.getEmail();
-		User findUser = userRepository.getUserByEmail(email);
+		if (registrationId.equals("github") && email==null) {
+			findUser = userDomainService.getUserByEmail(oAuth2Response.getGithubId()+"@github.com");
+		} else {
+			findUser = userDomainService.getUserByEmail(oAuth2Response.getEmail());
+		}
+
 		AuthType authType = AuthType.from(oAuth2Response.getProvider().toUpperCase());
 
 		if (findUser == null) {
 			String nickname = userDomainService.generateUniqueNickname();
-			User newUser = User.socialUser(email, oAuth2Response.getName(), nickname, UUID.randomUUID().toString());
+			User newUser;
+			if (registrationId.equalsIgnoreCase("github")){
+				String githubEmail;
+				if (oAuth2Response.getEmail()==null) {
+					githubEmail = oAuth2Response.getGithubId()+"@github.com";
+				} else {
+					githubEmail = oAuth2Response.getGithubId()+"@github.com";
+				}
+				newUser = User.githubUser(
+					githubEmail, oAuth2Response.getName(), nickname,
+					UUID.randomUUID().toString(),oAuth2Response.getGithubUrl());
+			} else{
+				newUser = User.socialUser(email, oAuth2Response.getName(), nickname, UUID.randomUUID().toString());
+			}
+			newUser.setVerified();
 			userRepository.createUser(newUser);
 			userAuthTypeRepository.createUserAuthType(new UserAuthType(newUser, authType));
 		} else {
 			if (!userDomainService.getUserAuthTypes(findUser).contains(authType)) {
+				findUser.setVerified();
 				userAuthTypeRepository.createUserAuthType(new UserAuthType(findUser, authType));
 			}
 		}

@@ -47,4 +47,5 @@ public class UserRepositoryImpl implements UserRepository {
 		userJpaRepository.updateReviewTokens(ids, newToken);
 	}
 
+
 }

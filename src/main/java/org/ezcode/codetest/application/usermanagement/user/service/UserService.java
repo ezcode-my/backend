@@ -35,7 +35,6 @@ public class UserService {
 	private final UserDomainService userDomainService;
 	private final SubmissionDomainService submissionDomainService;
 	private final RedisTemplate<String, String> redisTemplate;
-	private final MailService mailService;
 
 	@Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(AuthUser authUser) {

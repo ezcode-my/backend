@@ -27,12 +27,28 @@ public class GithubOAuth2Response implements OAuth2Response{
     @Override
     @Schema(description = "사용자 이메일", example = "user@gmail.com")
     public String getEmail() {
-        return attributes.get("email").toString();
+        if (attributes.get("email") != null) {
+            return (String) attributes.get("email");
+        } else {
+            return null;
+        }
     }
 
     @Override
     @Schema(description = "사용자 이름", example = "홍길동")
     public String getName() {
         return attributes.get("name").toString();
+    }
+
+    @Override
+    @Schema(description = "Github Id", example = "1345932")
+    public String getGithubId() {
+        return attributes.get("id").toString();
+    }
+
+    @Override
+    @Schema(description = "Github URL", example = "https://github.com/id")
+    public String getGithubUrl(){
+        return attributes.get("html_url").toString();
     }
 }

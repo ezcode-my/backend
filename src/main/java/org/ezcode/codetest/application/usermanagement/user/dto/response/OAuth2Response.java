@@ -12,4 +12,10 @@ public interface OAuth2Response {
 
 	//사용자 이름
 	String getName();
+
+	//깃헙 아이디
+	String getGithubId();
+
+	//깃헙 링크
+	String getGithubUrl();
 }

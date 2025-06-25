@@ -34,7 +34,6 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	private String username;
 
-	@Column(nullable = false)
 	private String email;
 
 	@Column(nullable = false)
@@ -74,7 +73,6 @@ public class User extends BaseEntity {
 	private boolean verified; //이메일 인증 여부
 
 
-
 	/*
 	처음 유저 생성(가입) 시에는 기본 정보만 받음
 	- 이메일, 비번, 이름, 별명, 나이
@@ -96,7 +94,7 @@ public class User extends BaseEntity {
 
 	/*
 	OAuth2로 로그인한 유저 저장
-	구글 & 깃허브 모두 하나의 소셜 유저로 입력 받기 -> AuthType 테이블에서만 구분됨 (GOOGLE, GITHUB)
+	구글 이외의 다른 소셜 로그인 확장 가능성을 고려해 socialUser 이름 유지
 	 */
 	public static User socialUser(String email, String username, String nickname, String password){
 		return User.builder()
@@ -111,10 +109,25 @@ public class User extends BaseEntity {
 			.build();
 	}
 
+	//깃허브 아이디와 url을 함께 저장하기 위해 따로 저장
+	public static User githubUser(String email, String username, String nickname, String password, String githubUrl){
+		return User.builder()
+			.email(email)
+			.username(username)
+			.role(UserRole.USER)
+			.tier(Tier.NEWBIE)
+			.nickname(nickname) //닉네임 자동 생성
+			.password(password)
+			.isDeleted(false)
+			.verified(false)
+			.githubUrl(githubUrl)
+			.build();
+	}
+
 
 	@Builder
 	public User(String email, String password, String username, String nickname,
-		Integer age, Tier tier, UserRole role, boolean isDeleted, boolean verified) {
+		Integer age, Tier tier, UserRole role, boolean isDeleted, boolean verified, String githubUrl) {
 		this.email = email;
 		this.password = password;
 		this.username = username;
@@ -124,6 +137,7 @@ public class User extends BaseEntity {
 		this.role = role;
 		this.isDeleted = isDeleted;
 		this.verified = verified;
+		this.githubUrl = githubUrl;
 	}
 
 	/*

@@ -30,7 +30,11 @@ public class CustomOAuth2User implements OAuth2User {
 	}
 
 	public String getEmail() {
-		return oAuth2Response.getEmail();
+		if (oAuth2Response.getEmail() == null) {
+			return oAuth2Response.getGithubId()+"@github.com";
+		} else {
+			return oAuth2Response.getEmail();
+		}
 	}
 
 	public String getProvider(){
@@ -40,4 +44,5 @@ public class CustomOAuth2User implements OAuth2User {
 	public String getUsername() {
 		return oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
 	}
+
 }

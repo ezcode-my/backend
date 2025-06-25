@@ -58,6 +58,7 @@ public class SecurityConfig {
 				.userInfoEndpoint((userInfo -> userInfo
 					.userService(customOAuth2UserService)))
 				.successHandler(customSuccessHandler))
+
 			// JWT 사용을 위해 세션을 STATELESS로 설정 (세션 정보 저장 x)
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

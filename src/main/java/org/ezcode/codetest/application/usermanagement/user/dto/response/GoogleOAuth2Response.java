@@ -38,4 +38,15 @@ public class GoogleOAuth2Response implements OAuth2Response {
 		return attributes.get("name").toString();
 	}
 
+	@Override
+	public String getGithubId() {
+		return "";
+	}
+
+	@Override
+	public String getGithubUrl() {
+		return "";
+	}
+
+
 }
