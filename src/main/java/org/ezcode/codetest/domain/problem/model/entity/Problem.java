@@ -138,6 +138,14 @@ public class Problem extends BaseEntity {
 
 	// 이미지 추가
 	public void addImage(String image) {
+		if (image == null || image.trim().isEmpty()) {
+			throw new IllegalArgumentException("이미지 URL을 찾을수 없습니다");
+		}
+
+		if (imageUrl.contains(image)) {
+			return; // 중복된 URL 무시
+		}
+
 		imageUrl.add(image);
 	}
 
