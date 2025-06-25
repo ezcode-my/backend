@@ -1,5 +1,6 @@
 package org.ezcode.codetest.infrastructure.event.publisher;
 
+import org.ezcode.codetest.application.submission.port.ProblemEventService;
 import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
 import org.ezcode.codetest.infrastructure.event.dto.GameLevelUpEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -9,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ProblemEventPublisher {
+public class ProblemEventPublisher implements ProblemEventService {
 
 	private final ApplicationEventPublisher publisher;
 

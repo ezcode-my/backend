@@ -8,28 +8,35 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 import org.ezcode.codetest.application.submission.aop.CodeReviewLock;
+import org.ezcode.codetest.application.submission.dto.event.SubmissionErrorEvent;
+import org.ezcode.codetest.application.submission.dto.event.SubmissionJudgingFinishedEvent;
+import org.ezcode.codetest.application.submission.dto.event.TestcaseEvaluatedEvent;
+import org.ezcode.codetest.application.submission.dto.event.payload.InitTestcaseListPayload;
+import org.ezcode.codetest.application.submission.dto.event.payload.TestcaseResultPayload;
 import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewRequest;
 import org.ezcode.codetest.application.submission.dto.request.review.ReviewPayload;
 import org.ezcode.codetest.application.submission.dto.response.review.CodeReviewResponse;
 import org.ezcode.codetest.application.submission.dto.response.submission.GroupedSubmissionResponse;
+import org.ezcode.codetest.application.submission.dto.event.TestcaseListInitializedEvent;
 import org.ezcode.codetest.application.submission.model.JudgeResult;
 import org.ezcode.codetest.application.submission.model.ReviewResult;
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.application.submission.port.ExceptionNotifier;
 import org.ezcode.codetest.application.submission.port.LockManager;
+import org.ezcode.codetest.application.submission.port.ProblemEventService;
 import org.ezcode.codetest.application.submission.port.QueueProducer;
+import org.ezcode.codetest.application.submission.port.SubmissionEventService;
 import org.ezcode.codetest.domain.submission.exception.SubmissionException;
 import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
-import org.ezcode.codetest.infrastructure.event.dto.SubmissionMessage;
-import org.ezcode.codetest.application.submission.port.EmitterStore;
+import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
+import org.ezcode.codetest.infrastructure.event.dto.submission.SubmissionMessage;
 import org.ezcode.codetest.application.submission.port.ReviewClient;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.submission.dto.AnswerEvaluation;
 import org.ezcode.codetest.domain.submission.dto.SubmissionData;
 import org.ezcode.codetest.application.submission.dto.request.compile.CodeCompileRequest;
 import org.ezcode.codetest.application.submission.dto.request.submission.CodeSubmitRequest;
-import org.ezcode.codetest.application.submission.dto.response.submission.JudgeResultResponse;
 import org.ezcode.codetest.application.submission.port.JudgeClient;
 import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
@@ -44,7 +51,6 @@ import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,13 +66,14 @@ public class SubmissionService {
     private final ProblemDomainService problemDomainService;
     private final LanguageDomainService languageDomainService;
     private final SubmissionDomainService submissionDomainService;
-    private final EmitterStore emitterStore;
     private final QueueProducer queueProducer;
     private final Executor judgeTestcaseExecutor;
     private final ExceptionNotifier exceptionNotifier;
     private final LockManager lockManager;
+    private final SubmissionEventService submissionEventService;
+    private final ProblemEventService problemEventService;
 
-    public SseEmitter enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
+    public String enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
 
         boolean acquired = lockManager.tryLock("submission", authUser.getId(), problemId);
 
@@ -74,59 +81,59 @@ public class SubmissionService {
             throw new SubmissionException(SubmissionExceptionCode.ALREADY_JUDGING);
         }
 
-        SseEmitter emitter = new SseEmitter(10 * 60 * 1000L);
-        String emitterKey = authUser.getId() + "_" + UUID.randomUUID();
-
-        log.info("[SSE 저장] emitterKey: {}", emitterKey);
-        emitterStore.saveWithCallbacks(emitterKey, emitter);
+        String sessionKey = authUser.getId() + "_" + UUID.randomUUID();
 
         queueProducer.enqueue(
-            new SubmissionMessage(emitterKey, problemId, request.languageId(), authUser.getId(), request.sourceCode())
+            new SubmissionMessage(sessionKey, problemId, request.languageId(), authUser.getId(), request.sourceCode())
         );
 
-        return emitter;
+        return sessionKey;
     }
 
     @Async("judgeSubmissionExecutor")
     public void submitCodeStream(SubmissionMessage msg) {
         try {
             log.info("[Submission RUN] Thread = {}", Thread.currentThread().getName());
-            log.info("[큐 수신] SubmissionMessage.emitterKey: {}", msg.emitterKey());
+            log.info("[큐 수신] SubmissionMessage.sessionKey: {}", msg.sessionKey());
             User user = userDomainService.getUserById(msg.userId());
             Language language = languageDomainService.getLanguage(msg.languageId());
             ProblemInfo problemInfo = problemDomainService.getProblemInfo(msg.problemId());
-            SseEmitter emitter = emitterStore.getOrElseThrow(msg.emitterKey());
 
+            List<Testcase> testcaseList = problemInfo.testcaseList();
             int totalTestcaseCount = problemInfo.getTestcaseCount();
+
             SubmissionContext context = SubmissionContext.initialize(totalTestcaseCount);
 
-            for (Testcase tc : problemInfo.testcaseList()) {
-                runTestcaseAsync(tc, msg, language.getJudge0Id(), problemInfo, context, emitter);
+            submissionEventService.publishInitTestcases(
+                new TestcaseListInitializedEvent(msg.sessionKey(), InitTestcaseListPayload.from(problemInfo))
+            );
+
+            for (int i = 0; i < totalTestcaseCount; i++) {
+                int seqId = i + 1;
+                runTestcaseAsync(seqId, testcaseList.get(i), msg, language.getJudge0Id(), problemInfo, context);
             }
 
-            if (!context.latch().await(60, TimeUnit.SECONDS)) {
-                emitter.completeWithError(new SubmissionException(SubmissionExceptionCode.TESTCASE_TIMEOUT));
-                return;
+            if (!context.latch().await(100, TimeUnit.SECONDS)) {
+                throw new SubmissionException(SubmissionExceptionCode.TESTCASE_TIMEOUT);
             }
 
-            emitter.send(SseEmitter.event()
-                .name("final")
-                .data(context.toFinalResult(totalTestcaseCount)));
-            emitter.complete();
+            submissionEventService.publishFinalResult(
+                new SubmissionJudgingFinishedEvent(msg.sessionKey(), context.toFinalResult(totalTestcaseCount))
+            );
 
             SubmissionData submissionData = SubmissionData.base(
                 user, problemInfo, language, msg.sourceCode(), context.getCurrentMessage()
             );
 
-            submissionDomainService.finalizeSubmission(
+            UserProblemResult userProblemResult = submissionDomainService.finalizeSubmission(
                 submissionData, context.aggregator(), context.getPassedCount()
             );
 
+            problemEventService.publishProblemSolveEvent(userProblemResult);
         } catch (Exception e) {
-            emitterStore.get(msg.emitterKey()).ifPresent(emitter -> emitter.completeWithError(e));
+            submissionEventService.publishSubmissionError(new SubmissionErrorEvent(msg.sessionKey(), e));
             exceptionNotificationHelper(e);
         } finally {
-            emitterStore.remove(msg.emitterKey());
             lockManager.releaseLock("submission", msg.userId(), msg.problemId());
         }
     }
@@ -154,8 +161,8 @@ public class SubmissionService {
     }
 
     private void runTestcaseAsync(
-        Testcase tc, SubmissionMessage msg, Long judge0Id,
-        ProblemInfo problemInfo, SubmissionContext context, SseEmitter emitter
+        int seqId, Testcase tc, SubmissionMessage msg,
+        Long judge0Id, ProblemInfo problemInfo, SubmissionContext context
     ) {
         CompletableFuture.runAsync(() -> {
             try {
@@ -168,11 +175,13 @@ public class SubmissionService {
                 AnswerEvaluation evaluation = submissionDomainService.handleEvaluationAndUpdateStats(
                     TestcaseEvaluationInput.from(tc, result), problemInfo, context
                 );
-                emitter.send(JudgeResultResponse.fromEvaluation(result, evaluation));
+
+                submissionEventService.publishTestcaseUpdate(
+                    new TestcaseEvaluatedEvent(msg.sessionKey(), TestcaseResultPayload.fromEvaluation(seqId, result, evaluation))
+                );
             } catch (Exception e) {
                 if (context.notified().compareAndSet(false, true)) {
-                    emitter.completeWithError(e);
-                    emitterStore.remove(msg.emitterKey());
+                    submissionEventService.publishSubmissionError(new SubmissionErrorEvent(msg.sessionKey(), e));
                     exceptionNotificationHelper(e);
                 }
             } finally {

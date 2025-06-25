@@ -14,6 +14,7 @@ class OpenAIMessageBuilder {
     private static final String PREFIX = """
         당신은 코딩 테스트 사이트의 코드 리뷰어입니다.
         아래 **정확히** 이 형식을 지켜 응답하세요:
+        '시간 복잡도:', '코드 총평:' 같은 제목은 **제목**과 같이 볼드체로 변환합니다.
         """.stripIndent();
 
     private static final String SUFFIX = """
@@ -62,25 +63,25 @@ class OpenAIMessageBuilder {
         String body;
         if (isCorrect) {
             body = """
-                <정답일 경우>
                 - 시간 복잡도: Big-O 표기법으로만 답하세요. **단, N과 M을 같다고 가정하고 n으로 표기하세요.**
-                - 코드에 포함된 중첩 루프(depth)에 따라 O(N^k) 형태로 정확히 표기해주세요.
+                코드에 포함된 중첩 루프(depth)에 따라 O(N^k) 형태로 정확히 표기해주세요.
                 **for 루프뿐만 아니라 while 루프도 모두 중첩(depth)에 포함**하여, 코드에 실제로 있는 루프 개수만큼 exponent를 세십시오.
                 예) for-for-for ⇒ O(n³), for-for-while ⇒ O(n³), for-for-for-for-while ⇒ O(n⁵)
-                
+                \n
                 - 코드 총평:
-                각 문장은 한 탭(\t) 들여쓰기 + '- ' 로 시작.
+                각 문장은 한 탭(\t) 들여쓰기 + '- '로 시작.
                 문장 끝에만 마침표를 붙이세요.
+                \n
                 - 조금 더 개선할 수 있는 방안:
-                각 문장은 한 탭(\t) 들여쓰기 + '- ' 로 시작.
+                각 문장은 한 탭(\t) 들여쓰기 + '- '로 시작.
                 문장 끝에만 마침표를 붙이세요.
                 """.stripIndent();
         } else {
             body = """
-                <오답일 경우>
-                코드 총평:
-                각 문장은 한 탭(\t) 들여쓰기 + '- ' 로 시작.
+                - 코드 총평:
+                각 문장은 한 탭(\t) 들여쓰기 + '- '로 시작.
                 문장 끝에만 마침표를 붙이세요.
+                \n
                 - 공부하면 좋은 키워드:
                 1. 첫 번째 키워드
                 2. 두 번째 키워드

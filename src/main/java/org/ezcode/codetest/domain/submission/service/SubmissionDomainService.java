@@ -28,7 +28,10 @@ public class SubmissionDomainService {
     private final UserProblemResultRepository userProblemResultRepository;
 
     @Transactional
-    public void finalizeSubmission(SubmissionData submissionData, SubmissionAggregator aggregator, int passedCount) {
+    public UserProblemResult finalizeSubmission(
+        SubmissionData submissionData,
+        SubmissionAggregator aggregator,
+        int passedCount) {
 
         createSubmission(SubmissionData.toEntity(
                 submissionData.withAggregatedStats(aggregator),
@@ -38,20 +41,21 @@ public class SubmissionDomainService {
 
         boolean allPassed = passedCount == submissionData.getTestCaseSize();
 
-        getUserProblemResult(submissionData.getUserId(), submissionData.getProblemId()).ifPresentOrElse(
-            result -> {
-                if (!result.isCorrect()) {
-                    modifyUserProblemResult(result, allPassed);
-                }
-            },
-            () -> createUserProblemResult(
+        return getUserProblemResult(submissionData.getUserId(), submissionData.getProblemId()).map(
+                result -> {
+                    if (!result.isCorrect() && allPassed) {
+                        modifyUserProblemResult(result, true);
+                        return result;
+                    }
+                    return result;
+                })
+            .orElseGet(() -> createUserProblemResult(
                 UserProblemResult.builder()
                     .user(submissionData.user())
                     .problem(submissionData.problem())
                     .isCorrect(allPassed)
                     .build()
-            )
-        );
+            ));
     }
 
     public AnswerEvaluation handleEvaluationAndUpdateStats(
@@ -84,16 +88,16 @@ public class SubmissionDomainService {
     }
 
     private AnswerEvaluation evaluate(
-        String expectedOutput, String actualOutput, boolean success, double executionTime, long memoryUsage,
+        String expectedOutput, String actualOutput, boolean success, long executionTime, long memoryUsage,
         ProblemInfo problemInfo
     ) {
         boolean isCorrect = success && expectedOutput.strip().equals(actualOutput.strip());
         boolean timeEfficient = executionTime <= problemInfo.getTimeLimit();
         boolean memoryEfficient = memoryUsage <= problemInfo.getMemoryLimit();
-        return new AnswerEvaluation(isCorrect, timeEfficient, memoryEfficient, expectedOutput, actualOutput);
+        return new AnswerEvaluation(isCorrect, timeEfficient, memoryEfficient);
     }
 
-    private void collectStatistics(SubmissionAggregator aggregator, double executionTime, long memoryUsage) {
+    private void collectStatistics(SubmissionAggregator aggregator, long executionTime, long memoryUsage) {
         aggregator.accumulate(executionTime, memoryUsage);
     }
 
@@ -105,11 +109,11 @@ public class SubmissionDomainService {
         return userProblemResultRepository.findUserProblemResultByUserIdAndProblemId(userId, problemId);
     }
 
-    private void createUserProblemResult(UserProblemResult userProblemResult) {
-        userProblemResultRepository.saveUserProblemResult(userProblemResult);
+    private UserProblemResult createUserProblemResult(UserProblemResult userProblemResult) {
+        return userProblemResultRepository.saveUserProblemResult(userProblemResult);
     }
 
-    private void modifyUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
-        userProblemResultRepository.updateUserProblemResult(userProblemResult, isCorrect);
+    private UserProblemResult modifyUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
+        return userProblemResultRepository.updateUserProblemResult(userProblemResult, isCorrect);
     }
 }

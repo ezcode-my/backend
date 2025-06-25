@@ -3,7 +3,7 @@ package org.ezcode.codetest.infrastructure.event.publisher;
 import java.util.Map;
 
 import org.ezcode.codetest.application.submission.port.QueueProducer;
-import org.ezcode.codetest.infrastructure.event.dto.SubmissionMessage;
+import org.ezcode.codetest.infrastructure.event.dto.submission.SubmissionMessage;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +18,9 @@ public class RedisJudgeQueueProducer implements QueueProducer {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void enqueue(SubmissionMessage submissionMessage) {
-        log.info("[SSE enqueue] emitterKey: {}", submissionMessage.emitterKey());
+        log.info("[SSE enqueue] emitterKey: {}", submissionMessage.sessionKey());
         Map<String, String> map = Map.of(
-            "emitterKey", submissionMessage.emitterKey(),
+            "sessionKey", submissionMessage.sessionKey(),
             "problemId", submissionMessage.problemId().toString(),
             "languageId", submissionMessage.languageId().toString(),
             "userId", submissionMessage.userId().toString(),

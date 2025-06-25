@@ -1,5 +1,9 @@
 package org.ezcode.codetest.infrastructure.event.publisher;
 
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.ErrorWsResponse;
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.SubmissionFinalResultResponse;
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.InitTestcaseListResponse;
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.JudgeResultResponse;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 
@@ -65,6 +69,38 @@ public class StompMessageService {
 			principalName,
 			"/queue/notifications",
 			dataList
+		);
+	}
+
+	public void sendInitTestcases(String sessionKey, List<InitTestcaseListResponse> dataList) {
+
+		messagingTemplate.convertAndSend(
+			"/topic/submission/" + sessionKey + "/init",
+			dataList
+		);
+	}
+
+	public void sendTestcaseResultUpdate(String sessionKey, JudgeResultResponse data) {
+
+		messagingTemplate.convertAndSend(
+			"/topic/submission/" + sessionKey + "/case",
+			data
+		);
+	}
+
+	public void sendFinalResult(String sessionKey, SubmissionFinalResultResponse data) {
+
+		messagingTemplate.convertAndSend(
+			"/topic/submission/" + sessionKey + "/final",
+			data
+		);
+	}
+
+	public void sendError(String sessionKey, ErrorWsResponse data) {
+
+		messagingTemplate.convertAndSend(
+			"/topic/submission/" + sessionKey + "/error",
+			data
 		);
 	}
 

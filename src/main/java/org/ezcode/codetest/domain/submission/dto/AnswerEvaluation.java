@@ -9,11 +9,7 @@ public record AnswerEvaluation(
 
     boolean timeEfficient,
 
-    boolean memoryEfficient,
-
-    String expectedOutput,
-
-    String actualOutput
+    boolean memoryEfficient
 
 ) {
     public boolean isPassed() {

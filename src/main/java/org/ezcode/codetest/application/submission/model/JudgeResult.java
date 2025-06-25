@@ -7,7 +7,7 @@ public record JudgeResult(
 
     String actualOutput,
 
-    double executionTime,
+    long executionTime,
 
     long memoryUsage,
 

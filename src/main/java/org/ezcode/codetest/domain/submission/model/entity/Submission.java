@@ -51,14 +51,14 @@ public class Submission extends BaseEntity {
     private int testCaseTotalCount;
 
     @Column(name = "execution_time", nullable = false)
-    private Double executionTime;
+    private Long executionTime;
 
     @Column(name = "memory_usage", nullable = false)
     private Long memoryUsage;
 
     @Builder
     public Submission(User user, Problem problem, Language language, String code, String message,
-        int testCasePassedCount, int testCaseTotalCount, Double executionTime, Long memoryUsage) {
+        int testCasePassedCount, int testCaseTotalCount, Long executionTime, Long memoryUsage) {
         this.user = user;
         this.problem = problem;
         this.language = language;
@@ -76,10 +76,6 @@ public class Submission extends BaseEntity {
 
     public Long getProblemId() {
         return this.problem.getId();
-    }
-
-    public String getProblemDescription() {
-        return this.problem.getDescription();
     }
 
     public boolean isCorrect() {

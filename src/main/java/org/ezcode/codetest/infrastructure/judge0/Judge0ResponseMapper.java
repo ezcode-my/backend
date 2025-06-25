@@ -12,7 +12,7 @@ public class Judge0ResponseMapper {
         boolean success = isSuccessful(executionResultResponse);
         return JudgeResult.builder()
             .actualOutput(output)
-            .executionTime(executionResultResponse.getTime())
+            .executionTime(toMilliseconds(executionResultResponse.getTime()))
             .memoryUsage(executionResultResponse.getMemory())
             .success(success)
             .message(executionResultResponse.status().description())
@@ -20,16 +20,32 @@ public class Judge0ResponseMapper {
     }
 
     private String extractActualOutput(ExecutionResultResponse executionResultResponse) {
-        if (executionResultResponse.stdout() != null)
-            return executionResultResponse.stdout();
-        if (executionResultResponse.compile_output() != null)
+        if (executionResultResponse.stdout() != null) {
+            return normalizeOutput(executionResultResponse.stdout());
+        }
+
+        if (executionResultResponse.compile_output() != null) {
             return executionResultResponse.compile_output();
-        if (executionResultResponse.stderr() != null)
+        }
+
+        if (executionResultResponse.stderr() != null) {
             return executionResultResponse.stderr();
+        }
+
         return "(No output)";
     }
 
     private boolean isSuccessful(ExecutionResultResponse executionResultResponse) {
         return executionResultResponse.stdout() != null && executionResultResponse.status().id() == 3;
+    }
+
+    private long toMilliseconds(double timeInSeconds) {
+        return Math.round(timeInSeconds * 1000);
+    }
+
+    private String normalizeOutput(String output) {
+        return output
+            .replaceAll("[\\r\\n]+$", "")
+            .strip();
     }
 }

@@ -27,7 +27,7 @@ public record SubmissionData(
 
     String message,
 
-    double executionTime,
+    long executionTime,
 
     long memoryUsage
 
