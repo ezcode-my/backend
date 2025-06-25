@@ -46,6 +46,7 @@ public class DiscussionController {
 	public ResponseEntity<Page<DiscussionResponse>> getDiscussions(
 		@PathVariable Long problemId,
 		@RequestParam(defaultValue = "best") String sortBy,
+		@RequestParam Long ttt,
 		@PageableDefault Pageable pageable,
 		@AuthenticationPrincipal AuthUser authUser
 	) {
@@ -54,7 +55,7 @@ public class DiscussionController {
 
 		return ResponseEntity
 			.ok()
-			.body(discussionService.getDiscussions(problemId, sortBy, currentUserId, pageable));
+			.body(discussionService.getDiscussions(problemId, sortBy, currentUserId, pageable, ttt));
 	}
 
 	@PutMapping("/{discussionId}")

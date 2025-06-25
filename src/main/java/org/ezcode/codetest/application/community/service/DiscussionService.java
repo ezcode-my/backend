@@ -41,10 +41,10 @@ public class DiscussionService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<DiscussionResponse> getDiscussions(Long problemId, String sortBy, Long userId, Pageable pageable) {
+	public Page<DiscussionResponse> getDiscussions(Long problemId, String sortBy, Long userId, Pageable pageable, Long ttt) {
 
 		Page<DiscussionQueryResult> result =
-			discussionDomainService.getAllDiscussionsByProblemId(problemId, sortBy, userId, pageable);
+			discussionDomainService.getAllDiscussionsByProblemId(problemId, sortBy, userId, pageable, ttt);
 		return result.map(DiscussionResponse::from);
 	}
 

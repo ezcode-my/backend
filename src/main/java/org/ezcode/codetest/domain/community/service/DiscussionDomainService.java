@@ -37,9 +37,9 @@ public class DiscussionDomainService {
 		return discussion;
 	}
 
-	public Page<DiscussionQueryResult> getAllDiscussionsByProblemId(Long problemId, String sortBy, Long userId, Pageable pageable) {
+	public Page<DiscussionQueryResult> getAllDiscussionsByProblemId(Long problemId, String sortBy, Long userId, Pageable pageable, Long ttt) {
 
-		return discussionRepository.findAllByProblemId(problemId, sortBy, userId, pageable);
+		return discussionRepository.findAllByProblemId(problemId, sortBy, userId, pageable, ttt);
 	}
 
 	public Discussion modify(Long discussionId, Long problemId, Long userId, Language language, String content) {

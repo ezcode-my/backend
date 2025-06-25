@@ -14,7 +14,7 @@ public interface DiscussionRepository {
 
 	Optional<Discussion> findById(Long discussionId);
 
-	Page<DiscussionQueryResult> findAllByProblemId(Long problemId, String sortBy, Long userId, Pageable pageable);
+	Page<DiscussionQueryResult> findAllByProblemId(Long problemId, String sortBy, Long userId, Pageable pageable, Long ttt);
 
 	void updateDiscussion(Discussion discussion, Language language, String content);
 

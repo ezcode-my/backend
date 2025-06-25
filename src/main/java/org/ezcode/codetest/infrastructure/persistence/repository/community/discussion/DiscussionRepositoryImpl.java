@@ -32,9 +32,12 @@ public class DiscussionRepositoryImpl implements DiscussionRepository {
 	}
 
 	@Override
-	public Page<DiscussionQueryResult> findAllByProblemId(Long problemId, String sortBy, Long userId, Pageable pageable) {
+	public Page<DiscussionQueryResult> findAllByProblemId(Long problemId, String sortBy, Long userId, Pageable pageable, Long ttt) {
 
-		return discussionJpaRepository.findAllByProblemId(problemId, sortBy, userId, pageable);
+		if (ttt == 1) {
+			return discussionJpaRepository.findAllByProblemId(problemId, sortBy, userId, pageable);
+		}
+		return discussionJpaRepository.findAllByProblemIdOptimized(problemId, sortBy, userId, pageable);
 	}
 
 	@Override
