@@ -3,14 +3,15 @@ package org.ezcode.codetest.infrastructure.persistence.repository.community.disc
 import static org.ezcode.codetest.domain.community.model.entity.QDiscussion.*;
 import static org.ezcode.codetest.domain.community.model.entity.QDiscussionVote.*;
 import static org.ezcode.codetest.domain.community.model.entity.QReply.*;
+import static org.ezcode.codetest.domain.user.model.entity.QUser.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.ezcode.codetest.application.usermanagement.user.dto.response.SimpleUserInfoResponse;
 import org.ezcode.codetest.domain.community.dto.DiscussionQueryResult;
 import org.ezcode.codetest.domain.community.dto.QDiscussionQueryResult;
 import org.ezcode.codetest.domain.community.model.enums.VoteType;
-import org.ezcode.codetest.domain.user.model.entity.QUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -36,8 +37,6 @@ public class DiscussionQueryOptimizedRepositoryImpl implements DiscussionQueryOp
 
 	@Override
 	public Page<DiscussionQueryResult> findAllByProblemIdOptimized(Long problemId, String sortBy, Long currentUserId, Pageable pageable) {
-
-		QUser user = QUser.user;
 
 		Expression<Long> replyCount = reply.id.countDistinct();
 
@@ -97,6 +96,85 @@ public class DiscussionQueryOptimizedRepositoryImpl implements DiscussionQueryOp
 			.where(discussion.problem.id.eq(problemId));
 
 		return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
+	}
+
+	@Override
+	public List<Long> findDiscussionIdsByProblemId(Long problemId, String sortBy, Pageable pageable) {
+
+		// upvoteCount, downvoteCount, bestScore 표현식은 findAllByProblemIdOptimized에서 사용한 것과 동일
+		NumberExpression<Long> upvoteCount = new CaseBuilder()
+			.when(discussionVote.voteType.eq(VoteType.UP)).then(discussionVote.id)
+			.otherwise((Long) null)
+			.countDistinct();
+		NumberExpression<Long> downvoteCount = new CaseBuilder()
+			.when(discussionVote.voteType.eq(VoteType.DOWN)).then(discussionVote.id)
+			.otherwise((Long) null)
+			.countDistinct();
+
+		NumberExpression<Long> bestScore = upvoteCount.subtract(downvoteCount);
+
+		return jpaQueryFactory
+			.select(discussion.id)
+			.from(discussion)
+			.leftJoin(discussionVote).on(discussionVote.discussion.eq(discussion))
+			.where(discussion.problem.id.eq(problemId))
+			.groupBy(discussion.id)
+			.orderBy(getOrderSpecifier(sortBy, bestScore, upvoteCount))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+	}
+
+	@Override
+	public List<DiscussionQueryResult> findDiscussionsByIds(List<Long> discussionIds, Long currentUserId) {
+		if (discussionIds == null || discussionIds.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		Expression<Long> replyCount = reply.id.countDistinct();
+
+		NumberExpression<Long> upvoteCount = new CaseBuilder()
+			.when(discussionVote.voteType.eq(VoteType.UP)).then(discussionVote.id) // 'UP'일 때 vote의 id를 대상으로
+			.otherwise((Long) null)
+			.countDistinct();
+		NumberExpression<Long> downvoteCount = new CaseBuilder()
+			.when(discussionVote.voteType.eq(VoteType.DOWN)).then(discussionVote.id) // 'DOWN'일 때 vote의 id를 대상으로
+			.otherwise((Long) null)
+			.countDistinct();
+
+		Expression<VoteType> userVoteType;
+		if (currentUserId != null) {
+			userVoteType = new CaseBuilder()
+				.when(discussionVote.voter.id.eq(currentUserId)).then(discussionVote.voteType)
+				.otherwise(Expressions.nullExpression(VoteType.class)).max();
+		} else {
+			userVoteType = Expressions.nullExpression(VoteType.class);
+		}
+
+		return jpaQueryFactory
+			.select(new QDiscussionQueryResult(
+				discussion.id,
+				Projections.constructor(SimpleUserInfoResponse.class,
+					user.id,
+					user.nickname,
+					user.tier,
+					user.profileImageUrl
+				),
+				discussion.problem.id,
+				discussion.content,
+				discussion.createdAt,
+				upvoteCount,
+				downvoteCount,
+				replyCount,
+				userVoteType
+			))
+            .from(discussion)
+			.join(discussion.user, user)
+			.leftJoin(discussionVote).on(discussionVote.discussion.eq(discussion))
+			.leftJoin(reply).on(reply.discussion.eq(discussion))
+			.where(discussion.id.in(discussionIds))
+			.groupBy(discussion.id)
+            .fetch();
 	}
 
 	private OrderSpecifier<?>[] getOrderSpecifier(String sort, NumberExpression<Long> bestScore, Expression<Long> upvoteCount) {
