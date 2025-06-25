@@ -5,7 +5,6 @@ import org.ezcode.codetest.domain.community.dto.DiscussionQueryResult;
 import org.ezcode.codetest.domain.community.dto.QDiscussionQueryResult;
 import org.ezcode.codetest.domain.community.model.entity.QDiscussionVote;
 import org.ezcode.codetest.domain.community.model.enums.VoteType;
-import org.ezcode.codetest.domain.user.model.entity.QUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -14,7 +13,9 @@ import org.springframework.stereotype.Repository;
 import static org.ezcode.codetest.domain.community.model.entity.QDiscussion.discussion;
 import static org.ezcode.codetest.domain.community.model.entity.QDiscussionVote.discussionVote;
 import static org.ezcode.codetest.domain.community.model.entity.QReply.reply;
+import static org.ezcode.codetest.domain.user.model.entity.QUser.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.querydsl.core.types.Expression;
@@ -39,8 +40,6 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 	private final JPAQueryFactory jpaQueryFactory;
 
 	public Page<DiscussionQueryResult> findAllByProblemId(Long problemId, String sortBy, Long currentUserId, Pageable pageable) {
-
-		QUser user = discussion.user;
 
 		JPQLQuery<Long> upvoteCount = getVoteCount(VoteType.UP);
 		JPQLQuery<Long> downvoteCount = getVoteCount(VoteType.DOWN);
@@ -89,6 +88,74 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 			.where(discussion.problem.id.eq(problemId));
 
 		return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
+	}
+
+	@Override
+	public List<Long> findDiscussionIdsByProblemIdWithSubquery(Long problemId, String sortBy, Pageable pageable) {
+
+		JPQLQuery<Long> upvoteCount = getVoteCount(VoteType.UP);
+		JPQLQuery<Long> downvoteCount = getVoteCount(VoteType.DOWN);
+
+		NumberOperation<Long> bestScore = Expressions.numberOperation(
+			Long.class,
+			Ops.SUB,
+			upvoteCount,
+			downvoteCount
+		);
+
+		return jpaQueryFactory
+			.select(discussion.id)
+			.from(discussion)
+			.where(discussion.problem.id.eq(problemId))
+			.orderBy(getOrderSpecifier(sortBy, bestScore, upvoteCount))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+	}
+
+	@Override
+	public List<DiscussionQueryResult> findDiscussionsByIdsWithSubquery(List<Long> discussionIds, Long currentUserId) {
+		if (discussionIds == null || discussionIds.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		JPQLQuery<Long> upvoteCount = getVoteCount(VoteType.UP);
+		JPQLQuery<Long> downvoteCount = getVoteCount(VoteType.DOWN);
+
+		NumberOperation<Long> bestScore = Expressions.numberOperation(
+			Long.class,
+			Ops.SUB,
+			upvoteCount,
+			downvoteCount
+		);
+
+		JPQLQuery<Long> replyCount = JPAExpressions
+			.select(reply.count())
+			.from(reply)
+			.where(reply.discussion.eq(discussion));
+
+		Expression<VoteType> userVoteType = getUserVoteTypeExpression(currentUserId);
+
+		return jpaQueryFactory
+			.select(new QDiscussionQueryResult(
+				discussion.id,
+				Projections.constructor(SimpleUserInfoResponse.class,
+					user.id,
+					user.nickname,
+					user.tier,
+					user.profileImageUrl
+				),
+				discussion.problem.id,
+				discussion.content,
+				discussion.createdAt,
+				upvoteCount,
+				downvoteCount,
+				replyCount,
+				userVoteType
+			))
+			.from(discussion)
+			.where(discussion.id.in(discussionIds))
+			.fetch();
 	}
 
 	private JPQLQuery<Long> getVoteCount(VoteType voteType) {

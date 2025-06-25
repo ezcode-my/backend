@@ -43,9 +43,26 @@ public class DiscussionRepositoryImpl implements DiscussionRepository {
 			return discussionJpaRepository.findAllByProblemId(problemId, sortBy, userId, pageable);
 		} else if (ttt == 2) {
 			return discussionJpaRepository.findAllByProblemIdOptimized(problemId, sortBy, userId, pageable);
-		} else {
+		} else if (ttt == 3) {
 			List<Long> ids = discussionJpaRepository.findDiscussionIdsByProblemId(problemId, sortBy, pageable);
 			List<DiscussionQueryResult> results = discussionJpaRepository.findDiscussionsByIds(ids, userId);
+
+			long totalCount = 10; //discussionQueryRepository.countByProblemId(problemId);
+
+			// 4. (매우 중요) 순서 보정: `WHERE IN` 절은 ID 목록의 순서를 보장하지 않으므로,
+			//    처음에 정렬해서 얻은 ID 목록의 순서대로 `results`를 다시 정렬해줍니다.
+			Map<Long, DiscussionQueryResult> resultMap = results.stream()
+				.collect(Collectors.toMap(DiscussionQueryResult::getDiscussionId, Function.identity()));
+
+			List<DiscussionQueryResult> sortedResults = ids.stream()
+				.map(resultMap::get)
+				.collect(Collectors.toList());
+
+			// 5. 최종 Page 객체 생성: content, pageable, total 정보를 모두 사용하여 PageImpl을 만듭니다.
+			return new PageImpl<>(sortedResults, pageable, totalCount);
+		} else {
+			List<Long> ids = discussionJpaRepository.findDiscussionIdsByProblemIdWithSubquery(problemId, sortBy, pageable);
+			List<DiscussionQueryResult> results = discussionJpaRepository.findDiscussionsByIdsWithSubquery(ids, userId);
 
 			long totalCount = 10; //discussionQueryRepository.countByProblemId(problemId);
 
