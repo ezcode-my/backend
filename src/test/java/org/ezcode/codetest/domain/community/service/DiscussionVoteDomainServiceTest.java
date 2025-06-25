@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.domain.community.model.VoteResult;
+import org.ezcode.codetest.domain.community.dto.VoteResult;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.model.entity.DiscussionVote;
 import org.ezcode.codetest.domain.community.model.enums.VoteType;
