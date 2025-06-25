@@ -1,7 +1,6 @@
 package org.ezcode.codetest.domain.user.service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GithubOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GoogleOAuth2Response;
@@ -9,6 +8,7 @@ import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Re
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
+import org.ezcode.codetest.domain.user.model.entity.UserFactory;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.repository.UserAuthTypeRepository;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
@@ -36,55 +36,65 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		//부모 클래스에 존재하는 loadUser 메서드에 userRequest인자를 넣어 유저 정보를 가져온다
 		OAuth2User oAuth2User = super.loadUser(userRequest);
-		log.info("loadUser: {}", oAuth2User);
+
+		log.info("loadUser : {}", oAuth2User);
 
 		//가져온 인증 정보가 구글인지, 깃헙인지 알아내기 위한 변수
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-		//google, github에 따라 다르게 반환
-		OAuth2Response oAuth2Response = switch (registrationId.toLowerCase()) {
-			case "google" -> new GoogleOAuth2Response(oAuth2User.getAttributes());
-			case "github" -> new GithubOAuth2Response(oAuth2User.getAttributes());
-			default -> throw new OAuth2AuthenticationException("Unsupported provider");
-		};
+		OAuth2Response oAuth2Response = createResponse(registrationId, oAuth2User.getAttributes());
 
-		User findUser;
-		String email = oAuth2Response.getEmail();
-		if (registrationId.equals("github") && email==null) {
-			findUser = userDomainService.getUserByEmail(oAuth2Response.getGithubId()+"@github.com");
-		} else {
-			findUser = userDomainService.getUserByEmail(oAuth2Response.getEmail());
-		}
+		String resolvedEmail = oAuth2Response.getEmail();
 
+		User findUser = userDomainService.getUserByEmail(resolvedEmail);
 		AuthType authType = AuthType.from(oAuth2Response.getProvider().toUpperCase());
 
-		if (findUser == null) {
-			String nickname = userDomainService.generateUniqueNickname();
-			User newUser;
-			if (registrationId.equalsIgnoreCase("github")){
-				String githubEmail;
-				if (oAuth2Response.getEmail()==null) {
-					githubEmail = oAuth2Response.getGithubId()+"@github.com";
-				} else {
-					githubEmail = oAuth2Response.getGithubId()+"@github.com";
-				}
-				newUser = User.githubUser(
-					githubEmail, oAuth2Response.getName(), nickname,
-					UUID.randomUUID().toString(),oAuth2Response.getGithubUrl());
-			} else{
-				newUser = User.socialUser(email, oAuth2Response.getName(), nickname, UUID.randomUUID().toString());
-			}
-			newUser.setVerified();
-			userRepository.createUser(newUser);
-			userAuthTypeRepository.createUserAuthType(new UserAuthType(newUser, authType));
-		} else {
-			if (!userDomainService.getUserAuthTypes(findUser).contains(authType)) {
-				findUser.setVerified();
-				userAuthTypeRepository.createUserAuthType(new UserAuthType(findUser, authType));
-			}
-		}
-
+		processUser(findUser, oAuth2Response, authType, registrationId);
 		return new CustomOAuth2User(oAuth2Response);
+
+	}
+
+	private OAuth2Response createResponse(String provider, Map<String, Object> attributes) {
+		return switch (provider.toLowerCase()) {
+			case "google" -> new GoogleOAuth2Response(attributes);
+			case "github" -> new GithubOAuth2Response(attributes);
+			default -> throw new OAuth2AuthenticationException("Unsupported provider");
+		};
+	}
+
+	//신규인지 존재하는 유저인지
+	private void processUser(
+		User user,
+		OAuth2Response response,
+		AuthType authType,
+		String provider
+	) {
+		if (user == null) {
+			createNewUser(response, authType, provider);
+		} else {
+			updateExistingUser(user, response, authType, provider);
+		}
+	}
+	private void createNewUser(OAuth2Response response, AuthType authType, String provider) {
+		String nickname = userDomainService.generateUniqueNickname();
+		User newUser = UserFactory.createSocialUser(response, nickname, provider);
+		newUser.setVerified();
+		newUser.setReviewToken(20);
+		userRepository.createUser(newUser);
+		userAuthTypeRepository.createUserAuthType(new UserAuthType(newUser, authType));
+	}
+
+	private void updateExistingUser(User user, OAuth2Response response, AuthType authType, String provider) {
+		if (!userDomainService.getUserAuthTypes(user).contains(authType)) {
+			user.setVerified();
+			userAuthTypeRepository.createUserAuthType(new UserAuthType(user, authType));
+			updateGithubUrl(user, response, provider);
+		}
+	}
+	private void updateGithubUrl(User user, OAuth2Response response, String provider) {
+		if ("github".equals(provider) && user.getGithubUrl()==null) {
+			user.setGithubUrl(response.getGithubUrl());
+		}
 	}
 
 }

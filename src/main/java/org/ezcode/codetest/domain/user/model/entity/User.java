@@ -171,6 +171,14 @@ public class User extends BaseEntity {
 		this.verified = true;
 	}
 
+	public void setReviewToken(int reviewToken){
+		this.reviewToken = reviewToken;
+	}
+
+	public void setGithubUrl(String githubUrl){
+		this.githubUrl = githubUrl;
+	}
+
 	public void decreaseReviewToken() {
 		this.reviewToken -= 1;
 	}
