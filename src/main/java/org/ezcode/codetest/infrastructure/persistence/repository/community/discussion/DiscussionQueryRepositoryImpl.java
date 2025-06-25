@@ -95,7 +95,16 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 			.leftJoin(discussionVote).on(discussionVote.discussion.eq(discussion))
 			.leftJoin(reply).on(reply.discussion.eq(discussion))
 			.where(discussion.id.in(discussionIds))
-			.groupBy(discussion.id)
+			.groupBy(
+				discussion.id,
+				user.id,
+				user.nickname,
+				user.tier,
+				user.profileImageUrl,
+				discussion.problem.id,
+				discussion.content,
+				discussion.createdAt
+			)
             .fetch();
 	}
 

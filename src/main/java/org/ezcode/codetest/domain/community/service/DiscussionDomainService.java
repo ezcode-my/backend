@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.community.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,7 @@ public class DiscussionDomainService {
 
 		List<DiscussionQueryResult> sortedResults = discussionIds.stream()
 			.map(resultMap::get)
+			.filter(Objects::nonNull)
 			.collect(Collectors.toList());
 
 		return new PageImpl<>(sortedResults, pageable, totalCount);
