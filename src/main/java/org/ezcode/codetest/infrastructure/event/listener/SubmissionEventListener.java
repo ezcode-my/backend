@@ -1,0 +1,48 @@
+package org.ezcode.codetest.infrastructure.event.listener;
+
+import java.util.List;
+
+import org.ezcode.codetest.application.submission.dto.event.SubmissionErrorEvent;
+import org.ezcode.codetest.application.submission.dto.event.SubmissionJudgingFinishedEvent;
+import org.ezcode.codetest.application.submission.dto.event.TestcaseListInitializedEvent;
+import org.ezcode.codetest.application.submission.dto.event.TestcaseEvaluatedEvent;
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.ErrorWsResponse;
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.SubmissionFinalResultResponse;
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.InitTestcaseListResponse;
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.JudgeResultResponse;
+import org.ezcode.codetest.infrastructure.event.publisher.StompMessageService;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
+public class SubmissionEventListener {
+
+    private final StompMessageService messageService;
+
+    @EventListener
+    public void onTestcaseInit(TestcaseListInitializedEvent event) {
+        List<InitTestcaseListResponse> wsDtos = InitTestcaseListResponse.mapToList(event.payload());
+        messageService.sendInitTestcases(event.sessionKey(), wsDtos);
+    }
+
+    @EventListener
+    public void onTestcaseUpdate(TestcaseEvaluatedEvent event) {
+        JudgeResultResponse wsDto = JudgeResultResponse.from(event.payload());
+        messageService.sendTestcaseResultUpdate(event.sessionKey(), wsDto);
+    }
+
+    @EventListener
+    public void onSubmissionFinished(SubmissionJudgingFinishedEvent event) {
+        SubmissionFinalResultResponse wsDto = SubmissionFinalResultResponse.from(event.payload());
+        messageService.sendFinalResult(event.sessionKey(), wsDto);
+    }
+
+    @EventListener
+    public void onSubmissionError(SubmissionErrorEvent event) {
+        ErrorWsResponse wsDto = ErrorWsResponse.from(event.code());
+        messageService.sendError(event.sessionKey(), wsDto);
+    }
+}
