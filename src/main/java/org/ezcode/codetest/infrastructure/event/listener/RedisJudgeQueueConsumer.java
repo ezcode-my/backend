@@ -5,7 +5,7 @@ import java.util.Map;
 import org.ezcode.codetest.application.submission.service.SubmissionService;
 import org.ezcode.codetest.domain.submission.exception.SubmissionException;
 import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
-import org.ezcode.codetest.infrastructure.event.dto.SubmissionMessage;
+import org.ezcode.codetest.infrastructure.event.dto.submission.SubmissionMessage;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamListener;
@@ -27,7 +27,7 @@ public class RedisJudgeQueueConsumer implements StreamListener<String, MapRecord
         Map<String, String> values = message.getValue();
 
         SubmissionMessage msg = new SubmissionMessage(
-            values.get("emitterKey"),
+            values.get("sessionKey"),
             Long.valueOf(values.get("problemId")),
             Long.valueOf(values.get("languageId")),
             Long.valueOf(values.get("userId")),
@@ -35,7 +35,7 @@ public class RedisJudgeQueueConsumer implements StreamListener<String, MapRecord
         );
 
         try {
-            log.info("[컨슈머 수신] {}", msg.emitterKey());
+            log.info("[컨슈머 수신] {}", msg.sessionKey());
             submissionService.submitCodeStream(msg);
 
             log.info("[컨슈머 ACK] messageId={}", message.getId());

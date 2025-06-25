@@ -62,7 +62,7 @@ public class RedisStreamConfig {
 
             log.info("Redis Stream 'judge-queue'에 대한 Consumer Group 'judge-group'을 생성했습니다.");
         } catch (Exception e) {
-            log.error("예외 발생: {}, 메시지: {}", e.getClass(), e.getMessage());
+            log.info("예외 발생: {}, 메시지: {}", e.getClass(), e.getMessage());
             if (e.getCause() instanceof io.lettuce.core.RedisBusyException) {
                 log.info("Redis Consumer Group 'judge-group'이 이미 존재하여 생성을 건너뜁니다.");
             } else {

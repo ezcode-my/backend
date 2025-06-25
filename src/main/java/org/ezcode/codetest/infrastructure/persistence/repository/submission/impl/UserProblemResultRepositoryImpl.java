@@ -23,13 +23,14 @@ public class UserProblemResultRepositoryImpl implements UserProblemResultReposit
     }
 
     @Override
-    public void saveUserProblemResult(UserProblemResult userProblemResult) {
-        userProblemResultJpaRepository.save(userProblemResult);
+    public UserProblemResult saveUserProblemResult(UserProblemResult userProblemResult) {
+        return userProblemResultJpaRepository.save(userProblemResult);
     }
 
     @Override
-    public void updateUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
+    public UserProblemResult updateUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
         userProblemResult.updateResult(isCorrect);
+        return userProblemResult;
     }
 
     @Override

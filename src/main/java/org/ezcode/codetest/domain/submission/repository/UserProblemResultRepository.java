@@ -12,9 +12,9 @@ import org.springframework.data.repository.query.Param;
 public interface UserProblemResultRepository {
     Optional<UserProblemResult> findUserProblemResultByUserIdAndProblemId(Long userId, Long problemId);
 
-    void saveUserProblemResult(UserProblemResult userProblemResult);
+    UserProblemResult saveUserProblemResult(UserProblemResult userProblemResult);
 
-    void updateUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect);
+    UserProblemResult updateUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect);
 
     @Query("""
             SELECT upr.user.id, SUM(p.score)

@@ -22,7 +22,7 @@ public record SubmissionDetailResponse(
     String message,
 
     @Schema(description = "실행 시간 (s)", example = "0.129")
-    Double executionTime,
+    Long executionTime,
 
     @Schema(description = "메모리 사용량 (KB)", example = "12196")
     Long memoryUsage,

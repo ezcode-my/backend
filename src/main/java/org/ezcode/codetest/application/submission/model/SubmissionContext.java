@@ -1,6 +1,6 @@
 package org.ezcode.codetest.application.submission.model;
 
-import org.ezcode.codetest.application.submission.dto.response.submission.FinalResultResponse;
+import org.ezcode.codetest.application.submission.dto.event.payload.SubmissionFinalResultPayload;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
 
 import java.util.concurrent.CountDownLatch;
@@ -33,8 +33,8 @@ public record SubmissionContext(
         );
     }
 
-    public FinalResultResponse toFinalResult(int totalTestcaseCount) {
-        return new FinalResultResponse(
+    public SubmissionFinalResultPayload toFinalResult(int totalTestcaseCount) {
+        return new SubmissionFinalResultPayload(
             totalTestcaseCount,
             this.getPassedCount(),
             this.getCurrentMessage()
@@ -51,10 +51,6 @@ public record SubmissionContext(
 
     public int getPassedCount() {
         return this.passedCount.get();
-    }
-
-    public int getProcessedCount() {
-        return this.processedCount.get();
     }
 
     public String getCurrentMessage() {
