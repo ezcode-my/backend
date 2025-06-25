@@ -1,7 +1,5 @@
-package org.ezcode.codetest.application.community;
+package org.ezcode.codetest.util;
 
-import org.ezcode.codetest.util.TestDataGenerator;
-import org.ezcode.codetest.util.TestDataGeneratorForDiscussion;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+@Disabled
 @ActiveProfiles("test")
 @SpringBootTest
-public class QueryPerformanceTest {
+public class DummyDataInit {
 
 	@Autowired
 	private TestDataGenerator testDataGenerator;
