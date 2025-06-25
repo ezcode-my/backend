@@ -11,7 +11,7 @@ import org.ezcode.codetest.domain.community.model.enums.VoteType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(name = "DiscussionResponse", description = "Discussion 조회 응답 DTO")
+@Schema(name = "DiscussionResponse", description = "Discussion 응답 DTO, 목록 조회 시에만 추천 수, 비추천 수 등의 데이터가 포함됨")
 public record DiscussionResponse(
 
 	@Schema(description = "Discussion 고유 ID", example = "123", requiredMode = REQUIRED)
@@ -26,14 +26,19 @@ public record DiscussionResponse(
 	@Schema(description = "토론 내용", example = "이 문제는 이렇게 풀 수 있습니다...", requiredMode = REQUIRED)
 	String content,
 
+	@Schema(description = "생성 일시", example = "2025-06-25T14:30:00", requiredMode = REQUIRED)
 	LocalDateTime createdAt,
 
+	@Schema(description = "총 추천 수 (upvote)", example = "10")
 	Long upvoteCount,
 
+	@Schema(description = "총 비추천 수 (downvote)", example = "2")
 	Long downvoteCount,
 
+	@Schema(description = "총 댓글 수", example = "5")
 	Long replyCount,
 
+	@Schema(description = "현재 사용자의 추천 상태 (UP, DOWN, NONE)", example = "UP")
 	VoteType voteStatus
 
 ) {
