@@ -1,7 +1,6 @@
 package org.ezcode.codetest.presentation.ranking;
 
 import lombok.RequiredArgsConstructor;
-import org.ezcode.codetest.application.ranking.dto.PointResponse;
 import org.ezcode.codetest.application.ranking.dto.RankingResponse;
 import org.ezcode.codetest.application.ranking.dto.TargetRankingResponse;
 import org.ezcode.codetest.application.ranking.service.RankingFacadeService;
