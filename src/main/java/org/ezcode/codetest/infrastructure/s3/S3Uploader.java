@@ -27,15 +27,27 @@ public class S3Uploader {
 
 	public String upload(MultipartFile multipartFile, String dirName) {
 		try {
+			// MIME 타입 검사 (png, jpeg, jpg, webp 만 가능)
+			String contentType = multipartFile.getContentType();
+			if (contentType == null || !contentType.startsWith("image/")) {
+				throw new S3Exception(
+					S3ExceptionCode.S3_INVALID_FILE_TYPE,
+					S3ExceptionCode.S3_INVALID_FILE_TYPE.getStatus(),
+					S3ExceptionCode.S3_INVALID_FILE_TYPE.getMessage()
+				);
+			}
+
+			// S3 파일명 지정 ( 디렉토리/UUID-원본파일명 )
 			String fileName = dirName + "/" + UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
 
 			ObjectMetadata metadata = new ObjectMetadata();
 			metadata.setContentLength(multipartFile.getSize());
-			metadata.setContentType(multipartFile.getContentType());
+			metadata.setContentType(contentType);
 
 			amazonS3.putObject(bucket, fileName, multipartFile.getInputStream(), metadata);
 			String result = amazonS3.getUrl(bucket, fileName).toString(); // 업로드 파일 URL로 변환 ( 문자열 )
 			log.info("S3 버킷 이미지 업로드 완료 {}", result);
+
 			return result;
 
 		} catch (IOException e) {
