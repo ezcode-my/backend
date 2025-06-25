@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,21 @@ public class S3Uploader {
 			return result;
 
 		} catch (IOException e) {
+			log.error("S3 업로드 중 IO 오류 발생",e);
+			throw new S3Exception(
+				S3ExceptionCode.S3_UPLOAD_FAILED,
+				S3ExceptionCode.S3_UPLOAD_FAILED.getStatus(),
+				S3ExceptionCode.S3_UPLOAD_FAILED.getMessage()
+			);
+		} catch (AmazonS3Exception e) {
+			log.error("S3 서비스 오류 발생: {}", e.getErrorMessage(), e);
+			throw new S3Exception(
+				S3ExceptionCode.S3_UPLOAD_FAILED,
+				S3ExceptionCode.S3_UPLOAD_FAILED.getStatus(),
+				S3ExceptionCode.S3_UPLOAD_FAILED.getMessage()
+			);
+		} catch (Exception e) {
+			log.error("예상치 못한 업로드 오류 발생", e);
 			throw new S3Exception(
 				S3ExceptionCode.S3_UPLOAD_FAILED,
 				S3ExceptionCode.S3_UPLOAD_FAILED.getStatus(),
