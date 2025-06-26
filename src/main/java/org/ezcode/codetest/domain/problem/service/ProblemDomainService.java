@@ -50,7 +50,7 @@ public class ProblemDomainService {
 		return problemCategoryRepository.findByProblemIdsIn(problemIds);
 	}
 
-	public void updateProblemCategory(Problem problem, List<String> categories) {
+	public void updateCategoryAndSearchEngine(Problem problem, List<String> categories) {
 
 		problemCategoryRepository.deleteAllByProblemId(problem.getId());
 
@@ -60,7 +60,10 @@ public class ProblemDomainService {
 			.map(cat -> ProblemCategory.from(problem, cat))
 			.toList();
 
-		problemCategoryRepository.saveAll(problemCategories);
+		List<ProblemCategory> savedCategories = problemCategoryRepository.saveAll(problemCategories);
+
+		searchRepository.save(ProblemSearchDocument.from(problem, savedCategories.stream().map(
+			ProblemCategory::getCategory).toList()));
 	}
 
 	public Problem createProblem(Problem problem, Map<String, String> categories) {

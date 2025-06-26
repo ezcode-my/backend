@@ -36,6 +36,7 @@ public class ProblemCategoryRepositoryImpl implements ProblemCategoryRepository 
 	public void deleteAllByProblemId(Long problemId) {
 
 		problemCategoryRepository.deleteAllByProblemId(problemId);
+		problemCategoryRepository.flush();
 	}
 
 	@Override

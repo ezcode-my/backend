@@ -106,8 +106,6 @@ public class ProblemService {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
-		problemDomainService.updateProblemCategory(findProblem, request.categories());
-
 		findProblem.update(
 			findProblem.getCreator(),
 			request.title(),
@@ -117,6 +115,9 @@ public class ProblemService {
 			request.timeLimit(),
 			request.reference()
 		);
+
+		problemDomainService.updateCategoryAndSearchEngine(findProblem, request.categories());
+
 	}
 
 	// 문제 삭제 ( 관리자 )
