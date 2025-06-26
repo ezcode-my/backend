@@ -3,8 +3,11 @@ package org.ezcode.codetest.infrastructure.event.publisher;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.ezcode.codetest.application.submission.port.ExceptionNotifier;
+import org.ezcode.codetest.domain.submission.exception.CodeReviewException;
+import org.ezcode.codetest.domain.submission.exception.SubmissionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +29,43 @@ public class DiscordNotifier implements ExceptionNotifier {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void sendEmbed(String title, String description, String exception, String methodName) {
+    public void notifyException(String methodName, Throwable t) {
+        String title = "채점 시스템 예외";
+        String description;
+        String exceptionDetail;
+
+        if (t instanceof SubmissionException se) {
+            var code = se.getResponseCode();
+            description = "채점 중 SubmissionException 발생";
+            exceptionDetail =
+                """
+                    • 성공 여부: %s
+                    • 상태코드: %s
+                    • 메시지: %s
+                    """.formatted(code.isSuccess(), code.getStatus(), code.getMessage());
+        } else if (t instanceof CodeReviewException ce) {
+            var code = ce.getResponseCode();
+            description = "코드 리뷰 중 CodeReviewException 발생";
+            exceptionDetail =
+                """
+                    • 성공 여부: %s
+                    • 상태코드: %s
+                    • 메시지: %s
+                    """.formatted(code.isSuccess(), code.getStatus(), code.getMessage());
+        } else {
+            description = "채점 중 알 수 없는 예외 발생";
+            exceptionDetail =
+                """
+                    • 성공 여부: false
+                    • 상태코드: 500
+                    • 메시지: %s
+                    """.formatted(Optional.ofNullable(t.getMessage()).orElse("No message"));
+        }
+
+        sendEmbed(title, description, exceptionDetail, methodName);
+    }
+
+    private void sendEmbed(String title, String description, String exception, String methodName) {
         try {
             Map<String, Object> embed = Map.of(
                 "title", title,

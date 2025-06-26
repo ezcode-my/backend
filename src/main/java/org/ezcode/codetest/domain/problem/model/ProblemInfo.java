@@ -12,7 +12,7 @@ public record ProblemInfo(
 	List<Testcase> testcaseList
 
 ) {
-	public double getTimeLimit() {
+	public long getTimeLimit() {
 		return this.problem.getTimeLimit();
 	}
 

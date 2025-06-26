@@ -1,8 +1,15 @@
 package org.ezcode.codetest.application.submission.model;
 
 import org.ezcode.codetest.application.submission.dto.event.payload.SubmissionFinalResultPayload;
+import org.ezcode.codetest.domain.language.model.entity.Language;
+import org.ezcode.codetest.domain.problem.model.ProblemInfo;
+import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
+import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.infrastructure.event.dto.submission.SubmissionMessage;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,41 +27,55 @@ public record SubmissionContext(
 
     CountDownLatch latch,
 
-    AtomicBoolean notified
+    AtomicBoolean notified,
+
+    User user,
+
+    Language language,
+
+    ProblemInfo problemInfo,
+
+    SubmissionMessage msg
 ) {
-    public static SubmissionContext initialize(int totalTestcaseCount) {
+    public static SubmissionContext initialize(
+        User user, Language language, ProblemInfo problemInfo, SubmissionMessage msg
+    ) {
         return new SubmissionContext(
             new SubmissionAggregator(),
             new AtomicInteger(0),
             new AtomicInteger(0),
             new AtomicReference<>("Accepted"),
-            new CountDownLatch(totalTestcaseCount),
-            new AtomicBoolean(false)
+            new CountDownLatch(problemInfo.getTestcaseCount()),
+            new AtomicBoolean(false),
+            user,
+            language,
+            problemInfo,
+            msg
         );
     }
 
-    public SubmissionFinalResultPayload toFinalResult(int totalTestcaseCount) {
+    public SubmissionFinalResultPayload toFinalResult() {
         return new SubmissionFinalResultPayload(
-            totalTestcaseCount,
+            this.getTestcaseCount(),
             this.getPassedCount(),
             this.getCurrentMessage()
         );
     }
 
     public void incrementPassedCount() {
-        this.passedCount.incrementAndGet();
+        passedCount.incrementAndGet();
     }
 
     public void incrementProcessedCount() {
-        this.processedCount.incrementAndGet();
+        processedCount.incrementAndGet();
     }
 
     public int getPassedCount() {
-        return this.passedCount.get();
+        return passedCount.get();
     }
 
     public String getCurrentMessage() {
-        return this.message.get();
+        return message.get();
     }
 
     public void updateMessage(String message) {
@@ -62,6 +83,46 @@ public record SubmissionContext(
     }
 
     public void countDown() {
-        this.latch.countDown();
+        latch.countDown();
+    }
+
+    public List<Testcase> getTestcases() {
+        return problemInfo.testcaseList();
+    }
+
+    public int getTestcaseCount() {
+        return problemInfo.getTestcaseCount();
+    }
+
+    public String getSourceCode() {
+        return msg.sourceCode();
+    }
+
+    public long getJudge0Id() {
+        return language.getJudge0Id();
+    }
+
+    public String getInput(int seqId) {
+        return getTestcases().get(seqId - 1).getInput();
+    }
+
+    public String getExpectedOutput(int seqId) {
+        return getTestcases().get(seqId - 1).getOutput();
+    }
+
+    public long getTimeLimit() {
+        return problemInfo.getTimeLimit();
+    }
+
+    public long getMemoryLimit() {
+        return problemInfo.getMemoryLimit();
+    }
+
+    public String getSessionKey() {
+        return msg.sessionKey();
+    }
+
+    public Problem getProblem() {
+        return problemInfo.problem();
     }
 }

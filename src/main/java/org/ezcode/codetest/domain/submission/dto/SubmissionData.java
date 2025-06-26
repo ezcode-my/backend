@@ -2,8 +2,7 @@ package org.ezcode.codetest.domain.submission.dto;
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.problem.model.ProblemInfo;
-import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
+import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.submission.model.entity.Submission;
@@ -32,28 +31,14 @@ public record SubmissionData(
     long memoryUsage
 
 ) {
-    public static SubmissionData base(
-        User user, ProblemInfo problemInfo, Language language, String code, String message) {
+    public static SubmissionData from(SubmissionContext ctx) {
         return SubmissionData.builder()
-            .user(user)
-            .problem(problemInfo.problem())
-            .language(language)
-            .testCaseList(problemInfo.testcaseList())
-            .code(code)
-            .message(message)
-            .build();
-    }
-
-    public SubmissionData withAggregatedStats(SubmissionAggregator aggregator) {
-        return SubmissionData.builder()
-            .user(this.user)
-            .problem(this.problem)
-            .language(this.language)
-            .testCaseList(this.testCaseList)
-            .code(this.code)
-            .message(this.message)
-            .executionTime(aggregator.averageExecutionTime())
-            .memoryUsage(aggregator.averageMemoryUsage())
+            .user(ctx.user())
+            .problem(ctx.getProblem())
+            .language(ctx.language())
+            .testCaseList(ctx.getTestcases())
+            .code(ctx.getSourceCode())
+            .message(ctx.getCurrentMessage())
             .build();
     }
 
@@ -68,6 +53,20 @@ public record SubmissionData(
             .testCaseTotalCount(submissionData.getTestCaseSize())
             .executionTime(submissionData.executionTime)
             .memoryUsage(submissionData.memoryUsage)
+            .build();
+    }
+
+    public static Submission toEntity(SubmissionContext ctx) {
+        return Submission.builder()
+            .user(ctx.user())
+            .problem(ctx.getProblem())
+            .language(ctx.language())
+            .code(ctx.getSourceCode())
+            .message(ctx.getCurrentMessage())
+            .testCasePassedCount(ctx.getPassedCount())
+            .testCaseTotalCount(ctx.getTestcaseCount())
+            .executionTime(ctx.aggregator().averageExecutionTime())
+            .memoryUsage(ctx.aggregator().averageMemoryUsage())
             .build();
     }
 

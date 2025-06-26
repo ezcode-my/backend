@@ -28,9 +28,8 @@ public class UserProblemResultRepositoryImpl implements UserProblemResultReposit
     }
 
     @Override
-    public UserProblemResult updateUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
+    public void updateUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
         userProblemResult.updateResult(isCorrect);
-        return userProblemResult;
     }
 
     @Override

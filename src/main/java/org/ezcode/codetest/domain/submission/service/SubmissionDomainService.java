@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
-import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.submission.model.SubmissionResult;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
@@ -17,7 +16,6 @@ import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
 import org.ezcode.codetest.domain.submission.repository.SubmissionRepository;
 import org.ezcode.codetest.domain.submission.repository.UserProblemResultRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,21 +26,13 @@ public class SubmissionDomainService {
     private final SubmissionRepository submissionRepository;
     private final UserProblemResultRepository userProblemResultRepository;
 
-    @Transactional
-    public SubmissionResult finalizeSubmission(
-        SubmissionData submissionData,
-        SubmissionAggregator aggregator,
-        int passedCount) {
+    public SubmissionResult finalizeSubmission(SubmissionContext ctx) {
 
-        createSubmission(SubmissionData.toEntity(
-                submissionData.withAggregatedStats(aggregator),
-                passedCount
-            )
-        );
+        createSubmission(SubmissionData.toEntity(ctx));
 
-        boolean allPassed = (passedCount == submissionData.getTestCaseSize());
+        boolean allPassed = (ctx.getPassedCount() == ctx.getTestcaseCount());
 
-        return getUserProblemResult(submissionData.getUserId(), submissionData.getProblemId()).map(
+        return getUserProblemResult(ctx.user().getId(), ctx.getProblem().getId()).map(
                 result -> {
                     if (!result.isCorrect() && allPassed) {
                         modifyUserProblemResult(result, true);
@@ -51,32 +41,30 @@ public class SubmissionDomainService {
                     return SubmissionResult.from(result, true);
                 })
             .orElseGet(() -> SubmissionResult.from(createUserProblemResult(
-                UserProblemResult.builder()
-                    .user(submissionData.user())
-                    .problem(submissionData.problem())
-                    .isCorrect(allPassed)
-                    .build()
+                    UserProblemResult.builder()
+                        .user(ctx.user())
+                        .problem(ctx.getProblem())
+                        .isCorrect(allPassed)
+                        .build()
                 ),false)
             );
     }
 
-    public AnswerEvaluation handleEvaluationAndUpdateStats(
-        TestcaseEvaluationInput input, ProblemInfo problemInfo, SubmissionContext context
+    public boolean handleEvaluationAndUpdateStats(
+        TestcaseEvaluationInput input, SubmissionContext ctx
     ) {
-        AnswerEvaluation evaluation =
-            evaluate(input.expectedOutput(), input.actualOutput(), input.success(),
-                input.executionTime(), input.memoryUsage(), problemInfo);
+        boolean isPassed = evaluate(input);
 
-        if (evaluation.isPassed()) {
-            context.incrementPassedCount();
+        if (isPassed) {
+            ctx.incrementPassedCount();
         } else {
-            context.updateMessage(input.resultMessage());
+            ctx.updateMessage(input.resultMessage());
         }
-        context.incrementProcessedCount();
+        ctx.incrementProcessedCount();
 
-        collectStatistics(context.aggregator(), input.executionTime(), input.memoryUsage());
+        collectStatistics(ctx.aggregator(), input);
 
-        return evaluation;
+        return isPassed;
     }
 
     public List<Submission> getSubmissions(Long userId) {
@@ -89,18 +77,16 @@ public class SubmissionDomainService {
         return submissionRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
     }
 
-    private AnswerEvaluation evaluate(
-        String expectedOutput, String actualOutput, boolean success, long executionTime, long memoryUsage,
-        ProblemInfo problemInfo
-    ) {
-        boolean isCorrect = success && expectedOutput.strip().equals(actualOutput.strip());
-        boolean timeEfficient = executionTime <= problemInfo.getTimeLimit();
-        boolean memoryEfficient = memoryUsage <= problemInfo.getMemoryLimit();
-        return new AnswerEvaluation(isCorrect, timeEfficient, memoryEfficient);
+    private boolean evaluate(TestcaseEvaluationInput input) {
+        boolean isCorrect = input.isCorrect();
+        boolean timeEfficient = input.timeEfficient();
+        boolean memoryEfficient = input.memoryEfficient();
+        AnswerEvaluation answerEvaluation = new AnswerEvaluation(isCorrect, timeEfficient, memoryEfficient);
+        return answerEvaluation.isPassed();
     }
 
-    private void collectStatistics(SubmissionAggregator aggregator, long executionTime, long memoryUsage) {
-        aggregator.accumulate(executionTime, memoryUsage);
+    private void collectStatistics(SubmissionAggregator aggregator, TestcaseEvaluationInput input) {
+        aggregator.accumulate(input);
     }
 
     private void createSubmission(Submission submission) {
@@ -115,7 +101,7 @@ public class SubmissionDomainService {
         return userProblemResultRepository.saveUserProblemResult(userProblemResult);
     }
 
-    private UserProblemResult modifyUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
-        return userProblemResultRepository.updateUserProblemResult(userProblemResult, isCorrect);
+    private void modifyUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
+        userProblemResultRepository.updateUserProblemResult(userProblemResult, isCorrect);
     }
 }
