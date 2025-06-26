@@ -19,9 +19,8 @@ public enum AuthExceptionCode implements ResponseCode {
 	NOT_EMAIL_USER(false, HttpStatus.BAD_REQUEST, "소셜 로그인 회원은 비밀번호 변경을 할 수 없습니다."),
 	PASSWORD_IS_SAME(false, HttpStatus.BAD_REQUEST, "기존 비밀번호와 같습니다. 새로운 비밀번호는 기존 비밀번호와 달라야합니다."),
 	ALREADY_WITHDRAW_USER(false, HttpStatus.NOT_FOUND, "탈퇴된 회원입니다."),
-    TOKEN_ENCODE_FAIL(false, HttpStatus.BAD_REQUEST, "토큰 인코딩에 실패했습니다.")
-
-	;
+    TOKEN_ENCODE_FAIL(false, HttpStatus.BAD_REQUEST, "토큰 인코딩에 실패했습니다."),
+	REDIRECT_URI_NOT_FOUND(false, HttpStatus.BAD_REQUEST, "redirect_uri를 찾을 수 없습니다");
 
 	private final boolean success;
 	private final HttpStatus status;

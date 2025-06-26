@@ -99,7 +99,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		String redirectUri = (String) request.getSession().getAttribute("redirect_uri");
 
 		if (redirectUri == null) {
-			throw new IllegalArgumentException("redirect_uri not found in session.");
+			throw new AuthException(AuthExceptionCode.REDIRECT_URI_NOT_FOUND);
 		}
 
 		request.getSession().removeAttribute("redirect_uri"); // uri 사용 후 제거하기

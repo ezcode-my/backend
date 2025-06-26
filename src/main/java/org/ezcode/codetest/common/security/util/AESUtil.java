@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class AESUtil {
 
     private static final String ALGORITHM = "AES";
-    @Value("${AES_SECRET_KEY}")
+    @Value("${aes.secret.key}")
     private String SECRET_KEY; // 반드시 16, 24, 또는 32바이트
 
     public String encrypt(String input) throws Exception {
