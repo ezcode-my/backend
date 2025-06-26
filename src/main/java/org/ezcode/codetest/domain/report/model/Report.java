@@ -36,6 +36,10 @@ public class Report extends BaseEntity {
 	@Column(nullable = false, length = 50)
 	private ReportType reportType;
 
+	@Column(length = 255)
+	private String resultMessage; // 운영자가 남긴 처리 메시지
+
+
 	@Column(nullable = false, length = 50)
 	@Enumerated(EnumType.STRING)
 	private ReportStatus reportStatus;
@@ -51,8 +55,9 @@ public class Report extends BaseEntity {
 		this.reportStatus = ReportStatus.PENDING;
 	}
 
-	public void updateStatus(ReportStatus newStatus) {
+	public void updateStatus(ReportStatus newStatus, String resultMessage) {
 		this.reportStatus = newStatus;
+		this.resultMessage = resultMessage;
 	}
 
 }

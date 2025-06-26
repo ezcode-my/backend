@@ -2,6 +2,7 @@ package org.ezcode.codetest.domain.community.repository;
 
 import java.util.Optional;
 
+import org.ezcode.codetest.domain.community.dto.ReplyQueryResult;
 import org.ezcode.codetest.domain.community.model.entity.Reply;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,9 +13,9 @@ public interface ReplyRepository {
 
 	Optional<Reply> findReplyById(Long replyId);
 
-	Page<Reply> findAllRepliesByDiscussionId(Long discussionId, Pageable pageable);
+	Page<ReplyQueryResult> findAllRepliesByDiscussionId(Long discussionId, Long currentUserId, Pageable pageable);
 
-	Page<Reply> findAllChildRepliesByParentReplyId(Long parentReplyId, Pageable pageable);
+	Page<ReplyQueryResult> findAllChildRepliesByParentReplyId(Long parentReplyId, Long currentUserId, Pageable pageable);
 
 	void updateReply(Reply reply, String content);
 

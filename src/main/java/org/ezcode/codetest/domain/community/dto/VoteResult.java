@@ -1,4 +1,4 @@
-package org.ezcode.codetest.domain.community.model;
+package org.ezcode.codetest.domain.community.dto;
 
 import org.ezcode.codetest.domain.community.model.enums.VoteType;
 

@@ -13,7 +13,7 @@ public record TestcaseEvaluationInput(
 
     boolean success,
 
-    double executionTime,
+    long executionTime,
 
     long memoryUsage
 

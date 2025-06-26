@@ -1,7 +1,10 @@
 package org.ezcode.codetest.presentation.submission;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 
 import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewRequest;
@@ -18,7 +21,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,36 +38,35 @@ public class SubmissionController {
 
     private final SubmissionService submissionService;
 
-    @PostMapping("/problems/{problemId}/submit-stream")
+    @PostMapping("/problems/{problemId}/submit-ws")
     @Operation(
-        summary = "코드 제출 (SSE 응답)",
+        summary = "코드 제출 (WebSocket)",
         description = """
-                  이 API는 Server-Sent Events(SSE)를 통해 테스트케이스별 채점 결과를 스트리밍으로 전송합니다.
-            
-                  응답 MIME 타입: `text/event-stream`
-            
-                  응답 예시:
-                  ```
-                  data: {"isPassed":true,"expectedOutput":"7","actualOutput":"7","executionTime":0.129,"memoryUsage":12196,"message":"Accepted"}
-                  ```
-            
-                  ```
-                  event: final
-                  data: {"totalCount":5,"passedCount":5,"message":"Accepted", correct":true}
-                  ```
-            """
+        문제에 대한 코드를 제출하면 채점 큐에 등록되고,
+        서버는 WebSocket(STOMP)을 통해 채점 결과를 실시간으로 전송합니다.
+
+        반환된 sessionKey를 사용해 다음 경로로 구독하십시오:
+        • /topic/submission/{sessionKey}/init
+        • /topic/submission/{sessionKey}/case
+        • /topic/submission/{sessionKey}/final
+        • /topic/submission/{sessionKey}/error
+        """
     )
-    @ApiResponse(
-        responseCode = "200",
-        description = "SSE로 스트리밍 응답 전송",
-        content = @Content(mediaType = "text/event-stream")
-    )
-    public SseEmitter submitCodeStream(
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "코드 제출 성공 및 sessionKey 반환"),
+        @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 데이터"),
+        @ApiResponse(responseCode = "409", description = "이미 해당 문제를 채점 중인 경우"),
+    })
+    public ResponseEntity<HashSet<String>> submitCodeStream(
         @Parameter(description = "제출할 문제 ID", required = true) @PathVariable Long problemId,
         @RequestBody @Valid CodeSubmitRequest request,
         @AuthenticationPrincipal AuthUser authUser
     ) {
-        return submissionService.enqueueCodeSubmission(problemId, request, authUser);
+        HashSet<String> set = new HashSet<>();
+        set.add(submissionService.enqueueCodeSubmission(problemId, request, authUser));
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(set);
     }
 
     @Operation(

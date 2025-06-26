@@ -1,8 +1,8 @@
-package org.ezcode.codetest.infrastructure.event.dto;
+package org.ezcode.codetest.infrastructure.event.dto.submission;
 
 public record SubmissionMessage(
 
-    String emitterKey,
+    String sessionKey,
 
     Long problemId,
 

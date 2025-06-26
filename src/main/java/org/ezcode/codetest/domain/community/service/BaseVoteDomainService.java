@@ -2,7 +2,7 @@ package org.ezcode.codetest.domain.community.service;
 
 import java.util.Optional;
 
-import org.ezcode.codetest.domain.community.model.VoteResult;
+import org.ezcode.codetest.domain.community.dto.VoteResult;
 import org.ezcode.codetest.domain.community.model.entity.BaseVote;
 import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.community.repository.BaseVoteRepository;

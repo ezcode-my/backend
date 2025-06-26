@@ -1,38 +1,51 @@
 package org.ezcode.codetest.application.problem.service;
 
 import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
-import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
+import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
+import org.ezcode.codetest.infrastructure.s3.S3Directory;
+import org.ezcode.codetest.infrastructure.s3.S3Uploader;
+import org.ezcode.codetest.infrastructure.s3.exception.S3Exception;
+import org.ezcode.codetest.infrastructure.s3.exception.code.S3ExceptionCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProblemService {
 
 	private final ProblemDomainService problemDomainService;
 	private final UserDomainService userDomainService;
+	private final S3Uploader s3Uploader;
 
 	// 문제 생성 ( 관리자 )
 	@Transactional
-	public ProblemDetailResponse createProblem(ProblemCreateRequest requestDto, AuthUser authUser) {
+	public ProblemDetailResponse createProblem(ProblemCreateRequest requestDto, MultipartFile image, AuthUser authUser) {
 
 		User user = userDomainService.getUserById(authUser.getId());
 
-		Problem savedProblem = problemDomainService.createProblem(
-			ProblemCreateRequest.toEntity(requestDto, user)
-		);
+		Problem problem = ProblemCreateRequest.toEntity(requestDto, user);
+		Problem savedProblem = problemDomainService.createProblem(problem);
+
+		// 문제 이미지 있다면?
+		if (image != null && !image.isEmpty()) {
+			String imageUrl = uploadImageAfterTransaction(image, savedProblem.getId());
+			updateProblemWithImage(savedProblem.getId(), imageUrl);
+		}
 
 		return ProblemDetailResponse.from(savedProblem);
 	}
@@ -81,6 +94,21 @@ public class ProblemService {
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
 		problemDomainService.removeProblem(findProblem);
+	}
+
+	@Transactional
+	public void updateProblemWithImage(Long problemId, String imageUrl) {
+		Problem problem = problemDomainService.getProblem(problemId);
+		problem.addImage(imageUrl);
+	}
+
+	private String uploadImageAfterTransaction(MultipartFile image, Long problemId) {
+		try {
+			return s3Uploader.upload(image, S3Directory.PROBLEM.getDir());
+		} catch (Exception e) {
+			log.error("Problem {} 이미지 업로드 실패", problemId, e);
+			throw new S3Exception(S3ExceptionCode.S3_UPLOAD_FAILED);
+		}
 	}
 }
 
