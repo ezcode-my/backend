@@ -183,12 +183,12 @@ public class ProblemSearchDocument {
 			.id(problem.getId())
 			.title(problem.getTitle())
 			.categories(problem.getCategories())
-			.difficulty(problem.getDifficulty())
+			.difficulty(problem.getDifficulty().getDifficulty())
 			.reference(problem.getReference())
 			.description(problem.getDescription())
 			.score(problem.getScore())
 			.categoriesKor(problem.getCategories().stream().map(Category::getDescription).toList())
-			.difficultyEn(Difficulty.getDifficultyFromKor(problem.getDifficulty()))
+			.difficultyEn(problem.getDifficulty())
 			.referenceKor(problem.getReference().getDescription())
 			.isDeleted(problem.getIsDeleted())
 			.build();
@@ -202,8 +202,11 @@ public class ProblemSearchDocument {
 		if (problem.getId().equals(this.id)) {
 			this.title = problem.getTitle();
 			this.categories = problem.getCategories();
-			this.difficulty = problem.getDifficulty();
+			this.categoriesKor = problem.getCategories().stream().map(Category::getDescription).toList();
+			this.difficulty = problem.getDifficulty().getDifficulty();
+			this.difficultyEn = problem.getDifficulty();
 			this.reference = problem.getReference();
+			this.referenceKor = problem.getReference().getDescription();
 			this.description = problem.getDescription();
 			this.score = problem.getScore();
 		}

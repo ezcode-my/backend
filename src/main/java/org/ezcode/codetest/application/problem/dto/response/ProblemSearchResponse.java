@@ -1,5 +1,7 @@
 package org.ezcode.codetest.application.problem.dto.response;
 
+import java.util.List;
+
 import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
 
 import lombok.Builder;
@@ -11,7 +13,7 @@ public record ProblemSearchResponse(
 
 	String title,
 
-	String category,
+	List<String> category,
 
 	String difficulty,
 
@@ -27,7 +29,7 @@ public record ProblemSearchResponse(
 		return ProblemSearchResponse.builder()
 			.id(document.getId())
 			.title(document.getTitle())
-			.category(document.getCategories().toString())
+			.category(document.getCategories().stream().map(Enum::toString).toList())
 			.difficulty(document.getDifficulty())
 			.reference(document.getReference().toString())
 			.description(document.getDescription())

@@ -52,7 +52,7 @@ public record ProblemCreateRequest(
 			.categories(request.categories)
 			.title(request.title)
 			.description(request.description)
-			.difficulty(request.difficulty.getDifficulty())
+			.difficulty(request.difficulty)
 			.score(request.difficulty.getScore())
 			.memoryLimit(request.memoryLimit)
 			.timeLimit(request.timeLimit)

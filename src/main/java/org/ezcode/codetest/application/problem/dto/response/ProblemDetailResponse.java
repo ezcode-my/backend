@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
+import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,7 +33,7 @@ public record ProblemDetailResponse(
 	int score,
 
 	@Schema(description = "난이도", example = "BRONZE")
-	String difficulty,
+	Difficulty difficulty,
 
 	@Schema(description = "메모리 제한(KB)", example = "30000")
 	Long memoryLimit,
