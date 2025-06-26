@@ -13,6 +13,6 @@ public record AnswerEvaluation(
 
 ) {
     public boolean isPassed() {
-        return this.isCorrect() && this.timeEfficient() && this.memoryEfficient();
+        return isCorrect && timeEfficient && memoryEfficient;
     }
 }

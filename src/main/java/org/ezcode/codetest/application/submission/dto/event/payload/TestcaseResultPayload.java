@@ -1,7 +1,6 @@
 package org.ezcode.codetest.application.submission.dto.event.payload;
 
 import org.ezcode.codetest.application.submission.model.JudgeResult;
-import org.ezcode.codetest.domain.submission.dto.AnswerEvaluation;
 
 public record TestcaseResultPayload(
 
@@ -18,10 +17,10 @@ public record TestcaseResultPayload(
     String message
 
 ) {
-    public static TestcaseResultPayload fromEvaluation(int seqId, JudgeResult result, AnswerEvaluation evaluation) {
+    public static TestcaseResultPayload fromEvaluation(int seqId, boolean isPassed, JudgeResult result) {
         return new TestcaseResultPayload(
             seqId,
-            evaluation.isPassed(),
+            isPassed,
             result.actualOutput(),
             result.executionTime(),
             result.memoryUsage(),

@@ -1,5 +1,7 @@
 package org.ezcode.codetest.infrastructure.judge0;
 
+import java.time.Duration;
+
 import org.ezcode.codetest.application.submission.dto.request.compile.CodeCompileRequest;
 import org.ezcode.codetest.application.submission.dto.response.compile.ExecutionResultResponse;
 import org.ezcode.codetest.application.submission.model.JudgeResult;
@@ -7,13 +9,19 @@ import org.ezcode.codetest.application.submission.port.JudgeClient;
 import org.ezcode.codetest.domain.submission.exception.SubmissionException;
 import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import io.netty.handler.timeout.TimeoutException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Slf4j
 @Component
@@ -27,65 +35,63 @@ public class Judge0Client implements JudgeClient {
 
     @PostConstruct
     private void init() {
-        this.webClient = WebClient.create(judge0ApiUrl);
+        this.webClient = WebClient.builder()
+            .baseUrl(judge0ApiUrl)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .build();
     }
 
     @Override
     public String submitAndGetToken(CodeCompileRequest request) {
-        try {
-            ExecutionResultResponse executionResultResponse = webClient.post()
-                .uri("/submissions?base64_encoded=false&wait=false")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(ExecutionResultResponse.class)
-                .block();
 
-            if (executionResultResponse == null) {
-                throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
-            }
+        ExecutionResultResponse resp = webClient.post()
+            .uri("/submissions?base64_encoded=false&wait=false")
+            .bodyValue(request)
+            .retrieve()
+            .bodyToMono(ExecutionResultResponse.class)
+            .timeout(Duration.ofSeconds(5))
+            .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
+                .maxBackoff(Duration.ofSeconds(4))
+                .filter(ex -> ex instanceof WebClientResponseException
+                                     || ex instanceof TimeoutException)
+            )
+            .onErrorMap(WebClientResponseException.class,
+                ex -> new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR))
+            .onErrorMap(TimeoutException.class,
+                ex -> new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT))
+            .block();
 
-            return executionResultResponse.token();
-        } catch (Exception e) {
+        if (resp == null || resp.token() == null) {
             throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
         }
+
+        return resp.token();
     }
 
     @Override
     public JudgeResult pollUntilDone(String token) {
-        try {
-            int maxAttempts = 30;
-            int attempt = 0;
-
-            while (attempt < maxAttempts) {
-                ExecutionResultResponse executionResultResponse = webClient.get()
+        ExecutionResultResponse finalResp = Flux
+            .interval(Duration.ZERO, Duration.ofSeconds(1))
+            .flatMap(tick ->
+                webClient.get()
                     .uri("/submissions/{token}", token)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
                     .bodyToMono(ExecutionResultResponse.class)
-                    .block();
+                    .onErrorResume(WebClientResponseException.BadRequest.class,
+                        ex -> Mono.just(ExecutionResultResponse.ofCompileError())
+                    )
+            )
+            .filter(resp -> resp.status().id() >= 3)
+            .next()
+            .timeout(Duration.ofSeconds(60),
+                Mono.error(new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT)))
+            .block();
 
-                if (executionResultResponse == null) {
-                    throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
-                }
-
-                if (executionResultResponse.status().id() >= 3) {
-                    return interpreter.toJudgeResult(executionResultResponse);
-                }
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
-                }
-                attempt++;
-            }
-            throw new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT);
-        } catch (SubmissionException se) {
-            throw se;
-        } catch (Exception e) {
+        if (finalResp == null) {
             throw new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR);
         }
+
+        return interpreter.toJudgeResult(finalResp);
     }
 }

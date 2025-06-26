@@ -19,6 +19,18 @@ public record ExecutionResultResponse(
     ExecutionStatus status
 
 ) {
+    public static ExecutionResultResponse ofCompileError() {
+        return new ExecutionResultResponse(
+            null,
+            0.0,
+            0L,
+            null,
+            null,
+            "Compilation Error",
+            1,
+            new ExecutionResultResponse.ExecutionStatus(6, "Compilation Error")
+        );
+    }
 
     public long getMemory() {
         return this.memory == null ? 0L : memory;

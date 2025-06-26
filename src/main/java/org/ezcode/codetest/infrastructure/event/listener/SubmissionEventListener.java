@@ -13,6 +13,8 @@ import org.ezcode.codetest.infrastructure.event.dto.submission.response.JudgeRes
 import org.ezcode.codetest.infrastructure.event.publisher.StompMessageService;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +36,7 @@ public class SubmissionEventListener {
         messageService.sendTestcaseResultUpdate(event.sessionKey(), wsDto);
     }
 
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onSubmissionFinished(SubmissionJudgingFinishedEvent event) {
         SubmissionFinalResultResponse wsDto = SubmissionFinalResultResponse.from(event.payload());
         messageService.sendFinalResult(event.sessionKey(), wsDto);

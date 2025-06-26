@@ -1,7 +1,7 @@
 package org.ezcode.codetest.domain.submission.model;
 
 import org.ezcode.codetest.application.submission.model.JudgeResult;
-import org.ezcode.codetest.domain.problem.model.entity.Testcase;
+import org.ezcode.codetest.application.submission.model.SubmissionContext;
 
 public record TestcaseEvaluationInput(
 
@@ -15,17 +15,35 @@ public record TestcaseEvaluationInput(
 
     long executionTime,
 
-    long memoryUsage
+    long memoryUsage,
+
+    long timeLimit,
+
+    long memoryLimit
 
 ) {
-    public static TestcaseEvaluationInput from(Testcase testcase, JudgeResult result) {
+    public static TestcaseEvaluationInput from(JudgeResult result, SubmissionContext ctx, int seqId) {
         return new TestcaseEvaluationInput(
-            testcase.getOutput(),
+            ctx.getExpectedOutput(seqId),
             result.actualOutput(),
             result.message(),
             result.success(),
             result.executionTime(),
-            result.memoryUsage()
+            result.memoryUsage(),
+            ctx.getTimeLimit(),
+            ctx.getMemoryLimit()
         );
+    }
+
+    public boolean isCorrect() {
+        return success && expectedOutput.strip().equals(actualOutput.strip());
+    }
+
+    public boolean timeEfficient() {
+        return executionTime <= timeLimit;
+    }
+
+    public boolean memoryEfficient() {
+        return memoryUsage <= memoryLimit;
     }
 }
