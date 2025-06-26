@@ -73,8 +73,9 @@ dependencies {
     // Mac에서 빌드시 필요한 의존성
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.121.Final:osx-aarch_64'
 
-    // actuator
+    // actuator + 프로메테우스
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
     // elasticsearch + elasticsearch 쿼리빌더 dsl
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
