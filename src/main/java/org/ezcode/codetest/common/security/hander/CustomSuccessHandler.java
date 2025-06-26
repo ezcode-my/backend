@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,7 +45,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
 		User loginUser= userDomainService.getUserByEmail(customUserDetails.getEmail());
-		log.info("loginUser: {}", loginUser);
+		log.info("loginUser Name: {}", loginUser.getUsername());
 
 		String accessToken = jwtUtil.createAccessToken(
 			loginUser.getId(),
@@ -64,14 +65,27 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 			refreshToken,
 			jwtUtil.getExpiration(refreshToken),
 			TimeUnit.MILLISECONDS);
-		log.info("레디스에 저장완료");
+
+		String redirectUri = (String) request.getSession().getAttribute("redirect_uri");
+
+		if (redirectUri == null) {
+			throw new IllegalArgumentException("redirect_uri not found in session.");
+		}
+
+		request.getSession().removeAttribute("redirect_uri"); // uri 사용 후 제거하기
+
+		String targetUri = UriComponentsBuilder.fromUriString(redirectUri)
+			.queryParam("accessToken", accessToken)
+			.queryParam("refreshToken", refreshToken)
+			.build().toUriString();
 
 		//JSON 문자열로 바꿔서 클라이언트에게 응답 본문으로 전달
 		OAuthResponse oAuthResponse = new OAuthResponse(accessToken, refreshToken);
+
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(objectMapper.writeValueAsString(oAuthResponse));
-		log.info("------------- accessToken : {}, refreshToken : {} ------------", accessToken, refreshToken);
-	}
+		// response.sendRedirect(targetUri);
+		}
 
 }

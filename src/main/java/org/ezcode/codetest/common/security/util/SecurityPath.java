@@ -7,6 +7,7 @@ public class SecurityPath {
 	public static final String[] PUBLIC_PATH = {
 		"/login/oauth2/**", //OAuth로그인 접근
 		"/api/auth/**",
+		"/api/oauth2/**",
 		"/login",
 		"/ezlogin",
 		"/login/**",
