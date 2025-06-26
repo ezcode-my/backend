@@ -2,8 +2,8 @@ package org.ezcode.codetest.application.problem.dto.response;
 
 import java.util.List;
 
+import org.ezcode.codetest.domain.problem.model.entity.Category;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
-import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 
@@ -20,7 +20,7 @@ public record ProblemResponse(
 	String creator,
 
 	@Schema(description = "카테고리", example = "FOR_BEGINNER")
-	List<Category> categories,
+	List<String> categories,
 
 	@Schema(description = "제목", example = "A+B")
 	String title,
@@ -36,7 +36,7 @@ public record ProblemResponse(
 
 ) {
 
-	public static ProblemResponse from(Problem problem) {
+	public static ProblemResponse from(Problem problem, List<Category> categories) {
 
 		if (problem == null) {
 			throw new IllegalArgumentException("문제는 null 값이 아니어야 합니다.");
@@ -45,7 +45,7 @@ public record ProblemResponse(
 		return ProblemResponse.builder()
 			.id(problem.getId())
 			.creator(problem.getCreator() != null ? problem.getCreator().getNickname() : "존재하지 않는 이름.")
-			.categories(problem.getCategories())
+			.categories(categories.stream().map(Category::getCategoryKorName).toList())
 			.title(problem.getTitle())
 			.score(problem.getScore())
 			.difficulty(problem.getDifficulty())

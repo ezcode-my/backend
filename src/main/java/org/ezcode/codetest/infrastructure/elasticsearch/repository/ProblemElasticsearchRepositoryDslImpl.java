@@ -31,11 +31,11 @@ public class ProblemElasticsearchRepositoryDslImpl implements ProblemElasticsear
 				.filter(f -> f.term(t -> t.field("isDeleted").value(false)))
 				.should(s -> s.match(m -> m.field("title").query(keyword).boost(12f)))
 				.should(s -> s.match(m -> m.field("description").query(keyword).boost(3f)))
-				.should(s -> s.match(m -> m.field("category").query(keyword).boost(6f)))
+				.should(s -> s.match(m -> m.field("categories").query(keyword).boost(6f)))
 				.should(s -> s.match(m -> m.field("difficulty").query(keyword).boost(5f)))
 				.should(s -> s.match(m -> m.field("reference").query(keyword).boost(7f)))
 				.should(s -> s.match(m -> m.field("referenceKor").query(keyword).boost(7f)))
-				.should(s -> s.match(m -> m.field("categoryKor").query(keyword).boost(6f)))
+				.should(s -> s.match(m -> m.field("categoriesKor").query(keyword).boost(6f)))
 				.should(s -> s.match(m -> m.field("difficultyEn").query(keyword).boost(5f)))
 				.minimumShouldMatch("1")
 			))
@@ -51,11 +51,11 @@ public class ProblemElasticsearchRepositoryDslImpl implements ProblemElasticsear
 							.build(),
 						List.of(
 							new HighlightField("title"),
-							new HighlightField("category"),
+							new HighlightField("categories"),
 							new HighlightField("difficulty"),
 							new HighlightField("reference"),
 							new HighlightField("description"),
-							new HighlightField("categoryKor"),
+							new HighlightField("categoriesKor"),
 							new HighlightField("referenceKor"),
 							new HighlightField("difficultyEn")
 						)
@@ -78,18 +78,18 @@ public class ProblemElasticsearchRepositoryDslImpl implements ProblemElasticsear
 				.filter(f -> f.term(t -> t.field("isDeleted").value(false)))
 				.filter(f2 -> f2.bool(bs -> bs
 					.should(s -> s.term(t -> t.field("title.keyword").value(keyword)))
-					.should(s -> s.term(t -> t.field("category.keyword").value(keyword)))
+					.should(s -> s.term(t -> t.field("categories.keyword").value(keyword)))
 					.should(s -> s.term(t -> t.field("difficulty.keyword").value(keyword)))
 					.should(s -> s.term(t -> t.field("reference.keyword").value(keyword)))
 					.should(s -> s.term(t -> t.field("difficultyEn.keyword").value(keyword)))
-					.should(s -> s.term(t -> t.field("categoryKor.keyword").value(keyword)))
+					.should(s -> s.term(t -> t.field("categoriesKor.keyword").value(keyword)))
 					.should(s -> s.term(t -> t.field("referenceKor.keyword").value(keyword)))
 					.minimumShouldMatch("1")
 				))
 			))
 			.withPageable(PageRequest.of(0, 30))
 			.withSourceFilter(new FetchSourceFilterBuilder()
-				.withIncludes("title", "description", "category", "difficulty", "reference")
+				.withIncludes("title", "description", "categories", "difficulty", "reference")
 				.build()
 			)
 			.build();
@@ -106,17 +106,17 @@ public class ProblemElasticsearchRepositoryDslImpl implements ProblemElasticsear
 				.filter(f -> f.term(t -> t.field("isDeleted").value(false)))
 				.should(s -> s.match(m -> m.field("title").query(keyword).boost(12f)))
 				.should(s -> s.match(m -> m.field("description").query(keyword).boost(4f)))
-				.should(s -> s.match(m -> m.field("category").query(keyword).boost(5f)))
+				.should(s -> s.match(m -> m.field("categories").query(keyword).boost(5f)))
 				.should(s -> s.match(m -> m.field("difficulty").query(keyword).boost(3f)))
 				.should(s -> s.match(m -> m.field("reference").query(keyword).boost(5f)))
-				.should(s -> s.match(m -> m.field("categoryKor").query(keyword).boost(5f)))
+				.should(s -> s.match(m -> m.field("categoriesKor").query(keyword).boost(5f)))
 				.should(s -> s.match(m -> m.field("difficultyEn").query(keyword).boost(3f)))
 				.should(s -> s.match(m -> m.field("referenceKor").query(keyword).boost(5f)))
 				.minimumShouldMatch("1")
 			))
 			.withPageable(PageRequest.of(0, 40))
 			.withSourceFilter(new FetchSourceFilterBuilder()
-				.withIncludes("title", "description", "category", "difficulty", "reference")
+				.withIncludes("title", "description", "categories", "difficulty", "reference")
 				.build()
 			)
 			.build();

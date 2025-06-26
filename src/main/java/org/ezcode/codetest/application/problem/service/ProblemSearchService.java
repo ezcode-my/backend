@@ -45,7 +45,6 @@ public class ProblemSearchService {
 				Optional.ofNullable(doc.getCategories())
 					.stream()
 					.flatMap(Collection::stream)
-					.map(Enum::toString)
 					.forEach(searchedKeyword::add);
 
 				Optional.ofNullable(doc.getCategoriesKor())

@@ -1,11 +1,18 @@
 package org.ezcode.codetest.application.problem.service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.ezcode.codetest.application.problem.dto.request.CategoryCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
+import org.ezcode.codetest.domain.problem.model.entity.Category;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import org.ezcode.codetest.domain.problem.model.entity.ProblemCategory;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -15,6 +22,7 @@ import org.ezcode.codetest.infrastructure.s3.S3Uploader;
 import org.ezcode.codetest.infrastructure.s3.exception.S3Exception;
 import org.ezcode.codetest.infrastructure.s3.exception.code.S3ExceptionCode;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,14 +40,20 @@ public class ProblemService {
 	private final UserDomainService userDomainService;
 	private final S3Uploader s3Uploader;
 
+	@Transactional
+	public void createCategory(CategoryCreateRequest requestDto) {
+
+		problemDomainService.createCategory(requestDto.toCategory());
+	}
+
 	// 문제 생성 ( 관리자 )
 	@Transactional
-	public ProblemDetailResponse createProblem(ProblemCreateRequest requestDto, MultipartFile image, AuthUser authUser) {
+	public void createProblem(ProblemCreateRequest requestDto, MultipartFile image, AuthUser authUser) {
 
 		User user = userDomainService.getUserById(authUser.getId());
 
-		Problem problem = ProblemCreateRequest.toEntity(requestDto, user);
-		Problem savedProblem = problemDomainService.createProblem(problem);
+		Problem problem = ProblemCreateRequest.toProblem(requestDto, user);
+		Problem savedProblem = problemDomainService.createProblem(problem, requestDto.categories());
 
 		// 문제 이미지 있다면?
 		if (image != null && !image.isEmpty()) {
@@ -47,15 +61,27 @@ public class ProblemService {
 			updateProblemWithImage(savedProblem.getId(), imageUrl);
 		}
 
-		return ProblemDetailResponse.from(savedProblem);
 	}
 
 	// 문제 전체 조회
 	@Transactional(readOnly = true)
 	public Page<ProblemResponse> getProblemsList(Pageable pageable, ProblemSearchCondition searchCondition) {
-		Page<Problem> problems = problemDomainService.getProblemBySearchCondition(pageable, searchCondition);
 
-		return problems.map(ProblemResponse::from); // Entity → DTO 변환
+		Page<Problem> problemPage = problemDomainService.getProblemBySearchCondition(pageable, searchCondition);
+		List<Problem> problems = problemPage.getContent();
+		List<ProblemCategory> categories = problemDomainService.getProblemsCategoryList(problems);
+
+		Map<Problem, List<Category>> maps = categories.stream()
+			.collect(Collectors.groupingBy(
+				ProblemCategory::getProblem,
+				Collectors.mapping(ProblemCategory::getCategory, Collectors.toList())
+			));
+
+		List<ProblemResponse> responses = problems.stream()
+			.map(p -> ProblemResponse.from(p, maps.getOrDefault(p, List.of())))
+			.collect(Collectors.toList());
+
+		return new PageImpl<>(responses, pageable, problemPage.getTotalElements());
 	}
 
 	// 문제 상세 조회
@@ -64,18 +90,21 @@ public class ProblemService {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
-		return ProblemDetailResponse.from(findProblem);
+		List<Category> categoryList = problemDomainService.getProblemCategoryList(findProblem);
+
+		return ProblemDetailResponse.from(findProblem, categoryList);
 	}
 
 	// 문제 수정 ( 관리자 )
 	@Transactional
-	public ProblemDetailResponse modifyProblem(Long problemId, ProblemUpdateRequest request) {
+	public void modifyProblem(Long problemId, ProblemUpdateRequest request) {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
+		problemDomainService.updateProblemCategory(findProblem, request.categories());
+
 		findProblem.update(
 			findProblem.getCreator(),
-			request.categories(),
 			request.title(),
 			request.description(),
 			request.difficulty(),
@@ -83,8 +112,6 @@ public class ProblemService {
 			request.timeLimit(),
 			request.reference()
 		);
-
-		return ProblemDetailResponse.from(findProblem);
 	}
 
 	// 문제 삭제 ( 관리자 )

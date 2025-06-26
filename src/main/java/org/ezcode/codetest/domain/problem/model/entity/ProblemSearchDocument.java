@@ -1,8 +1,7 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
-import java.util.*;
+import java.util.List;
 
-import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.springframework.data.annotation.Id;
@@ -58,7 +57,7 @@ public class ProblemSearchDocument {
 			)
 		}
 	)
-	private List<Category> categories;
+	private List<String> categories;
 
 	@MultiField(
 		mainField = @Field(
@@ -155,7 +154,7 @@ public class ProblemSearchDocument {
 	public ProblemSearchDocument(
 		Long id,
 		String title,
-		List<Category> categories,
+		List<String> categories,
 		String difficulty,
 		Reference reference,
 		String description,
@@ -178,16 +177,16 @@ public class ProblemSearchDocument {
 		this.isDeleted = isDeleted;
 	}
 
-	public static ProblemSearchDocument from(Problem problem) {
+	public static ProblemSearchDocument from(Problem problem, List<Category> categories) {
 		return ProblemSearchDocument.builder()
 			.id(problem.getId())
 			.title(problem.getTitle())
-			.categories(problem.getCategories())
+			.categories(categories.stream().map(Category::getCategoryCode).toList())
 			.difficulty(problem.getDifficulty().getDifficulty())
 			.reference(problem.getReference())
 			.description(problem.getDescription())
 			.score(problem.getScore())
-			.categoriesKor(problem.getCategories().stream().map(Category::getDescription).toList())
+			.categoriesKor(categories.stream().map(Category::getCategoryKorName).toList())
 			.difficultyEn(problem.getDifficulty())
 			.referenceKor(problem.getReference().getDescription())
 			.isDeleted(problem.getIsDeleted())
@@ -198,11 +197,11 @@ public class ProblemSearchDocument {
 		this.isDeleted = true;
 	}
 
-	public void update(Problem problem) {
+	public void update(Problem problem, List<Category> categories) {
 		if (problem.getId().equals(this.id)) {
 			this.title = problem.getTitle();
-			this.categories = problem.getCategories();
-			this.categoriesKor = problem.getCategories().stream().map(Category::getDescription).toList();
+			this.categories = categories.stream().map(Category::getCategoryCode).toList();
+			this.categoriesKor = categories.stream().map(Category::getCategoryKorName).toList();
 			this.difficulty = problem.getDifficulty().getDifficulty();
 			this.difficultyEn = problem.getDifficulty();
 			this.reference = problem.getReference();
