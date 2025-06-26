@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotNull;
 public record ProblemCreateRequest(
 
 	@NotNull(message = "카테고리를 설정해야 합니다.")
-	@Schema(description = "카테고리", example = "FOR_BEGINNER")
+	@Schema(description = "카테고리 목록", example = "[\"FOR_BEGINNER\", \"ALGORITHM\"]")
 	List<Category> categories,
 
 	@NotBlank(message = "문제 제목을 입력하세요.")
@@ -27,7 +27,7 @@ public record ProblemCreateRequest(
 	String description,
 
 	@NotNull(message = "난이도를 설정해야 합니다.")
-	@Schema(description = "난이도", example = "BRONZE")
+	@Schema(description = "난이도", example = "LV1")
 	Difficulty difficulty,
 
 	@NotNull(message = "메모리 제한을 설정해야 합니다.")

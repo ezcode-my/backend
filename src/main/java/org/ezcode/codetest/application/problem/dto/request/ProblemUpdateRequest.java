@@ -12,16 +12,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProblemUpdateRequest(
 
-	@Schema(description = "카테고리", example = "FOR_BEGINNER")
+	@Schema(description = "카테고리 목록", example = "[\"FOR_BEGINNER\", \"ALGORITHM\"]")
 	List<Category> categories,
 
 	@Schema(description = "제목", example = "A+B")
 	String title,
 
-	@Schema(description = "카테고리", example = "입력한 두수의 값을 더하고, 결과값을 출력하세요")
+	@Schema(description = "설명", example = "입력한 두수의 값을 더하고, 결과값을 출력하세요")
 	String description,
 
-	@Schema(description = "난이도", example = "BRONZE")
+	@Schema(description = "난이도", example = "LV1")
 	Difficulty difficulty,
 
 	@Schema(description = "메모리 제한(KB)", example = "30000")
