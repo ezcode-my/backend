@@ -1,7 +1,7 @@
 package org.ezcode.codetest.application.community.service;
 
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
-import org.ezcode.codetest.domain.community.model.VoteResult;
+import org.ezcode.codetest.domain.community.dto.VoteResult;
 import org.ezcode.codetest.domain.community.model.entity.BaseVote;
 import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.community.service.BaseVoteDomainService;

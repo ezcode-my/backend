@@ -2,7 +2,7 @@ package org.ezcode.codetest.application.community.dto.response;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.*;
 
-import org.ezcode.codetest.domain.community.model.VoteResult;
+import org.ezcode.codetest.domain.community.dto.VoteResult;
 import org.ezcode.codetest.domain.community.model.enums.VoteType;
 
 import io.swagger.v3.oas.annotations.media.Schema;

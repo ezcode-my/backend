@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.community.service;
+package org.ezcode.codetest.concurrency;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.ezcode.codetest.application.community.dto.request.VoteRequest;
+import org.ezcode.codetest.application.community.service.DiscussionVoteService;
 import org.ezcode.codetest.domain.community.model.enums.VoteType;
 import org.ezcode.codetest.domain.community.repository.DiscussionRepository;
 import org.ezcode.codetest.domain.community.repository.DiscussionVoteRepository;

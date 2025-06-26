@@ -2,6 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.community.repl
 
 import java.util.Optional;
 
+import org.ezcode.codetest.domain.community.dto.ReplyQueryResult;
 import org.ezcode.codetest.domain.community.model.entity.Reply;
 import org.ezcode.codetest.domain.community.repository.ReplyRepository;
 import org.springframework.data.domain.Page;
@@ -30,15 +31,15 @@ public class ReplyRepositoryImpl implements ReplyRepository {
 	}
 
 	@Override
-	public Page<Reply> findAllRepliesByDiscussionId(Long discussionId, Pageable pageable) {
+	public Page<ReplyQueryResult> findAllRepliesByDiscussionId(Long discussionId, Long currentUserId, Pageable pageable) {
 
-		return replyJpaRepository.findAllByDiscussionId(discussionId, pageable);
+		return replyJpaRepository.findRepliesByDiscussionId(discussionId, currentUserId, pageable);
 	}
 
 	@Override
-	public Page<Reply> findAllChildRepliesByParentReplyId(Long parentReplyId, Pageable pageable) {
+	public Page<ReplyQueryResult> findAllChildRepliesByParentReplyId(Long parentReplyId, Long currentUserId, Pageable pageable) {
 
-		return replyJpaRepository.findAllByParentReplyId(parentReplyId, pageable);
+		return replyJpaRepository.findRepliesByParentId(parentReplyId, currentUserId, pageable);
 	}
 
 	@Override

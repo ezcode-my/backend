@@ -3,6 +3,7 @@ package org.ezcode.codetest.application.community.service;
 import org.ezcode.codetest.application.community.dto.request.DiscussionCreateRequest;
 import org.ezcode.codetest.application.community.dto.request.DiscussionModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.DiscussionResponse;
+import org.ezcode.codetest.domain.community.dto.DiscussionQueryResult;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.service.DiscussionDomainService;
 import org.ezcode.codetest.domain.language.model.entity.Language;
@@ -40,10 +41,11 @@ public class DiscussionService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<DiscussionResponse> getDiscussions(Long problemId, Pageable pageable) {
+	public Page<DiscussionResponse> getDiscussions(Long problemId, String sortBy, Long userId, Pageable pageable) {
 
-		Page<Discussion> discussionResponsePage = discussionDomainService.getAllDiscussionsByProblemId(problemId, pageable);
-		return discussionResponsePage.map(DiscussionResponse::fromEntity);
+		Page<DiscussionQueryResult> result =
+			discussionDomainService.getAllDiscussionsByProblemId(problemId, sortBy, userId, pageable);
+		return result.map(DiscussionResponse::from);
 	}
 
 	@Transactional

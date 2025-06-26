@@ -1,11 +1,12 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.community.discussion;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.ezcode.codetest.domain.community.dto.DiscussionQueryResult;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.repository.DiscussionRepository;
 import org.ezcode.codetest.domain.language.model.entity.Language;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -31,9 +32,21 @@ public class DiscussionRepositoryImpl implements DiscussionRepository {
 	}
 
 	@Override
-	public Page<Discussion> findAllByProblemId(Long problemId, Pageable pageable) {
+	public List<Long> findDiscussionIdsByProblemId(Long problemId, String sortBy, Pageable pageable) {
 
-		return discussionJpaRepository.findAllByProblemId(problemId, pageable);
+		return discussionJpaRepository.findDiscussionIdsByProblemId(problemId, sortBy, pageable);
+	}
+
+	@Override
+	public List<DiscussionQueryResult> findDiscussionsByIds(List<Long> discussionIds, Long currentUserId) {
+
+		return discussionJpaRepository.findDiscussionsByIds(discussionIds, currentUserId);
+	}
+
+	@Override
+	public Long countByProblemId(Long problemId) {
+
+		return discussionJpaRepository.countByProblemId(problemId);
 	}
 
 	@Override

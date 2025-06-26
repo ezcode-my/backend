@@ -3,6 +3,7 @@ package org.ezcode.codetest.domain.community.service;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.event.payload.ReplyCreatePayload;
+import org.ezcode.codetest.domain.community.dto.ReplyQueryResult;
 import org.ezcode.codetest.domain.community.exception.CommunityException;
 import org.ezcode.codetest.domain.community.exception.CommunityExceptionCode;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
@@ -54,17 +55,17 @@ public class ReplyDomainService {
 		return reply;
 	}
 
-	public Page<Reply> getRepliesByDiscussionId(Discussion discussion, Pageable pageable) {
+	public Page<ReplyQueryResult> getRepliesByDiscussionId(Discussion discussion, Long currentUserId, Pageable pageable) {
 
-		return replyRepository.findAllRepliesByDiscussionId(discussion.getId(), pageable);
+		return replyRepository.findAllRepliesByDiscussionId(discussion.getId(), currentUserId, pageable);
 	}
 
-	public Page<Reply> getRepliesByParentReplyId(Long parentReplyId, Discussion discussion, Pageable pageable) {
+	public Page<ReplyQueryResult> getRepliesByParentReplyId(Long parentReplyId, Discussion discussion, Long currentUserId, Pageable pageable) {
 
 		Reply parentReply = getReplyById(parentReplyId);
 		validateDiscussionMatches(parentReply, discussion);
 
-		return replyRepository.findAllChildRepliesByParentReplyId(parentReply.getId(), pageable);
+		return replyRepository.findAllChildRepliesByParentReplyId(parentReply.getId(), currentUserId, pageable);
 	}
 
 	public Reply modify(Long replyId, Discussion discussion, Long userId, String content) {

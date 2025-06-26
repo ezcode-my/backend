@@ -70,10 +70,13 @@ public class ReplyController {
 	public ResponseEntity<Page<ReplyResponse>> getReplies(
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
-		@ParameterObject @PageableDefault Pageable pageable
+		@ParameterObject @PageableDefault Pageable pageable,
+		@AuthenticationPrincipal AuthUser authUser
 	) {
 
-		Page<ReplyResponse> page = replyService.getReplies(problemId, discussionId, pageable);
+		Long currentUserId = (authUser != null ? authUser.getId() : null);
+
+		Page<ReplyResponse> page = replyService.getReplies(problemId, discussionId, currentUserId, pageable);
 		return ResponseEntity.ok(page);
 	}
 
@@ -92,10 +95,13 @@ public class ReplyController {
 		@PathVariable Long problemId,
 		@PathVariable Long discussionId,
 		@PathVariable Long parentReplyId,
-		@ParameterObject @PageableDefault Pageable pageable
+		@ParameterObject @PageableDefault Pageable pageable,
+		@AuthenticationPrincipal AuthUser authUser
 	) {
 
-		Page<ReplyResponse> page = replyService.getChildReplies(problemId, discussionId, parentReplyId, pageable);
+		Long currentUserId = (authUser != null ? authUser.getId() : null);
+
+		Page<ReplyResponse> page = replyService.getChildReplies(problemId, discussionId, parentReplyId, currentUserId, pageable);
 		return ResponseEntity.ok(page);
 	}
 
