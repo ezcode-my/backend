@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.OAuthResponse;
+import org.ezcode.codetest.common.security.util.AESUtil;
+import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
@@ -32,15 +35,17 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ObjectMapper objectMapper; //json직렬화
 	private final OAuth2AuthorizedClientService authorizedClientService;
+	private final AESUtil aesUtil;
 
 	public CustomSuccessHandler(JwtUtil jwtUtil, UserDomainService userDomainService,
 		RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper,
-        OAuth2AuthorizedClientService authorizedClientService) {
+        OAuth2AuthorizedClientService authorizedClientService, AESUtil aesUtil) {
 		this.jwtUtil = jwtUtil;
 		this.userDomainService = userDomainService;
 		this.redisTemplate = redisTemplate;
 		this.objectMapper = objectMapper;
         this.authorizedClientService = authorizedClientService;
+        this.aesUtil = aesUtil;
     }
 
 	@Override
@@ -53,18 +58,22 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		User loginUser= userDomainService.getUserByEmail(customUserDetails.getEmail());
 		log.info("loginUser Name: {}", loginUser.getUsername());
 
-		log.info("provider : {}", customUserDetails.getProvider().toString());
 		if (customUserDetails.getProvider().equalsIgnoreCase("github")) {
 			//깃허브 access-token 가져오기
-
 			OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
 			OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
 				oauthToken.getAuthorizedClientRegistrationId(),
 				oauthToken.getName()
 			);
-			String githubAccessToken = client.getAccessToken().getTokenValue();
-			log.info("--------AccessToken : {}", githubAccessToken);
-			loginUser.setGithubAccessToken(githubAccessToken);
+
+			//AES 암호화
+            try {
+				String encodedGithubToken = aesUtil.encrypt(client.getAccessToken().getTokenValue());
+				loginUser.setGithubAccessToken(encodedGithubToken);
+            } catch (Exception e) {
+				log.error(e.getMessage());
+                throw new AuthException(AuthExceptionCode.TOKEN_ENCODE_FAIL);
+            }
 			userDomainService.updateUserGithubAccessToken(loginUser);
 		}
 

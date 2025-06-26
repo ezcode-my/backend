@@ -110,8 +110,8 @@ dependencies {
     //email-smtp
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-
-}
+    //AES 암호화
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'}
 
 tasks.named('test') {
     useJUnitPlatform()
