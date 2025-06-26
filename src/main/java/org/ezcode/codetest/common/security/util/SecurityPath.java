@@ -5,13 +5,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecurityPath {
 	public static final String[] PUBLIC_PATH = {
+		"/login/oauth2/**", //OAuth로그인 접근
 		"/api/auth/**",
+		"/api/oauth2/**",
 		"/login",
 		"/ezlogin",
 		"/login/**",
 		"/oauth2/**",
 		"/login/oauth",
-		"/login/oauth2/**", //OAuth로그인 접근
 		"/actuator/**",
 		"/chatting",
 		"/submit-test",

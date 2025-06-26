@@ -47,4 +47,9 @@ public class UserRepositoryImpl implements UserRepository {
 		userJpaRepository.updateReviewTokens(ids, newToken);
 	}
 
+	@Override
+	public void updateUserGithubAccessToken(User loginUser) {
+		userJpaRepository.save(loginUser);
+	}
+
 }

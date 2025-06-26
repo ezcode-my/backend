@@ -19,4 +19,6 @@ public interface UserRepository {
 	void decreaseReviewToken(User user);
 
 	void updateReviewTokens(List<Long> ids , int newToken);
+
+	void updateUserGithubAccessToken(User loginUser);
 }

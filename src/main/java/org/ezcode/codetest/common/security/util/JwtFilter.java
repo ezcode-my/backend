@@ -36,13 +36,6 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 									FilterChain filterChain) throws ServletException, IOException {
 
-		// String requestURI = request.getRequestURI();
-		//
-		// //whiteList 등록
-		// if (shouldNotFilter(requestURI)) {
-		// 	filterChain.doFilter(request, response);
-		// 	return;
-		// }
 
 		String bearerToken = request.getHeader("Authorization");
 

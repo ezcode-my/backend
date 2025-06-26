@@ -127,4 +127,9 @@ public class UserDomainService {
 	public User getUserByEmail(String email) {
 		return userRepository.getUserByEmail(email);
 	}
+
+	public void updateUserGithubAccessToken(User loginUser) {
+		log.info("Updating github access token for user: {}", loginUser);
+		userRepository.updateUserGithubAccessToken(loginUser);
+	}
 }
