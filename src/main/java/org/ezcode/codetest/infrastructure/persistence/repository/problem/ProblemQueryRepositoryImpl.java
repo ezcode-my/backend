@@ -5,6 +5,7 @@ import java.util.List;
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.QProblem;
+import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -32,11 +33,11 @@ public class ProblemQueryRepositoryImpl implements ProblemRepositoryCustom {
 		builder.and(problem.isDeleted.isFalse());
 
 		if(searchCondition.category() != null) {
-			builder.and(problem.category.eq(searchCondition.category()));
+			builder.and(problem.categories.contains(searchCondition.category()));
 		}
 
 		if(searchCondition.difficulty() != null) {
-			builder.and(problem.difficulty.eq(searchCondition.difficulty()));
+			builder.and(problem.difficulty.eq(Difficulty.valueOf(searchCondition.difficulty())));
 		}
 
 		List<Problem> content = jpaQueryFactory

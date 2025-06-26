@@ -108,7 +108,7 @@
         "analyzer": "nori_ko_with_en",
         "search_analyzer": "nori_ko_with_en"
       },
-      "category": {
+      "categories": {
         "type": "text",
         "analyzer": "uppercase_analyzer",
         "search_analyzer": "uppercase_standard",
@@ -119,7 +119,7 @@
           }
         }
       },
-      "categoryKor": {
+      "categoriesKor": {
         "type": "text",
         "analyzer": "nori_ko_with_en",
         "search_analyzer": "nori_ko_with_en",

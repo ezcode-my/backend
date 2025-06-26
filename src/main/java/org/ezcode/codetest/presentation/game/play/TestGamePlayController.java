@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +29,7 @@ public class TestGamePlayController {
 
 		Category randomCat = Category.values()[java.util.concurrent.ThreadLocalRandom.current().nextInt(Category.values().length)];
 
-		statusDomainService.gameCharacterLevelUp(authUser.getId(), true, randomCat.getDescription());
+		statusDomainService.gameCharacterLevelUp(authUser.getId(), true, List.of(randomCat.getDescription()));
 
 		System.out.println(randomCat.getDescription() + "레벨업");
 

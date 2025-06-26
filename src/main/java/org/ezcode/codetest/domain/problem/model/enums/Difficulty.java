@@ -9,13 +9,13 @@ import lombok.Getter;
 
 @Getter
 public enum Difficulty {
-	LV1("1", 10),
-	LV2("2", 20),
-	LV3("3", 40),
-	LV4("4", 80),
-	LV5("5", 160),
-	LV6("6", 320),
-	LV7("7", 640);
+	LV1("레벨1", 10),
+	LV2("레벨2", 20),
+	LV3("레벨3", 40),
+	LV4("레벨4", 80),
+	LV5("레벨5", 160),
+	LV6("레벨6", 320),
+	LV7("레벨7", 640);
 
 	private final String difficulty;
 

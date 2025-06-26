@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
+import java.util.*;
+
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
@@ -56,7 +58,7 @@ public class ProblemSearchDocument {
 			)
 		}
 	)
-	private Category category;
+	private List<Category> categories;
 
 	@MultiField(
 		mainField = @Field(
@@ -71,7 +73,7 @@ public class ProblemSearchDocument {
 			)
 		}
 	)
-	private String categoryKor;
+	private List<String> categoriesKor;
 
 	@MultiField(
 		mainField = @Field(
@@ -153,11 +155,11 @@ public class ProblemSearchDocument {
 	public ProblemSearchDocument(
 		Long id,
 		String title,
-		Category category,
+		List<Category> categories,
 		String difficulty,
 		Reference reference,
 		String description,
-		String categoryKor,
+		List<String> categoriesKor,
 		Difficulty difficultyEn,
 		String referenceKor,
 		int score,
@@ -165,11 +167,11 @@ public class ProblemSearchDocument {
 	) {
 		this.id = id;
 		this.title = title;
-		this.category = category;
+		this.categories = categories;
 		this.difficulty = difficulty;
 		this.reference = reference;
 		this.description = description;
-		this.categoryKor = categoryKor;
+		this.categoriesKor = categoriesKor;
 		this.difficultyEn = difficultyEn;
 		this.referenceKor = referenceKor;
 		this.score = score;
@@ -180,13 +182,13 @@ public class ProblemSearchDocument {
 		return ProblemSearchDocument.builder()
 			.id(problem.getId())
 			.title(problem.getTitle())
-			.category(problem.getCategory())
-			.difficulty(problem.getDifficulty())
+			.categories(problem.getCategories())
+			.difficulty(problem.getDifficulty().getDifficulty())
 			.reference(problem.getReference())
 			.description(problem.getDescription())
 			.score(problem.getScore())
-			.categoryKor(problem.getCategory().getDescription())
-			.difficultyEn(Difficulty.getDifficultyFromKor(problem.getDifficulty()))
+			.categoriesKor(problem.getCategories().stream().map(Category::getDescription).toList())
+			.difficultyEn(problem.getDifficulty())
 			.referenceKor(problem.getReference().getDescription())
 			.isDeleted(problem.getIsDeleted())
 			.build();
@@ -199,9 +201,12 @@ public class ProblemSearchDocument {
 	public void update(Problem problem) {
 		if (problem.getId().equals(this.id)) {
 			this.title = problem.getTitle();
-			this.category = problem.getCategory();
-			this.difficulty = problem.getDifficulty();
+			this.categories = problem.getCategories();
+			this.categoriesKor = problem.getCategories().stream().map(Category::getDescription).toList();
+			this.difficulty = problem.getDifficulty().getDifficulty();
+			this.difficultyEn = problem.getDifficulty();
 			this.reference = problem.getReference();
+			this.referenceKor = problem.getReference().getDescription();
 			this.description = problem.getDescription();
 			this.score = problem.getScore();
 		}

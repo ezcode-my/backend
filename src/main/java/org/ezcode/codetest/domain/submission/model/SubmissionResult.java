@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.submission.model;
 
+import java.util.List;
+
 import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
 
 import lombok.Builder;
@@ -9,7 +11,7 @@ public record SubmissionResult(
 
 	Long userId,
 
-	String problemCategory,
+	List<String> problemCategory,
 
 	boolean isSolved,
 

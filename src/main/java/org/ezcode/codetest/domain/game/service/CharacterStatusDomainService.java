@@ -5,6 +5,7 @@ import static org.ezcode.codetest.domain.game.constant.GameConstants.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 import org.ezcode.codetest.domain.game.exception.GameException;
@@ -56,12 +57,14 @@ public class CharacterStatusDomainService {
 			.orElseThrow(() -> new GameException(GameExceptionCode.CHARACTER_NOT_FOUND));
 	}
 
-	public void gameCharacterLevelUp(Long userId, boolean isProblemSolved, String problemCategory) {
+	public void gameCharacterLevelUp(Long userId, boolean isProblemSolved, List<String> problemCategory) {
 
 		if (!isProblemSolved)
 			return;
 
-		Map<Stat, Double> increaseStatRate = statUpdateUtil.getStatIncreasePerProblem(problemCategory);
+		int randomIndex = ThreadLocalRandom.current().nextInt(problemCategory.size());
+
+		Map<Stat, Double> increaseStatRate = statUpdateUtil.getStatIncreasePerProblem(problemCategory.get(randomIndex));
 
 		GameCharacter character = characterRepository.findByUserId(userId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.CHARACTER_NOT_FOUND));

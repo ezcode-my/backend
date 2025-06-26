@@ -1,9 +1,11 @@
 package org.ezcode.codetest.application.problem.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
+import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,7 +21,7 @@ public record ProblemDetailResponse(
 	String creator,
 
 	@Schema(description = "카테고리", example = "FOR_BEGINNER")
-	Category category,
+	List<Category> categories,
 
 	@Schema(description = "제목", example = "A+B")
 	String title,
@@ -31,7 +33,7 @@ public record ProblemDetailResponse(
 	int score,
 
 	@Schema(description = "난이도", example = "BRONZE")
-	String difficulty,
+	Difficulty difficulty,
 
 	@Schema(description = "메모리 제한(KB)", example = "30000")
 	Long memoryLimit,
@@ -55,7 +57,7 @@ public record ProblemDetailResponse(
 		return ProblemDetailResponse.builder()
 			.id(problem.getId())
 			.creator(problem.getCreator().getNickname())
-			.category(problem.getCategory())
+			.categories(problem.getCategories())
 			.title(problem.getTitle())
 			.description(problem.getDescription())
 			.score(problem.getScore())
