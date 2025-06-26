@@ -32,6 +32,10 @@ public class ProblemElasticsearchAdapter implements ProblemDocumentRepository {
 		return (list != null && !list.isEmpty()) ? list.get(0) : null;
 	}
 
+	private List<String> getElementList(List<String> list) {
+		return (list != null && !list.isEmpty()) ? list : null;
+	}
+
 	public Set<ProblemSearchDocument> findDocumentContainingKeyword(String keyword) {
 
 		SearchHits<ProblemSearchDocument> hits = searchRepository.findFieldsContainingKeyword(keyword);
@@ -41,20 +45,20 @@ public class ProblemElasticsearchAdapter implements ProblemDocumentRepository {
 				Map<String, List<String>> hitHighlightFields = hit.getHighlightFields();
 
 				String titleStr = getElement(hitHighlightFields.get("title"));
-				String categoryStr = getElement(hitHighlightFields.get("category"));
+				List<String> categoryStr = getElementList(hitHighlightFields.get("categories"));
 				String referenceStr = getElement(hitHighlightFields.get("reference"));
 				String difficulty = getElement(hitHighlightFields.get("difficulty"));
 				String descHighlight = getElement(hitHighlightFields.get("description"));
-				String categoryKorStr = getElement(hitHighlightFields.get("categoryKor"));
+				List<String> categoryKorStr = getElementList(hitHighlightFields.get("categoriesKor"));
 				String referenceKorStr = getElement(hitHighlightFields.get("referenceKor"));
 				String difficultyEn = getElement(hitHighlightFields.get("difficultyEn"));
 
 				ProblemSearchDocument.ProblemSearchDocumentBuilder builder = ProblemSearchDocument.builder()
 					.title(titleStr)
-					.category(categoryStr != null ? Category.valueOf(categoryStr) : null)
+					.categories(categoryStr != null ? categoryStr.stream().map(Category::valueOf).toList() : null)
 					.reference(referenceStr != null ? Reference.valueOf(referenceStr) : null)
 					.difficulty(difficulty)
-					.categoryKor(categoryKorStr)
+					.categoriesKor(categoryKorStr)
 					.referenceKor(referenceKorStr)
 					.difficultyEn(difficultyEn != null ? Difficulty.valueOf(difficultyEn) : null);
 

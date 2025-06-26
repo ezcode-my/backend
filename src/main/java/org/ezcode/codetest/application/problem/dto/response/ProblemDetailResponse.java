@@ -1,6 +1,7 @@
 package org.ezcode.codetest.application.problem.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
@@ -19,7 +20,7 @@ public record ProblemDetailResponse(
 	String creator,
 
 	@Schema(description = "카테고리", example = "FOR_BEGINNER")
-	Category category,
+	List<Category> categories,
 
 	@Schema(description = "제목", example = "A+B")
 	String title,
@@ -55,7 +56,7 @@ public record ProblemDetailResponse(
 		return ProblemDetailResponse.builder()
 			.id(problem.getId())
 			.creator(problem.getCreator().getNickname())
-			.category(problem.getCategory())
+			.categories(problem.getCategories())
 			.title(problem.getTitle())
 			.description(problem.getDescription())
 			.score(problem.getScore())

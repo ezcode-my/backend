@@ -27,7 +27,7 @@ public record ProblemSearchResponse(
 		return ProblemSearchResponse.builder()
 			.id(document.getId())
 			.title(document.getTitle())
-			.category(document.getCategory().toString())
+			.category(document.getCategories().toString())
 			.difficulty(document.getDifficulty())
 			.reference(document.getReference().toString())
 			.description(document.getDescription())

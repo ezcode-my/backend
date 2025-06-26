@@ -2,6 +2,8 @@ package org.ezcode.codetest.domain.submission.model.entity;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import java.util.List;
+
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
@@ -50,9 +52,9 @@ public class UserProblemResult extends BaseEntity {
         this.isCorrect = isCorrect;
     }
 
-    public String getProblemCategoryDescription() {
+    public List<String> getProblemCategoryDescription() {
 
-        return this.problem.getCategory().getDescription();
+        return this.problem.getCategories().stream().map(Category::getDescription).toList();
     }
 
 }

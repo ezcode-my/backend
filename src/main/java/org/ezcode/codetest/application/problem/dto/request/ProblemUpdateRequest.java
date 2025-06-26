@@ -1,5 +1,7 @@
 package org.ezcode.codetest.application.problem.dto.request;
 
+import java.util.List;
+
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
@@ -11,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record ProblemUpdateRequest(
 
 	@Schema(description = "카테고리", example = "FOR_BEGINNER")
-	Category category,
+	List<Category> categories,
 
 	@Schema(description = "제목", example = "A+B")
 	String title,
@@ -37,7 +39,7 @@ public record ProblemUpdateRequest(
 
 		return Problem.builder()
 			.creator(user)
-			.category(request.category)
+			.categories(request.categories)
 			.title(request.title)
 			.description(request.description)
 			.difficulty(request.difficulty.getDifficulty())

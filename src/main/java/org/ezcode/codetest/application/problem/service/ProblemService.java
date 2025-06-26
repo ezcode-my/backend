@@ -75,7 +75,7 @@ public class ProblemService {
 
 		findProblem.update(
 			findProblem.getCreator(),
-			request.category(),
+			request.categories(),
 			request.title(),
 			request.description(),
 			request.difficulty(),
