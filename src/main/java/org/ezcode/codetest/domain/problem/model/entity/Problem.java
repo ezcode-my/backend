@@ -10,6 +10,7 @@ import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -39,10 +40,6 @@ public class Problem extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "creator_id", nullable = false)
 	private User creator;
-
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private Category category;
 
 	@Column(nullable = false)
 	private String title;
@@ -81,11 +78,21 @@ public class Problem extends BaseEntity {
 	@ElementCollection(fetch = FetchType.LAZY)
 	private List<String> imageUrl = new ArrayList<>();
 
+	@ElementCollection(fetch = FetchType.LAZY)
+	@CollectionTable(
+		name = "problem_categories",
+		joinColumns = @JoinColumn(name = "problem_id")
+	)
+	@Column(name = "category")
+	@Enumerated(EnumType.STRING)
+	private List<Category> categories = new ArrayList<>();
+
 	@Builder
-	public Problem(User creator, Category category, String title, String description, int score, String difficulty,
+	public Problem(User creator, List<Category> categories, String title, String description, int score,
+		String difficulty,
 		Long memoryLimit, Long timeLimit, Reference reference) {
 		this.creator = creator;
-		this.category = category;
+		this.categories = categories;
 		this.title = title;
 		this.description = description;
 		this.score = score;
@@ -99,12 +106,13 @@ public class Problem extends BaseEntity {
 	}
 
 	// 여러개를 하나의 객체로 만드는 것
-	public static Problem of(User creator, Category category, String title, String description, int score, String difficulty,
+	public static Problem of(User creator, List<Category> categories, String title, String description, int score,
+		String difficulty,
 		Long memoryLimit, Long timeLimit, Reference reference) {
 
 		return Problem.builder()
 			.creator(creator)
-			.category(category)
+			.categories(categories)
 			.title(title)
 			.description(description)
 			.score(score)
@@ -116,20 +124,27 @@ public class Problem extends BaseEntity {
 	}
 
 	// 문제 수정 로직
-	public void update(User creator, Category category, String title, String description, Difficulty difficulty,
+	public void update(User creator, List<Category> categories, String title, String description, Difficulty difficulty,
 		Long memoryLimit, Long timeLimit, Reference reference) {
 
-		if (creator != null) this.creator = creator;
-		if (category != null) this.category = category;
-		if (title != null) this.title = title;
-		if (description != null) this.description = description;
+		if (creator != null)
+			this.creator = creator;
+		if (categories != null)
+			this.categories = categories;
+		if (title != null)
+			this.title = title;
+		if (description != null)
+			this.description = description;
 		if (difficulty != null) {
 			this.difficulty = difficulty.getDifficulty();
 			this.score = difficulty.getScore();
 		}
-		if (memoryLimit != null)this.memoryLimit = memoryLimit;
-		if (timeLimit != null) this.timeLimit = timeLimit;
-		if (reference != null) this.reference = reference;
+		if (memoryLimit != null)
+			this.memoryLimit = memoryLimit;
+		if (timeLimit != null)
+			this.timeLimit = timeLimit;
+		if (reference != null)
+			this.reference = reference;
 	}
 
 	public void softDelete() {
@@ -145,7 +160,6 @@ public class Problem extends BaseEntity {
 		if (imageUrl.contains(image)) {
 			return; // 중복된 URL 무시
 		}
-
 		imageUrl.add(image);
 	}
 

@@ -1,5 +1,7 @@
 package org.ezcode.codetest.application.problem.dto.request;
 
+import java.util.List;
+
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
@@ -14,7 +16,7 @@ public record ProblemCreateRequest(
 
 	@NotNull(message = "카테고리를 설정해야 합니다.")
 	@Schema(description = "카테고리", example = "FOR_BEGINNER")
-	Category category,
+	List<Category> categories,
 
 	@NotBlank(message = "문제 제목을 입력하세요.")
 	@Schema(description = "제목", example = "A+B")
@@ -47,7 +49,7 @@ public record ProblemCreateRequest(
 
 		return Problem.builder()
 			.creator(user)
-			.category(request.category)
+			.categories(request.categories)
 			.title(request.title)
 			.description(request.description)
 			.difficulty(request.difficulty.getDifficulty())

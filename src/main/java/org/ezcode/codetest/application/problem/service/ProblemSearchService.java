@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.problem.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,20 +22,39 @@ public class ProblemSearchService {
 
 	public Set<String> getProblemSuggestions(String keyword) {
 
-		Set<ProblemSearchDocument> result = searchDomainService.getSuggestionsByKeyword(keyword);
+		return searchDomainService
+			.getSuggestionsByKeyword(keyword)
+			.stream()
+			.flatMap(doc -> {
+				Stream.Builder<String> searchedKeyword = Stream.builder();
 
-		return result.stream()
-			.flatMap(doc -> Stream.of(
-				Optional.ofNullable(doc.getTitle()),
-				Optional.ofNullable(doc.getReference()).map(Enum::toString),
-				Optional.ofNullable(doc.getDifficulty()),
-				Optional.ofNullable(doc.getCategory()).map(Enum::toString),
-				Optional.ofNullable(doc.getDescription()),
-				Optional.ofNullable(doc.getCategoryKor()),
-				Optional.ofNullable(doc.getDifficultyEn()).map(Enum::toString),
+				Optional.ofNullable(doc.getTitle()).ifPresent(searchedKeyword::add);
+				Optional.ofNullable(doc.getReference())
+					.map(Enum::toString)
+					.ifPresent(searchedKeyword::add);
+				Optional.ofNullable(doc.getDifficulty())
+					.ifPresent(searchedKeyword::add);
+				Optional.ofNullable(doc.getDescription())
+					.ifPresent(searchedKeyword::add);
+				Optional.ofNullable(doc.getDifficultyEn())
+					.map(Enum::toString)
+					.ifPresent(searchedKeyword::add);
 				Optional.ofNullable(doc.getReferenceKor())
-			))
-			.flatMap(Optional::stream)
+					.ifPresent(searchedKeyword::add);
+
+				Optional.ofNullable(doc.getCategories())
+					.stream()
+					.flatMap(Collection::stream)
+					.map(Enum::toString)
+					.forEach(searchedKeyword::add);
+
+				Optional.ofNullable(doc.getCategoriesKor())
+					.stream()
+					.flatMap(Collection::stream)
+					.forEach(searchedKeyword::add);
+
+				return searchedKeyword.build();
+			})
 			.map(String::toUpperCase)
 			.collect(Collectors.toSet());
 	}
