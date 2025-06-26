@@ -79,7 +79,7 @@ public class ProblemDomainService {
 		List<Category> categoryList = categoryRepository.findAllByCategoryCodeIn(codes);
 
 		List<ProblemCategory> problemCategories = categoryList.stream()
-			.map(cat -> ProblemCategory.from(problem, cat))
+			.map(cat -> ProblemCategory.from(savedProblem, cat))
 			.toList();
 
 		problemCategoryRepository.saveAll(problemCategories);
