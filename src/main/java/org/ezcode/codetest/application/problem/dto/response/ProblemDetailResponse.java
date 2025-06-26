@@ -59,7 +59,7 @@ public record ProblemDetailResponse(
 			.creator(problem.getCreator().getNickname())
 			.title(problem.getTitle())
 			.description(problem.getDescription())
-			.categories(categories.stream().map(Category::getCategoryKorName).toList())
+			.categories(categories.stream().map(Category::getKorName).toList())
 			.score(problem.getScore())
 			.difficulty(problem.getDifficulty())
 			.memoryLimit(problem.getMemoryLimit())

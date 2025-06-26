@@ -23,85 +23,86 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubmissionDomainService {
 
-    private final SubmissionRepository submissionRepository;
-    private final UserProblemResultRepository userProblemResultRepository;
+	private final SubmissionRepository submissionRepository;
+	private final UserProblemResultRepository userProblemResultRepository;
 
-    public SubmissionResult finalizeSubmission(SubmissionContext ctx) {
+	public SubmissionResult finalizeSubmission(SubmissionContext ctx) {
 
-        createSubmission(SubmissionData.toEntity(ctx));
+		createSubmission(SubmissionData.toEntity(ctx));
 
-        boolean allPassed = (ctx.getPassedCount() == ctx.getTestcaseCount());
+		boolean allPassed = (ctx.getPassedCount() == ctx.getTestcaseCount());
 
-        return getUserProblemResult(ctx.user().getId(), ctx.getProblem().getId()).map(
-                result -> {
-                    if (!result.isCorrect() && allPassed) {
-                        modifyUserProblemResult(result, true);
-                        return SubmissionResult.from(result, false);
-                    }
-                    return SubmissionResult.from(result, true);
-                })
-            .orElseGet(() -> SubmissionResult.from(createUserProblemResult(
-                    UserProblemResult.builder()
-                        .user(ctx.user())
-                        .problem(ctx.getProblem())
-                        .isCorrect(allPassed)
-                        .build()
-                ),false)
-            );
-    }
+		return getUserProblemResult(ctx.user().getId(), ctx.getProblem().getId()).map(
+				result -> {
+					if (!result.isCorrect() && allPassed) {
+						modifyUserProblemResult(result, true);
+						return SubmissionResult.from(result, ctx.getProblemCategories(), false);
+					}
+					return SubmissionResult.from(result, ctx.getProblemCategories(), true);
+				})
+			.orElseGet(() -> SubmissionResult.from(createUserProblemResult(
+						UserProblemResult.builder()
+							.user(ctx.user())
+							.problem(ctx.getProblem())
+							.isCorrect(allPassed)
+							.build()
+					), ctx.getProblemCategories()
+					, false)
+			);
+	}
 
-    public boolean handleEvaluationAndUpdateStats(
-        TestcaseEvaluationInput input, SubmissionContext ctx
-    ) {
-        boolean isPassed = evaluate(input);
+	public boolean handleEvaluationAndUpdateStats(
+		TestcaseEvaluationInput input, SubmissionContext ctx
+	) {
+		boolean isPassed = evaluate(input);
 
-        if (isPassed) {
-            ctx.incrementPassedCount();
-        } else {
-            ctx.updateMessage(input.resultMessage());
-        }
-        ctx.incrementProcessedCount();
+		if (isPassed) {
+			ctx.incrementPassedCount();
+		} else {
+			ctx.updateMessage(input.resultMessage());
+		}
+		ctx.incrementProcessedCount();
 
-        collectStatistics(ctx.aggregator(), input);
+		collectStatistics(ctx.aggregator(), input);
 
-        return isPassed;
-    }
+		return isPassed;
+	}
 
-    public List<Submission> getSubmissions(Long userId) {
-        return submissionRepository.findSubmissionsByUserId(userId);
-    }
+	public List<Submission> getSubmissions(Long userId) {
+		return submissionRepository.findSubmissionsByUserId(userId);
+	}
 
-    public List<WeeklySolveCount> getWeeklySolveCounts(
-        LocalDateTime startDateTime, LocalDateTime endDateTime
-    ) {
-        return submissionRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
-    }
+	public List<WeeklySolveCount> getWeeklySolveCounts(
+		LocalDateTime startDateTime, LocalDateTime endDateTime
+	) {
+		return submissionRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
+	}
 
-    private boolean evaluate(TestcaseEvaluationInput input) {
-        boolean isCorrect = input.isCorrect();
-        boolean timeEfficient = input.timeEfficient();
-        boolean memoryEfficient = input.memoryEfficient();
-        AnswerEvaluation answerEvaluation = new AnswerEvaluation(isCorrect, timeEfficient, memoryEfficient);
-        return answerEvaluation.isPassed();
-    }
+	private boolean evaluate(TestcaseEvaluationInput input) {
+		boolean isCorrect = input.isCorrect();
+		boolean timeEfficient = input.timeEfficient();
+		boolean memoryEfficient = input.memoryEfficient();
+		AnswerEvaluation answerEvaluation = new AnswerEvaluation(isCorrect, timeEfficient, memoryEfficient);
+		return answerEvaluation.isPassed();
+	}
 
-    private void collectStatistics(SubmissionAggregator aggregator, TestcaseEvaluationInput input) {
-        aggregator.accumulate(input);
-    }
+	private void collectStatistics(SubmissionAggregator aggregator, TestcaseEvaluationInput input) {
+		aggregator.accumulate(input);
+	}
 
-    private void createSubmission(Submission submission) {
-        submissionRepository.saveSubmission(submission);
-    }
+	private void createSubmission(Submission submission) {
+		submissionRepository.saveSubmission(submission);
+	}
 
-    private Optional<UserProblemResult> getUserProblemResult(Long userId, Long problemId) {
-        return userProblemResultRepository.findUserProblemResultByUserIdAndProblemId(userId, problemId);
-    }
+	private Optional<UserProblemResult> getUserProblemResult(Long userId, Long problemId) {
+		return userProblemResultRepository.findUserProblemResultByUserIdAndProblemId(userId, problemId);
+	}
 
-    private UserProblemResult createUserProblemResult(UserProblemResult userProblemResult) {
-        return userProblemResultRepository.saveUserProblemResult(userProblemResult);
-    }
+	private UserProblemResult createUserProblemResult(UserProblemResult userProblemResult) {
+		return userProblemResultRepository.saveUserProblemResult(userProblemResult);
+	}
 
-    private void modifyUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
-        userProblemResultRepository.updateUserProblemResult(userProblemResult, isCorrect);
-    }
+	private void modifyUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
+		userProblemResultRepository.updateUserProblemResult(userProblemResult, isCorrect);
+	}
 }

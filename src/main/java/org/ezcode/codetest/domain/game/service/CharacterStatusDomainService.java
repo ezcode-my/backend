@@ -64,7 +64,7 @@ public class CharacterStatusDomainService {
 
 		int randomIndex = ThreadLocalRandom.current().nextInt(problemCategory.size());
 
-		Map<Stat, Double> increaseStatRate = statUpdateUtil.getStatIncreasePerProblem(problemCategory.get(randomIndex));
+		Map<Stat, Double> increaseStatRate = statUpdateUtil.getStatIncreasePerProblemCategory(problemCategory.get(randomIndex));
 
 		GameCharacter character = characterRepository.findByUserId(userId)
 			.orElseThrow(() -> new GameException(GameExceptionCode.CHARACTER_NOT_FOUND));

@@ -24,13 +24,13 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	@Override
 	public Optional<Category> findByCategoryCode(String categoryCode) {
 
-		return categoryRepository.findByCategoryCode(categoryCode);
+		return categoryRepository.findByCode(categoryCode);
 	}
 
 	@Override
 	public List<Category> findAllByCategoryCodeIn(List<String> categoryCodes) {
 
-		return categoryRepository.findAllByCategoryCodeIn(categoryCodes);
+		return categoryRepository.findAllByCodeIn(categoryCodes);
 	}
 
 }

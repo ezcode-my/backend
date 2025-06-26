@@ -181,12 +181,12 @@ public class ProblemSearchDocument {
 		return ProblemSearchDocument.builder()
 			.id(problem.getId())
 			.title(problem.getTitle())
-			.categories(categories.stream().map(Category::getCategoryCode).toList())
+			.categories(categories.stream().map(Category::getCode).toList())
 			.difficulty(problem.getDifficulty().getDifficulty())
 			.reference(problem.getReference())
 			.description(problem.getDescription())
 			.score(problem.getScore())
-			.categoriesKor(categories.stream().map(Category::getCategoryKorName).toList())
+			.categoriesKor(categories.stream().map(Category::getKorName).toList())
 			.difficultyEn(problem.getDifficulty())
 			.referenceKor(problem.getReference().getDescription())
 			.isDeleted(problem.getIsDeleted())
@@ -200,8 +200,8 @@ public class ProblemSearchDocument {
 	public void update(Problem problem, List<Category> categories) {
 		if (problem.getId().equals(this.id)) {
 			this.title = problem.getTitle();
-			this.categories = categories.stream().map(Category::getCategoryCode).toList();
-			this.categoriesKor = categories.stream().map(Category::getCategoryKorName).toList();
+			this.categories = categories.stream().map(Category::getCode).toList();
+			this.categoriesKor = categories.stream().map(Category::getKorName).toList();
 			this.difficulty = problem.getDifficulty().getDifficulty();
 			this.difficultyEn = problem.getDifficulty();
 			this.reference = problem.getReference();

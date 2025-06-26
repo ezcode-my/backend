@@ -45,7 +45,7 @@ public record ProblemResponse(
 		return ProblemResponse.builder()
 			.id(problem.getId())
 			.creator(problem.getCreator() != null ? problem.getCreator().getNickname() : "존재하지 않는 이름.")
-			.categories(categories.stream().map(Category::getCategoryKorName).toList())
+			.categories(categories.stream().map(Category::getKorName).toList())
 			.title(problem.getTitle())
 			.score(problem.getScore())
 			.difficulty(problem.getDifficulty())

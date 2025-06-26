@@ -9,6 +9,8 @@ import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
+import org.ezcode.codetest.domain.game.model.character.CategoryStat;
+import org.ezcode.codetest.domain.game.util.StatUpdateUtil;
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.model.entity.Category;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
@@ -38,12 +40,15 @@ public class ProblemService {
 
 	private final ProblemDomainService problemDomainService;
 	private final UserDomainService userDomainService;
+	private final StatUpdateUtil statUpdateUtil;
 	private final S3Uploader s3Uploader;
 
 	@Transactional
 	public void createCategory(CategoryCreateRequest requestDto) {
 
-		problemDomainService.createCategory(requestDto.toCategory());
+		Category category =problemDomainService.createCategory(requestDto.toCategory());
+
+		statUpdateUtil.save(new CategoryStat(category));
 	}
 
 	// 문제 생성 ( 관리자 )

@@ -19,14 +19,14 @@ public class Category {
 	private Long id;
 
 	@Column(unique = true, nullable = false)
-	private String categoryCode;
+	private String code;
 
 	@Column(unique = true, nullable = false)
-	private String categoryKorName;
+	private String korName;
 
-	public Category (String category, String categoryKor) {
-		this.categoryCode = category;
-		this.categoryKorName = categoryKor;
+	public Category (String code, String korName) {
+		this.code = code;
+		this.korName = korName;
 	}
 
 }

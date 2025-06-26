@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryJpaRepository extends JpaRepository<Category, Long> {
 
-	Optional<Category> findByCategoryCode(String categoryCode);
+	Optional<Category> findByCode(String categoryCode);
 
-	List<Category> findAllByCategoryCodeIn(List<String> categoryCodes);
+	List<Category> findAllByCodeIn(List<String> categoryCodes);
 }
