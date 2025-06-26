@@ -72,6 +72,8 @@ public class User extends BaseEntity {
 
 	private boolean verified; //이메일 인증 여부
 
+	private String githubAccessToken; //깃허브 access_token 값
+
 
 	/*
 	처음 유저 생성(가입) 시에는 기본 정보만 받음
@@ -177,6 +179,10 @@ public class User extends BaseEntity {
 
 	public void setGithubUrl(String githubUrl){
 		this.githubUrl = githubUrl;
+	}
+
+	public void setGithubAccessToken(String githubAccessToken){
+		this.githubAccessToken = githubAccessToken;
 	}
 
 	public void decreaseReviewToken() {

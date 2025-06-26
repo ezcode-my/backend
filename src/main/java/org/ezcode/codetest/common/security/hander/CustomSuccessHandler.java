@@ -10,6 +10,9 @@ import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,14 +31,17 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private final UserDomainService userDomainService;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ObjectMapper objectMapper; //json직렬화
+	private final OAuth2AuthorizedClientService authorizedClientService;
 
 	public CustomSuccessHandler(JwtUtil jwtUtil, UserDomainService userDomainService,
-		RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper) {
+		RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper,
+        OAuth2AuthorizedClientService authorizedClientService) {
 		this.jwtUtil = jwtUtil;
 		this.userDomainService = userDomainService;
 		this.redisTemplate = redisTemplate;
 		this.objectMapper = objectMapper;
-	}
+        this.authorizedClientService = authorizedClientService;
+    }
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws
@@ -46,6 +52,21 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 		User loginUser= userDomainService.getUserByEmail(customUserDetails.getEmail());
 		log.info("loginUser Name: {}", loginUser.getUsername());
+
+		log.info("provider : {}", customUserDetails.getProvider().toString());
+		if (customUserDetails.getProvider().equalsIgnoreCase("github")) {
+			//깃허브 access-token 가져오기
+
+			OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+			OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
+				oauthToken.getAuthorizedClientRegistrationId(),
+				oauthToken.getName()
+			);
+			String githubAccessToken = client.getAccessToken().getTokenValue();
+			log.info("--------AccessToken : {}", githubAccessToken);
+			loginUser.setGithubAccessToken(githubAccessToken);
+			userDomainService.updateUserGithubAccessToken(loginUser);
+		}
 
 		String accessToken = jwtUtil.createAccessToken(
 			loginUser.getId(),

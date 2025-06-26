@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "OAuth2", description = "OAuth2 인증 관련 API")
 public class OAuth2Controller {
 
-    @Operation(summary = "GitHub OAuth2 로그인 시작",
+    @Operation(summary = "GitHub & Google OAuth2 로그인 API",
         description = """
                프론트엔드에서 GitHub 로그인 버튼 클릭 시 이 API를 먼저 호출
                redirect_uri는 로그인 완료 후 accessToken과 refreshToken을 전달받을 프론트의 콜백 URL
