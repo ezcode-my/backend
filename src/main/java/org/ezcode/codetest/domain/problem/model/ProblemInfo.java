@@ -10,9 +10,7 @@ public record ProblemInfo(
 
 	Problem problem,
 
-	List<Testcase> testcaseList,
-
-	List<Category> problemCategories
+	List<Testcase> testcaseList
 
 ) {
 	public long getTimeLimit() {
