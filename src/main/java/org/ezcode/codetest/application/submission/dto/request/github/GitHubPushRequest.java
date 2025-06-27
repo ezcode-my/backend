@@ -18,9 +18,13 @@ public record GitHubPushRequest(
 
     Long problemId,
 
+    String difficulty,
+
     String problemTitle,
 
     String problemDescription,
+
+    String languageName,
 
     Long averageMemoryUsage,
 
@@ -38,8 +42,10 @@ public record GitHubPushRequest(
             info.getBranch(),
             info.getGithubAccessToken(),
             ctx.getProblem().getId(),
+            ctx.getProblem().getDifficulty().getDifficulty(),
             ctx.getProblem().getTitle(),
             ctx.getProblem().getDescription(),
+            ctx.getLanguageName(),
             ctx.aggregator().averageMemoryUsage(),
             ctx.aggregator().averageExecutionTime(),
             ctx.getSourceCode(),
