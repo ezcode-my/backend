@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.submission.port;
 
+import org.ezcode.codetest.application.submission.dto.event.GitStatusEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionErrorEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionJudgingFinishedEvent;
 import org.ezcode.codetest.application.submission.dto.event.TestcaseListInitializedEvent;
@@ -14,4 +15,6 @@ public interface SubmissionEventService {
     void publishFinalResult(SubmissionJudgingFinishedEvent event);
 
     void publishSubmissionError(SubmissionErrorEvent event);
+
+    void publishGitStatusUpdate(GitStatusEvent event);
 }
