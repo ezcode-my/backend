@@ -9,6 +9,7 @@ import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.entity.UserGithubInfo;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.common.security.util.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -66,15 +67,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 				oauthToken.getName()
 			);
 
+			UserGithubInfo userGithubInfo = userDomainService.getUserGithubInfoById(loginUser.getId());
+
 			//AES 암호화
             try {
 				String encodedGithubToken = aesUtil.encrypt(client.getAccessToken().getTokenValue());
-				loginUser.setGithubAccessToken(encodedGithubToken);
+
+				userGithubInfo.setGithubAccessToken(encodedGithubToken);
             } catch (Exception e) {
 				log.error(e.getMessage());
                 throw new AuthException(AuthExceptionCode.TOKEN_ENCODE_FAIL);
             }
-			userDomainService.updateUserGithubAccessToken(loginUser);
+			userDomainService.updateUserGithubAccessToken(userGithubInfo);
 		}
 
 		String accessToken = jwtUtil.createAccessToken(

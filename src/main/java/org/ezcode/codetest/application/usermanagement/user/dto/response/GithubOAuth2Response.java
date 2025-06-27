@@ -51,4 +51,10 @@ public class GithubOAuth2Response implements OAuth2Response{
     public String getGithubUrl(){
         return attributes.get("html_url").toString();
     }
+
+    @Override
+    @Schema(description = "Github owner name", example = "ezcode")
+    public String getOwner(){
+        return attributes.get("login").toString();
+    }
 }

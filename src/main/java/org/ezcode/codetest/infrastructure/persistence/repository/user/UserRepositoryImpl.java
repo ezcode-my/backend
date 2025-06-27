@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.entity.UserGithubInfo;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
@@ -51,5 +52,7 @@ public class UserRepositoryImpl implements UserRepository {
 	public void updateUserGithubAccessToken(User loginUser) {
 		userJpaRepository.save(loginUser);
 	}
+
+
 
 }

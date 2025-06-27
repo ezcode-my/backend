@@ -21,4 +21,5 @@ public interface UserRepository {
 	void updateReviewTokens(List<Long> ids , int newToken);
 
 	void updateUserGithubAccessToken(User loginUser);
+
 }

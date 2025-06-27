@@ -48,5 +48,9 @@ public class GoogleOAuth2Response implements OAuth2Response {
 		return "";
 	}
 
+	@Override
+	public String getOwner() {
+		return "";
+	}
 
 }

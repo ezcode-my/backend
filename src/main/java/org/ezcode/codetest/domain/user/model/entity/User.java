@@ -72,7 +72,7 @@ public class User extends BaseEntity {
 
 	private boolean verified; //이메일 인증 여부
 
-	private String githubAccessToken; //깃허브 access_token 값
+	private boolean gitPushStatus; //깃허브 자동 push 여부
 
 
 	/*
@@ -91,6 +91,7 @@ public class User extends BaseEntity {
 			.role(UserRole.ADMIN) // 테스트용
 			.isDeleted(false)
 			.verified(false)
+			.gitPushStatus(false)
 			.build();
 	}
 
@@ -108,6 +109,7 @@ public class User extends BaseEntity {
 			.password(password)
 			.isDeleted(false)
 			.verified(false)
+			.gitPushStatus(false)
 			.build();
 	}
 
@@ -123,13 +125,14 @@ public class User extends BaseEntity {
 			.isDeleted(false)
 			.verified(false)
 			.githubUrl(githubUrl)
+			.gitPushStatus(false)
 			.build();
 	}
 
 
 	@Builder
 	public User(String email, String password, String username, String nickname,
-		Integer age, Tier tier, UserRole role, boolean isDeleted, boolean verified, String githubUrl) {
+		Integer age, Tier tier, UserRole role, boolean isDeleted, boolean verified, String githubUrl, boolean gitPushStatus) {
 		this.email = email;
 		this.password = password;
 		this.username = username;
@@ -140,6 +143,7 @@ public class User extends BaseEntity {
 		this.isDeleted = isDeleted;
 		this.verified = verified;
 		this.githubUrl = githubUrl;
+		this.gitPushStatus = gitPushStatus;
 	}
 
 	/*
@@ -181,9 +185,6 @@ public class User extends BaseEntity {
 		this.githubUrl = githubUrl;
 	}
 
-	public void setGithubAccessToken(String githubAccessToken){
-		this.githubAccessToken = githubAccessToken;
-	}
 
 	public void decreaseReviewToken() {
 		this.reviewToken -= 1;

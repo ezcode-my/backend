@@ -18,4 +18,8 @@ public interface OAuth2Response {
 
 	//깃헙 링크
 	String getGithubUrl();
+
+
+	//깃헙 owner
+	String getOwner();
 }

@@ -12,7 +12,8 @@ public class UserFactory {
     ) {
         //나중에 확장성 고려해서 switch문 사용
         return switch (provider.toLowerCase()) {
-            case "github" -> User.githubUser(
+            case "github" ->
+                User.githubUser(
                 response.getEmail(),
                 response.getName(),
                 nickname,
