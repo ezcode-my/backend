@@ -28,7 +28,7 @@
         "nori_pos_filter": {
           "type": "nori_part_of_speech",
           "stoptags": [
-            "IC","MAG","MAJ","MM","VA","VX","VCP","VSV",
+            "IC","MM","VA","VX","VCP","VSV",
             "SF","SP","SE","XPN","XSN","XSV","XSA","NA","UNA"
           ]
         },

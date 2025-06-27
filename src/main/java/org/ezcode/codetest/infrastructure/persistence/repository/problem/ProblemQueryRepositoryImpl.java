@@ -32,11 +32,12 @@ public class ProblemQueryRepositoryImpl implements ProblemRepositoryCustom {
 
 		builder.and(problem.isDeleted.isFalse());
 
+		/*
 		if(searchCondition.category() != null) {
 			builder.and(problem.categories.contains(searchCondition.category()));
 		}
-
-		if(searchCondition.difficulty() != null) {
+		*/
+		if (searchCondition.difficulty() != null) {
 			builder.and(problem.difficulty.eq(Difficulty.valueOf(searchCondition.difficulty())));
 		}
 

@@ -1,8 +1,8 @@
 package org.ezcode.codetest.presentation.problemmanagement.problem;
 
+import org.ezcode.codetest.application.problem.dto.request.CategoryCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
-import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.service.ProblemService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
@@ -33,31 +33,32 @@ public class ProblemAdminController {
 
 	private final ProblemService problemService;
 
-	@PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+	@PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	@Operation(summary = "문제 등록", description = "문제를 등록합니다.")
 	@ApiResponse(responseCode = "201", description = "문제 생성 성공")
-	public ResponseEntity<ProblemDetailResponse> createProblem(
+	public ResponseEntity<Void> createProblem(
 		@RequestPart @Valid ProblemCreateRequest request,
 		@RequestPart(value = "image", required = false) MultipartFile image,
 		@AuthenticationPrincipal AuthUser user
 	) {
-
+		problemService.createProblem(request, image, user);
 		return ResponseEntity
-				.status(HttpStatus.CREATED)
-				.body(problemService.createProblem(request, image, user));
+			.status(HttpStatus.CREATED)
+			.build();
 	}
 
 	@PutMapping("/{problemId}")
 	@Operation(summary = "문제 수정", description = "문제를 수정합니다.")
 	@ApiResponse(responseCode = "200", description = "문제 수정 성공")
-	public ResponseEntity<ProblemDetailResponse> modifyProblem(
+	public ResponseEntity<Void> modifyProblem(
 		@PathVariable Long problemId,
 		@Valid @RequestBody ProblemUpdateRequest request
 	) {
+		problemService.modifyProblem(problemId, request);
 
 		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(problemService.modifyProblem(problemId, request));
+			.status(HttpStatus.OK)
+			.build();
 	}
 
 	@DeleteMapping("/{problemId}")
@@ -68,7 +69,18 @@ public class ProblemAdminController {
 		problemService.removeProblem(problemId);
 
 		return ResponseEntity
-				.status(HttpStatus.NO_CONTENT)
-				.build();
+			.status(HttpStatus.NO_CONTENT)
+			.build();
 	}
+
+	@PostMapping("/categories")
+	public ResponseEntity<Void> createCategory(@RequestBody CategoryCreateRequest request) {
+
+		problemService.createCategory(request);
+
+		return ResponseEntity
+			.status(HttpStatus.CREATED)
+			.build();
+	}
+
 }

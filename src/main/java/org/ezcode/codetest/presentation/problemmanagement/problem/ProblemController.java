@@ -4,7 +4,6 @@ import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.application.problem.service.ProblemService;
-import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,11 +34,11 @@ public class ProblemController {
 	@ApiResponse(responseCode = "200", description = "문제 전체 조회성공")
 	public ResponseEntity<Page<ProblemResponse>> getProblemsList(
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-		@RequestParam(required = false) Category category,
+		@RequestParam(required = false) String categoryCode,
 		@RequestParam(required = false) String difficulty
 	) {
 
-		ProblemSearchCondition searchCondition = new ProblemSearchCondition(category, difficulty);
+		ProblemSearchCondition searchCondition = new ProblemSearchCondition(categoryCode, difficulty);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)

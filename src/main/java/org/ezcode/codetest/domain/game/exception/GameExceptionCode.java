@@ -31,7 +31,8 @@ public enum GameExceptionCode implements ResponseCode {
 	ENCOUNTER_CHOICE_NOT_EXISTS(false, HttpStatus.BAD_REQUEST, "해당 인카운터 선택지가 존재하지 않습니다."),
 	ENCOUNTER_TOKEN_EXHAUSTED(false, HttpStatus.BAD_REQUEST, "인카운터 매칭 토큰을 전부 소진했습니다. 6 시간 이후 리필됩니다."),
 	BATTLE_TOKEN_EXHAUSTED(false, HttpStatus.BAD_REQUEST, "배틀 매칭 토큰을 전부 소진했습니다. 6 시간 이후 리필됩니다."),
-	PLAYER_TOKEN_BUCKET_NOT_EXISTS(false, HttpStatus.NOT_FOUND, "해당 캐릭터의 매칭 토큰 버킷이 존재하지 않습니다.");
+	PLAYER_TOKEN_BUCKET_NOT_EXISTS(false, HttpStatus.NOT_FOUND, "해당 캐릭터의 매칭 토큰 버킷이 존재하지 않습니다."),
+	CATEGORY_STAT_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 카테고리에 매칭되는 스텟 상승 비율이 없습니다.");
 
 	private final boolean success;
 	private final HttpStatus status;

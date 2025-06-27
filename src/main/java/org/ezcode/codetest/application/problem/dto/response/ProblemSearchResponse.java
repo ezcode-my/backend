@@ -29,7 +29,7 @@ public record ProblemSearchResponse(
 		return ProblemSearchResponse.builder()
 			.id(document.getId())
 			.title(document.getTitle())
-			.category(document.getCategories().stream().map(Enum::toString).toList())
+			.category(document.getCategories())
 			.difficulty(document.getDifficulty())
 			.reference(document.getReference().toString())
 			.description(document.getDescription())

@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
-import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -79,21 +77,11 @@ public class Problem extends BaseEntity {
 	@ElementCollection(fetch = FetchType.LAZY)
 	private List<String> imageUrl = new ArrayList<>();
 
-	@ElementCollection(fetch = FetchType.LAZY)
-	@CollectionTable(
-		name = "problem_categories",
-		joinColumns = @JoinColumn(name = "problem_id")
-	)
-	@Column(name = "category")
-	@Enumerated(EnumType.STRING)
-	private List<Category> categories = new ArrayList<>();
-
 	@Builder
-	public Problem(User creator, List<Category> categories, String title, String description, int score,
+	public Problem(User creator, String title, String description, int score,
 		Difficulty difficulty,
 		Long memoryLimit, Long timeLimit, Reference reference) {
 		this.creator = creator;
-		this.categories = categories;
 		this.title = title;
 		this.description = description;
 		this.score = score;
@@ -107,13 +95,12 @@ public class Problem extends BaseEntity {
 	}
 
 	// 여러개를 하나의 객체로 만드는 것
-	public static Problem of(User creator, List<Category> categories, String title, String description, int score,
+	public static Problem of(User creator, String title, String description, int score,
 		Difficulty difficulty,
 		Long memoryLimit, Long timeLimit, Reference reference) {
 
 		return Problem.builder()
 			.creator(creator)
-			.categories(categories)
 			.title(title)
 			.description(description)
 			.score(score)
@@ -125,13 +112,11 @@ public class Problem extends BaseEntity {
 	}
 
 	// 문제 수정 로직
-	public void update(User creator, List<Category> categories, String title, String description, Difficulty difficulty,
+	public void update(User creator, String title, String description, Difficulty difficulty,
 		Long memoryLimit, Long timeLimit, Reference reference) {
 
 		if (creator != null)
 			this.creator = creator;
-		if (categories != null)
-			this.categories = categories;
 		if (title != null)
 			this.title = title;
 		if (description != null)
