@@ -128,7 +128,7 @@ public record SubmissionContext(
     }
 
     public List<String> getCategories() {
-        return getProblem().getCategories().stream().map(ProblemCategory::getCategoryForKor).toList();
+        return problemInfo.categories();
     }
 
     public void incrementTotalSubmissions() {

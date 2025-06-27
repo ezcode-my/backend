@@ -57,4 +57,5 @@ public class ProblemCategory {
 	public String getCategoryForKor() {
 		return category.getKorName();
 	}
+
 }

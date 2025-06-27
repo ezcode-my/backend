@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.ezcode.codetest.domain.problem.model.entity.ProblemCategory;
 import org.ezcode.codetest.domain.problem.repository.ProblemCategoryRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class ProblemCategoryRepositoryImpl implements ProblemCategoryRepository 
 	}
 
 	@Override
+	@Cacheable(value = "problemCategory", key = "#problemId")
 	public List<ProblemCategory> findByProblemId(Long problemId) {
 
 		return problemCategoryRepository.findByProblemId(problemId);

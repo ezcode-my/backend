@@ -1,9 +1,7 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
@@ -75,9 +73,6 @@ public class Problem extends BaseEntity {
 
 	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Testcase> testcases = new ArrayList<>();
-
-	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<ProblemCategory> categories = new LinkedHashSet<>();
 
 	@ElementCollection(fetch = FetchType.LAZY)
 	private List<String> imageUrl = new ArrayList<>();
