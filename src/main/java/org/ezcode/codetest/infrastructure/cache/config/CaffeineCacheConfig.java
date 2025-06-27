@@ -48,9 +48,15 @@ public class CaffeineCacheConfig {
 				.expireAfterWrite(Duration.ofMinutes(10))
 				.build());
 
+		CaffeineCache categoryStatCache = new CaffeineCache("categoryStat",
+			Caffeine.newBuilder()
+				.expireAfterWrite(Duration.ofMinutes(10))
+				.build());
+
 		SimpleCacheManager manager = new SimpleCacheManager();
 		manager.setCaches(
-			List.of(skillCache, itemsByCategoryCache, encountersCache, countCache, historyCache, choiceCache));
+			List.of(skillCache, itemsByCategoryCache, encountersCache, countCache, historyCache, choiceCache,
+				categoryStatCache));
 		return manager;
 	}
 }

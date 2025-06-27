@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
-import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
@@ -55,7 +54,7 @@ public class ProblemElasticsearchAdapter implements ProblemDocumentRepository {
 
 				ProblemSearchDocument.ProblemSearchDocumentBuilder builder = ProblemSearchDocument.builder()
 					.title(titleStr)
-					.categories(categoryStr != null ? categoryStr.stream().map(Category::valueOf).toList() : null)
+					.categories(categoryStr)
 					.reference(referenceStr != null ? Reference.valueOf(referenceStr) : null)
 					.difficulty(difficulty)
 					.categoriesKor(categoryKorStr)

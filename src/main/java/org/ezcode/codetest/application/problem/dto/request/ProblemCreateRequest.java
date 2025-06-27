@@ -1,9 +1,8 @@
 package org.ezcode.codetest.application.problem.dto.request;
 
-import java.util.List;
+import java.util.Map;
 
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
-import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -14,9 +13,11 @@ import jakarta.validation.constraints.NotNull;
 
 public record ProblemCreateRequest(
 
-	@NotNull(message = "카테고리를 설정해야 합니다.")
-	@Schema(description = "카테고리 목록", example = "[\"FOR_BEGINNER\", \"ALGORITHM\"]")
-	List<Category> categories,
+
+	@NotNull(message = "카테고리 이름를 설정해야 합니다.")
+	@Schema(description = "카테고리 코드 식별자(영어) / 한글 이름", example = "FOR_BEGINNER : 입문자용")
+	Map<String, String> categories,
+
 
 	@NotBlank(message = "문제 제목을 입력하세요.")
 	@Schema(description = "제목", example = "A+B")
@@ -45,11 +46,10 @@ public record ProblemCreateRequest(
 ) {
 
 	// Dto -> Entity 변환
-	public static Problem toEntity(ProblemCreateRequest request, User user) {
+	public static Problem toProblem(ProblemCreateRequest request, User user) {
 
 		return Problem.builder()
 			.creator(user)
-			.categories(request.categories)
 			.title(request.title)
 			.description(request.description)
 			.difficulty(request.difficulty)

@@ -3,7 +3,6 @@ package org.ezcode.codetest.application.problem.dto.request;
 import java.util.List;
 
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
-import org.ezcode.codetest.domain.problem.model.enums.Category;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -12,8 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProblemUpdateRequest(
 
-	@Schema(description = "카테고리 목록", example = "[\"FOR_BEGINNER\", \"ALGORITHM\"]")
-	List<Category> categories,
+	@Schema(description = "카테고리", example = "FOR_BEGINNER")
+	List<String> categories,
 
 	@Schema(description = "제목", example = "A+B")
 	String title,
@@ -39,7 +38,6 @@ public record ProblemUpdateRequest(
 
 		return Problem.builder()
 			.creator(user)
-			.categories(request.categories)
 			.title(request.title)
 			.description(request.description)
 			.difficulty(request.difficulty)

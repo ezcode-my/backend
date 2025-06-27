@@ -18,7 +18,7 @@ public class RedisJudgeQueueProducer implements QueueProducer {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void enqueue(SubmissionMessage submissionMessage) {
-        log.info("[SSE enqueue] emitterKey: {}", submissionMessage.sessionKey());
+        log.info("[WS enqueue] sessionKey: {}", submissionMessage.sessionKey());
         Map<String, String> map = Map.of(
             "sessionKey", submissionMessage.sessionKey(),
             "problemId", submissionMessage.problemId().toString(),

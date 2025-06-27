@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 import org.ezcode.codetest.application.submission.dto.request.review.ReviewPayload;
 import org.ezcode.codetest.application.submission.model.OpenAIResponse;
 import org.ezcode.codetest.application.submission.model.ReviewResult;
+import org.ezcode.codetest.application.submission.port.ExceptionNotifier;
 import org.ezcode.codetest.application.submission.port.ReviewClient;
 import org.ezcode.codetest.domain.submission.exception.CodeReviewException;
 import org.ezcode.codetest.domain.submission.exception.code.CodeReviewExceptionCode;
@@ -37,6 +38,7 @@ public class OpenAIReviewClient implements ReviewClient {
     private WebClient webClient;
     private final OpenAIMessageBuilder openAiMessageBuilder;
     private final OpenAIResponseValidator openAiResponseValidator;
+    private final ExceptionNotifier exceptionNotifier;
 
     @PostConstruct
     private void init() {
@@ -59,6 +61,7 @@ public class OpenAIReviewClient implements ReviewClient {
                 content = callChatApi(requestBody);
             } catch (CodeReviewException e) {
                 log.error("OpenAI API 호출 실패: {}, {}", e.getHttpStatus(), e.getMessage());
+                exceptionNotifier.notifyException("requestReview", e);
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return new ReviewResult(openAiMessageBuilder.buildErrorMessage());
             }
@@ -68,6 +71,7 @@ public class OpenAIReviewClient implements ReviewClient {
             }
             log.warn("[{}/{}][isCorrect={}] 포맷 검증 실패:\n{}", attempt, maxAttempts, reviewPayload.isCorrect(), content);
         }
+        exceptionNotifier.notifyException("requestReview", new CodeReviewException(CodeReviewExceptionCode.REVIEW_INVALID_FORMAT));
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         return new ReviewResult(openAiMessageBuilder.buildErrorMessage());
     }

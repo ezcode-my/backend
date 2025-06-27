@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
-import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.submission.model.SubmissionResult;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
@@ -17,7 +16,6 @@ import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
 import org.ezcode.codetest.domain.submission.repository.SubmissionRepository;
 import org.ezcode.codetest.domain.submission.repository.UserProblemResultRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,97 +23,86 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubmissionDomainService {
 
-    private final SubmissionRepository submissionRepository;
-    private final UserProblemResultRepository userProblemResultRepository;
+	private final SubmissionRepository submissionRepository;
+	private final UserProblemResultRepository userProblemResultRepository;
 
-    @Transactional
-    public SubmissionResult finalizeSubmission(
-        SubmissionData submissionData,
-        SubmissionAggregator aggregator,
-        int passedCount) {
+	public SubmissionResult finalizeSubmission(SubmissionContext ctx) {
 
-        createSubmission(SubmissionData.toEntity(
-                submissionData.withAggregatedStats(aggregator),
-                passedCount
-            )
-        );
+		createSubmission(SubmissionData.toEntity(ctx));
 
-        boolean allPassed = (passedCount == submissionData.getTestCaseSize());
+		boolean allPassed = (ctx.getPassedCount() == ctx.getTestcaseCount());
 
-        return getUserProblemResult(submissionData.getUserId(), submissionData.getProblemId()).map(
-                result -> {
-                    if (!result.isCorrect() && allPassed) {
-                        modifyUserProblemResult(result, true);
-                        return SubmissionResult.from(result, false);
-                    }
-                    return SubmissionResult.from(result, true);
-                })
-            .orElseGet(() -> SubmissionResult.from(createUserProblemResult(
-                UserProblemResult.builder()
-                    .user(submissionData.user())
-                    .problem(submissionData.problem())
-                    .isCorrect(allPassed)
-                    .build()
-                ),false)
-            );
-    }
+		return getUserProblemResult(ctx.user().getId(), ctx.getProblem().getId()).map(
+				result -> {
+					if (!result.isCorrect() && allPassed) {
+						modifyUserProblemResult(result, true);
+						return SubmissionResult.from(result, ctx.getProblemCategories(), false);
+					}
+					return SubmissionResult.from(result, ctx.getProblemCategories(), true);
+				})
+			.orElseGet(() -> SubmissionResult.from(createUserProblemResult(
+						UserProblemResult.builder()
+							.user(ctx.user())
+							.problem(ctx.getProblem())
+							.isCorrect(allPassed)
+							.build()
+					), ctx.getProblemCategories()
+					, false)
+			);
+	}
 
-    public AnswerEvaluation handleEvaluationAndUpdateStats(
-        TestcaseEvaluationInput input, ProblemInfo problemInfo, SubmissionContext context
-    ) {
-        AnswerEvaluation evaluation =
-            evaluate(input.expectedOutput(), input.actualOutput(), input.success(),
-                input.executionTime(), input.memoryUsage(), problemInfo);
+	public boolean handleEvaluationAndUpdateStats(
+		TestcaseEvaluationInput input, SubmissionContext ctx
+	) {
+		boolean isPassed = evaluate(input);
 
-        if (evaluation.isPassed()) {
-            context.incrementPassedCount();
-        } else {
-            context.updateMessage(input.resultMessage());
-        }
-        context.incrementProcessedCount();
+		if (isPassed) {
+			ctx.incrementPassedCount();
+		} else {
+			ctx.updateMessage(input.resultMessage());
+		}
+		ctx.incrementProcessedCount();
 
-        collectStatistics(context.aggregator(), input.executionTime(), input.memoryUsage());
+		collectStatistics(ctx.aggregator(), input);
 
-        return evaluation;
-    }
+		return isPassed;
+	}
 
-    public List<Submission> getSubmissions(Long userId) {
-        return submissionRepository.findSubmissionsByUserId(userId);
-    }
+	public List<Submission> getSubmissions(Long userId) {
+		return submissionRepository.findSubmissionsByUserId(userId);
+	}
 
-    public List<WeeklySolveCount> getWeeklySolveCounts(
-        LocalDateTime startDateTime, LocalDateTime endDateTime
-    ) {
-        return submissionRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
-    }
+	public List<WeeklySolveCount> getWeeklySolveCounts(
+		LocalDateTime startDateTime, LocalDateTime endDateTime
+	) {
+		return submissionRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
+	}
 
-    private AnswerEvaluation evaluate(
-        String expectedOutput, String actualOutput, boolean success, long executionTime, long memoryUsage,
-        ProblemInfo problemInfo
-    ) {
-        boolean isCorrect = success && expectedOutput.strip().equals(actualOutput.strip());
-        boolean timeEfficient = executionTime <= problemInfo.getTimeLimit();
-        boolean memoryEfficient = memoryUsage <= problemInfo.getMemoryLimit();
-        return new AnswerEvaluation(isCorrect, timeEfficient, memoryEfficient);
-    }
+	private boolean evaluate(TestcaseEvaluationInput input) {
+		boolean isCorrect = input.isCorrect();
+		boolean timeEfficient = input.timeEfficient();
+		boolean memoryEfficient = input.memoryEfficient();
+		AnswerEvaluation answerEvaluation = new AnswerEvaluation(isCorrect, timeEfficient, memoryEfficient);
+		return answerEvaluation.isPassed();
+	}
 
-    private void collectStatistics(SubmissionAggregator aggregator, long executionTime, long memoryUsage) {
-        aggregator.accumulate(executionTime, memoryUsage);
-    }
+	private void collectStatistics(SubmissionAggregator aggregator, TestcaseEvaluationInput input) {
+		aggregator.accumulate(input);
+	}
 
-    private void createSubmission(Submission submission) {
-        submissionRepository.saveSubmission(submission);
-    }
+	private void createSubmission(Submission submission) {
+		submissionRepository.saveSubmission(submission);
+	}
 
-    private Optional<UserProblemResult> getUserProblemResult(Long userId, Long problemId) {
-        return userProblemResultRepository.findUserProblemResultByUserIdAndProblemId(userId, problemId);
-    }
+	private Optional<UserProblemResult> getUserProblemResult(Long userId, Long problemId) {
+		return userProblemResultRepository.findUserProblemResultByUserIdAndProblemId(userId, problemId);
+	}
 
-    private UserProblemResult createUserProblemResult(UserProblemResult userProblemResult) {
-        return userProblemResultRepository.saveUserProblemResult(userProblemResult);
-    }
+	private UserProblemResult createUserProblemResult(UserProblemResult userProblemResult) {
+		return userProblemResultRepository.saveUserProblemResult(userProblemResult);
+	}
 
-    private UserProblemResult modifyUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
-        return userProblemResultRepository.updateUserProblemResult(userProblemResult, isCorrect);
-    }
+	private void modifyUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
+		userProblemResultRepository.updateUserProblemResult(userProblemResult, isCorrect);
+	}
 }

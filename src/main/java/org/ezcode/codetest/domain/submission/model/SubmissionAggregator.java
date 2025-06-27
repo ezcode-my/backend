@@ -8,9 +8,9 @@ public class SubmissionAggregator {
 
     private int count;
 
-    public void accumulate(long executionTime, long memoryUsage) {
-        totalExecutionTime += executionTime;
-        totalMemoryUsage += memoryUsage;
+    public void accumulate(TestcaseEvaluationInput input) {
+        totalExecutionTime += input.executionTime();
+        totalMemoryUsage += input.memoryUsage();
         count++;
     }
 
