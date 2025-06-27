@@ -13,9 +13,11 @@ import jakarta.validation.constraints.NotNull;
 
 public record ProblemCreateRequest(
 
+
 	@NotNull(message = "카테고리 이름를 설정해야 합니다.")
 	@Schema(description = "카테고리 코드 식별자(영어) / 한글 이름", example = "FOR_BEGINNER : 입문자용")
 	Map<String, String> categories,
+
 
 	@NotBlank(message = "문제 제목을 입력하세요.")
 	@Schema(description = "제목", example = "A+B")
