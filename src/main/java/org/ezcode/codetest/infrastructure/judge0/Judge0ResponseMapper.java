@@ -1,8 +1,5 @@
 package org.ezcode.codetest.infrastructure.judge0;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
 import org.ezcode.codetest.application.submission.dto.response.compile.ExecutionResultResponse;
 import org.ezcode.codetest.application.submission.model.JudgeResult;
 import org.springframework.stereotype.Component;
@@ -50,10 +47,5 @@ public class Judge0ResponseMapper {
         return output
             .replaceAll("[\\r\\n]+$", "")
             .strip();
-    }
-
-    private String decodeBase64(String base64) {
-        if (base64 == null) return "";
-        return new String(Base64.getDecoder().decode(base64), StandardCharsets.US_ASCII);
     }
 }
