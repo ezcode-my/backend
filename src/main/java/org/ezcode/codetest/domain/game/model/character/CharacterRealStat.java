@@ -96,7 +96,6 @@ public class CharacterRealStat {
 			case DEBUGGING:
 				this.crit += rate / 10;
 				this.def += rate / 10;
-				this.atk += rate / 10;
 				this.stun += rate / 10;
 				break;
 			case OPTIMIZATION:

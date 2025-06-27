@@ -18,6 +18,7 @@ public class CaffeineCacheConfig {
 
 	@Bean
 	public CacheManager cacheManager() {
+
 		CaffeineCache countCache = new CaffeineCache("counts",
 			Caffeine.newBuilder()
 				.expireAfterWrite(Duration.ofMinutes(1))
@@ -53,10 +54,16 @@ public class CaffeineCacheConfig {
 				.expireAfterWrite(Duration.ofMinutes(10))
 				.build());
 
+		CaffeineCache problemCategory = new CaffeineCache("problemCategory",
+			Caffeine.newBuilder()
+				.expireAfterWrite(Duration.ofMinutes(10))
+				.build());
+
 		SimpleCacheManager manager = new SimpleCacheManager();
 		manager.setCaches(
 			List.of(skillCache, itemsByCategoryCache, encountersCache, countCache, historyCache, choiceCache,
-				categoryStatCache));
+				categoryStatCache, problemCategory));
+
 		return manager;
 	}
 }
