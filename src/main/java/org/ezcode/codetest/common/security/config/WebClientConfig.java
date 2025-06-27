@@ -12,6 +12,7 @@ public class WebClientConfig {
         return WebClient.builder()
             .baseUrl("https://api.github.com")
             .defaultHeader(HttpHeaders.ACCEPT, "application/vnd.github+json")
+            .defaultHeader(HttpHeaders.USER_AGENT, "ezcode-codetest-server")
             .build();
     }
 }

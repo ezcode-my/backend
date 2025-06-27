@@ -5,6 +5,8 @@ import java.util.Map;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GithubOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Response;
+import org.ezcode.codetest.domain.user.exception.UserException;
+import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
@@ -108,7 +110,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 					.user(user)
 					.build();
 
-			userGithubService.createUserGithubInfo(userGithubInfo);
+			try {
+				userGithubService.createUserGithubInfo(userGithubInfo);
+			} catch (Exception e) {
+				throw new UserException(UserExceptionCode.NO_GITHUB_INFO);
+			}
+
 		}
 	}
 

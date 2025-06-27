@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -27,6 +28,7 @@ public class UserGithubController {
 
     private final UserGithubService userGithubService;
 
+    @Operation(summary = "GitHub 레포지토리 목록 조회", description = "사용자의 GitHub 레포지토리 목록을 조회합니다")
     @GetMapping("/users/github")
     public ResponseEntity<List<UserGithubRepoResponse>> getGithubRepos(
         @AuthenticationPrincipal AuthUser authUser
@@ -38,7 +40,7 @@ public class UserGithubController {
     @PostMapping("/users/github")
     public ResponseEntity<UserGithubRepoResponse> selectGithubRepo(
         @AuthenticationPrincipal AuthUser authUser,
-        @RequestBody UserGithubRepoSelectRequest reqeust
+        @Valid @RequestBody UserGithubRepoSelectRequest reqeust
     ) throws Exception {
         return ResponseEntity.status(HttpStatus.OK).body(userGithubService.selectGithubRepo(authUser, reqeust));
     }

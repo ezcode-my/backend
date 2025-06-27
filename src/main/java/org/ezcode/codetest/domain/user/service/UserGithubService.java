@@ -13,12 +13,14 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.UserGithubInfo;
 import org.ezcode.codetest.domain.user.repository.UserGithubInfoRepository;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +62,17 @@ public class UserGithubService {
                 headers.setAccept(List.of(MediaType.APPLICATION_JSON));
             })
             .retrieve()
+            // .onStatus(
+            //     status -> status == HttpStatus.BAD_REQUEST,  // 상태 코드 조건
+            //     response -> Mono.error(new UserException(UserExceptionCode.NO_GITHUB_INFO))
+            // )
+            .onStatus(
+                status -> status.is4xxClientError() || status.is5xxServerError(),
+                response -> response.bodyToMono(String.class)
+                    .flatMap(errorBody -> Mono.error(new IllegalAccessException( //UserException 대신 github 문구 받아오게 수정
+                        "GitHub API 오류: " + response.statusCode() + " - " + errorBody
+                    )))
+            )
             .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
             .block()
             .stream()
@@ -71,7 +84,7 @@ public class UserGithubService {
     }
 
     @Transactional
-    public UserGithubRepoResponse selectGithubRepo(AuthUser authUser, UserGithubRepoSelectRequest reqeust) throws
+    public UserGithubRepoResponse selectGithubRepo(AuthUser authUser, UserGithubRepoSelectRequest request) throws
         Exception {
         UserGithubInfo userGithub = userGithubInfoRepository.getUserGithubInfo(authUser.getId());
 
@@ -82,11 +95,11 @@ public class UserGithubService {
         List<UserGithubRepoResponse> repos = getGithubRepos(authUser);
 
         UserGithubRepoResponse selectedRepo = repos.stream()
-            .filter(repo -> repo.getRepoName().equals(reqeust.repositoryName()))
+            .filter(repo -> repo.getRepoName().equals(request.repositoryName()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("해당 이름의 레포를 찾을 수 없습니다."));
+            .orElseThrow(() -> new UserException(UserExceptionCode.NO_GITHUB_REPO));
 
-        userGithub.setGithubRepo(reqeust.repositoryName(), selectedRepo.getDefaultBranch());
+        userGithub.setGithubRepo(request.repositoryName(), selectedRepo.getDefaultBranch());
         userGithubInfoRepository.updateGithubInfo(userGithub);
 
         return selectedRepo;
