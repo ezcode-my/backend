@@ -139,7 +139,7 @@ public record SubmissionContext(
         getProblem().incrementCorrectSubmissions();
     }
 
-    public boolean isGitPushStatus(){
+    public boolean isGitPushStatus() {
         return user.isGitPushStatus();
     }
 
@@ -149,5 +149,9 @@ public record SubmissionContext(
 
     public boolean isPassed() {
         return getPassedCount() == getTestcaseCount();
+    }
+
+    public String getLanguageName() {
+        return language.getName();
     }
 }
