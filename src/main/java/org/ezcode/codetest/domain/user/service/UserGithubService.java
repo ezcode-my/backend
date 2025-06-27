@@ -69,7 +69,7 @@ public class UserGithubService {
             .onStatus(
                 status -> status.is4xxClientError() || status.is5xxServerError(),
                 response -> response.bodyToMono(String.class)
-                    .flatMap(errorBody -> Mono.error(new IllegalAccessException( //UserException 대신 github 문구 받아오게 수정
+                    .flatMap(errorBody -> Mono.error(new Exception( //UserException 대신 github 문구 받아오게 수정
                         "GitHub API 오류: " + response.statusCode() + " - " + errorBody
                     )))
             )
