@@ -24,7 +24,6 @@ import org.ezcode.codetest.domain.submission.model.SubmissionResult;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
 import org.ezcode.codetest.domain.submission.service.SubmissionDomainService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +55,6 @@ public class JudgementService {
         }
     }
 
-    @Transactional
     public void finalizeAndPublish(SubmissionContext ctx) {
         SubmissionResult submissionResult = submissionDomainService.finalizeSubmission(ctx);
 

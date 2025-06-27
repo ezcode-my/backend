@@ -16,6 +16,8 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
 		select distinct p
 		from Problem p
 		left join fetch p.testcases
+		left join fetch p.categories c
+		left join fetch c.category
 		where p.id = :problemId
 		""")
 	Optional<Problem> findProblemWithTestcasesById(@Param("problemId") Long problemId);
