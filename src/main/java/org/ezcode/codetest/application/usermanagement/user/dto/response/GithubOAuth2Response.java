@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.usermanagement.user.dto.response;
 
+import java.util.List;
 import java.util.Map;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,14 +42,20 @@ public class GithubOAuth2Response implements OAuth2Response{
     }
 
     @Override
-    @Schema(description = "Github Id", example = "1345932")
+    @Schema(description = "깃허브 고유 Id", example = "1345932")
     public String getGithubId() {
         return attributes.get("id").toString();
     }
 
     @Override
-    @Schema(description = "Github URL", example = "https://github.com/id")
+    @Schema(description = "깃허브 홈 URL", example = "https://github.com/id")
     public String getGithubUrl(){
         return attributes.get("html_url").toString();
+    }
+
+    @Override
+    @Schema(description = "깃허브 아이디(login name)", example = "ezcode")
+    public String getOwner(){
+        return attributes.get("login").toString();
     }
 }

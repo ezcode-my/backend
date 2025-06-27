@@ -7,6 +7,7 @@ import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
 import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
+import org.ezcode.codetest.domain.user.model.entity.UserGithubInfo;
 import org.ezcode.codetest.domain.user.model.enums.Adjective;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.model.enums.Noun;
@@ -14,6 +15,7 @@ import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.repository.UserAuthTypeRepository;
+import org.ezcode.codetest.domain.user.repository.UserGithubInfoRepository;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.ezcode.codetest.common.security.util.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserDomainService {
 	private final UserRepository userRepository;
 	private final UserAuthTypeRepository userAuthTypeRepository;
+	private final UserGithubInfoRepository userGithubInfoRepository;
 	private final PasswordEncoder passwordEncoder;
 	private static final java.util.Random RANDOM = new java.util.Random();
 
@@ -128,8 +131,5 @@ public class UserDomainService {
 		return userRepository.getUserByEmail(email);
 	}
 
-	public void updateUserGithubAccessToken(User loginUser) {
-		log.info("Updating github access token for user: {}", loginUser);
-		userRepository.updateUserGithubAccessToken(loginUser);
-	}
+
 }

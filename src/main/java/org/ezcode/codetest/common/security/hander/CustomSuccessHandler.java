@@ -9,8 +9,10 @@ import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.entity.UserGithubInfo;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.common.security.util.JwtUtil;
+import org.ezcode.codetest.domain.user.service.UserGithubService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -32,17 +34,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	private final JwtUtil jwtUtil;
 	private final UserDomainService userDomainService;
+	private final UserGithubService userGithubService;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ObjectMapper objectMapper; //json직렬화
 	private final OAuth2AuthorizedClientService authorizedClientService;
 	private final AESUtil aesUtil;
 
 	public CustomSuccessHandler(JwtUtil jwtUtil, UserDomainService userDomainService,
+        UserGithubService userGithubService,
 		RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper,
         OAuth2AuthorizedClientService authorizedClientService, AESUtil aesUtil) {
 		this.jwtUtil = jwtUtil;
 		this.userDomainService = userDomainService;
-		this.redisTemplate = redisTemplate;
+        this.userGithubService = userGithubService;
+        this.redisTemplate = redisTemplate;
 		this.objectMapper = objectMapper;
         this.authorizedClientService = authorizedClientService;
         this.aesUtil = aesUtil;
@@ -66,15 +71,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 				oauthToken.getName()
 			);
 
+			UserGithubInfo userGithubInfo = userGithubService.getUserGithubInfoById(loginUser.getId());
+
 			//AES 암호화
             try {
 				String encodedGithubToken = aesUtil.encrypt(client.getAccessToken().getTokenValue());
-				loginUser.setGithubAccessToken(encodedGithubToken);
+
+				userGithubInfo.setGithubAccessToken(encodedGithubToken);
             } catch (Exception e) {
 				log.error(e.getMessage());
                 throw new AuthException(AuthExceptionCode.TOKEN_ENCODE_FAIL);
             }
-			userDomainService.updateUserGithubAccessToken(loginUser);
+			userGithubService.updateUserGithubAccessToken(userGithubInfo);
 		}
 
 		String accessToken = jwtUtil.createAccessToken(

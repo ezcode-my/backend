@@ -5,10 +5,13 @@ import java.util.Map;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GithubOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Response;
+import org.ezcode.codetest.domain.user.exception.UserException;
+import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.entity.UserFactory;
+import org.ezcode.codetest.domain.user.model.entity.UserGithubInfo;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.repository.UserAuthTypeRepository;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
@@ -30,6 +33,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	private final UserRepository userRepository;
 	private final UserAuthTypeRepository userAuthTypeRepository;
 	private final UserDomainService userDomainService;
+	private final UserGithubService userGithubService;
 
 	@Override
 	@Transactional
@@ -75,6 +79,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			updateExistingUser(user, response, authType, provider);
 		}
 	}
+
 	private void createNewUser(OAuth2Response response, AuthType authType, String provider) {
 		String nickname = userDomainService.generateUniqueNickname();
 		User newUser = UserFactory.createSocialUser(response, nickname, provider);
@@ -82,6 +87,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		newUser.setReviewToken(20);
 		userRepository.createUser(newUser);
 		userAuthTypeRepository.createUserAuthType(new UserAuthType(newUser, authType));
+		updateGithubUrl(newUser, response, provider);
 	}
 
 	private void updateExistingUser(User user, OAuth2Response response, AuthType authType, String provider) {
@@ -95,8 +101,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		}
 	}
 	private void updateGithubUrl(User user, OAuth2Response response, String provider) {
-		if ("github".equals(provider) && user.getGithubUrl()==null) {
+		if ("github".equals(provider)) {
 			user.setGithubUrl(response.getGithubUrl());
+
+			UserGithubInfo userGithubInfo =
+				UserGithubInfo.builder()
+					.owner(response.getOwner())
+					.user(user)
+					.build();
+
+			try {
+				userGithubService.createUserGithubInfo(userGithubInfo);
+			} catch (Exception e) {
+				throw new UserException(UserExceptionCode.NO_GITHUB_INFO);
+			}
+
 		}
 	}
 
