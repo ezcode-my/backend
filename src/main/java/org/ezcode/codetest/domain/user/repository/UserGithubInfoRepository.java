@@ -8,4 +8,6 @@ public interface UserGithubInfoRepository {
     UserGithubInfo getUserGithubInfo(Long id);
 
     void updateGithubAccessToken(UserGithubInfo userGithubInfo);
+
+    void updateGithubInfo(UserGithubInfo userGithub);
 }

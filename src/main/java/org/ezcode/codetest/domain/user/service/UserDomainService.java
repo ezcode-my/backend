@@ -131,15 +131,5 @@ public class UserDomainService {
 		return userRepository.getUserByEmail(email);
 	}
 
-	public void updateUserGithubAccessToken(UserGithubInfo userGithubInfo) {
-		userGithubInfoRepository.updateGithubAccessToken(userGithubInfo);
-	}
 
-	public void createUserGithubInfo(UserGithubInfo userGithubInfo) {
-		userGithubInfoRepository.createUserGithubInfo(userGithubInfo);
-	}
-
-	public UserGithubInfo getUserGithubInfoById(Long id) {
-		return userGithubInfoRepository.getUserGithubInfo(id);
-	}
 }

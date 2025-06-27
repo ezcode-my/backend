@@ -12,6 +12,7 @@ import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserGithubInfo;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.common.security.util.JwtUtil;
+import org.ezcode.codetest.domain.user.service.UserGithubService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -33,17 +34,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	private final JwtUtil jwtUtil;
 	private final UserDomainService userDomainService;
+	private final UserGithubService userGithubService;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ObjectMapper objectMapper; //json직렬화
 	private final OAuth2AuthorizedClientService authorizedClientService;
 	private final AESUtil aesUtil;
 
 	public CustomSuccessHandler(JwtUtil jwtUtil, UserDomainService userDomainService,
+        UserGithubService userGithubService,
 		RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper,
         OAuth2AuthorizedClientService authorizedClientService, AESUtil aesUtil) {
 		this.jwtUtil = jwtUtil;
 		this.userDomainService = userDomainService;
-		this.redisTemplate = redisTemplate;
+        this.userGithubService = userGithubService;
+        this.redisTemplate = redisTemplate;
 		this.objectMapper = objectMapper;
         this.authorizedClientService = authorizedClientService;
         this.aesUtil = aesUtil;
@@ -67,7 +71,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 				oauthToken.getName()
 			);
 
-			UserGithubInfo userGithubInfo = userDomainService.getUserGithubInfoById(loginUser.getId());
+			UserGithubInfo userGithubInfo = userGithubService.getUserGithubInfoById(loginUser.getId());
 
 			//AES 암호화
             try {
@@ -78,7 +82,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 				log.error(e.getMessage());
                 throw new AuthException(AuthExceptionCode.TOKEN_ENCODE_FAIL);
             }
-			userDomainService.updateUserGithubAccessToken(userGithubInfo);
+			userGithubService.updateUserGithubAccessToken(userGithubInfo);
 		}
 
 		String accessToken = jwtUtil.createAccessToken(

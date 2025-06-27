@@ -46,4 +46,8 @@ public class UserGithubInfo {
         this.githubAccessToken = githubAccessToken;
     }
 
+    public void setGithubRepo(String githubRepoName, String defaultBranch) {
+        this.repo = githubRepoName;
+        this.branch = defaultBranch;
+    }
 }

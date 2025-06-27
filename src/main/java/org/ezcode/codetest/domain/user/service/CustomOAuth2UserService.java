@@ -31,6 +31,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	private final UserRepository userRepository;
 	private final UserAuthTypeRepository userAuthTypeRepository;
 	private final UserDomainService userDomainService;
+	private final UserGithubService userGithubService;
 
 	@Override
 	@Transactional
@@ -107,7 +108,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 					.user(user)
 					.build();
 
-			userDomainService.createUserGithubInfo(userGithubInfo);
+			userGithubService.createUserGithubInfo(userGithubInfo);
 		}
 	}
 

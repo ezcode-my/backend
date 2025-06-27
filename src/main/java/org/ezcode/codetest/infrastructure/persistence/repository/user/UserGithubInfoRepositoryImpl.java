@@ -25,4 +25,9 @@ public class UserGithubInfoRepositoryImpl implements UserGithubInfoRepository {
     public void updateGithubAccessToken(UserGithubInfo userGithubInfo) {
         userGithubInfoJpaRepository.save(userGithubInfo);
     }
+
+    @Override
+    public void updateGithubInfo(UserGithubInfo userGithub) {
+        userGithubInfoJpaRepository.save(userGithub);
+    }
 }
