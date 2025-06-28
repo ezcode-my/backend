@@ -2,7 +2,6 @@ package org.ezcode.codetest.domain.problem.model;
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.problem.model.entity.Category;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 
@@ -12,7 +11,7 @@ public record ProblemInfo(
 
 	List<Testcase> testcaseList,
 
-	List<Category> problemCategories
+	List<String> categories
 
 ) {
 	public long getTimeLimit() {
@@ -26,4 +25,5 @@ public record ProblemInfo(
 	public int getTestcaseCount() {
 		return this.testcaseList.size();
 	}
+
 }

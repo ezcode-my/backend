@@ -70,12 +70,12 @@ public class AuthController {
 	}
 
 	@Operation(summary = "토큰 재발급", description = "리프레시 토큰을 이용하여 새로운 액세스 토큰을 발급합니다.",
-		security = @SecurityRequirement(name = "JWT_REFRESH")
+		security = @SecurityRequirement(name = "Authorization")
 	)
 	@PostMapping("/auth/refresh")
 	public ResponseEntity<RefreshTokenResponse> refresh(HttpServletRequest request) {
 
-		String token = Optional.ofNullable(request.getHeader("JWT_REFRESH"))
+		String token = Optional.ofNullable(request.getHeader("Authorization"))
 			.map(h -> h.replace("Bearer ", ""))
 			.orElseThrow(()-> new AuthException(AuthExceptionCode.INVALID_AUTHORIZATION_HEADER));
 

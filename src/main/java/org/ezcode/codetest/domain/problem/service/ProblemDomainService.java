@@ -114,11 +114,11 @@ public class ProblemDomainService {
 		Problem problem = problemRepository.findProblemWithTestcasesById(problemId)
 			.orElseThrow(() -> new ProblemException(ProblemExceptionCode.PROBLEM_NOT_FOUND));
 
-		List<ProblemCategory> problemCategories = problemCategoryRepository.findByProblemId(problemId);
+		List<ProblemCategory> categories = problemCategoryRepository.findByProblemId(problemId);
 
-		List<Category> categories = problemCategories.stream().map(ProblemCategory::getCategory).toList();
+		List<String> categoryNames = categories.stream().map(cat -> cat.getCategory().getKorName()).toList();
 
-		return new ProblemInfo(problem, problem.getTestcases(), categories);
+		return new ProblemInfo(problem, problem.getTestcases(), categoryNames);
 	}
 
 }
