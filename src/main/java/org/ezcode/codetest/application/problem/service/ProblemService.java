@@ -131,13 +131,14 @@ public class ProblemService {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
+		// 문제 이미지가 있으면 삭제
 		if (!findProblem.getImageUrl().isEmpty()) {
 			for(String imageUrl : findProblem.getImageUrl()) {
 				s3Uploader.delete(imageUrl);
 			}
-			findProblem.clearImages();
 		}
 
+		// Soft Delete
 		problemDomainService.removeProblem(findProblem);
 	}
 

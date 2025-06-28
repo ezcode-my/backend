@@ -152,6 +152,7 @@ public class Problem extends BaseEntity {
 	// 이미지 초기화
 	public void clearImages() {
 		this.imageUrl.clear();
+	}
 
 	public void incrementTotalSubmissions() {
 		totalSubmissions += 1;
