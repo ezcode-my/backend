@@ -21,8 +21,6 @@ public class GitHubContentBuilder {
     private String repoRootFolder;
 
     private final GitBlobCalculator gitBlobCalculator;
-    private static final DateTimeFormatter OUTPUT_FMT
-        = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     protected List<Map<String, Object>> buildGitTreeEntries(
         GitHubPushRequest req, String codeBlobSha
