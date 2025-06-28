@@ -61,13 +61,13 @@ public class S3Uploader {
 	}
 
 	// 이미지 삭제
-	public void delete(String imageUrl) {
+	public void delete(String fileUrl) {
 		try {
-			String fileName = extractKeyFromProblemUrl(imageUrl);
+			String fileName = extractKeyFromProblemUrl(fileUrl);
 			amazonS3.deleteObject(bucket, fileName); // S3 내 이미지 객체 제거.
 			log.info("S3에서 이미지 삭제 완료: {}", fileName);
 		} catch (Exception e) {
-			log.error("S3 이미지 삭제 실패: {}", imageUrl, e);
+			log.error("S3 이미지 삭제 실패: {}", fileUrl, e);
 			throw new S3Exception(S3ExceptionCode.S3_DELETE_FAILED);
 		}
 	}
