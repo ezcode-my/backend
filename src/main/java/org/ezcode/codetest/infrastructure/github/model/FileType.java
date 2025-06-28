@@ -5,12 +5,14 @@ import org.ezcode.codetest.application.submission.dto.request.github.GitHubPushR
 public enum FileType {
     SOURCE, README;
 
-    public String resolveFilename(GitHubPushRequest request) {
+    public String resolveFilename(GitHubPushRequest req) {
         return switch (this) {
             case SOURCE -> String.format("%s.%s",
-                request.problemTitle(), Extensions.getExtensionByLanguage(request.languageName())
+                req.problemTitle(), Extensions.getExtensionByLanguage(req.languageName())
             );
-            case README -> "README.md";
+            case README -> String.format("README_%s.md",
+                req.languageName().toLowerCase()
+            );
         };
     }
 }
