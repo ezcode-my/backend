@@ -68,7 +68,7 @@ public class SubmissionService {
 
     @Async("judgeSubmissionExecutor")
     @Transactional
-    public void submitCodeStream(SubmissionMessage msg) {
+    public void processSubmissionAsync(SubmissionMessage msg) {
         try {
             log.info("[Submission RUN] Thread = {}", Thread.currentThread().getName());
             log.info("[큐 수신] SubmissionMessage.sessionKey: {}", msg.sessionKey());
@@ -77,7 +77,7 @@ public class SubmissionService {
             judgementService.publishInitTestcases(ctx);
             judgementService.runTestcases(ctx);
             judgementService.finalizeAndPublish(ctx);
-            gitHubPushService.commitAndPushToRepo(ctx);
+            gitHubPushService.pushSolutionToRepo(ctx);
         } catch (Exception e) {
             judgementService.publishSubmissionError(msg.sessionKey(), e);
             exceptionNotifier.notifyException("submitCodeStream", e);

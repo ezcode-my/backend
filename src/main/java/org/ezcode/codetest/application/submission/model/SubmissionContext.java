@@ -153,4 +153,8 @@ public record SubmissionContext(
     public String getLanguageName() {
         return language.getName();
     }
+
+    public String getLanguageVersion() {
+        return language.getVersion();
+    }
 }

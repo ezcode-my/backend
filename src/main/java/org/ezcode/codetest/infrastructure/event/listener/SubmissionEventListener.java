@@ -2,12 +2,12 @@ package org.ezcode.codetest.infrastructure.event.listener;
 
 import java.util.List;
 
-import org.ezcode.codetest.application.submission.dto.event.GitStatusEvent;
+import org.ezcode.codetest.application.submission.dto.event.GitPushStatusEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionErrorEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionJudgingFinishedEvent;
 import org.ezcode.codetest.application.submission.dto.event.TestcaseListInitializedEvent;
 import org.ezcode.codetest.application.submission.dto.event.TestcaseEvaluatedEvent;
-import org.ezcode.codetest.infrastructure.event.dto.submission.GitStatusResponse;
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.GitPushStatusResponse;
 import org.ezcode.codetest.infrastructure.event.dto.submission.response.ErrorWsResponse;
 import org.ezcode.codetest.infrastructure.event.dto.submission.response.SubmissionFinalResultResponse;
 import org.ezcode.codetest.infrastructure.event.dto.submission.response.InitTestcaseListResponse;
@@ -51,8 +51,8 @@ public class SubmissionEventListener {
     }
 
     @EventListener
-    public void onGitStatusChange(GitStatusEvent event) {
-        GitStatusResponse wsDto = new GitStatusResponse(event.message());
+    public void onGitPushStatus(GitPushStatusEvent event) {
+        GitPushStatusResponse wsDto = new GitPushStatusResponse(event.pushStatus());
         messageService.sendGitStatus(event.sessionKey(), wsDto);
     }
 }

@@ -7,16 +7,16 @@ import java.util.Optional;
 import org.ezcode.codetest.application.submission.dto.request.github.GitHubPushRequest;
 import org.ezcode.codetest.application.submission.port.GitHubClient;
 import org.ezcode.codetest.infrastructure.github.model.CommitContext;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class GitHubClientAdapter implements GitHubClient {
+public class GitHubClientImpl implements GitHubClient {
 
     private final GitHubApiClient gitHubApiClient;
-    private final GitHubTemplateBuilder templateBuilder;
+    private final GitHubContentBuilder templateBuilder;
     private final GitBlobCalculator blobCalculator;
 
     @Override

@@ -36,7 +36,7 @@ public class RedisJudgeQueueConsumer implements StreamListener<String, MapRecord
 
         try {
             log.info("[컨슈머 수신] {}", msg.sessionKey());
-            submissionService.submitCodeStream(msg);
+            submissionService.processSubmissionAsync(msg);
 
             log.info("[컨슈머 ACK] messageId={}", message.getId());
             redisTemplate.opsForStream().acknowledge("judge-group", message);

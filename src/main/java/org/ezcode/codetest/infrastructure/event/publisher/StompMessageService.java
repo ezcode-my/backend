@@ -1,6 +1,6 @@
 package org.ezcode.codetest.infrastructure.event.publisher;
 
-import org.ezcode.codetest.infrastructure.event.dto.submission.GitStatusResponse;
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.GitPushStatusResponse;
 import org.ezcode.codetest.infrastructure.event.dto.submission.response.ErrorWsResponse;
 import org.ezcode.codetest.infrastructure.event.dto.submission.response.SubmissionFinalResultResponse;
 import org.ezcode.codetest.infrastructure.event.dto.submission.response.InitTestcaseListResponse;
@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 public class StompMessageService {
 
     private final SimpMessagingTemplate messagingTemplate;
+
+    private static final String SUBMISSION_DEST_PREFIX = "/topic/submission/%s";
 
     public <T> void handleChatRoomListLoad(T roomData, String principalName, String sessionId) {
 
@@ -76,7 +78,7 @@ public class StompMessageService {
     public void sendInitTestcases(String sessionKey, List<InitTestcaseListResponse> dataList) {
 
         messagingTemplate.convertAndSend(
-            "/topic/submission/" + sessionKey + "/init",
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/init",
             dataList
         );
     }
@@ -84,7 +86,7 @@ public class StompMessageService {
     public void sendTestcaseResultUpdate(String sessionKey, JudgeResultResponse data) {
 
         messagingTemplate.convertAndSend(
-            "/topic/submission/" + sessionKey + "/case",
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/case",
             data
         );
     }
@@ -92,7 +94,7 @@ public class StompMessageService {
     public void sendFinalResult(String sessionKey, SubmissionFinalResultResponse data) {
 
         messagingTemplate.convertAndSend(
-            "/topic/submission/" + sessionKey + "/final",
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/final",
             data
         );
     }
@@ -100,15 +102,15 @@ public class StompMessageService {
     public void sendError(String sessionKey, ErrorWsResponse data) {
 
         messagingTemplate.convertAndSend(
-            "/topic/submission/" + sessionKey + "/error",
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/error",
             data
         );
     }
 
-    public void sendGitStatus(String sessionKey, GitStatusResponse data) {
+    public void sendGitStatus(String sessionKey, GitPushStatusResponse data) {
 
         messagingTemplate.convertAndSend(
-            "/topic/submission/" + sessionKey + "/git",
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/git-status",
             data
         );
     }
