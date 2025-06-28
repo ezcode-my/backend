@@ -45,11 +45,17 @@ public class SubmissionController {
         문제에 대한 코드를 제출하면 채점 큐에 등록되고,
         서버는 WebSocket(STOMP)을 통해 채점 결과를 실시간으로 전송합니다.
 
-        반환된 sessionKey를 사용해 다음 경로로 구독하십시오:
+        반환된 sessionKey를 사용해 다음 경로로 구독하세요.
+        
         • /topic/submission/{sessionKey}/init
+        
         • /topic/submission/{sessionKey}/case
+        
         • /topic/submission/{sessionKey}/final
+        
         • /topic/submission/{sessionKey}/error
+        
+        • /topic/submission/{sessionKey}/git-status
         """
     )
     @ApiResponses({
