@@ -90,10 +90,6 @@ public class GitHubApiClient {
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(body)
             .retrieve()
-            .onStatus(status -> status.value() == 422, resp ->
-                resp.bodyToMono(String.class)
-                    .flatMap(errorBody -> Mono.error(new RuntimeException(errorBody)))
-            )
             .onStatus(HttpStatusCode::is4xxClientError,
                 resp -> Mono.error(new GitHubClientException(GitHubExceptionCode.TREE_CREATION_FAILED)))
             .onStatus(HttpStatusCode::is5xxServerError,
