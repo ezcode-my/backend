@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProblemUpdateRequest(
 
+	// 리스트 이므로, [] 대괄호 사용
 	@Schema(description = "카테고리", example = "FOR_BEGINNER")
 	List<String> categories,
 

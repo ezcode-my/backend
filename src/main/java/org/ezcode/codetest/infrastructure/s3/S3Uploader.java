@@ -26,6 +26,7 @@ public class S3Uploader {
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
+	// 이미지 업로드
 	public String upload(MultipartFile multipartFile, String dirName) {
 		try {
 			// MIME 타입 검사 (png, jpeg, jpg, webp 만 가능)
@@ -57,5 +58,23 @@ public class S3Uploader {
 			log.error("예상치 못한 업로드 오류 발생", e);
 			throw new S3Exception(S3ExceptionCode.S3_UPLOAD_FAILED);
 		}
+	}
+
+	// 이미지 삭제
+	public void delete(String fileUrl) {
+		try {
+			String fileName = extractKeyFromProblemUrl(fileUrl);
+			amazonS3.deleteObject(bucket, fileName); // S3 내 이미지 객체 제거.
+			log.info("S3에서 이미지 삭제 완료: {}", fileName);
+		} catch (Exception e) {
+			log.error("S3 이미지 삭제 실패: {}", fileUrl, e);
+			throw new S3Exception(S3ExceptionCode.S3_DELETE_FAILED);
+		}
+	}
+
+	// 문제 이미지 URL 가져오기
+	private String extractKeyFromProblemUrl(String fileUrl) {
+		// S3 주소 포맷 기준으로 잘라내기
+		return fileUrl.substring(fileUrl.indexOf("problem/"));
 	}
 }
