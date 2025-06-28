@@ -131,6 +131,13 @@ public class ProblemService {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
+		if (!findProblem.getImageUrl().isEmpty()) {
+			for(String imageUrl : findProblem.getImageUrl()) {
+				s3Uploader.delete(imageUrl);
+			}
+			findProblem.clearImages();
+		}
+
 		problemDomainService.removeProblem(findProblem);
 	}
 
