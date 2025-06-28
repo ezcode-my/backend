@@ -4,7 +4,6 @@ import org.ezcode.codetest.application.submission.dto.event.payload.SubmissionFi
 import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
-import org.ezcode.codetest.domain.problem.model.entity.ProblemCategory;
 import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.submission.model.SubmissionAggregator;
 import org.ezcode.codetest.domain.user.model.entity.User;
@@ -139,7 +138,7 @@ public record SubmissionContext(
         getProblem().incrementCorrectSubmissions();
     }
 
-    public boolean isGitPushStatus(){
+    public boolean isGitPushStatus() {
         return user.isGitPushStatus();
     }
 
@@ -149,5 +148,13 @@ public record SubmissionContext(
 
     public boolean isPassed() {
         return getPassedCount() == getTestcaseCount();
+    }
+
+    public String getLanguageName() {
+        return language.getName();
+    }
+
+    public String getLanguageVersion() {
+        return language.getVersion();
     }
 }

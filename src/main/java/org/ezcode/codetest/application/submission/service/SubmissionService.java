@@ -49,7 +49,7 @@ public class SubmissionService {
     private final ExceptionNotifier exceptionNotifier;
     private final LockManager lockManager;
     private final JudgementService judgementService;
-    private final GitHubService gitHubService;
+    private final GitHubPushService gitHubPushService;
 
     public String enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
 
@@ -68,7 +68,7 @@ public class SubmissionService {
 
     @Async("judgeSubmissionExecutor")
     @Transactional
-    public void submitCodeStream(SubmissionMessage msg) {
+    public void processSubmissionAsync(SubmissionMessage msg) {
         try {
             log.info("[Submission RUN] Thread = {}", Thread.currentThread().getName());
             log.info("[큐 수신] SubmissionMessage.sessionKey: {}", msg.sessionKey());
@@ -77,7 +77,7 @@ public class SubmissionService {
             judgementService.publishInitTestcases(ctx);
             judgementService.runTestcases(ctx);
             judgementService.finalizeAndPublish(ctx);
-            gitHubService.commitAndPushToRepo(ctx);
+            gitHubPushService.pushSolutionToRepo(ctx);
         } catch (Exception e) {
             judgementService.publishSubmissionError(msg.sessionKey(), e);
             exceptionNotifier.notifyException("submitCodeStream", e);

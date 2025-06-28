@@ -1,5 +1,6 @@
 package org.ezcode.codetest.infrastructure.event.publisher;
 
+import org.ezcode.codetest.infrastructure.event.dto.submission.response.GitPushStatusResponse;
 import org.ezcode.codetest.infrastructure.event.dto.submission.response.ErrorWsResponse;
 import org.ezcode.codetest.infrastructure.event.dto.submission.response.SubmissionFinalResultResponse;
 import org.ezcode.codetest.infrastructure.event.dto.submission.response.InitTestcaseListResponse;
@@ -20,103 +21,113 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StompMessageService {
 
-	private final SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
-	public <T> void handleChatRoomListLoad(T roomData, String principalName, String sessionId) {
+    private static final String SUBMISSION_DEST_PREFIX = "/topic/submission/%s";
 
-		SimpMessageHeaderAccessor accessor =
-			SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+    public <T> void handleChatRoomListLoad(T roomData, String principalName, String sessionId) {
 
-		accessor.setLeaveMutable(true);
-		accessor.setSessionId(sessionId);
+        SimpMessageHeaderAccessor accessor =
+            SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
 
-		messagingTemplate.convertAndSendToUser(
-			principalName,
-			"/queue/chatrooms",
-			roomData,
-			accessor.getMessageHeaders()
-		);
-	}
+        accessor.setLeaveMutable(true);
+        accessor.setSessionId(sessionId);
 
-	public <T> void handleChatRoomHistoryLoad(T chatData, String principalName, String sessionId) {
+        messagingTemplate.convertAndSendToUser(
+            principalName,
+            "/queue/chatrooms",
+            roomData,
+            accessor.getMessageHeaders()
+        );
+    }
 
-		SimpMessageHeaderAccessor accessor =
-			SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+    public <T> void handleChatRoomHistoryLoad(T chatData, String principalName, String sessionId) {
 
-		accessor.setLeaveMutable(true);
-		accessor.setSessionId(sessionId);
+        SimpMessageHeaderAccessor accessor =
+            SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
 
-		messagingTemplate.convertAndSendToUser(
-			principalName,
-			"/queue/chat",
-			chatData,
-			accessor.getMessageHeaders()
-		);
-	}
+        accessor.setLeaveMutable(true);
+        accessor.setSessionId(sessionId);
 
-	public void handleNotification(NotificationResponse data, String principalName) {
+        messagingTemplate.convertAndSendToUser(
+            principalName,
+            "/queue/chat",
+            chatData,
+            accessor.getMessageHeaders()
+        );
+    }
 
-		messagingTemplate.convertAndSendToUser(
-			principalName,
-			"/queue/notification",
-			data
-		);
-	}
+    public void handleNotification(NotificationResponse data, String principalName) {
 
-	public void handleNotificationList(List<NotificationResponse> dataList, String principalName) {
+        messagingTemplate.convertAndSendToUser(
+            principalName,
+            "/queue/notification",
+            data
+        );
+    }
 
-		messagingTemplate.convertAndSendToUser(
-			principalName,
-			"/queue/notifications",
-			dataList
-		);
-	}
+    public void handleNotificationList(List<NotificationResponse> dataList, String principalName) {
 
-	public void sendInitTestcases(String sessionKey, List<InitTestcaseListResponse> dataList) {
+        messagingTemplate.convertAndSendToUser(
+            principalName,
+            "/queue/notifications",
+            dataList
+        );
+    }
 
-		messagingTemplate.convertAndSend(
-			"/topic/submission/" + sessionKey + "/init",
-			dataList
-		);
-	}
+    public void sendInitTestcases(String sessionKey, List<InitTestcaseListResponse> dataList) {
 
-	public void sendTestcaseResultUpdate(String sessionKey, JudgeResultResponse data) {
+        messagingTemplate.convertAndSend(
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/init",
+            dataList
+        );
+    }
 
-		messagingTemplate.convertAndSend(
-			"/topic/submission/" + sessionKey + "/case",
-			data
-		);
-	}
+    public void sendTestcaseResultUpdate(String sessionKey, JudgeResultResponse data) {
 
-	public void sendFinalResult(String sessionKey, SubmissionFinalResultResponse data) {
+        messagingTemplate.convertAndSend(
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/case",
+            data
+        );
+    }
 
-		messagingTemplate.convertAndSend(
-			"/topic/submission/" + sessionKey + "/final",
-			data
-		);
-	}
+    public void sendFinalResult(String sessionKey, SubmissionFinalResultResponse data) {
 
-	public void sendError(String sessionKey, ErrorWsResponse data) {
+        messagingTemplate.convertAndSend(
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/final",
+            data
+        );
+    }
 
-		messagingTemplate.convertAndSend(
-			"/topic/submission/" + sessionKey + "/error",
-			data
-		);
-	}
+    public void sendError(String sessionKey, ErrorWsResponse data) {
 
-	public <T> void handleChatMessageBroadcast(T data, Long roomId) {
+        messagingTemplate.convertAndSend(
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/error",
+            data
+        );
+    }
 
-		messagingTemplate.convertAndSend("/topic/chat/" + roomId, data);
-	}
+    public void sendGitStatus(String sessionKey, GitPushStatusResponse data) {
 
-	public <T> void handleChatRoomEntryExitMessage(T messageData, Long roomId) {
+        messagingTemplate.convertAndSend(
+            SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/git-status",
+            data
+        );
+    }
 
-		messagingTemplate.convertAndSend("/topic/chat/" + roomId, messageData);
-	}
+    public <T> void handleChatMessageBroadcast(T data, Long roomId) {
 
-	public <T> void handleChatRoomParticipantCountChange(T roomData) {
+        messagingTemplate.convertAndSend("/topic/chat/" + roomId, data);
+    }
 
-		messagingTemplate.convertAndSend("/topic/chatrooms", roomData);
-	}
+    public <T> void handleChatRoomEntryExitMessage(T messageData, Long roomId) {
+
+        messagingTemplate.convertAndSend("/topic/chat/" + roomId, messageData);
+    }
+
+    public <T> void handleChatRoomParticipantCountChange(T roomData) {
+
+        messagingTemplate.convertAndSend("/topic/chatrooms", roomData);
+    }
 
 }

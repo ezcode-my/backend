@@ -18,9 +18,15 @@ public record GitHubPushRequest(
 
     Long problemId,
 
+    String difficulty,
+
     String problemTitle,
 
     String problemDescription,
+
+    String languageName,
+
+    String languageVersion,
 
     Long averageMemoryUsage,
 
@@ -31,19 +37,26 @@ public record GitHubPushRequest(
     String submittedAt
 
 ) {
-    public static GitHubPushRequest of(SubmissionContext ctx, UserGithubInfo info) {
+    public static GitHubPushRequest of(SubmissionContext ctx, UserGithubInfo info, String decryptedToken) {
         return new GitHubPushRequest(
             info.getOwner(),
             info.getRepo(),
             info.getBranch(),
-            info.getGithubAccessToken(),
+            decryptedToken,
             ctx.getProblem().getId(),
+            ctx.getProblem().getDifficulty().getDifficulty(),
             ctx.getProblem().getTitle(),
             ctx.getProblem().getDescription(),
+            ctx.getLanguageName(),
+            ctx.getLanguageVersion(),
             ctx.aggregator().averageMemoryUsage(),
             ctx.aggregator().averageExecutionTime(),
             ctx.getSourceCode(),
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
         );
+    }
+
+    public String getLanguage() {
+        return languageName + " " + languageVersion;
     }
 }

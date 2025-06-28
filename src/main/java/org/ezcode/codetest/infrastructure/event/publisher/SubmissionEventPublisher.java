@@ -1,5 +1,6 @@
 package org.ezcode.codetest.infrastructure.event.publisher;
 
+import org.ezcode.codetest.application.submission.dto.event.GitPushStatusEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionErrorEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionJudgingFinishedEvent;
 import org.ezcode.codetest.application.submission.dto.event.TestcaseListInitializedEvent;
@@ -33,6 +34,11 @@ public class SubmissionEventPublisher implements SubmissionEventService {
 
     @Override
     public void publishSubmissionError(SubmissionErrorEvent event) {
+        publisher.publishEvent(event);
+    }
+
+    @Override
+    public void publishGitPushStatus(GitPushStatusEvent event) {
         publisher.publishEvent(event);
     }
 
