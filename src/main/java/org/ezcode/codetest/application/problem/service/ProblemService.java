@@ -46,7 +46,7 @@ public class ProblemService {
 	@Transactional
 	public void createCategory(CategoryCreateRequest requestDto) {
 
-		Category category =problemDomainService.createCategory(requestDto.toCategory());
+		Category category = problemDomainService.createCategory(requestDto.toCategory());
 
 		statUpdateUtil.save(new CategoryStat(category));
 	}
@@ -102,7 +102,7 @@ public class ProblemService {
 
 	// 문제 수정 ( 관리자 )
 	@Transactional
-	public void modifyProblem(Long problemId, ProblemUpdateRequest request) {
+	public void modifyProblem(Long problemId, ProblemUpdateRequest request, MultipartFile newImage) {
 
 		Problem findProblem = problemDomainService.getProblem(problemId);
 
@@ -115,6 +115,11 @@ public class ProblemService {
 			request.timeLimit(),
 			request.reference()
 		);
+
+		// 이미지 수정 처리
+		if (newImage != null && !newImage.isEmpty()) {
+			updateProblemImage(findProblem, newImage);
+		}
 
 		problemDomainService.updateCategoryAndSearchEngine(findProblem, request.categories());
 
@@ -142,6 +147,21 @@ public class ProblemService {
 			log.error("Problem {} 이미지 업로드 실패", problemId, e);
 			throw new S3Exception(S3ExceptionCode.S3_UPLOAD_FAILED);
 		}
+	}
+
+	// 이미지 수정
+	private void updateProblemImage(Problem problem, MultipartFile newImage) {
+
+		// 기존 이미지가 있다면 삭제 처리
+		if (!problem.getImageUrl().isEmpty()) {
+			for(String imageUrl : problem.getImageUrl()) {
+				s3Uploader.delete(imageUrl);
+			}
+			problem.clearImages();
+		}
+
+		String newImageUrl = uploadImageAfterTransaction(newImage, problem.getId());
+		problem.addImage(newImageUrl);
 	}
 }
 

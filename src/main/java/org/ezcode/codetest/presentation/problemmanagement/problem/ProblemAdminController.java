@@ -47,14 +47,15 @@ public class ProblemAdminController {
 			.build();
 	}
 
-	@PutMapping("/{problemId}")
+	@PutMapping(path = "/{problemId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	@Operation(summary = "문제 수정", description = "문제를 수정합니다.")
 	@ApiResponse(responseCode = "200", description = "문제 수정 성공")
 	public ResponseEntity<Void> modifyProblem(
 		@PathVariable Long problemId,
-		@Valid @RequestBody ProblemUpdateRequest request
+		@RequestPart @Valid ProblemUpdateRequest request,
+		@RequestPart(value = "image", required = false) MultipartFile image
 	) {
-		problemService.modifyProblem(problemId, request);
+		problemService.modifyProblem(problemId, request, image);
 
 		return ResponseEntity
 			.status(HttpStatus.OK)

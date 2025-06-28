@@ -149,4 +149,8 @@ public class Problem extends BaseEntity {
 		imageUrl.add(image);
 	}
 
+	// 이미지 초기화
+	public void clearImages() {
+		this.imageUrl.clear();
+	}
 }
