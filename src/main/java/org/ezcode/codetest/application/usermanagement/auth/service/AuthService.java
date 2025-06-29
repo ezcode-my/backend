@@ -228,20 +228,19 @@ public class AuthService {
 
 		mailService.sendPasswordMail(user.getId(), request.getEmail(), request.getRedirectUrl());
 
-		return FindPasswordResponse.from("이메일로 전송되었습니다.");
+		return FindPasswordResponse.from("이메일 전송되었습니다.");
 	}
 
 	//메일로 받은 링크를 통해 비번 변경
-	public FindPasswordResponse resetPassword(ResetPasswordRequest request) {
+	public FindPasswordResponse resetPassword(String email, String key) {
 
-		User user = userDomainService.getUserByEmail(request.getEmail());
+		User user = userDomainService.getUserByEmail(email);
 
-		boolean isMatch = mailService.verifyPasswordCode(user.getId(), request.getToken());
+		boolean isMatch = mailService.verifyPasswordCode(user.getId(), key);
 
 		if (isMatch){
-			String encodedPassword = userDomainService.encodePassword(request.getNewPassword());
-			user.modifyPassword(encodedPassword);
-			return FindPasswordResponse.from("비밀번호가 변경되었습니다.");
+			user.setVerified();
+			return VerifyEmailCodeResponse.from("인증되었습니다");
 		} else {
 			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
 		}

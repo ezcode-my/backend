@@ -83,37 +83,4 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.OK).body(authService.refreshToken(token));
 	}
 
-	@Operation(summary = "이메일 인증 코드 전송", description = "현재 로그인된 회원의 이메일로 인증 코드를 전송합니다.")
-	@PostMapping("/email/send")
-	public ResponseEntity<SendEmailResponse> sendMailCode(
-		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody SendEmailRequest request
-	){
-		return ResponseEntity.status(HttpStatus.CREATED).body(authService.sendEmailCode(authUser.getId(), authUser.getEmail(), request.getRedirectUrl()));
-	}
-
-	//이메일에서 버튼 클릭하면 자동으로 연결
-	@Operation(summary = "이메일 코드 입력 및 인증", description = "이메일로 받은 코드를 입력하여 이메일 인증된 회원으로 전환합니다")
-	@GetMapping("/auth/verify")
-	public ResponseEntity<VerifyEmailCodeResponse> verifyEmailCode(
-		@RequestParam String email,
-		@RequestParam String key
-	){
-		return ResponseEntity.status(HttpStatus.OK).body(authService.verifyEmailCode(email, key));
-	}
-
-	//미완성 -> 메일 전송까지는 성공
-	@PostMapping("/auth/find-password")
-	public ResponseEntity<FindPasswordResponse> findPassword(
-		@RequestBody FindPasswordRequest request
-	){
-		return ResponseEntity.status(HttpStatus.OK).body(authService.findPassword(request));
-	}
-
-	@PostMapping("/auth/reset-password")
-	public ResponseEntity<FindPasswordResponse> resetPassword(
-		@RequestBody ResetPasswordRequest request
-	){
-		return ResponseEntity.status(HttpStatus.OK).body(authService.resetPassword(request));
-	}
 }
