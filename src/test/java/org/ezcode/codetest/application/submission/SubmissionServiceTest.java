@@ -242,55 +242,54 @@ public class SubmissionServiceTest {
             then(userDomainService).should().decreaseReviewToken(user);
             assertThat(resp.reviewContent()).isEqualTo(reviewResult.reviewContent());
         }
+    }
 
-        @Nested
-        @DisplayName("실패 케이스")
-        class FailureCases {
+    @Nested
+    @DisplayName("실패 케이스")
+    class FailureCases {
 
-            @Test
-            @DisplayName("락 획득 실패 -> ALREADY_JUDGING 예외")
-            void enqueueCodeSubmissionFailed() {
+        @Test
+        @DisplayName("락 획득 실패 -> ALREADY_JUDGING 예외")
+        void enqueueCodeSubmissionFailed() {
 
-                // given
-                given(authUser.getId()).willReturn(userId);
-                given(lockManager.tryLock("submission", authUser.getId(), problemId))
-                    .willReturn(false);
+            // given
+            given(authUser.getId()).willReturn(userId);
+            given(lockManager.tryLock("submission", authUser.getId(), problemId))
+                .willReturn(false);
 
-                // when & then
-                assertThatThrownBy(() ->
-                    submissionService.enqueueCodeSubmission(problemId, request, authUser)
-                )
-                    .isInstanceOf(SubmissionException.class)
-                    .hasMessage(SubmissionExceptionCode.ALREADY_JUDGING.getMessage());
-            }
+            // when & then
+            assertThatThrownBy(() ->
+                submissionService.enqueueCodeSubmission(problemId, request, authUser)
+            )
+                .isInstanceOf(SubmissionException.class)
+                .hasMessage(SubmissionExceptionCode.ALREADY_JUDGING.getMessage());
+        }
 
-            @Test
-            @DisplayName("예외 -> 에러 이벤트 발행 & 락 해제")
-            void processFailureNotifiesAndReleasesLock() {
+        @Test
+        @DisplayName("예외 -> 에러 이벤트 발행 & 락 해제")
+        void processFailureNotifiesAndReleasesLock() {
 
-                // given
-                given(msg.userId()).willReturn(userId);
-                given(msg.languageId()).willReturn(languageId);
-                given(msg.problemId()).willReturn(problemId);
-                given(msg.sessionKey()).willReturn(sessionKey);
-                given(userDomainService.getUserById(userId)).willReturn(user);
-                given(languageDomainService.getLanguage(languageId))
-                    .willThrow(new LanguageException(LanguageExceptionCode.LANGUAGE_NOT_FOUND));
+            // given
+            given(msg.userId()).willReturn(userId);
+            given(msg.languageId()).willReturn(languageId);
+            given(msg.problemId()).willReturn(problemId);
+            given(msg.sessionKey()).willReturn(sessionKey);
+            given(userDomainService.getUserById(userId)).willReturn(user);
+            given(languageDomainService.getLanguage(languageId))
+                .willThrow(new LanguageException(LanguageExceptionCode.LANGUAGE_NOT_FOUND));
 
-                // when
-                submissionService.processSubmissionAsync(msg);
+            // when
+            submissionService.processSubmissionAsync(msg);
 
-                // then
-                then(judgementService).should().publishSubmissionError(
-                    eq(sessionKey),
-                    any(LanguageException.class)
-                );
-                then(exceptionNotifier).should().notifyException(
-                    eq("submitCodeStream"), any(LanguageException.class)
-                );
-                then(lockManager).should().releaseLock("submission", userId, problemId);
-            }
-
+            // then
+            then(judgementService).should().publishSubmissionError(
+                eq(sessionKey),
+                any(LanguageException.class)
+            );
+            then(exceptionNotifier).should().notifyException(
+                eq("submitCodeStream"), any(LanguageException.class)
+            );
+            then(lockManager).should().releaseLock("submission", userId, problemId);
         }
     }
 }
