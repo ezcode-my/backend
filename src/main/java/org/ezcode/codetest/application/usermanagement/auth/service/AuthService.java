@@ -113,7 +113,7 @@ public class AuthService {
 
 		if (isMatch){
 			user.setVerified();
-			return VerifyEmailCodeResponse.from("인증되었습니다");
+			return VerifyEmailCodeResponse.from("인증되었습니다", isMatch);
 		} else {
 			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
 		}
@@ -231,8 +231,7 @@ public class AuthService {
 		return FindPasswordResponse.from("이메일 전송되었습니다.");
 	}
 
-	//메일로 받은 링크를 통해 비번 변경
-	public FindPasswordResponse resetPassword(String email, String key) {
+	public VerifyEmailCodeResponse verifyFindPassword(String email, String key) {
 
 		User user = userDomainService.getUserByEmail(email);
 
@@ -240,7 +239,7 @@ public class AuthService {
 
 		if (isMatch){
 			user.setVerified();
-			return VerifyEmailCodeResponse.from("인증되었습니다");
+			return VerifyEmailCodeResponse.from("인증되었습니다", isMatch);
 		} else {
 			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
 		}

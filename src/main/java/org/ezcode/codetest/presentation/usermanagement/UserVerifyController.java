@@ -58,12 +58,12 @@ public class UserVerifyController {
         return ResponseEntity.status(HttpStatus.OK).body(authService.findPassword(request));
     }
 
-    @Operation(summary = "비밀번호 찾기 요청", description = "비밀번호를 찾기 위해 이메일로 인증코드를 전송합니다.")
-    @PostMapping("/auth/find-password-verify")
-    public ResponseEntity<FindPasswordResponse> resetPassword(
+    @Operation(summary = "비밀번호 찾기 요청 이메일 코드 인증", description = "비밀번호 찾기로 받은 이메일에서 '인증하기' 버튼을 누르면 자동으로 호출되는 api")
+    @GetMapping("/auth/find-password-verify")
+    public ResponseEntity<VerifyEmailCodeResponse> resetPassword(
         @RequestParam String email,
         @RequestParam String key
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(authService.resetPassword(email, key));
+        return ResponseEntity.status(HttpStatus.OK).body(authService.verifyFindPassword(email, key));
     }
 }
