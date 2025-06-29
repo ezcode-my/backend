@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 
 import org.ezcode.codetest.application.usermanagement.user.dto.request.UserGithubRepoSelectRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserGithubRepoResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.UserGitubAutoPushResponse;
 import org.ezcode.codetest.common.security.util.AESUtil;
 import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
+import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserGithubInfo;
 import org.ezcode.codetest.domain.user.repository.UserGithubInfoRepository;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,8 +22,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserGithubService {
@@ -100,8 +104,26 @@ public class UserGithubService {
             .orElseThrow(() -> new UserException(UserExceptionCode.NO_GITHUB_REPO));
 
         userGithub.setGithubRepo(request.repositoryName(), selectedRepo.getDefaultBranch());
+
         userGithubInfoRepository.updateGithubInfo(userGithub);
 
+        User user = userGithub.getUser();
+        user.setGitPushStatus(true); //레포를 선택하면 자동으로 push 설정이 true
+
         return selectedRepo;
+    }
+
+    @Transactional
+    public UserGitubAutoPushResponse changeAutoPushSetting(AuthUser authUser) {
+        UserGithubInfo userGithubInfo = userGithubInfoRepository.getUserGithubInfo(authUser.getId());
+        if (userGithubInfo == null) { //유저의 깃허브 정보가 없으면 에러 반환
+            throw new UserException(UserExceptionCode.NO_GITHUB_INFO);
+        }
+        User user = userGithubInfo.getUser();
+        boolean userGitPushStatus = user.getGitPushStatus();
+        user.setGitPushStatus(!userGitPushStatus);
+        log.info("기존 status: {} || 변경 status : {}", userGitPushStatus, user.getGitPushStatus());
+
+        return new UserGitubAutoPushResponse("변경되었습니다", user.getGitPushStatus());
     }
 }

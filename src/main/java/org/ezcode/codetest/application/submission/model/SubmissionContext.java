@@ -139,7 +139,7 @@ public record SubmissionContext(
     }
 
     public boolean isGitPushStatus() {
-        return user.isGitPushStatus();
+        return user.getGitPushStatus();
     }
 
     public Long getUserId() {
