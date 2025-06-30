@@ -24,6 +24,9 @@ repositories {
 }
 
 dependencies {
+    implementation 'io.projectreactor:reactor-core'
+    implementation 'io.projectreactor.netty:reactor-netty'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
@@ -37,7 +40,6 @@ dependencies {
 
     // activemq
     implementation 'org.springframework.boot:spring-boot-starter-activemq'
-    implementation "io.projectreactor.netty:reactor-netty:1.1.0"
 
     // 웹소켓
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -62,6 +64,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation "org.mockito:mockito-inline:4.+"
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.11.0'
 
     // bcrypt
     implementation 'at.favre.lib:bcrypt:0.10.2'

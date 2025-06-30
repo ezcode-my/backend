@@ -1,6 +1,7 @@
 package org.ezcode.codetest.infrastructure.judge0;
 
 import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 
 import org.ezcode.codetest.application.submission.dto.request.compile.CodeCompileRequest;
 import org.ezcode.codetest.application.submission.dto.response.compile.ExecutionResultResponse;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import io.netty.handler.timeout.TimeoutException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,10 +55,13 @@ public class Judge0Client implements JudgeClient {
                 .filter(ex -> ex instanceof WebClientResponseException
                                      || ex instanceof TimeoutException)
             )
+            .onErrorMap(IllegalStateException.class,
+                ex -> new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT))
             .onErrorMap(WebClientResponseException.class,
                 ex -> new SubmissionException(SubmissionExceptionCode.COMPILE_SERVER_ERROR))
             .onErrorMap(TimeoutException.class,
                 ex -> new SubmissionException(SubmissionExceptionCode.COMPILE_TIMEOUT))
+
             .block();
 
         if (resp == null || resp.token() == null) {
