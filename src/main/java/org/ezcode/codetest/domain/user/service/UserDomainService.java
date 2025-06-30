@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UserDomainService {
 	private final UserRepository userRepository;
 	private final UserAuthTypeRepository userAuthTypeRepository;
-	private final UserGithubInfoRepository userGithubInfoRepository;
 	private final PasswordEncoder passwordEncoder;
 	private static final java.util.Random RANDOM = new java.util.Random();
 

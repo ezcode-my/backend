@@ -81,7 +81,7 @@ public class MailService {
 			String body = "";
 			body += "<h3>" + "아래 버튼을 클릭하여 비밀번호 변경을 완료해 주세요" + "</h3>";
 			// 이메일 버튼
-			body += "<a href='"+redirectUrl+"/api/auth/reset-password?email="+ email + "&key=" + verificationCode + "' target='_blenk'>비밀번호 변경하기</a>";
+			body += "<a href='"+redirectUrl+"/api/auth/find-password-verify?email="+ email + "&key=" + verificationCode + "' target='_blenk'>비밀번호 변경하기</a>";
 			body += "<h3>" + "감사합니다." + "</h3>";
 			message.setText(body,"UTF-8", "html");
 		} catch (MessagingException e) {

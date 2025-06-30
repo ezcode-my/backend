@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.FindPasswordRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.request.ResetPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.FindPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
@@ -13,7 +12,10 @@ import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninRe
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.VerifyEmailCodeResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.request.ResetPasswordRequest;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.VerifyFindPasswordResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
@@ -77,11 +79,12 @@ public class AuthService {
 
 	//3. 만약 아예 첫 가입 유저일 때
 	private void createNewUser(SignupRequest request, String encodedPassword) {
+		String nickname = userDomainService.generateUniqueNickname();
 		User newUser = User.emailUser(
 			request.getEmail(),
 			encodedPassword,
 			request.getUsername(),
-			request.getNickname(),
+			nickname,
 			request.getAge()
 		);
 
@@ -113,7 +116,7 @@ public class AuthService {
 
 		if (isMatch){
 			user.setVerified();
-			return VerifyEmailCodeResponse.from("인증되었습니다");
+			return VerifyEmailCodeResponse.from("인증되었습니다", isMatch);
 		} else {
 			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
 		}
@@ -228,22 +231,38 @@ public class AuthService {
 
 		mailService.sendPasswordMail(user.getId(), request.getEmail(), request.getRedirectUrl());
 
-		return FindPasswordResponse.from("이메일로 전송되었습니다.");
+		return FindPasswordResponse.from("이메일 전송되었습니다.");
 	}
 
-	//메일로 받은 링크를 통해 비번 변경
-	public FindPasswordResponse resetPassword(ResetPasswordRequest request) {
+	public VerifyFindPasswordResponse verifyFindPassword(String email, String key) {
 
-		User user = userDomainService.getUserByEmail(request.getEmail());
+		User user = userDomainService.getUserByEmail(email);
 
-		boolean isMatch = mailService.verifyPasswordCode(user.getId(), request.getToken());
+		boolean isMatch = mailService.verifyPasswordCode(user.getId(), key);
+
+		String tempResetToken = jwtUtil.createEmailToken(user.getId(), email);
 
 		if (isMatch){
-			String encodedPassword = userDomainService.encodePassword(request.getNewPassword());
-			user.modifyPassword(encodedPassword);
-			return FindPasswordResponse.from("비밀번호가 변경되었습니다.");
+			user.setVerified();
+			return VerifyFindPasswordResponse.from("인증되었습니다", tempResetToken);
 		} else {
 			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);
 		}
+	}
+
+	@Transactional
+	public ChangeUserPasswordResponse resetPassword(@Valid ResetPasswordRequest request) {
+		Long userId = jwtUtil.getUserId(request.tempResetToken());
+		log.info("요청 유저 id : {}", userId);
+
+		User user = userDomainService.getUserById(userId);
+		//기존과 같은 비밀번호일때
+		userDomainService.passwordComparison(request.newPassword(), user.getPassword());
+		if (!request.newPassword().equals(request.newPasswordConfirm())){
+			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);
+		}
+		String encodedPassword = userDomainService.encodePassword(request.newPassword());
+		user.modifyPassword(encodedPassword);
+		return new ChangeUserPasswordResponse("비밀번호 변경이 완료되었습니다.");
 	}
 }

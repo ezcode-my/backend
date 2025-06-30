@@ -185,8 +185,15 @@ public class User extends BaseEntity {
 		this.githubUrl = githubUrl;
 	}
 
-
 	public void decreaseReviewToken() {
 		this.reviewToken -= 1;
+	}
+
+	public void setGitPushStatus(boolean gitPushStatus) {
+		this.gitPushStatus = gitPushStatus;
+	}
+
+	public boolean getGitPushStatus() {
+		return gitPushStatus;
 	}
 }

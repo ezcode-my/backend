@@ -41,9 +41,12 @@ public class UserInfoResponse {
 	@Schema(description = "사용자 티어", example = "GOLD")
 	private final Tier tier;
 
+	@Schema(description = "인증 여부", example = "true")
+	private final boolean verified;
+
 	@Builder
 	public UserInfoResponse(String username, String email, String nickname, UserRole userRole, Tier tier,
-		Integer age, String githubUrl, String blogUrl, String profileImageUrl, String introduction) {
+		Integer age, String githubUrl, String blogUrl, String profileImageUrl, String introduction, boolean verified) {
 		this.username = username;
 		this.email = email;
 		this.nickname = nickname;
@@ -54,7 +57,8 @@ public class UserInfoResponse {
 		this.introduction = introduction;
 		this.tier = tier;
 		this.userRole = userRole;
-	}
+        this.verified = verified;
+    }
 
 	public static UserInfoResponse fromEntity(User user) {
 		return UserInfoResponse.builder()

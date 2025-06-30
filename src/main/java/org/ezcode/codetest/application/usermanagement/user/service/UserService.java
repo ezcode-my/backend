@@ -52,6 +52,7 @@ public class UserService {
 			.githubUrl(user.getGithubUrl())
 			.userRole(user.getRole())
 			.tier(user.getTier())
+			.verified(user.isVerified())
 			.build();
 	}
 
