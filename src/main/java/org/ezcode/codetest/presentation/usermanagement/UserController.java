@@ -3,6 +3,7 @@ package org.ezcode.codetest.presentation.usermanagement;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ModifyUserInfoRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.GrantAdminRoleResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserInfoResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.WithdrawUserResponse;
@@ -13,9 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,6 +92,14 @@ public class UserController {
 		@AuthenticationPrincipal AuthUser authUser
 	){
 		return ResponseEntity.status(HttpStatus.OK).body(userService.withdrawUser(authUser));
+	}
 
+	@Operation(summary = "유저 권한 전환", description = "관리자 권한을 가지고 있는 유저는 다른 유저의 권한을 수정할 수 있습니다.")
+	@PostMapping("/admin/users/{userId}/grant-admin")
+	public ResponseEntity<GrantAdminRoleResponse> grantAdminRole(
+		@AuthenticationPrincipal AuthUser authUser,
+		@PathVariable Long userId
+	){
+		return ResponseEntity.status(HttpStatus.OK).body(userService.grantAdminRole(authUser, userId));
 	}
 }

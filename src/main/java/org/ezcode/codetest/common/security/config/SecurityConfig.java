@@ -73,11 +73,11 @@ public class SecurityConfig {
 					.requestMatchers(new DispatcherTypeRequestMatcher(DispatcherType.ASYNC)).permitAll()
 					.requestMatchers(
 						SecurityPath.PUBLIC_PATH).permitAll()
+					.requestMatchers("/api/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.requestMatchers(HttpMethod.GET,
 						"/api/problems/*/discussions",
 						"/api/problems/{problemId}/discussions/{discussionId}/replies",
 						"/api/problems/{problemId}/discussions/{discussionId}/replies/**").permitAll()
-					.requestMatchers("/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.anyRequest().authenticated() //나머지는 일반 인증
 			)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

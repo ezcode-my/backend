@@ -70,6 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			tier
 		);
 
+
 		// 인가를 위한 권한 정보 저장
 		Collection<? extends GrantedAuthority> authorities =
 			List.of(new SimpleGrantedAuthority("ROLE_" + authUser.getRole().name()));
@@ -77,6 +78,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		// Spring Security 인증 토큰 생성
 		Authentication authToken;
 		authToken = new UsernamePasswordAuthenticationToken(authUser, null, authorities);
+
 
 		// SecurityContextHolder(세션)에 토큰 담기
 		SecurityContextHolder.getContext().setAuthentication(authToken);

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import org.ezcode.codetest.application.usermanagement.user.dto.response.GrantAdminRoleResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
 import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
@@ -14,10 +15,13 @@ import org.ezcode.codetest.application.usermanagement.user.dto.response.UserInfo
 import org.ezcode.codetest.application.usermanagement.user.dto.response.WithdrawUserResponse;
 import org.ezcode.codetest.domain.submission.service.SubmissionDomainService;
 import org.ezcode.codetest.domain.user.exception.AuthException;
+import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
+import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
+import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.ezcode.codetest.domain.user.service.MailService;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.infrastructure.s3.S3Directory;
@@ -159,5 +163,19 @@ public class UserService {
 		User user = userDomainService.getUserById(authUser.getId());
 		user.modifyProfileImage(null);
 		return new UserProfileImageResponse(user.getProfileImageUrl());
+	}
+
+	@Transactional
+	public GrantAdminRoleResponse grantAdminRole(AuthUser authUser, Long userId) {
+		if (authUser.getId().equals(userId)) {
+			throw new UserException(UserExceptionCode.GRANT_ADMIN_SELF);
+		}
+		User user = userDomainService.getUserById(userId);
+		if (user.getRole().equals(UserRole.ADMIN)) {
+			throw new UserException(UserExceptionCode.ALREADY_ADMIN_USER);
+		}
+		user.modifyUserRole(UserRole.ADMIN);
+
+		return new GrantAdminRoleResponse("ADMIN 권한을 부여합니다");
 	}
 }
