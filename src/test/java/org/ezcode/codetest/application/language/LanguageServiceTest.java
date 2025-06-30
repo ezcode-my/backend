@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.language.service;
+package org.ezcode.codetest.application.language;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
