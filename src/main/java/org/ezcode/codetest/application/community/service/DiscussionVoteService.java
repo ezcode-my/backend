@@ -1,11 +1,13 @@
 package org.ezcode.codetest.application.community.service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.community.dto.request.VoteRequest;
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.port.NotificationEventService;
+import org.ezcode.codetest.application.notification.service.NotificationExecutor;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.model.entity.DiscussionVote;
 import org.ezcode.codetest.domain.community.service.DiscussionDomainService;
@@ -19,17 +21,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class DiscussionVoteService extends BaseVoteService<DiscussionVote, DiscussionVoteDomainService> {
 
 	private final DiscussionDomainService discussionDomainService;
-	private final NotificationEventService notificationEventService;
+	private final NotificationExecutor notificationExecutor;
 
 	public DiscussionVoteService(
 		DiscussionVoteDomainService domainService,
 		UserDomainService userDomainService,
 		DiscussionDomainService discussionDomainService,
-		NotificationEventService notificationEventService
+		NotificationExecutor notificationExecutor
 	) {
 		super(domainService, userDomainService);
 		this.discussionDomainService = discussionDomainService;
-		this.notificationEventService = notificationEventService;
+		this.notificationExecutor = notificationExecutor;
 	}
 
 	@Transactional
@@ -43,10 +45,13 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 	@Override
 	protected void afterVote(User voter, Long targetId) {
 
-		Discussion discussion = discussionDomainService.getDiscussionById(targetId);
+		notificationExecutor.execute(() -> {
 
-		Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createDiscussionVoteNotification(voter, discussion);
+			Discussion discussion = discussionDomainService.getDiscussionById(targetId);
 
-		notificationEvent.ifPresent(notificationEventService::notify);
+			Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createDiscussionVoteNotification(voter, discussion);
+
+			return notificationEvent.map(List::of).orElse(Collections.emptyList());
+		});
 	}
 }

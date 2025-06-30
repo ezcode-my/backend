@@ -1,11 +1,13 @@
 package org.ezcode.codetest.application.community.service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.community.dto.request.VoteRequest;
 import org.ezcode.codetest.application.community.dto.response.VoteResponse;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.port.NotificationEventService;
+import org.ezcode.codetest.application.notification.service.NotificationExecutor;
 import org.ezcode.codetest.domain.community.model.entity.Reply;
 import org.ezcode.codetest.domain.community.model.entity.ReplyVote;
 import org.ezcode.codetest.domain.community.service.ReplyDomainService;
@@ -19,18 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomainService> {
 
 	private final ReplyDomainService replyDomainService;
+	private final NotificationExecutor notificationExecutor;
 
-	private final NotificationEventService notificationEventService;
 
 	public ReplyVoteService(
 		ReplyVoteDomainService domainService,
 		UserDomainService userDomainService,
 		ReplyDomainService replyDomainService,
-		NotificationEventService notificationEventService
+		NotificationExecutor notificationExecutor
 	) {
 		super(domainService, userDomainService);
 		this.replyDomainService = replyDomainService;
-		this.notificationEventService = notificationEventService;
+		this.notificationExecutor = notificationExecutor;
 	}
 
 	@Transactional
@@ -44,10 +46,13 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	@Override
 	protected void afterVote(User voter, Long targetId) {
 
-		Reply reply = replyDomainService.getReplyById(targetId);
+		notificationExecutor.execute(() -> {
 
-		Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createReplyVoteNotification(voter, reply);
+			Reply reply = replyDomainService.getReplyById(targetId);
 
-		notificationEvent.ifPresent(notificationEventService::notify);
+			Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createReplyVoteNotification(voter, reply);
+
+			return notificationEvent.map(List::of).orElse(Collections.emptyList());
+		});
 	}
 }

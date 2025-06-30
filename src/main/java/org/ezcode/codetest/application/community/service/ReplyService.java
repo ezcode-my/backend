@@ -1,12 +1,12 @@
 package org.ezcode.codetest.application.community.service;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.ezcode.codetest.application.community.dto.request.ReplyCreateRequest;
 import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
-import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.port.NotificationEventService;
+import org.ezcode.codetest.application.notification.service.NotificationExecutor;
 import org.ezcode.codetest.domain.community.dto.ReplyQueryResult;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.model.entity.Reply;
@@ -30,7 +30,7 @@ public class ReplyService {
 	private final DiscussionDomainService discussionDomainService;
 	private final UserDomainService userDomainService;
 
-	private final NotificationEventService notificationEventService;
+	private final NotificationExecutor notificationExecutor;
 
 	@Transactional
 	public ReplyResponse createReply(
@@ -46,14 +46,17 @@ public class ReplyService {
 
 		Reply reply = replyDomainService.createReply(discussion, user, request.parentReplyId(), request.content());
 
-		List<User> notificationTargets = reply.generateNotificationTargets();
+		notificationExecutor.execute(() -> {
+			List<User> notificationTargets = reply.generateNotificationTargets();
 
-		if (!notificationTargets.isEmpty()) {
-			for (User target : notificationTargets) {
-				NotificationCreateEvent notificationEvent = replyDomainService.createReplyNotification(target, reply);
-				notificationEventService.notify(notificationEvent);
+			if (notificationTargets.isEmpty()) {
+				return Collections.emptyList();
 			}
-		}
+
+			return notificationTargets.stream()
+				.map(target -> replyDomainService.createReplyNotification(target, reply))
+				.toList();
+		});
 
 		return ReplyResponse.fromEntity(reply);
 	}
