@@ -2,7 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.notification;
 
 import java.util.List;
 
-import org.ezcode.codetest.infrastructure.event.dto.NotificationRecord;
+import org.ezcode.codetest.infrastructure.notification.model.NotificationRecord;
 
 public interface NotificationRepository {
 

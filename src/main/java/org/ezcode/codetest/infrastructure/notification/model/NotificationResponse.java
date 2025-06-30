@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.event.dto;
+package org.ezcode.codetest.infrastructure.notification.model;
 
 import java.time.LocalDateTime;
 
@@ -9,11 +9,7 @@ public record NotificationResponse(
 
 	String id,
 
-	NotificationType type,
-
-	String message,
-
-	String redirectUrl,
+	NotificationType notificationType,
 
 	NotificationPayload payload,
 
@@ -27,11 +23,20 @@ public record NotificationResponse(
 		return new NotificationResponse(
 			record.getId(),
 			record.getType(),
-			record.getMessage(),
-			record.getRedirectUrl(),
 			record.getPayload(),
 			record.isRead(),
 			record.getCreatedAt()
+		);
+	}
+
+	public static NotificationResponse from(NotificationDocument document) {
+
+		return new NotificationResponse(
+			document.getId(),
+			document.getNotificationType(),
+			document.getPayload(),
+			document.isRead(),
+			document.getCreatedAt()
 		);
 	}
 }

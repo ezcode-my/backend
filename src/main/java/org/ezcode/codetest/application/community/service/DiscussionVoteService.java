@@ -47,6 +47,6 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 
 		Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createDiscussionVoteNotification(voter, discussion);
 
-		notificationEvent.ifPresent(notificationEventService::saveAndNotify);
+		notificationEvent.ifPresent(notificationEventService::notify);
 	}
 }

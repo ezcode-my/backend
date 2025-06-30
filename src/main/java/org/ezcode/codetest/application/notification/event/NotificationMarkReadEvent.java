@@ -1,6 +1,6 @@
 package org.ezcode.codetest.application.notification.event;
 
-public record NotificationReadEvent(
+public record NotificationMarkReadEvent(
 
 	String principalName,
 

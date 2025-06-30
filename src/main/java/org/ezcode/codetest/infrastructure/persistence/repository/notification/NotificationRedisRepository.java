@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.ezcode.codetest.infrastructure.event.dto.NotificationRecord;
+import org.ezcode.codetest.infrastructure.notification.model.NotificationRecord;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;

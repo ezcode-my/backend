@@ -1,4 +1,4 @@
-package org.ezcode.codetest.infrastructure.event.dto;
+package org.ezcode.codetest.infrastructure.notification.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

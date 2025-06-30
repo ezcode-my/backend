@@ -1,7 +1,7 @@
 package org.ezcode.codetest.infrastructure.cache.config;
 
 import org.ezcode.codetest.application.chatting.port.cache.ChatRoomCache;
-import org.ezcode.codetest.infrastructure.event.dto.NotificationRecord;
+import org.ezcode.codetest.infrastructure.notification.model.NotificationRecord;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

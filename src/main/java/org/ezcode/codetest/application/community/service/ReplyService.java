@@ -51,7 +51,7 @@ public class ReplyService {
 		if (!notificationTargets.isEmpty()) {
 			for (User target : notificationTargets) {
 				NotificationCreateEvent notificationEvent = replyDomainService.createReplyNotification(target, reply);
-				notificationEventService.saveAndNotify(notificationEvent);
+				notificationEventService.notify(notificationEvent);
 			}
 		}
 

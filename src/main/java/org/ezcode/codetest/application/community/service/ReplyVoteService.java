@@ -48,6 +48,6 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 
 		Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createReplyVoteNotification(voter, reply);
 
-		notificationEvent.ifPresent(notificationEventService::saveAndNotify);
+		notificationEvent.ifPresent(notificationEventService::notify);
 	}
 }
