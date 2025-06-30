@@ -161,8 +161,20 @@ public class UserService {
 	@Transactional
 	public UserProfileImageResponse deleteUserProfileImage(AuthUser authUser) {
 		User user = userDomainService.getUserById(authUser.getId());
-		user.modifyProfileImage(null);
-		return new UserProfileImageResponse(user.getProfileImageUrl());
+
+		String oldImageUrl = user.getProfileImageUrl();
+
+		// S3에서 기존 이미지 파일 삭제
+		if (oldImageUrl != null) {
+			try {
+				s3Uploader.delete(oldImageUrl, "profile");
+				user.modifyProfileImage(null);
+			} catch (Exception e) {
+				log.warn("프로필 이미지 삭제 실패 - url: {}", oldImageUrl, e);
+			}
+		}
+
+		return new UserProfileImageResponse(null);
 	}
 
 	@Transactional
