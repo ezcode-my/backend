@@ -1,6 +1,7 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,10 +40,15 @@ public class OAuth2Controller {
         HttpServletResponse response,
         @RequestParam(required = false) String redirect_uri
     ) throws IOException {
-        if (redirect_uri != null) {
+        if (redirect_uri != null && isValidRedirectUri(redirect_uri)) {
             request.getSession().setAttribute("redirect_uri", redirect_uri);
         }
 
         response.sendRedirect("/oauth2/authorization/" + provider);
+    }
+
+    private boolean isValidRedirectUri(String uri) {
+        List<String> allowedDomains = List.of("http://localhost:8080", "https://ezcode.my");
+        return allowedDomains.stream().anyMatch(uri::startsWith);
     }
 }

@@ -120,10 +120,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		//JSON 문자열로 바꿔서 클라이언트에게 응답 본문으로 전달
 		OAuthResponse oAuthResponse = new OAuthResponse(accessToken, refreshToken);
 
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-		response.getWriter().write(objectMapper.writeValueAsString(oAuthResponse));
-		// response.sendRedirect(targetUri);
+		response.sendRedirect(targetUri);
 		}
 
 }

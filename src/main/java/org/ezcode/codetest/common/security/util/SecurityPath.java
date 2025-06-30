@@ -8,6 +8,7 @@ public class SecurityPath {
 		"/login/oauth2/**", //OAuth로그인 접근
 		"/api/auth/**",
 		"/api/oauth2/**",
+		"/oauth/**",
 		"/login",
 		"/ezlogin",
 		"/login/**",
