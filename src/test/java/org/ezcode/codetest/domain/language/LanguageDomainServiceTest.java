@@ -1,4 +1,4 @@
-package org.ezcode.codetest.domain.language.service;
+package org.ezcode.codetest.domain.language;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -10,6 +10,7 @@ import org.ezcode.codetest.domain.language.exception.LanguageException;
 import org.ezcode.codetest.domain.language.exception.code.LanguageExceptionCode;
 import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.language.repository.LanguageRepository;
+import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
