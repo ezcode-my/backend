@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
 import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
@@ -19,10 +20,15 @@ import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.service.MailService;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
+import org.ezcode.codetest.infrastructure.s3.S3Directory;
+import org.ezcode.codetest.infrastructure.s3.S3Uploader;
+import org.ezcode.codetest.infrastructure.s3.exception.S3Exception;
+import org.ezcode.codetest.infrastructure.s3.exception.code.S3ExceptionCode;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +41,7 @@ public class UserService {
 	private final UserDomainService userDomainService;
 	private final SubmissionDomainService submissionDomainService;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final S3Uploader s3Uploader;
 
 	@Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(AuthUser authUser) {
@@ -126,4 +133,31 @@ public class UserService {
 		userDomainService.resetReviewTokensForUsers(UsersByWeek.from(counts, weekLength));
 	}
 
+	@Transactional
+	public UserProfileImageResponse uploadUserProfileImage(AuthUser authUser, MultipartFile image) {
+		User user = userDomainService.getUserById(authUser.getId());
+		if (user.getProfileImageUrl()!=null) {
+			s3Uploader.delete(user.getProfileImageUrl(), "profile");
+		}
+		String profileImageUrl = uploadProfileImage(image);
+
+		user.modifyProfileImage(profileImageUrl);
+		return new UserProfileImageResponse(profileImageUrl);
+	}
+
+	private String uploadProfileImage(MultipartFile image) {
+		try {
+			return s3Uploader.upload(image, S3Directory.PROFILE.getDir());
+		} catch (Exception e) {
+			log.error("프로필 이미지 업로드 실패 - image {}", image, e);
+			throw new S3Exception(S3ExceptionCode.S3_UPLOAD_FAILED);
+		}
+	}
+
+	@Transactional
+	public UserProfileImageResponse deleteUserProfileImage(AuthUser authUser) {
+		User user = userDomainService.getUserById(authUser.getId());
+		user.modifyProfileImage(null);
+		return new UserProfileImageResponse(user.getProfileImageUrl());
+	}
 }

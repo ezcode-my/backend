@@ -134,7 +134,7 @@ public class ProblemService {
 		// 문제 이미지가 있으면 삭제
 		if (!findProblem.getImageUrl().isEmpty()) {
 			for(String fileUrl : findProblem.getImageUrl()) {
-				s3Uploader.delete(fileUrl);
+				s3Uploader.delete(fileUrl, "problem");
 			}
 		}
 
@@ -163,7 +163,7 @@ public class ProblemService {
 		// 기존 이미지가 있다면 삭제 처리
 		if (!problem.getImageUrl().isEmpty()) {
 			for(String fileUrl : problem.getImageUrl()) {
-				s3Uploader.delete(fileUrl);
+				s3Uploader.delete(fileUrl, "problem");
 			}
 			problem.clearImages();
 		}

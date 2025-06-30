@@ -28,7 +28,7 @@ public class OAuth2Controller {
                프론트엔드에서 GitHub 로그인 버튼 클릭 시 이 API를 먼저 호출
                redirect_uri는 로그인 완료 후 accessToken과 refreshToken을 전달받을 프론트의 콜백 URL
 
-               예시: GET /api/oauth2/authorize/github?redirect_uri=https://ezcode.my/oauth/callback
+               예시: GET /api/oauth2/authorize/google?redirect_uri=https://ezcode.my
                """)
     @Parameters({
         @Parameter(name = "redirect_uri", description = "프론트 콜백 URI", required = true, example = "https://ezcode.my/oauth/callback (이 uri는 예시이니 편하신걸로 바꾸심 됩니당)")
@@ -48,7 +48,7 @@ public class OAuth2Controller {
     }
 
     private boolean isValidRedirectUri(String uri) {
-        List<String> allowedDomains = List.of("http://localhost:8080", "https://ezcode.my");
+        List<String> allowedDomains = List.of("http://localhost:8080", "http://localhost:3000","https://ezcode.my");
         return allowedDomains.stream().anyMatch(uri::startsWith);
     }
 }
