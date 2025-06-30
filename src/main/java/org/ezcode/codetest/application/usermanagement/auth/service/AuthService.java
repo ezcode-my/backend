@@ -249,21 +249,19 @@ public class AuthService {
 		}
 	}
 
+	@Transactional
 	public ChangeUserPasswordResponse resetPassword(@Valid ResetPasswordRequest request) {
 		Long userId = jwtUtil.getUserId(request.tempResetToken());
 		log.info("요청 유저 id : {}", userId);
-		User user = userDomainService.getUserById(userId);
 
-		if (request.newPassword().equals(user.getPassword())){
-			throw new AuthException(AuthExceptionCode.PASSWORD_IS_SAME); //기존과 같은 비밀번호일때
-		}
+		User user = userDomainService.getUserById(userId);
+		//기존과 같은 비밀번호일때
+		userDomainService.passwordComparison(request.newPassword(), user.getPassword());
 		if (!request.newPassword().equals(request.newPasswordConfirm())){
 			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);
 		}
-
-		jwtUtil.
-
-		user.modifyPassword(request.newPassword());
+		String encodedPassword = userDomainService.encodePassword(request.newPassword());
+		user.modifyPassword(encodedPassword);
 		return new ChangeUserPasswordResponse("비밀번호 변경이 완료되었습니다.");
 	}
 }
