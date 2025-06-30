@@ -2,17 +2,11 @@ package org.ezcode.codetest.presentation.usermanagement;
 
 import java.util.Optional;
 
-import org.ezcode.codetest.application.usermanagement.auth.dto.request.FindPasswordRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.request.ResetPasswordRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.request.SendEmailRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.response.FindPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.RefreshTokenResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SigninRequest;
-import org.ezcode.codetest.application.usermanagement.auth.dto.response.SendEmailResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SigninResponse;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SignupRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.response.SignupResponse;
-import org.ezcode.codetest.application.usermanagement.auth.dto.response.VerifyEmailCodeResponse;
 import org.ezcode.codetest.application.usermanagement.auth.service.AuthService;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.domain.user.exception.AuthException;
@@ -21,11 +15,9 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;

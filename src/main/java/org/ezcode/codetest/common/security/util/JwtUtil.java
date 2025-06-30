@@ -148,4 +148,23 @@ public class JwtUtil {
 			return false;
 		}
 	}
+
+    public String createEmailToken(Long userId, String email) {
+		if ( email == null ) {
+			throw new IllegalArgumentException("토큰에 필요한 필수 매개변수가 null입니다.");
+		}
+
+		Date date = new Date();
+		long EXPIRATION_TIME = 600 * 1000; // 10분
+
+		return BEARER_PREFIX +
+			Jwts.builder()
+				.setSubject(String.valueOf(userId))
+				.claim("email", email)
+				.setExpiration(new Date(date.getTime() + EXPIRATION_TIME))
+				.setIssuedAt(date)
+				.signWith(key, signatureAlgorithm)
+				.compact();
+	}
+
 }
