@@ -1,39 +1,66 @@
 package org.ezcode.codetest.infrastructure.notification.service;
 
+import java.util.List;
+import java.util.Set;
+
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
+import org.ezcode.codetest.application.notification.event.NotificationListRequestEvent;
 import org.ezcode.codetest.application.notification.event.NotificationMarkReadEvent;
 import org.ezcode.codetest.application.notification.exception.NotificationException;
 import org.ezcode.codetest.application.notification.exception.NotificationExceptionCode;
+import org.ezcode.codetest.infrastructure.notification.dto.NotificationPageResponse;
+import org.ezcode.codetest.infrastructure.notification.dto.NotificationResponse;
 import org.ezcode.codetest.infrastructure.notification.model.NotificationDocument;
 import org.ezcode.codetest.infrastructure.notification.repository.NotificationMongoRepository;
-import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class NotificationService {
 
 	private final NotificationMongoRepository mongoRepository;
 
-	// @CacheEvict(value = "notificationList", key = "#event.principalName + ':*'")
-	public NotificationDocument createNewNotification(NotificationCreateEvent event) {
+	private final RedisTemplate<String, Object> redisTemplate;
 
-		return mongoRepository.save(NotificationDocument.from(event));
+	public NotificationService(
+		NotificationMongoRepository mongoRepository,
+		@Qualifier("notificationRedisTemplate") RedisTemplate<String, Object> redisTemplate
+	) {
+		this.mongoRepository = mongoRepository;
+		this.redisTemplate = redisTemplate;
 	}
 
-	// @Cacheable(value = "notificationList", key = "#principalName + ':' + #page")
-	public Page<NotificationDocument> getNotifications(String principalName, int page, int size) {
+	public NotificationDocument createNewNotification(NotificationCreateEvent event) {
 
-		int zeroBasedPage = page > 0 ? page - 1 : 0;
+		NotificationDocument document = mongoRepository.save(NotificationDocument.from(event));
 
-		PageRequest pageRequest = PageRequest.of(zeroBasedPage, size, Sort.by("createdAt").descending());
-		return mongoRepository.findAllByPrincipalName(principalName, pageRequest);
+		evictNotificationListCache(event.principalName());
+
+		return document;
+	}
+
+	@Cacheable(value = "notificationList", key = "#event.principalName + ':' + #event.page + ':' + #event.size", cacheManager = "notificationRedisCacheManager")
+	public NotificationPageResponse<NotificationResponse> getNotifications(NotificationListRequestEvent event) {
+
+		PageRequest pageRequest = PageRequest.of(event.page(), event.size(), Sort.by("createdAt").descending());
+
+		Page<NotificationDocument> page = mongoRepository.findAllByPrincipalName(event.principalName(), pageRequest);
+
+		List<NotificationResponse> notificationList = page.stream()
+			.map(NotificationResponse::from)
+			.toList();
+
+		return new NotificationPageResponse<>(
+			notificationList,
+			page.getNumber(),
+			page.getSize(),
+			page.getTotalElements()
+		);
 	}
 
 	public void markAsRead(NotificationMarkReadEvent event) {
@@ -44,5 +71,18 @@ public class NotificationService {
 
 		notificationDocument.markAsRead();
 		mongoRepository.save(notificationDocument);
+
+		evictNotificationListCache(event.principalName());
+	}
+
+	private void evictNotificationListCache(String principalName) {
+
+		String pattern = "notificationList::" + principalName + ":*";
+
+		Set<String> keys = redisTemplate.keys(pattern);
+
+		if (!keys.isEmpty()) {
+			redisTemplate.delete(keys);
+		}
 	}
 }

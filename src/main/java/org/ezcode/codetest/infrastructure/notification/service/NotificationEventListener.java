@@ -7,9 +7,9 @@ import org.ezcode.codetest.application.notification.event.NotificationListReques
 import org.ezcode.codetest.application.notification.event.NotificationMarkReadEvent;
 import org.ezcode.codetest.application.notification.exception.NotificationException;
 import org.ezcode.codetest.application.notification.exception.NotificationExceptionCode;
+import org.ezcode.codetest.infrastructure.notification.dto.NotificationPageResponse;
 import org.ezcode.codetest.infrastructure.notification.model.NotificationDocument;
-import org.ezcode.codetest.infrastructure.notification.model.NotificationResponse;
-import org.springframework.data.domain.Page;
+import org.ezcode.codetest.infrastructure.notification.dto.NotificationResponse;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -48,13 +48,12 @@ public class NotificationEventListener {
 	public void handleNotificationListRequestEvent(String message) {
 
 		NotificationListRequestEvent event = convertObject(message, NotificationListRequestEvent.class);
-		Page<NotificationDocument> notifications =
-			notificationService.getNotifications(event.principalName(), event.page(), event.size());
+		NotificationPageResponse<NotificationResponse> notifications = notificationService.getNotifications(event);
 
 		messagingTemplate.convertAndSendToUser(
 			event.principalName(),
 			"/queue/notifications",
-			notifications.stream().map(NotificationResponse::from).toList()
+			notifications
 		);
 	}
 

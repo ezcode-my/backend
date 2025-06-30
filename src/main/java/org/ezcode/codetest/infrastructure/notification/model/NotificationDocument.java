@@ -7,6 +7,8 @@ import org.ezcode.codetest.application.notification.event.NotificationCreateEven
 import org.ezcode.codetest.application.notification.event.payload.NotificationPayload;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,7 @@ public class NotificationDocument {
 
 	private NotificationPayload payload;
 
+	@JsonProperty("read")
 	private boolean isRead;
 
 	private LocalDateTime createdAt;

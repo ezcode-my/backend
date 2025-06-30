@@ -1,9 +1,10 @@
-package org.ezcode.codetest.infrastructure.notification.model;
+package org.ezcode.codetest.infrastructure.notification.dto;
 
 import java.time.LocalDateTime;
 
 import org.ezcode.codetest.application.notification.event.payload.NotificationPayload;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
+import org.ezcode.codetest.infrastructure.notification.model.NotificationDocument;
 
 public record NotificationResponse(
 
@@ -18,16 +19,6 @@ public record NotificationResponse(
 	LocalDateTime createdAt
 
 ) {
-
-	public static NotificationResponse from(NotificationRecord record) {
-		return new NotificationResponse(
-			record.getId(),
-			record.getType(),
-			record.getPayload(),
-			record.isRead(),
-			record.getCreatedAt()
-		);
-	}
 
 	public static NotificationResponse from(NotificationDocument document) {
 
