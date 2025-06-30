@@ -74,7 +74,7 @@ public class Problem extends BaseEntity {
 	@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Testcase> testcases = new ArrayList<>();
 
-	@ElementCollection(fetch = FetchType.LAZY)
+	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> imageUrl = new ArrayList<>();
 
 	@Builder
