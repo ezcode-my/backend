@@ -64,6 +64,8 @@ public class ProblemQueryRepositoryImpl implements ProblemRepositoryCustom {
 		Long total = jpaQueryFactory
 			.select(problem.countDistinct())
 			.from(problem)
+			.leftJoin(problemCategory).on(problem.eq(problemCategory.problem))
+			.leftJoin(problemCategory.category, category)
 			.where(builder)
 			.fetchOne();
 
