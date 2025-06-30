@@ -79,11 +79,12 @@ public class AuthService {
 
 	//3. 만약 아예 첫 가입 유저일 때
 	private void createNewUser(SignupRequest request, String encodedPassword) {
+		String nickname = userDomainService.generateUniqueNickname();
 		User newUser = User.emailUser(
 			request.getEmail(),
 			encodedPassword,
 			request.getUsername(),
-			request.getNickname(),
+			nickname,
 			request.getAge()
 		);
 

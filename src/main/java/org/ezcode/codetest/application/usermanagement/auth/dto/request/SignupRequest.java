@@ -38,11 +38,6 @@ public class SignupRequest {
 	@Size(max = 15, message = "이름은 15글자 이하로 입력 가능합니다")
 	private String username;
 
-	@Schema(description = "사용자 별명 (최대 20자)", example = "다람쥐쳇바퀴에굴러가")
-	@NotBlank(message = "별명은 반드시 입력되어야합니다")
-	@Size(max = 20, message = "별명은 20글자 이하로 입력 가능합니다")
-	private String nickname;
-
 	//선택적 입력
 	@Schema(description = "나이 (선택 입력)", example = "25")
 	private Integer age;
