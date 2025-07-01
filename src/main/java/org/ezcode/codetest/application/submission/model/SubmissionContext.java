@@ -157,4 +157,8 @@ public record SubmissionContext(
     public String getLanguageVersion() {
         return language.getVersion();
     }
+
+    public String getUserEmail() {
+        return user.getEmail();
+    }
 }
