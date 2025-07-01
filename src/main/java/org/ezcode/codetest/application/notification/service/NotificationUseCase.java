@@ -1,7 +1,7 @@
 package org.ezcode.codetest.application.notification.service;
 
 import org.ezcode.codetest.application.notification.event.NotificationListRequestEvent;
-import org.ezcode.codetest.application.notification.event.NotificationReadEvent;
+import org.ezcode.codetest.application.notification.event.NotificationMarkReadEvent;
 import org.ezcode.codetest.application.notification.port.NotificationEventService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class NotificationUseCase {
 	public void modifyNotificationMarksRead(String email, String notificationId) {
 
 		notificationEventService.setRead(
-			new NotificationReadEvent(email, notificationId)
+			new NotificationMarkReadEvent(email, notificationId)
 		);
 	}
 }

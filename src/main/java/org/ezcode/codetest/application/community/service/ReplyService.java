@@ -1,12 +1,12 @@
 package org.ezcode.codetest.application.community.service;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.ezcode.codetest.application.community.dto.request.ReplyCreateRequest;
 import org.ezcode.codetest.application.community.dto.request.ReplyModifyRequest;
 import org.ezcode.codetest.application.community.dto.response.ReplyResponse;
-import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
-import org.ezcode.codetest.application.notification.port.NotificationEventService;
+import org.ezcode.codetest.application.notification.service.NotificationExecutor;
 import org.ezcode.codetest.domain.community.dto.ReplyQueryResult;
 import org.ezcode.codetest.domain.community.model.entity.Discussion;
 import org.ezcode.codetest.domain.community.model.entity.Reply;
@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
@@ -30,7 +32,7 @@ public class ReplyService {
 	private final DiscussionDomainService discussionDomainService;
 	private final UserDomainService userDomainService;
 
-	private final NotificationEventService notificationEventService;
+	private final NotificationExecutor notificationExecutor;
 
 	@Transactional
 	public ReplyResponse createReply(
@@ -46,14 +48,22 @@ public class ReplyService {
 
 		Reply reply = replyDomainService.createReply(discussion, user, request.parentReplyId(), request.content());
 
-		List<User> notificationTargets = reply.generateNotificationTargets();
+		notificationExecutor.execute(() -> {
+			try {
+				List<User> notificationTargets = reply.generateNotificationTargets();
 
-		if (!notificationTargets.isEmpty()) {
-			for (User target : notificationTargets) {
-				NotificationCreateEvent notificationEvent = replyDomainService.createReplyNotification(target, reply);
-				notificationEventService.saveAndNotify(notificationEvent);
+				if (notificationTargets.isEmpty()) {
+					return Collections.emptyList();
+				}
+
+				return notificationTargets.stream()
+					.map(target -> replyDomainService.createReplyNotification(target, reply))
+					.toList();
+			} catch (Exception ex) {
+				log.error("댓글 알림 생성 중 에러 발생 : {}", ex.getMessage());
+				return Collections.emptyList();
 			}
-		}
+		});
 
 		return ReplyResponse.fromEntity(reply);
 	}
