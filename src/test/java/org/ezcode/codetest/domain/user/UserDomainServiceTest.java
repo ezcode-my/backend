@@ -58,6 +58,7 @@ public class UserDomainServiceTest {
     ) {
         public Long getId() { return 1L; }
         public int getReviewToken() { return 5; }
+        public int getZeroReviewToken() { return 0; }
     };
     private final UserAuthType testAuthType = new UserAuthType(testUser, AuthType.EMAIL);
 
@@ -201,9 +202,8 @@ public class UserDomainServiceTest {
             28, Tier.NEWBIE, UserRole.USER,
             false, true, "https://github.com", false
         ) {
-            @Override
             public int getReviewToken() {
-                return 0; // Directly return 0 tokens
+                return 0;
             }
         };
 
