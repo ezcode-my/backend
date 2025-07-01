@@ -74,6 +74,8 @@ public class SecurityConfig {
 					.requestMatchers(
 						SecurityPath.PUBLIC_PATH).permitAll()
 					.requestMatchers(HttpMethod.GET,
+						"/api/problems",
+						"/api/problems/{problemId}",
 						"/api/problems/*/discussions",
 						"/api/problems/{problemId}/discussions/{discussionId}/replies",
 						"/api/problems/{problemId}/discussions/{discussionId}/replies/**").permitAll()

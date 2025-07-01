@@ -3,127 +3,209 @@
 <head>
     <meta charset="UTF-8" />
     <title>코드 제출 테스트 (WebSocket)</title>
+    <link rel="icon" href="data:;base64,=">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; padding: 30px; }
-        .section { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .result-box { background: #fff; border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; white-space: pre; }
-        .slot { padding: 8px; margin: 4px 0; border-radius: 4px; }
-        .init { background: #eef; }
-        .passed { background: #efe; }
-        .failed { background: #fee; }
-        button { padding: 10px 20px; background: #007bff; border: none; border-radius: 4px; color: #fff; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        textarea, input { width: 100%; padding: 10px; margin: 5px 0 15px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px; font-family: monospace; }
+        body { font-family:'Segoe UI',sans-serif; background:#f8f9fa; padding:30px; }
+        .section { background:#fff; padding:20px; border-radius:8px; margin-bottom:30px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
+        .result-box { background:#fff; border:1px solid #dee2e6; border-radius:5px; padding:15px; white-space:pre; }
+        .slot { padding:8px; margin:4px 0; border-radius:4px; }
+        .init { background:#eef; } .passed { background:#efe; } .failed { background:#fee; }
+        button { padding:10px 20px; background:#007bff; border:none; border-radius:4px; color:#fff; cursor:pointer; }
+        button:hover { background:#0056b3; }
+        textarea,input { width:100%; padding:10px; margin:5px 0 15px; box-sizing:border-box; border:1px solid #ced4da; border-radius:4px; font-family:monospace; }
+
+        /* Markdown styling */
+        #prob-desc { padding:10px; border:1px solid #ced4da; border-radius:4px; background:#f1f1f1; }
+        #prob-desc h1 { font-size:1.5em; margin-bottom:0.5em; }
+        #prob-desc h2 { font-size:1.3em; margin-bottom:0.4em; }
+        #prob-desc p { margin-bottom:0.8em; }
+        #prob-desc code { background:#eaeaea; padding:2px 4px; border-radius:3px; font-family:monospace; }
+        #prob-desc pre { background:#eaeaea; padding:10px; border-radius:4px; overflow:auto; }
+        #prob-desc ul { margin-left:1em; list-style:disc; }
+        #prob-desc ol { margin-left:1em; list-style:decimal; }
+        #prob-desc blockquote { border-left:4px solid #ccc; padding-left:10px; color:#666; margin:1em 0; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <!-- SockJS, STOMP.js, marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            // JWT 토큰 ↔ localStorage
+            const jwtInput = document.getElementById('jwtToken');
+            const stored = localStorage.getItem('jwtToken');
+            if (stored) jwtInput.value = stored;
+            jwtInput.addEventListener('input', () => localStorage.setItem('jwtToken', jwtInput.value.trim()));
+
+            function getTokenValue() {
+                const raw = jwtInput.value.trim();
+                return raw.startsWith('Bearer ') ? raw : 'Bearer ' + raw;
+            }
+            function tokenHeader() {
+                const raw = jwtInput.value.trim();
+                return raw ? { 'Authorization': getTokenValue() } : {};
+            }
+
+            // 요소 참조
+            const probTitleEl = document.getElementById('prob-title');
+            const probDescEl  = document.getElementById('prob-desc');
+            const probTimeEl  = document.getElementById('prob-time');
+            const probMemEl   = document.getElementById('prob-mem');
+            const probCatsEl  = document.getElementById('prob-cats');
+            const pidInput    = document.getElementById('problemId');
+            const judgeEl     = document.getElementById('judgeResult');
+
+            // 초기 problemId 설정 (쿼리스트링 또는 기본 1)
+            pidInput.value = new URLSearchParams(location.search).get('problemId') || '1';
+
+            // 문제 상세 조회 및 Markdown 렌더링
+            async function loadProblem() {
+                const pid = pidInput.value.trim();
+                if (!pid) {
+                    probTitleEl.textContent = '문제 ID를 입력하세요';
+                    probDescEl.innerHTML = '';
+                    probTimeEl.textContent = probMemEl.textContent = probCatsEl.textContent = '--';
+                    return;
+                }
+                try {
+                    const res = await fetch(`/api/problems/${pid}`, {
+                        headers: { 'Accept':'application/json', ...tokenHeader() }
+                    });
+                    if (res.status === 401) {
+                        probTitleEl.textContent = '인증 필요: JWT 토큰을 입력하세요';
+                        return;
+                    }
+                    if (!res.ok) {
+                        probTitleEl.textContent = `조회 실패 (HTTP ${res.status})`;
+                        return;
+                    }
+                    const wrapper = await res.json();
+                    const data = wrapper.result ?? wrapper;
+
+                    probTitleEl.textContent = `${data.id}. ${data.title}`;
+                    probDescEl.innerHTML  = data.description
+                        ? marked.parse(data.description)
+                        : '';
+                    probTimeEl.textContent = data.timeLimit   ?? '--';
+                    probMemEl.textContent  = data.memoryLimit ?? '--';
+                    probCatsEl.textContent = Array.isArray(data.categories)
+                        ? data.categories.join(', ')
+                        : '';
+                } catch (err) {
+                    console.error(err);
+                    probTitleEl.textContent = '네트워크 오류';
+                }
+            }
+            pidInput.addEventListener('change', loadProblem);
+            loadProblem();
+
+            // WebSocket 제출 & 구독
+            let stompClient, sessionKey;
+            window.submitCode = async () => {
+                judgeEl.innerHTML = '';
+                const pid = pidInput.value.trim();
+                const payload = {
+                    languageId: +document.getElementById('languageId').value,
+                    sourceCode: document.getElementById('sourceCode').value
+                };
+                try {
+                    const res = await fetch(`/api/problems/${pid}/submit-ws`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...tokenHeader()
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    const resp = await res.json();
+                    if (!resp.success) {
+                        judgeEl.textContent = `Error: ${resp.message}`;
+                        return;
+                    }
+                    sessionKey = resp.result;
+                    connectAndSubscribe();
+                } catch (err) {
+                    console.error(err);
+                    judgeEl.textContent = '채점 요청 실패';
+                }
+            };
+
+            function connectAndSubscribe() {
+                const tokenOnly = getTokenValue().replace(/^Bearer\s+/, '');
+                const socket = new SockJS(`/ws?token=${encodeURIComponent(tokenOnly)}`);
+                stompClient = Stomp.over(socket);
+
+                // 디버그 로그
+                stompClient.debug = msg => console.log('[STOMP]', msg);
+
+                stompClient.connect({}, () => {
+                    const base = `/topic/submission/${sessionKey}`;
+                    // INIT 이벤트 채널
+                    stompClient.subscribe(`${base}/init`, msg => handleInit(JSON.parse(msg.body)));
+                    // CASE 이벤트 채널
+                    stompClient.subscribe(`${base}/case`, msg => handleCase(JSON.parse(msg.body)));
+                    // FINAL 이벤트 채널
+                    stompClient.subscribe(`${base}/final`, msg => handleFinal(JSON.parse(msg.body)));
+                }, err => console.error('STOMP 연결 오류:', err));
+            }
+
+            function handleInit(slots) {
+                judgeEl.innerHTML = '';
+                slots.forEach(s => {
+                    const d = document.createElement('div');
+                    d.id = `slot-${s.seqId}`;
+                    d.className = 'slot init';
+                    d.textContent = `[${s.seqId}] 상태: ${s.status}`;
+                    judgeEl.appendChild(d);
+                });
+            }
+
+            function handleCase(data) {
+                const d = document.getElementById(`slot-${data.seqId}`);
+                if (!d) return;
+                d.className = data.isPassed ? 'slot passed' : 'slot failed';
+                d.textContent = `[${data.seqId}] ${data.message} (${data.executionTime}s, ${data.memoryUsage}KB)`;
+            }
+
+            function handleFinal(res) {
+                const sum = document.createElement('div');
+                sum.style.marginTop = '12px';
+                sum.innerHTML = `<strong>최종:</strong> ${res.passedCount}/${res.totalCount} 통과 — ${res.message}`;
+                judgeEl.appendChild(sum);
+            }
+        });
+    </script>
 </head>
+
 <body>
+<div class="section" id="problem-info">
+    <h2 id="prob-title">로딩 중…</h2>
+    <div id="prob-desc"></div>
+    <ul>
+        <li>시간 제한: <span id="prob-time">--</span> ms</li>
+        <li>메모리 제한: <span id="prob-mem">--</span> KB</li>
+        <li>카테고리: <span id="prob-cats">--</span></li>
+    </ul>
+</div>
+
 <div class="section">
     <h2>코드 제출 (WebSocket)</h2>
     <label>JWT 토큰:</label>
-    <input type="text" id="jwtToken" placeholder="Bearer eyJ..." />
+    <input type="text" id="jwtToken" placeholder="Bearer …" />
     <label>문제 ID:</label>
     <input type="number" id="problemId" placeholder="문제 ID" />
     <label>언어 ID:</label>
     <input type="number" id="languageId" placeholder="언어 ID" />
     <label>소스코드:</label>
-    <textarea id="sourceCode" rows="8">// 여기에 소스코드를 입력하세요</textarea>
+    <textarea id="sourceCode" rows="8">// 코드를 입력하세요</textarea>
     <button onclick="submitCode()">코드 제출 (WS)</button>
 </div>
+
 <div class="section">
     <h3>채점 결과</h3>
     <div id="judgeResult" class="result-box"></div>
 </div>
-
-<script>
-    let stompClient, sessionKey;
-    const judgeEl = document.getElementById('judgeResult');
-
-    function getTokenValue() {
-        const raw = document.getElementById('jwtToken').value.trim();
-        return raw.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
-    }
-
-    function submitCode() {
-        judgeEl.innerHTML = '';
-        const pid = +document.getElementById('problemId').value;
-        const payload = {
-            languageId: +document.getElementById('languageId').value,
-            sourceCode: document.getElementById('sourceCode').value
-        };
-
-        fetch(`/api/problems/${pid}/submit-ws`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': getTokenValue()
-            },
-            body: JSON.stringify(payload)
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) {
-                    console.error('서버 오류:', data.message);
-                    judgeEl.textContent = `Error: ${data.message}`;
-                    return;
-                }
-                // result 필드에 sessionKey 가 들어있음
-                sessionKey = data.result;
-                console.log('sessionKey:', sessionKey);
-                connectAndSubscribe();
-            })
-            .catch(err => console.error('REST 호출 실패:', err));
-    }
-
-    function connectAndSubscribe() {
-        const tokenOnly = getTokenValue().replace(/^Bearer\s+/, '');
-        const socket = new SockJS(`/ws?token=${encodeURIComponent(tokenOnly)}`);
-        stompClient = Stomp.over(socket);
-
-        // 디버그 로그 켜기
-        stompClient.debug = msg => console.log('[STOMP]', msg);
-
-        stompClient.connect(
-            {},
-            () => {
-                const base = `/topic/submission/${sessionKey}`;
-                stompClient.subscribe(`${base}/init`, msg => handleInit(JSON.parse(msg.body)));
-                stompClient.subscribe(`${base}/case`, msg => handleCase(JSON.parse(msg.body)));
-                stompClient.subscribe(`${base}/final`, msg => handleFinal(JSON.parse(msg.body)));
-            },
-            err => console.error('STOMP 연결 오류:', err)
-        );
-    }
-
-    function handleInit(slots) {
-        judgeEl.innerHTML = '';
-        slots.forEach(s => {
-            const d = document.createElement('div');
-            d.id = `slot-${s.seqId}`;
-            d.className = 'slot init';
-            d.textContent = `[${s.seqId}] 상태: ${s.status}`;
-            judgeEl.appendChild(d);
-        });
-    }
-
-    let receivedCases = new Set();
-
-    function handleCase(data) {
-        const d = document.getElementById(`slot-${data.seqId}`);
-        if (!d) return;
-        d.className = data.isPassed ? 'slot passed' : 'slot failed';
-        d.textContent = `[${data.seqId}] ${data.message} (${data.executionTime}s, ${data.memoryUsage}KB)`;
-
-        receivedCases.add(data.seqId);
-    }
-
-    function handleFinal(res) {
-        const sum = document.createElement('div');
-        sum.style.marginTop = '12px';
-        sum.innerHTML = `<strong>최종:</strong> ${res.passedCount}/${res.totalCount} 통과 — ${res.message}`;
-        judgeEl.appendChild(sum);
-    }
-</script>
 </body>
 </html>
