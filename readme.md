@@ -92,32 +92,6 @@
 
 ## 💡 기술 스택
 
-🖥️ **Language**: Java 17
-
-🔧 **Backend**: Spring Boot, Spring Data JPA, QueryDSL, Spring Batch
-
-🔐 **Security**: Spring Security, JWT
-
-💾 **Database**: MySQL, Redis, MongoDB, ElasticCache
-
-📨 **Message Queue**: ActiveMQ, Redis Stream
-
-🧠 **IDE**: IntelliJ IDEA
-
-🌐 **External API**: Gmail SMTP, OpenAI, Judge0
-
-📚 **API Docs**: Swagger
-
-🧪 **Test Tools**: Postman, JUnit5, nGrinder
-
-☁️ **Cloud Services**: AWS EC2, RDS, S3, LightSail, Cloudflare
-
-🚀 **Deployment**: Jenkins, GitHub Actions, Docker, Nginx
-
-📊 **Monitoring**: Spring Actuator, Prometheus, Grafana
-
-🤝 **Collaboration Tools**: GitHub, Notion, Slack, Discord
-
 | 구분                 | 사용 기술                                                |
 |--------------------|------------------------------------------------------|
 | **🖥️ 언어**         | Java 17                                              |
