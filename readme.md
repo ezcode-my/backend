@@ -1,9 +1,12 @@
-내일배움캠프 최종프로젝트 코딩테스트 사이트(2025.05.27~2025.07.08)
-
 # 📢 Ezcode - 개발자 중심의 코딩테스트 플랫폼
 
 > **Ezcode**는 채점 그 이상의 가치를 제공하는 개발자 중심 코딩테스트 플랫폼입니다.  
 > 단순히 문제를 푸는 것을 넘어서, 지속적인 성장과 동기부여를 설계했습니다.
+
+---
+
+## 👨🏽‍🤝‍👨🏼 팀원 소개
+
 
 ---
 ## 🚀 주요 특징
@@ -64,12 +67,11 @@
 
 ---
 
-
----
-
 ## 📂 아키텍처
 
 ### ⚙️ 4-Layer Architecture + Port & Adapter Pattern
+
+![img.png](img.png)
 
 > 자세한 논의 내용은 아래 링크를 참고하세요:
 - [ver1 아키텍처](https://www.notion.so/2012dc3ef51480e88b11fd1d69e9fc40?pvs=21)
@@ -81,39 +83,39 @@
 ## 💡 기술 스택
 
 ### 🖥 Language
-- Java 17
+Java 17
 
 ### 🧑🏻‍💻 Backend
-- Spring Boot, Spring Data JPA, QueryDSL, Spring Batch
+Spring Boot, Spring Data JPA, QueryDSL, Spring Batch
 
 ### 🔐 Security
-- Spring Security, JWT
+Spring Security, JWT
 
 ### 💾 DB
-- MySQL, Redis, MongoDB, ElasticCache
+MySQL, Redis, MongoDB, ElasticCache
 
 ### 📜 Message
-- ActiveMQ, Redis Stream
+ActiveMQ, Redis Stream
 
 ### 🖥 IDE
-- IntelliJ IDEA
+IntelliJ IDEA
 
 ### 📲 External API
-- Gmail SMTP, OPEN AI, Judge0
+Gmail SMTP, OPEN AI, Judge0
 
 ### 🧩 Test Tool
-- Postman, JUnit5, nGrinder
+Postman, JUnit5, nGrinder
 
 ### 📝 API Docs
-- Swagger
+Swagger
 
 ### 🌐 Cloud Service
-- AWS EC2, RDS, S3, LightSail, Cloudflare
+AWS EC2, RDS, S3, LightSail, Cloudflare
 
 ### 🔨 Deployment Tools
-- Jenkins, Git Actions, Docker, Nginx
+Jenkins, Git Actions, Docker, Nginx
 
 ### 📈 Monitoring
-- Spring Actuator, Prometheus, Grafana
+Spring Actuator, Prometheus, Grafana
 
 ---
