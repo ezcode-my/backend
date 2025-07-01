@@ -26,10 +26,10 @@ public class Testcase {
 	@JoinColumn(name = "problem_id", nullable = false)
 	private Problem problem;
 
-	@Column(nullable = false)
+	@Column
 	private String input;
 
-	@Column(nullable = false)
+	@Column
 	private String output;
 
 	@Builder
@@ -53,7 +53,8 @@ public class Testcase {
 	}
 
 	public String getInput() {
-		return this.input.replace("\\n", "\n");
+		if (input != null) return this.input.replace("\\n", "\n");
+		return null;
 	}
 
 	public String getOutput() {

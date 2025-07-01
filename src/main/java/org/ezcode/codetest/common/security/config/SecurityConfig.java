@@ -75,6 +75,8 @@ public class SecurityConfig {
 						SecurityPath.PUBLIC_PATH).permitAll()
 					.requestMatchers("/api/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.requestMatchers(HttpMethod.GET,
+						"/api/problems",
+						"/api/problems/{problemId}",
 						"/api/problems/*/discussions",
 						"/api/problems/{problemId}/discussions/{discussionId}/replies",
 						"/api/problems/{problemId}/discussions/{discussionId}/replies/**").permitAll()
