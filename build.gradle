@@ -124,4 +124,6 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    maxHeapSize = '1g'
+    minHeapSize = '512m'
 }
