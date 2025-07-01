@@ -17,6 +17,9 @@ import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomainService> {
 
@@ -48,11 +51,16 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 
 		notificationExecutor.execute(() -> {
 
-			Reply reply = replyDomainService.getReplyById(targetId);
+			try {
+				Reply reply = replyDomainService.getReplyById(targetId);
 
-			Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createReplyVoteNotification(voter, reply);
+				Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createReplyVoteNotification(voter, reply);
 
-			return notificationEvent.map(List::of).orElse(Collections.emptyList());
+				return notificationEvent.map(List::of).orElse(Collections.emptyList());
+			} catch (Exception ex) {
+				log.error("댓글 추천 알림 생성 중 에러 발생 : {}", ex.getMessage());
+				return Collections.emptyList();
+			}
 		});
 	}
 }

@@ -32,7 +32,7 @@ public class NotificationExecutor {
 				log.info("알림 이벤트 {}개 발행 성공", events.size());
 			}
 		} catch (Exception ex) {
-			log.error("알림 이벤트 발행 실패");
+			log.error("알림 이벤트 발행 실패: {}", ex.getMessage(), ex);
 		}
 	}
 }

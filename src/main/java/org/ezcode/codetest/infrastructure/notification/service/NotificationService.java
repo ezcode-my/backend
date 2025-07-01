@@ -1,5 +1,6 @@
 package org.ezcode.codetest.infrastructure.notification.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +18,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -77,11 +81,19 @@ public class NotificationService {
 
 	private void evictNotificationListCache(String principalName) {
 
-		String pattern = "notificationList::" + principalName + ":*";
+		String pattern = "notificationList::" + principalName.replaceAll("[*?\\[\\]]", "\\\\$0") + ":*";
 
-		Set<String> keys = redisTemplate.keys(pattern);
+		Set<String> keys = redisTemplate.execute((RedisCallback<Set<String>>)connection -> {
+			Set<String> matchingKeys = new HashSet<>();
+			ScanOptions options = ScanOptions.scanOptions().match(pattern).count(1000).build();
+			Cursor<byte[]> cursor = connection.scan(options);
+			while (cursor.hasNext()) {
+				matchingKeys.add(new String(cursor.next()));
+			}
+			return matchingKeys;
+		});
 
-		if (!keys.isEmpty()) {
+		if (keys != null && !keys.isEmpty()) {
 			redisTemplate.delete(keys);
 		}
 	}

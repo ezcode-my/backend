@@ -5,11 +5,10 @@ import java.time.LocalDateTime;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.event.payload.NotificationPayload;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

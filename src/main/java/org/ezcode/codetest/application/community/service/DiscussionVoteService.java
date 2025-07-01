@@ -17,6 +17,9 @@ import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class DiscussionVoteService extends BaseVoteService<DiscussionVote, DiscussionVoteDomainService> {
 
@@ -47,11 +50,16 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 
 		notificationExecutor.execute(() -> {
 
-			Discussion discussion = discussionDomainService.getDiscussionById(targetId);
+			try {
+				Discussion discussion = discussionDomainService.getDiscussionById(targetId);
 
-			Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createDiscussionVoteNotification(voter, discussion);
+				Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createDiscussionVoteNotification(voter, discussion);
 
-			return notificationEvent.map(List::of).orElse(Collections.emptyList());
+				return notificationEvent.map(List::of).orElse(Collections.emptyList());
+			} catch (Exception ex) {
+				log.error("토론글 추천 알림 생성 중 에러 발생 : {}", ex.getMessage());
+				return Collections.emptyList();
+			}
 		});
 	}
 }

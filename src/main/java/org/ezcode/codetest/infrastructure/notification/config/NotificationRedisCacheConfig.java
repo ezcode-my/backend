@@ -29,7 +29,10 @@ public class NotificationRedisCacheConfig {
 	public CacheManager notificationRedisCacheManager(RedisConnectionFactory redisConnectionFactory) {
 
 		PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
-			.allowIfSubType(Object.class)
+			.allowIfSubType("org.ezcode.codetest.application.notification.event.payload")
+			.allowIfSubType("org.ezcode.codetest.infrastructure.notification")
+			.allowIfSubType("java.util")
+			.allowIfSubType("org.springframework.data.domain")
 			.build();
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
