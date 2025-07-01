@@ -121,4 +121,8 @@ public class ProblemDomainService {
 		return new ProblemInfo(problem, problem.getTestcases(), categoryNames);
 	}
 
+	// 문제 수정시 문제를 DB 저장 용도
+	public void saveProblem(Problem problem) {
+		problemRepository.save(problem);
+	}
 }

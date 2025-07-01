@@ -136,6 +136,12 @@ public class ProblemService {
 			for(String fileUrl : findProblem.getImageUrl()) {
 				s3Uploader.delete(fileUrl, "problem");
 			}
+
+			// 문제 엔티티의 imageUrl 컬렉션도 clear
+			findProblem.clearImages();
+
+			// DB에서 연관 이미지 정보 제거 위해 save
+			problemDomainService.saveProblem(findProblem);
 		}
 
 		// Soft Delete
@@ -166,6 +172,7 @@ public class ProblemService {
 				s3Uploader.delete(fileUrl, "problem");
 			}
 			problem.clearImages();
+			problemDomainService.saveProblem(problem);
 		}
 
 		String newImageUrl = uploadImageAfterTransaction(newImage, problem.getId());
