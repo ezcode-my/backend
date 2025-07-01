@@ -7,8 +7,16 @@
 
 ---
 
-## 👨🏽‍🤝‍👨🏼 팀원 소개
+## 👥 팀원 역할
 
+| 이름  | 역할  | 담당 기능               |
+|-----|-----|---------------------|
+| 오동원 | 팀장  | 인프라, 신고, 랭킹         |
+| 김태익 | 부팀장 | 채점, 코드리뷰            |
+| 김민우 | 팀원  | 문제, 테스트케이스          |
+| 임민지 | 팀원  | 디자인, 사용자 인증 및 회원 관리 |
+| 유승우 | 팀원  | 커뮤니티, 알림            |
+| 박경오 | 팀원  | 게임, 채팅, 문제 검색 엔진    |
 
 ---
 ## 🚀 주요 특징
@@ -110,4 +118,18 @@
 
 🤝 **Collaboration Tools**: GitHub, Notion, Slack, Discord
 
----
+| 구분                 | 사용 기술                                                |
+|--------------------|------------------------------------------------------|
+| **🖥️ 언어**         | Java 17                                              |
+| **🔧 백엔드**         | Spring Boot, Spring Data JPA, QueryDSL, Spring Batch |
+| **🔐 보안**          | Spring Security, JWT                                 |
+| **💾 데이터베이스**      | MySQL, Redis, MongoDB, ElasticCache                  |
+| **📨 메시지 큐**       | ActiveMQ, Redis Stream                               |
+| **🧠 개발 도구 (IDE)** | IntelliJ IDEA                                        |
+| **🌐 외부 API**      | Gmail SMTP, OpenAI, Judge0                           |
+| **📚 API 문서화**      | Swagger                           |
+| **🧪 테스트 도구**      | Postman, JUnit5, nGrinder                           |
+| **☁️ 클라우드 서비스**      | AWS EC2, RDS, S3, LightSail, Cloudflare                           |
+| **🚀 배포 도구**      | Jenkins, GitHub Actions, Docker, Nginx                           |
+| **📊 모니터링**      | Spring Actuator, Prometheus, Grafana                           |
+| **🤝 협업 도구**      | GitHub, Notion, Slack, Discord, jira                 |
