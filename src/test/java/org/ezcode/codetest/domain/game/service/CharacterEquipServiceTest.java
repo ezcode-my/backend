@@ -3,15 +3,21 @@ package org.ezcode.codetest.domain.game.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
+import org.ezcode.codetest.domain.game.exception.GameException;
+import org.ezcode.codetest.domain.game.exception.GameExceptionCode;
 import org.ezcode.codetest.domain.game.model.character.GameCharacter;
+import org.ezcode.codetest.domain.game.model.character.Inventory;
 import org.ezcode.codetest.domain.game.model.item.Accessory;
 import org.ezcode.codetest.domain.game.model.item.AccessoryType;
 import org.ezcode.codetest.domain.game.model.item.Defence;
 import org.ezcode.codetest.domain.game.model.item.DefenceType;
 import org.ezcode.codetest.domain.game.model.item.Grade;
 import org.ezcode.codetest.domain.game.model.item.Item;
+import org.ezcode.codetest.domain.game.model.item.ItemType;
 import org.ezcode.codetest.domain.game.model.item.Weapon;
 import org.ezcode.codetest.domain.game.model.item.WeaponType;
 import org.ezcode.codetest.domain.game.model.skill.GameCharacterSkill;
@@ -64,14 +70,25 @@ class CharacterEquipServiceTest {
 	private List<Item> notFullSlotEquippedItems = new ArrayList<>();
 
 	@Spy
+	private List<GameCharacterSkill> characterSkills = new ArrayList<>();
+
+	@Spy
 	private GameCharacter character;
+
+	@Spy
+	private Inventory inventory;
+
+	@Spy
+	private GameCharacterSkill characterSkill3;
 
 	private User user;
 	private Skill skill;
-	private GameCharacterSkill characterSkill;
+	private GameCharacterSkill characterSkill1, characterSkill2;
 	private Item weapon, defence, accessory;
 
-
+	private static final String ITEM_NAME = "테스트 아이템";
+	private static final String SKILL_NAME = "테스트 스킬";
+	private static final Integer SLOT_NUMBER = 1;
 
 	@BeforeEach
 	void setUp() {
@@ -98,11 +115,27 @@ class CharacterEquipServiceTest {
 
 		ReflectionTestUtils.setField(skill, "id", 1L);
 
-		characterSkill = GameCharacterSkill.builder()
+		inventory = spy(new Inventory(character));
+
+		ReflectionTestUtils.setField(inventory, "id", 1L);
+
+		characterSkill1 = GameCharacterSkill.builder()
 			.character(character)
 			.skill(skill)
 			.slotType(SkillSlotType.SLOT_1)
 			.build();
+
+		characterSkill2 = GameCharacterSkill.builder()
+			.character(character)
+			.skill(skill)
+			.slotType(SkillSlotType.SLOT_2)
+			.build();
+
+		characterSkill3 = spy(GameCharacterSkill.builder()
+			.character(character)
+			.skill(skill)
+			.slotType(SkillSlotType.BACKPACK)
+			.build());
 
 		weapon = Weapon.builder()
 			.id("1")
@@ -143,6 +176,7 @@ class CharacterEquipServiceTest {
 
 		fullSlotEquippedItems.addAll(List.of(weapon, defence, accessory));
 		notFullSlotEquippedItems.addAll(List.of(weapon, defence));
+		characterSkills.addAll(List.of(characterSkill1, characterSkill2, characterSkill3));
 	}
 
 	@Nested
@@ -200,18 +234,97 @@ class CharacterEquipServiceTest {
 			);
 
 		}
-/*
+
 		@Test
 		@DisplayName("캐릭터 장착 스킬 불러오기")
-		void loadEquippedSkillsWhenSkillIsNotDeleted() {
+		void loadEquippedSkills() {
 
 			// given
-			given(characterSkillRepository.)
+			given(characterSkillRepository.findByCharacterIdAndEquipped(character.getId())).willReturn(characterSkills);
 
+			// when
+			equipService.loadEquippedSkills(character);
+
+			//then
+			verify(characterSkills).sort(any());
 
 		}
 
-*/
+		@Test
+		@DisplayName("캐릭터 미장착 스킬 불러오기")
+		void loadUnEquippedSkills() {
+
+			//given
+			given(characterSkillRepository.findByCharacterIdAndUnEquipped(character.getId())).willReturn(
+				characterSkills);
+
+			//when
+			equipService.loadUnEquippedSkills(character);
+
+			//then
+			verify(characterSkillRepository).findByCharacterIdAndUnEquipped(character.getId());
+		}
+
+		@Test
+		@DisplayName("캐릭터 생성시 기본 아이템 장착하기")
+		void equipDefaultItem() {
+
+			//given
+			given(itemRepository.findByName(ITEM_NAME)).willReturn(Optional.of(weapon));
+
+			//when
+			equipService.equipDefaultItem(character, inventory, ITEM_NAME);
+
+			//then
+			verify(inventory).addItem(any(ItemType.class), anyString());
+			verify(character).equipItem(any(ItemType.class), anyString());
+		}
+
+		@Test
+		@DisplayName("캐릭터 스킬 장착 성공시")
+		void equipSkillWhenSkillNotEquipped() {
+
+			// given
+			given(skillRepository.findByName(SKILL_NAME))
+				.willReturn(Optional.of(skill));
+
+			GameCharacterSkill target = mock(GameCharacterSkill.class);
+			given(target.getSkill()).willReturn(skill);
+			given(target.getSlotType()).willReturn(SkillSlotType.BACKPACK);
+
+			given(characterSkillRepository.findByCharacterId(character.getId()))
+				.willReturn(List.of(target));
+
+			// when
+			equipService.equipSkill(character, SKILL_NAME, SLOT_NUMBER);
+
+			// then
+			verify(target).equipSkill(SkillSlotType.SLOT_1);
+
+		}
+
+		@Test
+		@DisplayName("캐릭터 스킬 장착 해제시")
+		void unEquipSkillWhenSkillEquipped() {
+
+			// given
+			given(skillRepository.findByName(SKILL_NAME))
+				.willReturn(Optional.of(skill));
+
+			GameCharacterSkill target = mock(GameCharacterSkill.class);
+			given(target.getSkill()).willReturn(skill);
+			given(target.getSlotType()).willReturn(SkillSlotType.SLOT_1);
+
+			given(characterSkillRepository.findByCharacterId(character.getId()))
+				.willReturn(List.of(target));
+
+			// when
+			equipService.unEquipSkill(character, SKILL_NAME);
+
+			// then
+			verify(target).unEquipSkill();
+
+		}
 
 
 
