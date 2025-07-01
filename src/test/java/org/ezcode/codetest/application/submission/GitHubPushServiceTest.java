@@ -126,9 +126,9 @@ public class GitHubPushServiceTest {
 
                 gitHubPushService.pushSolutionToRepo(ctx);
 
-                then(eventService).should().publishGitPushStatus(GitPushStatusEvent.started(sessionKey));
+                then(eventService).should().publishGitPushStatus(GitPushStatusEvent.started(ctx));
                 then(gitHubClient).should().commitAndPushToRepo(req);
-                then(eventService).should().publishGitPushStatus(GitPushStatusEvent.succeeded(sessionKey));
+                then(eventService).should().publishGitPushStatus(GitPushStatusEvent.succeeded(ctx));
                 then(exceptionNotifier).should(never()).notifyException(anyString(), any());
             }
         }
@@ -160,9 +160,9 @@ public class GitHubPushServiceTest {
 
                 gitHubPushService.pushSolutionToRepo(ctx);
 
-                then(eventService).should().publishGitPushStatus(GitPushStatusEvent.started(sessionKey));
+                then(eventService).should().publishGitPushStatus(GitPushStatusEvent.started(ctx));
                 then(exceptionNotifier).should().notifyException(eq("commitAndPush"), any(SubmissionException.class));
-                then(eventService).should().publishGitPushStatus(GitPushStatusEvent.failed(sessionKey));
+                then(eventService).should().publishGitPushStatus(GitPushStatusEvent.failed(ctx));
             }
         }
     }
