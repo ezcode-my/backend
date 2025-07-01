@@ -12,6 +12,10 @@ public record NotificationResponse(
 
 	NotificationType notificationType,
 
+	String message,
+
+	String redirectUrl,
+
 	NotificationPayload payload,
 
 	boolean isRead,
@@ -25,6 +29,8 @@ public record NotificationResponse(
 		return new NotificationResponse(
 			document.getId(),
 			document.getNotificationType(),
+			document.getNotificationType().getMessage(),
+			document.getNotificationType().getRedirectUrl(),
 			document.getPayload(),
 			document.isRead(),
 			document.getCreatedAt()

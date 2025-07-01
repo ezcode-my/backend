@@ -55,6 +55,7 @@ public class DiscussionVoteDomainService extends BaseVoteDomainService<Discussio
 		DiscussionVotePayload payload = new DiscussionVotePayload(
 			discussion.getProblemId(),
 			discussion.getId(),
+			voter.getId(),
 			voter.getNickname()
 		);
 

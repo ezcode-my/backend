@@ -48,17 +48,11 @@ public class ReplyService {
 
 		Reply reply = replyDomainService.createReply(discussion, user, request.parentReplyId(), request.content());
 
-		notificationExecutor.execute(() -> {
-			List<User> notificationTargets = reply.generateNotificationTargets();
-
-			if (notificationTargets.isEmpty()) {
-				return Collections.emptyList();
-			}
-
-			return notificationTargets.stream()
+		notificationExecutor.execute(() ->
+			reply.generateNotificationTargets().stream()
 				.map(target -> replyDomainService.createReplyNotification(target, reply))
-				.toList();
-		});
+				.toList()
+		);
 
 		return ReplyResponse.fromEntity(reply);
 	}
