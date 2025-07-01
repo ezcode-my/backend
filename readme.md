@@ -1,5 +1,7 @@
 # 📢 Ezcode - 개발자 중심의 코딩테스트 플랫폼
 
+![logo.png](reademeimage/logo.png)
+
 > **Ezcode**는 채점 그 이상의 가치를 제공하는 개발자 중심 코딩테스트 플랫폼입니다.  
 > 단순히 문제를 푸는 것을 넘어서, 지속적인 성장과 동기부여를 설계했습니다.
 
@@ -71,7 +73,7 @@
 
 ### ⚙️ 4-Layer Architecture + Port & Adapter Pattern
 
-![img.png](img.png)
+![img.png](reademeimage/img.png)
 
 > 자세한 논의 내용은 아래 링크를 참고하세요:
 - [ver1 아키텍처](https://www.notion.so/2012dc3ef51480e88b11fd1d69e9fc40?pvs=21)
