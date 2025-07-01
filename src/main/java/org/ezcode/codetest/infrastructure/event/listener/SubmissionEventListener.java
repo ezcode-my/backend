@@ -29,19 +29,19 @@ public class SubmissionEventListener {
     @EventListener
     public void onTestcaseInit(TestcaseListInitializedEvent event) {
         List<InitTestcaseListResponse> wsDtos = InitTestcaseListResponse.mapToList(event.payload());
-        messageService.sendInitTestcases(event.sessionKey(), wsDtos);
+        messageService.sendInitTestcases(event.sessionKey(), event.principalName(), wsDtos);
     }
 
     @EventListener
     public void onTestcaseUpdate(TestcaseEvaluatedEvent event) {
         JudgeResultResponse wsDto = JudgeResultResponse.from(event.payload());
-        messageService.sendTestcaseResultUpdate(event.sessionKey(), wsDto);
+        messageService.sendTestcaseResultUpdate(event.sessionKey(), event.principalName(), wsDto);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onSubmissionFinished(SubmissionJudgingFinishedEvent event) {
         SubmissionFinalResultResponse wsDto = SubmissionFinalResultResponse.from(event.payload());
-        messageService.sendFinalResult(event.sessionKey(), wsDto);
+        messageService.sendFinalResult(event.sessionKey(), event.principalName(), wsDto);
     }
 
     @EventListener
@@ -53,6 +53,6 @@ public class SubmissionEventListener {
     @EventListener
     public void onGitPushStatus(GitPushStatusEvent event) {
         GitPushStatusResponse wsDto = new GitPushStatusResponse(event.pushStatus());
-        messageService.sendGitStatus(event.sessionKey(), wsDto);
+        messageService.sendGitStatus(event.sessionKey(), event.principalName(), wsDto);
     }
 }

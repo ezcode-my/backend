@@ -255,7 +255,7 @@
                     }
 
                     // (B) sessionKey별 채널 구독
-                    const base = `/topic/submission/${sessionKey}`;
+                    const base = `/user/queue/submission/${sessionKey}`;
                     stompClient.subscribe(`${base}/init`, msg => handleInit(JSON.parse(msg.body)));
                     stompClient.subscribe(`${base}/case`, msg => handleCase(JSON.parse(msg.body)));
                     stompClient.subscribe(`${base}/final`, msg => handleFinal(JSON.parse(msg.body)));

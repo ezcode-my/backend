@@ -14,9 +14,9 @@ public record SubmissionErrorEvent(
         this(sessionKey, resolveCode(t));
     }
 
-    private static SubmissionExceptionCode  resolveCode(Throwable t) {
+    private static SubmissionExceptionCode resolveCode(Throwable t) {
         if (t instanceof SubmissionException se) {
-            return (SubmissionExceptionCode) se.getResponseCode();
+            return (SubmissionExceptionCode)se.getResponseCode();
         }
         return SubmissionExceptionCode.UNKNOWN_ERROR;
     }

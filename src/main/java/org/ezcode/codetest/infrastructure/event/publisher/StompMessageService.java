@@ -9,6 +9,11 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -21,7 +26,7 @@ public class StompMessageService {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    private static final String SUBMISSION_DEST_PREFIX = "/topic/submission/%s";
+    private static final String SUBMISSION_DEST_PREFIX = "/queue/submission/%s";
 
     public <T> void handleChatRoomListLoad(T roomData, String principalName, String sessionId) {
 
@@ -55,41 +60,59 @@ public class StompMessageService {
         );
     }
 
-    public void sendInitTestcases(String sessionKey, List<InitTestcaseListResponse> dataList) {
-
-        messagingTemplate.convertAndSend(
+    public void sendInitTestcases(
+        String sessionKey,
+        String principalName,
+        List<InitTestcaseListResponse> dataList
+    ) {
+        messagingTemplate.convertAndSendToUser(
+            principalName,
             SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/init",
             dataList
         );
     }
 
-    public void sendTestcaseResultUpdate(String sessionKey, JudgeResultResponse data) {
-
-        messagingTemplate.convertAndSend(
+    public void sendTestcaseResultUpdate(
+        String sessionKey,
+        String principalName,
+        JudgeResultResponse data
+    ) {
+        messagingTemplate.convertAndSendToUser(
+            principalName,
             SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/case",
             data
         );
     }
 
-    public void sendFinalResult(String sessionKey, SubmissionFinalResultResponse data) {
-
-        messagingTemplate.convertAndSend(
+    public void sendFinalResult(
+        String sessionKey,
+        String principalName,
+        SubmissionFinalResultResponse data
+    ) {
+        messagingTemplate.convertAndSendToUser(
+            principalName,
             SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/final",
             data
         );
     }
 
-    public void sendError(String sessionKey, ErrorWsResponse data) {
-
+    public void sendError(
+        String sessionKey,
+        ErrorWsResponse data
+    ) {
         messagingTemplate.convertAndSend(
             SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/error",
             data
         );
     }
 
-    public void sendGitStatus(String sessionKey, GitPushStatusResponse data) {
-
-        messagingTemplate.convertAndSend(
+    public void sendGitStatus(
+        String sessionKey,
+        String principalName,
+        GitPushStatusResponse data
+    ) {
+        messagingTemplate.convertAndSendToUser(
+            principalName,
             SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/git-status",
             data
         );
@@ -109,5 +132,4 @@ public class StompMessageService {
 
         messagingTemplate.convertAndSend("/topic/chatrooms", roomData);
     }
-
 }
