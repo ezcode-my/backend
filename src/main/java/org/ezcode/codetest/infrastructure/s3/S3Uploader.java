@@ -61,9 +61,15 @@ public class S3Uploader {
 	}
 
 	// 이미지 삭제
-	public void delete(String fileUrl) {
+	public void delete(String fileUrl, String dirName) {
 		try {
-			String fileName = extractKeyFromProblemUrl(fileUrl);
+			String fileName = "";
+			if (dirName.equalsIgnoreCase("problem")) {
+				fileName = extractKeyFromProblemUrl(fileUrl);
+			}
+			if (dirName.equalsIgnoreCase("profile")) {
+				fileName = extractKeyFromProfileUrl(fileUrl);
+			}
 			amazonS3.deleteObject(bucket, fileName); // S3 내 이미지 객체 제거.
 			log.info("S3에서 이미지 삭제 완료: {}", fileName);
 		} catch (Exception e) {
@@ -76,5 +82,10 @@ public class S3Uploader {
 	private String extractKeyFromProblemUrl(String fileUrl) {
 		// S3 주소 포맷 기준으로 잘라내기
 		return fileUrl.substring(fileUrl.indexOf("problem/"));
+	}
+
+	// 프로필 이미지 URL 가져오기
+	private String extractKeyFromProfileUrl(String profileFileUrl) {
+		return profileFileUrl.substring(profileFileUrl.indexOf("profile/"));
 	}
 }

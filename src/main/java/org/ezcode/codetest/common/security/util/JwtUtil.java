@@ -150,7 +150,7 @@ public class JwtUtil {
 	}
 
     public String createEmailToken(Long userId, String email) {
-		if ( email == null ) {
+		if ( email == null || userId == null) {
 			throw new IllegalArgumentException("토큰에 필요한 필수 매개변수가 null입니다.");
 		}
 
