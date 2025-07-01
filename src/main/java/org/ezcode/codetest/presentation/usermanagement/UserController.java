@@ -94,12 +94,4 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.withdrawUser(authUser));
 	}
 
-	@Operation(summary = "유저 권한 전환", description = "관리자 권한을 가지고 있는 유저는 다른 유저의 권한을 수정할 수 있습니다.")
-	@PostMapping("/admin/users/{userId}/grant-admin")
-	public ResponseEntity<GrantAdminRoleResponse> grantAdminRole(
-		@AuthenticationPrincipal AuthUser authUser,
-		@PathVariable Long userId
-	){
-		return ResponseEntity.status(HttpStatus.OK).body(userService.grantAdminRole(authUser, userId));
-	}
 }
