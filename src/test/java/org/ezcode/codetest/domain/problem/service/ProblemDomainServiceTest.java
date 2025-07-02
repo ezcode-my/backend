@@ -1,7 +1,6 @@
 package org.ezcode.codetest.domain.problem.service;
 
-import static org.hibernate.validator.internal.util.Contracts.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.junit.Assert.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class ProblemDomainServiceTest {
@@ -42,6 +40,8 @@ class ProblemDomainServiceTest {
 	@Test
 	@DisplayName("문제 생성 성공")
 	void createProblem_success() {
+
+		// given
 		User mockUser = mock(User.class);
 
 		Problem problem = new Problem(mockUser, "A+B", "두 수를 더하라", 10, Difficulty.LV1, 1000L, 200L, Reference.ORIGINAL);
@@ -59,8 +59,10 @@ class ProblemDomainServiceTest {
 		ProblemSearchDocument doc = ProblemSearchDocument.from(problem, List.of(category));
 		when(searchRepository.save(any(ProblemSearchDocument.class))).thenReturn(doc);
 
+		// when
 		Problem result = problemDomainService.createProblem(problem, categoryMap);
 
+		// then
 		assertNotNull(result);
 		assertEquals("A+B", result.getTitle());
 		verify(problemRepository).save(problem);
@@ -69,21 +71,31 @@ class ProblemDomainServiceTest {
 	@Test
 	@DisplayName("문제 저장 성공")
 	void saveProblem_success() {
+
+		// given
 		Problem problem = mock(Problem.class);
-		problemRepository.save(problem);
+
+		// when
+		problemDomainService.saveProblem(problem);
+
+		// then
 		verify(problemRepository).save(problem);
 	}
 
 	@Test
 	@DisplayName("문제 조회 성공")
 	void getProblem_success() {
+
+		// given
 		Long problemId = 1L;
 		Problem problem = mock(Problem.class);
 
 		when(problemRepository.findByIdNotDeleted(problemId)).thenReturn(Optional.ofNullable(problem));
 
+		// when
 		Problem result = problemDomainService.getProblem(problemId);
 
+		// then
 		assertNotNull(result);
 		assertEquals(problem, result);
 		verify(problemRepository).findByIdNotDeleted(problemId);
@@ -92,20 +104,37 @@ class ProblemDomainServiceTest {
 	@Test
 	@DisplayName("문제 삭제 성공")
 	void removeProblem_success() {
-		Problem problem = mock(Problem.class);
-		problemRepository.delete(problem);
 
+		// given
+		Problem problem = mock(Problem.class);
+		when(problem.getId()).thenReturn(1L);
+
+		ProblemSearchDocument searchDocument = mock(ProblemSearchDocument.class);
+		when(searchRepository.findById(1L)).thenReturn(Optional.of(searchDocument));
+
+		// when
+		problemDomainService.removeProblem(problem);
+
+		// then
 		verify(problemRepository).delete(problem);
+		verify(searchRepository).findById(1L);
+		verify(searchRepository).delete(searchDocument);
 	}
+
+
 
 	@Test
 	@DisplayName("카테고리 생성 성공")
 	void createCategory_success() {
+
+		// given
 		Category category = new Category("MATH", "수학");
 		when(categoryRepository.save(category)).thenReturn(category);
 
-		Category result = categoryRepository.save(category);
+		// when
+		Category result = problemDomainService.createCategory(category);
 
+		// then
 		assertEquals("MATH", result.getCode());
 		verify(categoryRepository).save(category);
 	}
@@ -113,6 +142,8 @@ class ProblemDomainServiceTest {
 	@Test
 	@DisplayName("문제 ID로 카테고리 리스트 조회 성공")
 	void getProblemCategoryList_success() {
+
+		// given
 		Problem problem = mock(Problem.class);
 		when(problem.getId()).thenReturn(1L);
 
@@ -121,8 +152,10 @@ class ProblemDomainServiceTest {
 
 		when(problemCategoryRepository.findByProblemId(1L)).thenReturn(List.of(pc));
 
+		// when
 		List<Category> result = problemDomainService.getProblemCategoryList(problem);
 
+		// then
 		assertEquals(1, result.size());
 		assertEquals("ALGO", result.get(0).getCode());
 	}
