@@ -1,4 +1,4 @@
-package org.ezcode.codetest.presentation.problemmanagement;
+package org.ezcode.codetest.presentation.problemmanagement.problem;
 
 import java.util.List;
 import java.util.Set;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/problems/search")
+@RequestMapping("/api/problems")
 public class ProblemSearchController {
 
 	private final ProblemSearchService searchService;
@@ -51,7 +51,7 @@ public class ProblemSearchController {
 			@ApiResponse(responseCode = "200", description = "해당 검색어에 매칭되는 대한 문제 반환")
 		}
 	)
-	@GetMapping
+	@GetMapping("/search")
 	public ResponseEntity<List<ProblemSearchResponse>> getProblemSearchResult(
 		@RequestParam
 		@NotBlank(message = "검색어를 입력하세요.")

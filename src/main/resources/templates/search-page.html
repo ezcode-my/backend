@@ -133,7 +133,7 @@
       const token = getToken();
       if (!keyword || !token) return;
       try {
-        const resp = await fetch('/problems/search/suggestions?keyword=' + encodeURIComponent(keyword), {
+        const resp = await fetch('/api/problems/suggestions?keyword=' + encodeURIComponent(keyword), {
           headers: { 'Authorization': 'Bearer ' + token }
         });
         if (!resp.ok) throw new Error();
@@ -205,7 +205,7 @@
       await new Promise(r => setTimeout(r, 1000));
 
       try {
-        const resp = await fetch('/problems/search?keyword=' + encodeURIComponent(kw), {
+        const resp = await fetch('/api/problems/search?keyword=' + encodeURIComponent(kw), {
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + token }
         });
