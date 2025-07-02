@@ -176,18 +176,4 @@ public class UserService {
 
 		return new UserProfileImageResponse(null);
 	}
-
-	@Transactional
-	public GrantAdminRoleResponse grantAdminRole(AuthUser authUser, Long userId) {
-		if (authUser.getId().equals(userId)) {
-			throw new UserException(UserExceptionCode.GRANT_ADMIN_SELF);
-		}
-		User user = userDomainService.getUserById(userId);
-		if (user.getRole().equals(UserRole.ADMIN)) {
-			throw new UserException(UserExceptionCode.ALREADY_ADMIN_USER);
-		}
-		user.modifyUserRole(UserRole.ADMIN);
-
-		return new GrantAdminRoleResponse("ADMIN 권한을 부여합니다");
-	}
 }
