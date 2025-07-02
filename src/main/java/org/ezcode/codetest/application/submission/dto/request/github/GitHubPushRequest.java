@@ -59,4 +59,8 @@ public record GitHubPushRequest(
     public String getLanguage() {
         return languageName + " " + languageVersion;
     }
+
+    public String getProblemInfo() {
+        return problemId + ". " + problemTitle;
+    }
 }

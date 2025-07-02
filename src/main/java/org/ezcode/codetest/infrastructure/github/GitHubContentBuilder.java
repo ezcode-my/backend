@@ -69,7 +69,7 @@ public class GitHubContentBuilder {
             .map(s -> {
                 FileType fileType = FileType.valueOf(s);
                 String path = String.format("%s/%s/%s/%s",
-                    repoRootFolder, req.difficulty(), req.problemId(), fileType.resolveFilename(req)
+                    repoRootFolder, req.difficulty(), req.getProblemInfo(), fileType.resolveFilename(req)
                 );
 
                 String content = fileType == FileType.SOURCE
