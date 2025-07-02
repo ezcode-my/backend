@@ -9,17 +9,14 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class StompMessageService {
@@ -65,6 +62,7 @@ public class StompMessageService {
         String principalName,
         List<InitTestcaseListResponse> dataList
     ) {
+        log.info("init 발행");
         messagingTemplate.convertAndSendToUser(
             principalName,
             SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/init",
@@ -77,6 +75,7 @@ public class StompMessageService {
         String principalName,
         JudgeResultResponse data
     ) {
+        log.info("case 발행");
         messagingTemplate.convertAndSendToUser(
             principalName,
             SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/case",
@@ -89,6 +88,7 @@ public class StompMessageService {
         String principalName,
         SubmissionFinalResultResponse data
     ) {
+        log.info("final 발행");
         messagingTemplate.convertAndSendToUser(
             principalName,
             SUBMISSION_DEST_PREFIX.formatted(sessionKey) + "/final",
