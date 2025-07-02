@@ -47,15 +47,15 @@ public class SubmissionController {
 
         반환된 sessionKey를 사용해 다음 경로로 구독하세요.
         
-        • /topic/submission/{sessionKey}/init
+        • /user/queue/submission/{sessionKey}/init
         
-        • /topic/submission/{sessionKey}/case
+        • /user/queue/submission/{sessionKey}/case
         
-        • /topic/submission/{sessionKey}/final
+        • /user/queue/submission/{sessionKey}/final
         
         • /topic/submission/{sessionKey}/error
         
-        • /topic/submission/{sessionKey}/git-status
+        • /user/queue/submission/{sessionKey}/git-status
         """
     )
     @ApiResponses({

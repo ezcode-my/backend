@@ -23,6 +23,9 @@ public class S3Uploader {
 
 	private final AmazonS3 amazonS3;
 
+	// 5MB 파일 최대 크기
+	private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
+
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
@@ -33,6 +36,11 @@ public class S3Uploader {
 			String contentType = multipartFile.getContentType();
 			if (contentType == null || !contentType.startsWith("image/")) {
 				throw new S3Exception(S3ExceptionCode.S3_INVALID_FILE_TYPE);
+			}
+
+			// 파일 크기 검사
+			if (multipartFile.getSize() > MAX_FILE_SIZE) {
+				throw new S3Exception(S3ExceptionCode.S3_FILE_TOO_LARGE);
 			}
 
 			// S3 파일명 지정 ( 디렉토리/UUID-원본파일명 )
@@ -79,9 +87,9 @@ public class S3Uploader {
 	}
 
 	// 문제 이미지 URL 가져오기
-	private String extractKeyFromProblemUrl(String fileUrl) {
+	private String extractKeyFromProblemUrl(String problemfileUrl) {
 		// S3 주소 포맷 기준으로 잘라내기
-		return fileUrl.substring(fileUrl.indexOf("problem/"));
+		return problemfileUrl.substring(problemfileUrl.indexOf("problem/"));
 	}
 
 	// 프로필 이미지 URL 가져오기

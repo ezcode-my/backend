@@ -53,7 +53,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 			.setUserDestinationBroadcast("/topic/simp-user-registry")
 			.setUserRegistryBroadcast("/topic/simp-user-registry");
 
-		registry.setApplicationDestinationPrefixes("/chat");
+		registry.setApplicationDestinationPrefixes("/chat", "/app");
 		registry.setUserDestinationPrefix("/user");
 	}
 

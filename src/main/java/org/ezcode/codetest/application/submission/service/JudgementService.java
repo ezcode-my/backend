@@ -42,7 +42,7 @@ public class JudgementService {
 
     public void publishInitTestcases(SubmissionContext ctx) {
         submissionEventService.publishInitTestcases(
-            new TestcaseListInitializedEvent(ctx.getSessionKey(), InitTestcaseListPayload.from(ctx))
+            TestcaseListInitializedEvent.of(ctx, InitTestcaseListPayload.from(ctx))
         );
     }
 
@@ -90,15 +90,13 @@ public class JudgementService {
     }
 
     private void publishTestcaseUpdate(int seqId, SubmissionContext ctx, boolean isPassed, JudgeResult result) {
-        submissionEventService.publishTestcaseUpdate(new TestcaseEvaluatedEvent(
-            ctx.getSessionKey(), TestcaseResultPayload.fromEvaluation(seqId, isPassed, result))
+        submissionEventService.publishTestcaseUpdate(TestcaseEvaluatedEvent.of(
+            ctx, TestcaseResultPayload.fromEvaluation(seqId, isPassed, result))
         );
     }
 
     private void publishFinalResult(SubmissionContext ctx){
-        submissionEventService.publishFinalResult(
-            new SubmissionJudgingFinishedEvent(ctx.getSessionKey(), ctx.toFinalResult())
-        );
+        submissionEventService.publishFinalResult(SubmissionJudgingFinishedEvent.from(ctx));
     }
 
     private void publishProblemSolve(SubmissionResult submissionResult) {
