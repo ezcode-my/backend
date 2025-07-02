@@ -48,22 +48,11 @@ public class ReplyService {
 
 		Reply reply = replyDomainService.createReply(discussion, user, request.parentReplyId(), request.content());
 
-		notificationExecutor.execute(() -> {
-			try {
-				List<User> notificationTargets = reply.generateNotificationTargets();
-
-				if (notificationTargets.isEmpty()) {
-					return Collections.emptyList();
-				}
-
-				return notificationTargets.stream()
-					.map(target -> replyDomainService.createReplyNotification(target, reply))
-					.toList();
-			} catch (Exception ex) {
-				log.error("댓글 알림 생성 중 에러 발생 : {}", ex.getMessage());
-				return Collections.emptyList();
-			}
-		});
+		notificationExecutor.execute(() ->
+			reply.generateNotificationTargets().stream()
+				.map(target -> replyDomainService.createReplyNotification(target, reply))
+				.toList()
+		);
 
 		return ReplyResponse.fromEntity(reply);
 	}

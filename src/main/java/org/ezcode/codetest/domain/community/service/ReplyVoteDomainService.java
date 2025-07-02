@@ -60,6 +60,7 @@ public class ReplyVoteDomainService extends BaseVoteDomainService<ReplyVote, Rep
 		ReplyVotePayload payload = new ReplyVotePayload(
 			reply.getProblemId(),
 			reply.getId(),
+			voter.getId(),
 			voter.getNickname()
 		);
 

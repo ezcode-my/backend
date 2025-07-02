@@ -107,16 +107,24 @@ public class ReplyDomainService {
 
 	public NotificationCreateEvent createReplyNotification(User target, Reply reply) {
 
+		Long parentReplyId = reply.getParentReplyId();
+		User author = reply.getUser();
+
 		ReplyCreatePayload payload = new ReplyCreatePayload(
 			reply.getProblemId(),
-			reply.getId(),
 			reply.getDiscussionId(),
+			reply.getId(),
+			parentReplyId,
+			author.getId(),
+			author.getNickname(),
 			reply.getContent()
 		);
 
 		return NotificationCreateEvent.of(
 			target.getEmail(),
-			NotificationType.COMMUNITY_REPLY,
+			parentReplyId == null
+				? NotificationType.COMMUNITY_DISCUSSION_REPLY
+				: NotificationType.COMMUNITY_CHILD_REPLY,
 			payload
 		);
 	}

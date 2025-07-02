@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum NotificationType {
 	/* 커뮤니티 */
-	COMMUNITY_REPLY("새로운 댓글이 달렸습니다.", "/problems/{problemId}/discussions/{discussionId}"),
+	COMMUNITY_DISCUSSION_REPLY("작성하신 토론글에 새로운 댓글이 달렸습니다.", "/problems/{problemId}/discussions/{discussionId}"),
+	COMMUNITY_CHILD_REPLY("작성하신 댓글에 새로운 대댓글이 달렸습니다.", "/problems/{problemId}/discussions/{discussionId}"),
 	COMMUNITY_DISCUSSION_VOTED_UP("토론글에 추천을 받았습니다.", "/problems/{problemId}/discussions/{discussionId}"),
 	COMMUNITY_REPLY_VOTED_UP("댓글에 추천을 받았습니다.", "/problems/{problemId}/discussions/{discussionId}/replies/{replyId}"),
 	COMMUNITY_MENTIONED("멘션", ""),

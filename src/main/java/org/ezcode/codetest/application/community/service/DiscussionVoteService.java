@@ -49,17 +49,12 @@ public class DiscussionVoteService extends BaseVoteService<DiscussionVote, Discu
 	protected void afterVote(User voter, Long targetId) {
 
 		notificationExecutor.execute(() -> {
+			Discussion discussion = discussionDomainService.getDiscussionById(targetId);
 
-			try {
-				Discussion discussion = discussionDomainService.getDiscussionById(targetId);
+			Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createDiscussionVoteNotification(
+				voter, discussion);
 
-				Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createDiscussionVoteNotification(voter, discussion);
-
-				return notificationEvent.map(List::of).orElse(Collections.emptyList());
-			} catch (Exception ex) {
-				log.error("토론글 추천 알림 생성 중 에러 발생 : {}", ex.getMessage());
-				return Collections.emptyList();
-			}
+			return notificationEvent.map(List::of).orElse(Collections.emptyList());
 		});
 	}
 }
