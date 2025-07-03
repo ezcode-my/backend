@@ -89,7 +89,16 @@
 - [ver2 아키텍처](https://www.notion.so/ver2-2012dc3ef514801f8e80dab143a11088?pvs=21)
 - [ver3 아키텍처](https://www.notion.so/ver3-2022dc3ef51480ecb369f608ae0c3dc6?pvs=21)
 
+
+### System Architecture
+
+![systemArchitecture.png](reademeimage/systemArchitecture.png)
+
 ---
+
+## CI/CD
+
+![ci_cd.png](reademeimage/ci_cd.png)
 
 ## 💡 기술 스택
 
