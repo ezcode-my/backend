@@ -80,9 +80,9 @@
 
 ## 📜 문서
 
-### API 명세서
+### API (Swagger)
 
-<a href="http://3.38.223.188/swagger-ui/index.html">🌉 API 명세서</a>
+### <a href="http://3.38.223.188/swagger-ui/index.html"> <<API 명세서>> </a>
 
 ### ERD
 
