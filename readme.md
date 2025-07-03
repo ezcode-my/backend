@@ -78,6 +78,16 @@
 
 ---
 
+## 📜 문서
+
+### API 명세서
+
+<a href="http://3.38.223.188/swagger-ui/index.html">🌉 API 명세서</a>
+
+### ERD
+
+![erd.png](reademeimage/erd.png)
+
 ## 📂 아키텍처
 
 ### ⚙️ 4-Layer Architecture + Port & Adapter Pattern
@@ -90,13 +100,13 @@
 - [ver3 아키텍처](https://www.notion.so/ver3-2022dc3ef51480ecb369f608ae0c3dc6?pvs=21)
 
 
-### System Architecture
+### 🧩 System Architecture
 
 ![systemArchitecture.png](reademeimage/systemArchitecture.png)
 
 ---
 
-## CI/CD
+## 💭 CI/CD
 
 ![ci_cd.png](reademeimage/ci_cd.png)
 
@@ -107,13 +117,13 @@
 | **🖥️ 언어**         | Java 17                                              |
 | **🔧 백엔드**         | Spring Boot, Spring Data JPA, QueryDSL, Spring Batch |
 | **🔐 보안**          | Spring Security, JWT                                 |
-| **💾 데이터베이스**      | MySQL, Redis, MongoDB, ElasticCache                  |
+| **💾 데이터베이스**      | MySQL, Redis, MongoDB, Elastic search                |
 | **📨 메시지 큐**       | ActiveMQ, Redis Stream                               |
 | **🧠 개발 도구 (IDE)** | IntelliJ IDEA                                        |
 | **🌐 외부 API**      | Gmail SMTP, OpenAI, Judge0                           |
-| **📚 API 문서화**      | Swagger                           |
-| **🧪 테스트 도구**      | Postman, JUnit5, nGrinder                           |
-| **☁️ 클라우드 서비스**      | AWS EC2, RDS, S3, LightSail, Cloudflare                           |
-| **🚀 배포 도구**      | Jenkins, GitHub Actions, Docker, Nginx                           |
-| **📊 모니터링**      | Spring Actuator, Prometheus, Grafana                           |
+| **📚 API 문서화**      | Swagger                                              |
+| **🧪 테스트 도구**      | Postman, JUnit5, nGrinder                            |
+| **☁️ 클라우드 서비스**      | AWS EC2, RDS, S3, LightSail, Cloudflare              |
+| **🚀 배포 도구**      | Jenkins, Docker, Nginx                               |
+| **📊 모니터링**      | Spring Actuator, Prometheus, Grafana                 |
 | **🤝 협업 도구**      | GitHub, Notion, Slack, Discord, jira                 |
