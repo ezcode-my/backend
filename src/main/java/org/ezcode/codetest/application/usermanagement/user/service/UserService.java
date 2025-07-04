@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GrantAdminRoleResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.UserReviewTokenResponse;
 import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
@@ -175,5 +176,11 @@ public class UserService {
 		}
 
 		return new UserProfileImageResponse(null);
+	}
+
+	public UserReviewTokenResponse getReivewToken(AuthUser authUser) {
+		User user = userDomainService.getUserById(authUser.getId());
+
+		return new UserReviewTokenResponse(user.getReviewToken());
 	}
 }
