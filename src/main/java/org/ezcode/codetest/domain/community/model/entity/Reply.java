@@ -93,7 +93,7 @@ public class Reply extends BaseEntity {
 
 	public List<User> generateNotificationTargets() {
 
-		Set<User> targets = new HashSet<>(); 	// 중복 방지를 위해 Set 사용
+		Set<User> targets = new HashSet<>();
 
 		User discussionAuthor = discussion.getUser();
 		User parentAuthor = this.getParentReplyUser();
@@ -107,5 +107,10 @@ public class Reply extends BaseEntity {
 		}
 
 		return new ArrayList<>(targets);
+	}
+
+	public Long getParentReplyId() {
+
+		return this.getParent() != null ? this.getParent().getId() : null;
 	}
 }

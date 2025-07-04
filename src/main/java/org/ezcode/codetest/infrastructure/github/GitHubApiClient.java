@@ -43,7 +43,7 @@ public class GitHubApiClient {
 
     protected Optional<String> fetchSourceBlobSha(GitHubPushRequest req) {
         String fileName = FileType.SOURCE.resolveFilename(req);
-        String path = String.format("%s/%s/%s/%s", repoRootFolder, req.difficulty(), req.problemId(), fileName);
+        String path = String.format("%s/%s/%s/%s", repoRootFolder, req.difficulty(), req.getProblemInfo(), fileName);
 
         return baseBuilder(req.accessToken())
             .get()
@@ -152,10 +152,10 @@ public class GitHubApiClient {
 
     private String createCommit(GitHubPushRequest req, String parentSha, String treeSha) {
         Map<String, Object> body = Map.of(
-            "message", String.format("문제 %s. %s (%s) – 메모리: %sKB, 시간: %sms",
+            "message", String.format("[%s] 문제 %s. %s, 메모리: %sKB, 시간: %sms",
+                req.difficulty(),
                 req.problemId(),
                 req.problemTitle(),
-                req.difficulty(),
                 req.averageMemoryUsage(),
                 req.averageExecutionTime()
             ),

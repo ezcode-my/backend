@@ -30,7 +30,16 @@ public class NotificationController {
 
 	@Operation(
 		summary = "알림 목록 조회",
-		description = "현재 사용자(authUser)의 알림을 페이징하여 조회 요청을 보냅니다.",
+		description = """
+			현재 사용자(authUser)의 알림을 페이징하여 조회 요청을 보냅니다.
+			해당 API는 요청만 날릴 뿐 실제 알림 데이터는 웹소켓을 통해 전달 받습니다.
+			웹소켓 구독 경로는 다음과 같습니다.
+			
+			- 신규 알림 : /user/queue/notification
+			- 알림 목록 : /user/queue/notifications
+			
+			자세한 내용은 다음 [링크](https://www.notion.so/teamsparta/1-5-2002dc3ef51481e7afbec86e90d0010e?p=2232dc3ef51480638fd9eecc3b90a0fc&pm=s) 참고
+			""",
 		parameters = {
 			@Parameter(name = "pageable", description = "페이징 정보 (page, size, sort)")
 		}

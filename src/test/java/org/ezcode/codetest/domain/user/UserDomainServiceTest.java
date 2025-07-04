@@ -58,7 +58,6 @@ public class UserDomainServiceTest {
     ) {
         public Long getId() { return 1L; }
         public int getReviewToken() { return 5; }
-        public int getZeroReviewToken() { return 0; }
     };
     private final UserAuthType testAuthType = new UserAuthType(testUser, AuthType.EMAIL);
 

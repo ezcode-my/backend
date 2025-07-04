@@ -50,17 +50,12 @@ public class ReplyVoteService extends BaseVoteService<ReplyVote, ReplyVoteDomain
 	protected void afterVote(User voter, Long targetId) {
 
 		notificationExecutor.execute(() -> {
+			Reply reply = replyDomainService.getReplyById(targetId);
 
-			try {
-				Reply reply = replyDomainService.getReplyById(targetId);
+			Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createReplyVoteNotification(voter,
+				reply);
 
-				Optional<NotificationCreateEvent> notificationEvent = voteDomainService.createReplyVoteNotification(voter, reply);
-
-				return notificationEvent.map(List::of).orElse(Collections.emptyList());
-			} catch (Exception ex) {
-				log.error("댓글 추천 알림 생성 중 에러 발생 : {}", ex.getMessage());
-				return Collections.emptyList();
-			}
+			return notificationEvent.map(List::of).orElse(Collections.emptyList());
 		});
 	}
 }

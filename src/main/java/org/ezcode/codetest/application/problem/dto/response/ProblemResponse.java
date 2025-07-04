@@ -32,8 +32,13 @@ public record ProblemResponse(
 	Difficulty difficulty,
 
 	@Schema(description = "출처", example = "ORIGINAL")
-	Reference reference
+	Reference reference,
 
+	@Schema(description = "총 제출횟수", example = "0")
+	Long totalSubmissions,
+
+	@Schema(description = "성공한 횟수", example = "0")
+	Long correctSubmissions
 ) {
 
 	public static ProblemResponse from(Problem problem, List<Category> categories) {
@@ -50,6 +55,8 @@ public record ProblemResponse(
 			.score(problem.getScore())
 			.difficulty(problem.getDifficulty())
 			.reference(problem.getReference())
+			.totalSubmissions(problem.getTotalSubmissions())
+			.correctSubmissions(problem.getCorrectSubmissions())
 			.build();
 	}
 }
