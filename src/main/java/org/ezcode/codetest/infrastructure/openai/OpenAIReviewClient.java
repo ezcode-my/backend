@@ -83,7 +83,7 @@ public class OpenAIReviewClient implements ReviewClient {
             .bodyValue(requestBody)
             .retrieve()
             .bodyToMono(OpenAIResponse.class)
-            .timeout(Duration.ofSeconds(10))
+            .timeout(Duration.ofSeconds(20))
             .retryWhen(
                 Retry.backoff(3, Duration.ofSeconds(1))
                     .maxBackoff(Duration.ofSeconds(5))

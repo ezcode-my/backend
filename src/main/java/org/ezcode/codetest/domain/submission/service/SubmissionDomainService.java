@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
+import org.ezcode.codetest.domain.submission.dto.DailyCorrectCount;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.domain.submission.model.SubmissionResult;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
@@ -83,6 +84,10 @@ public class SubmissionDomainService {
         LocalDateTime startDateTime, LocalDateTime endDateTime
     ) {
         return submissionRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
+    }
+
+    public List<DailyCorrectCount> getSolvedHistoryByDate(Long userId) {
+        return userProblemResultRepository.countCorrectByUserGroupedByDate(userId);
     }
 
     private boolean evaluate(TestcaseEvaluationInput input) {

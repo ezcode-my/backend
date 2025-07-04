@@ -8,22 +8,29 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 @Configuration
 @OpenAPIDefinition(
-    info = @Info(title = "API 문서", version = "v1"),
-    security = @SecurityRequirement(name = "JWT")
+	servers = {
+		@Server(
+			url = "https://ezcode.my",           // ← 슬래시 없이 호스트만!
+			description = "Production server"
+		)
+	},
+	info = @Info(title = "API 문서", version = "v1"),
+	security = @SecurityRequirement(name = "JWT")
 )
 @SecurityScheme(
-    name = "JWT",
-    type = SecuritySchemeType.HTTP,
-    scheme = "bearer",
-    bearerFormat = "JWT"
+	name = "JWT",
+	type = SecuritySchemeType.HTTP,
+	scheme = "bearer",
+	bearerFormat = "JWT"
 )
 @SecurityScheme(
-    name = "JWT_REFRESH", // refreshToken용
-    type = SecuritySchemeType.APIKEY,
-    in = SecuritySchemeIn.HEADER
+	name = "JWT_REFRESH", // refreshToken용
+	type = SecuritySchemeType.APIKEY,
+	in = SecuritySchemeIn.HEADER
 )
 public class SwaggerConfig {
 }
