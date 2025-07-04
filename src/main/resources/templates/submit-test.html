@@ -282,7 +282,7 @@
                 const d = document.getElementById(`slot-${data.seqId}`);
                 if (!d) return;
                 d.className = data.isPassed ? 'slot passed' : 'slot failed';
-                d.textContent = `[${data.seqId}] ${data.message} (${data.executionTime}s, ${data.memoryUsage}KB)`;
+                d.textContent = `[${data.seqId}] ${data.message} (${data.executionTime}ms, ${data.memoryUsage}KB)`;
             }
 
             function handleFinal(res) {
