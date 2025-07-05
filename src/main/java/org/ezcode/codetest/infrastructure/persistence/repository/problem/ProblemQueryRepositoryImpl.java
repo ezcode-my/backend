@@ -37,13 +37,6 @@ public class ProblemQueryRepositoryImpl implements ProblemRepositoryCustom {
 
 		builder.and(problem.isDeleted.isFalse());
 
-		JPAQuery<Problem> query = jpaQueryFactory
-			.selectDistinct(problem)
-			.from(problem)
-			.leftJoin(problemCategory).on(problem.eq(problemCategory.problem))
-			.leftJoin(problemCategory.category, category)
-			.where(builder);
-
 		// 카테고리 필터링
 		if (searchCondition.category() != null) {
 			builder.and(category.code.eq(searchCondition.category())
@@ -54,6 +47,15 @@ public class ProblemQueryRepositoryImpl implements ProblemRepositoryCustom {
 		if (searchCondition.difficulty() != null) {
 			builder.and(problem.difficulty.eq(Difficulty.valueOf(searchCondition.difficulty())));
 		}
+
+		JPAQuery<Problem> query = jpaQueryFactory
+			.selectDistinct(problem)
+			.from(problem)
+			.leftJoin(problemCategory).on(problem.eq(problemCategory.problem))
+			.leftJoin(problemCategory.category, category)
+			.where(builder);
+
+
 
 		List<Problem> content = query
 			.offset(pageable.getOffset())
