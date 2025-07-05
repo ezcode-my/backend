@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,7 +45,14 @@ public class OAuth2Controller {
             request.getSession().setAttribute("redirect_uri", redirect_uri);
         }
 
-        response.sendRedirect("/oauth2/authorization/" + provider);
+        String target = UriComponentsBuilder.newInstance()
+            .scheme("https")
+            .host("ezcode.my")
+            .path("/oauth2/authorization/" + provider)
+            .build()
+            .toUriString();
+        response.sendRedirect(target);
+
     }
 
     private boolean isValidRedirectUri(String uri) {

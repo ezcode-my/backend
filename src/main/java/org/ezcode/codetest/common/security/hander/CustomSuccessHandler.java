@@ -117,7 +117,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 			.queryParam("refreshToken", refreshToken)
 			.build().toUriString();
 
-
 		response.sendRedirect(targetUri);
 		}
 
