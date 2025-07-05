@@ -1,273 +1,329 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
-  <title>문제 검색</title>
-  <meta charset="UTF-8"/>
-  <style>
-    body {
-      background: #f6f9fc;
-      font-family: 'Segoe UI', 'Apple SD Gothic Neo', Arial, sans-serif;
-      margin: 0;
-      min-height: 100vh;
-    }
-    .search-container {
-      max-width: 720px;
-      margin: 80px auto 0 auto;
-      padding: 66px 54px 48px 54px;
-      background: #b6c2db;
-      border-radius: 39px;
-      box-shadow: 0 12px 57px rgba(0,0,0,0.09), 0 2px 12px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-    }
-    .form-group { display: flex; flex-direction: column; gap: 14px; }
-    label {
-      font-weight: 600; color: #1a237e; font-size: 1.7rem;
-      margin-bottom: 3px; letter-spacing: 0.01em;
-    }
-    input[type="text"] {
-      font-size: 1.77rem; border: 2.5px solid #b6c2db;
-      border-radius: 17px; padding: 26px 27px;
-      outline: none; background: #fff;
-      transition: border-color 0.19s; color: #16243a;
-    }
-    input[type="text"]::placeholder { color: rgba(22,36,58,0.6); }
-    input[type="text"]:focus { border-color: #2563eb; }
-    .autocomplete-list {
-      border: 2px solid #b6c2db; box-shadow: 0 3px 21px rgba(59,130,246,0.10);
-      max-height: 300px; overflow-y: auto; background: #fff;
-      position: absolute; z-index: 120; width: 100%;
-      bottom: calc(100% + 3px); padding: 0; list-style: none;
-      border-radius: 17px; left: 0;
-    }
-    .autocomplete-item {
-      padding: 20px 30px; cursor: pointer; font-size: 1.68rem;
-      transition: background 0.13s; color: #273145;
-      border-bottom: 2px solid #eff1f5;
-    }
-    .autocomplete-item:last-child { border-bottom: none; }
-    .autocomplete-item:hover,
-    .autocomplete-item.active { background: #e7ecff; color: #2563eb; }
-    #autocomplete-box { position: relative; width: 100%; }
+    <meta charset="UTF-8"/>
+    <title>EzCode 문제 검색</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap"
+          rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f111a;
+            color: #f0f2f5;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-    button[type="submit"] {
-      background: linear-gradient(90deg,#2563eb 25%,#4285f4 100%);
-      color: #fff; font-weight: 700; border: none;
-      border-radius: 17px; padding: 27px 0;
-      font-size: 1.78rem; width: 100%; margin-top: 14px;
-      cursor: pointer; transition: background 0.17s, box-shadow 0.17s;
-      box-shadow: 0 3px 21px rgba(59,130,246,0.10);
-    }
-    button[type="submit"]:hover {
-      background: linear-gradient(90deg,#1749c6 25%,#2563eb 100%);
-    }
+        #header-placeholder {
+            margin-bottom: 40px; /* 헤더와 본문 사이 간격 */
+        }
 
-    /* 로더 (모래시계) */
-    .loader {
-      font-size: 4rem; text-align: center; color: #2563eb;
-      padding: 60px 0;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0%   { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+        .search-container {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+            background-color: #1c1e2b;
+            padding: 40px;
+            border-radius: 18px;
+            box-sizing: border-box;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+        }
 
-    #results {
-      background: #f3f6fa; border-radius: 18px; margin-top: 3px;
-      padding: 29px 27px 21px 27px; min-height: 180px; max-height: 400px;
-      overflow-y: auto; box-shadow: 0 6px 30px rgba(100,116,139,0.15);
-      font-size: 1.67rem; color: #16243a; font-weight: 500;
-      letter-spacing: 0.01em;
-      opacity: 0; transform: translateY(-40px) scale(0.92);
-      transition:
-              opacity 1.5s ease-out,
-              transform 1.5s cubic-bezier(0.68,-0.55,0.27,1.55);
-    }
-    #results.visible {
-      opacity: 1; transform: translateY(0) scale(1);
-    }
-    .result-title {
-      font-size: 1.64rem; color: #2563eb; font-weight: 700;
-      margin-right: 12px;
-    }
-    .result-list { list-style: none; padding: 0; margin: 0; }
-    .result-item {
-      background: #fff; border: 1px solid #d1d5db;
-      border-radius: 12px; padding: 16px; margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .result-item > div { margin-bottom: 4px; font-size: 1.5rem; }
-    .result-item > div span { font-weight: 600; color: #2563eb; }
+        h2 {
+            text-align: center;
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #00d084;
+            margin-bottom: 24px;
+        }
 
-    h2 {
-      margin: 0 0 15px 0; font-size: 3.0rem; text-align: center;
-      font-weight: 800; color: #2563eb; letter-spacing: 0.01em;
-    }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
 
-    @media (max-width: 900px) {
-      .search-container { max-width: 95vw; padding: 24px 8vw; }
-      button[type="submit"] { font-size: 1.2rem; padding: 20px 0; }
-      input[type="text"] { font-size: 1.2rem; padding: 14px 16px; }
-      h2 { font-size: 2.2rem; }
-      .autocomplete-item { font-size: 1.2rem; padding: 12px 18px; }
-      .autocomplete-list { max-height: 200px; bottom: calc(100%+2px); }
-      #results { font-size: 1.2rem; padding: 18px 14px; }
-      .result-item > div { font-size: 1.2rem; }
-    }
-  </style>
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 20px;
+            background-color: #2a2d3d;
+            border: 1px solid #3a3d4d;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
 
-  <script>
+        input[type="text"]:focus {
+            border-color: #00d084;
+            outline: none;
+        }
+
+        button[type="submit"] {
+            margin-top: 24px;
+            background-color: #00d084;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #00b472;
+        }
+
+        .autocomplete-list {
+            background-color: #2a2d3d;
+            border: 1px solid #3a3d4d;
+            border-radius: 10px;
+            margin-top: 4px;
+            list-style: none;
+            padding: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            position: absolute;
+            width: 100%;
+            z-index: 999;
+        }
+
+        .autocomplete-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #3a3d4d;
+            color: #f0f2f5;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.active {
+            background-color: #3d414f;
+            color: #00d084;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        #results {
+            background-color: #1c1e2b;
+            border: 1px solid #3a3d4d;
+            border-radius: 10px;
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 15px;
+        }
+
+        .result-title {
+            color: #00d084;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .result-item {
+            background-color: #2a2d3d;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #3a3d4d;
+        }
+
+        .result-item > div {
+            margin-bottom: 6px;
+        }
+
+        .result-item a {
+            color: #00d084;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
+        }
+
+        .loader {
+            font-size: 2rem;
+            text-align: center;
+            padding: 30px 0;
+            color: #00d084;
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="header-placeholder"></div>
+<div class="search-container">
+  <h2>문제 검색</h2>
+
+    <div class="form-group">
+        <label for="jwtToken">JWT 토큰 입력</label>
+        <input type="text" id="jwtToken" placeholder="여기에 JWT 토큰을 입력하세요" required/>
+    </div>
+
+    <form id="searchForm" autocomplete="off">
+        <div class="form-group" id="autocomplete-box">
+            <label for="keyword">검색어 입력</label>
+            <input type="text" id="keyword" name="keyword" required placeholder="검색어를 입력하세요"/>
+            <ul id="autocomplete-list" class="autocomplete-list"></ul>
+        </div>
+        <button type="submit" id="searchBtn">검색</button>
+    </form>
+
+    <div id="results"></div>
+</div>
+
+<script>
     let debounceTimer = null, focusIndex = -1;
 
     function getToken() {
-      return document.getElementById('jwtToken').value;
+        return document.getElementById('jwtToken').value;
     }
+
     function clearAutocomplete() {
-      document.getElementById('autocomplete-list').innerHTML = "";
-      focusIndex = -1;
+        document.getElementById('autocomplete-list').innerHTML = "";
+        focusIndex = -1;
     }
 
     async function fetchSuggestions(keyword) {
-      const token = getToken();
-      if (!keyword || !token) return;
-      try {
-        const resp = await fetch('/api/problems/suggestions?keyword=' + encodeURIComponent(keyword), {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-        if (!resp.ok) throw new Error();
-        const data = await resp.json();
-        if (!data.success || !Array.isArray(data.result)) return;
-        const listEl = document.getElementById('autocomplete-list');
-        listEl.innerHTML = "";
-        data.result.forEach((str, idx) => {
-          const li = document.createElement('li');
-          li.textContent = str; li.className = "autocomplete-item";
-          li.dataset.index = idx;
-          li.onclick = () => {
-            document.getElementById('keyword').value = str;
-            clearAutocomplete();
-          };
-          listEl.appendChild(li);
-        });
-      } catch {}
+        const token = getToken();
+        if (!keyword || !token) return;
+        try {
+            const resp = await fetch('/api/problems/suggestions?keyword=' + encodeURIComponent(keyword), {
+                headers: {'Authorization': 'Bearer ' + token}
+            });
+            const data = await resp.json();
+            if (!data.success || !Array.isArray(data.result)) return;
+            const listEl = document.getElementById('autocomplete-list');
+            listEl.innerHTML = "";
+            data.result.forEach((str, idx) => {
+                const li = document.createElement('li');
+                li.textContent = str;
+                li.className = "autocomplete-item";
+                li.dataset.index = idx;
+                li.onclick = () => {
+                    document.getElementById('keyword').value = str;
+                    clearAutocomplete();
+                };
+                listEl.appendChild(li);
+            });
+        } catch {
+        }
     }
 
     function handleKeywordInput(e) {
-      const kw = e.target.value.trim();
-      clearAutocomplete();
-      if (kw.length < 2) return;
-      if (debounceTimer) clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => fetchSuggestions(kw), 250);
+        const kw = e.target.value.trim();
+        clearAutocomplete();
+        if (kw.length < 2) return;
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => fetchSuggestions(kw), 250);
     }
 
     function handleKeyDown(e) {
-      const items = document.querySelectorAll('.autocomplete-item');
-      if (!items.length) return;
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        focusIndex = (focusIndex + 1) % items.length;
-        updateFocus(items);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        focusIndex = (focusIndex - 1 + items.length) % items.length;
-        updateFocus(items);
-      } else if (e.key === 'Enter' && focusIndex >= 0) {
-        e.preventDefault();
-        document.getElementById('keyword').value = items[focusIndex].textContent;
-        clearAutocomplete();
-      }
+        const items = document.querySelectorAll('.autocomplete-item');
+        if (!items.length) return;
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            focusIndex = (focusIndex + 1) % items.length;
+            updateFocus(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            focusIndex = (focusIndex - 1 + items.length) % items.length;
+            updateFocus(items);
+        } else if (e.key === 'Enter' && focusIndex >= 0) {
+            e.preventDefault();
+            document.getElementById('keyword').value = items[focusIndex].textContent;
+            clearAutocomplete();
+        }
     }
 
     function updateFocus(items) {
-      items.forEach((it, idx) => it.classList.toggle('active', idx === focusIndex));
+        items.forEach((it, idx) => it.classList.toggle('active', idx === focusIndex));
     }
 
     function toggleSearchForm() {
-      const token = getToken();
-      document.getElementById('keyword').disabled = !token;
-      document.getElementById('searchBtn').disabled = !token;
-      clearAutocomplete();
+        const token = getToken();
+        document.getElementById('keyword').disabled = !token;
+        document.getElementById('searchBtn').disabled = !token;
+        clearAutocomplete();
     }
 
     async function handleSearchSubmit(e) {
-      e.preventDefault();
-      const token = getToken();
-      const kw = document.getElementById('keyword').value.trim();
-      if (kw.length < 2) return;
-      if (!token) { alert('JWT 토큰을 먼저 입력하세요.'); return; }
-
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.classList.remove('visible');
-      // 1초 딜레이 및 로더 표시
-      resultsDiv.innerHTML = '<div class="loader">⏳</div>';
-      await new Promise(r => setTimeout(r, 1000));
-
-      try {
-        const resp = await fetch('/api/problems/search?keyword=' + encodeURIComponent(kw), {
-          method: 'GET',
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-        if (!resp.ok) { throw new Error(); }
-        const data = await resp.json();
-
-        let html = '<span class="result-title">PROBLEM LIST :</span>';
-        if (data.success && Array.isArray(data.result) && data.result.length) {
-          html += '<ul class="result-list">';
-          data.result.forEach(item => {
-            html += `
-              <li class="result-item">
-                <div><span>ID:</span> ${item.id}</div>
-                <div><span>Title:</span> ${item.title}</div>
-                <div><span>Category:</span> ${item.category}</div>
-                <div><span>Difficulty:</span> ${item.difficulty}</div>
-                <div><span>Reference:</span> ${item.reference}</div>
-                <div><span>Description:</span> ${item.description}</div>
-                <div><span>Score:</span> ${item.score}</div>
-              </li>`;
-          });
-          html += '</ul>';
-        } else {
-          html += ' <span style="color:#a0a0a0;">검색 결과가 없습니다.</span>';
+        e.preventDefault();
+        const token = getToken();
+        const kw = document.getElementById('keyword').value.trim();
+        if (kw.length < 2) return;
+        if (!token) {
+            alert('JWT 토큰을 먼저 입력하세요.');
+            return;
         }
-        resultsDiv.innerHTML = html;
-        void resultsDiv.offsetWidth;
-        resultsDiv.classList.add('visible');
-      } catch {
-        resultsDiv.innerHTML = '<span style="color:red;">검색 중 오류가 발생했습니다.</span>';
-      } finally {
-        clearAutocomplete();
-      }
+
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '<div class="loader">⏳</div>';
+        await new Promise(r => setTimeout(r, 1000));
+
+        try {
+            const resp = await fetch('/api/problems/search?keyword=' + encodeURIComponent(kw), {
+                method: 'GET',
+                headers: {'Authorization': 'Bearer ' + token}
+            });
+            const data = await resp.json();
+
+            let html = '<span class="result-title">PROBLEM LIST :</span>';
+            if (data.success && Array.isArray(data.result) && data.result.length) {
+                html += '<div>';
+                data.result.forEach(item => {
+                    html += `
+              <div class="result-item">
+                <div><b>ID:</b> ${item.id}</div>
+                <div><b>Title:</b> <a href="/test/submit?problemId=${item.id}">${item.title}</a></div>
+                <div><b>Category:</b> ${item.category}</div>
+                <div><b>Difficulty:</b> ${item.difficulty}</div>
+                <div><b>Reference:</b> ${item.reference}</div>
+                <div><b>Description:</b> ${item.description}</div>
+                <div><b>Score:</b> ${item.score}</div>
+              </div>`;
+                });
+                html += '</div>';
+            } else {
+                html += '<div style="margin-top:12px; color: #aaa;">검색 결과가 없습니다.</div>';
+            }
+            resultsDiv.innerHTML = html;
+        } catch {
+            resultsDiv.innerHTML = '<div style="color:red;">검색 중 오류가 발생했습니다.</div>';
+        } finally {
+            clearAutocomplete();
+        }
     }
 
-    window.onload = function() {
-      clearAutocomplete();
-      document.getElementById('jwtToken').addEventListener('input', toggleSearchForm);
-      document.getElementById('searchForm').addEventListener('submit', handleSearchSubmit);
-      const ki = document.getElementById('keyword');
-      ki.addEventListener('input', handleKeywordInput);
-      ki.addEventListener('keydown', handleKeyDown);
-      toggleSearchForm();
+    window.onload = function () {
+        clearAutocomplete();
+        document.getElementById('jwtToken').addEventListener('input', toggleSearchForm);
+        document.getElementById('searchForm').addEventListener('submit', handleSearchSubmit);
+        const ki = document.getElementById('keyword');
+        ki.addEventListener('input', handleKeywordInput);
+        ki.addEventListener('keydown', handleKeyDown);
+        toggleSearchForm();
     };
-  </script>
-</head>
-<body>
-<div class="search-container">
-  <h2>문제 검색</h2>
-  <div class="form-group">
-    <label for="jwtToken">JWT 토큰 입력</label>
-    <input type="text" id="jwtToken" placeholder="여기에 JWT 토큰을 입력하세요" required />
-  </div>
-  <form id="searchForm" autocomplete="off">
-    <div class="form-group" id="autocomplete-box">
-      <label for="keyword">검색어 입력</label>
-      <input type="text" id="keyword" name="keyword" required placeholder="검색어를 입력하세요" />
-      <ul id="autocomplete-list" class="autocomplete-list"></ul>
-    </div>
-    <button type="submit" id="searchBtn">검색</button>
-  </form>
-  <div id="results"></div>
-</div>
+    fetch('/html/header.html')
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('header-placeholder').innerHTML = data;
+        });
+</script>
 </body>
 </html>

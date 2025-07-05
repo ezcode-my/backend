@@ -16,7 +16,7 @@ public class SecurityPath {
 		"/login/oauth",
 		"/actuator/**",
 		"/chatting",
-		"/submit-test",
+		"/submit-test/**",
 		"/problems/**",
 		"/ws/**",
 		"/swagger-ui/**",
@@ -27,6 +27,9 @@ public class SecurityPath {
 		"/searching",
 		"/css/**", //html 화면 구성 접근
 		"/images/**",
-		"/gaming"
+		"/gaming",
+		"/problems-test",
+		"/test/**",
+		"/html/**"
 	};
 }
