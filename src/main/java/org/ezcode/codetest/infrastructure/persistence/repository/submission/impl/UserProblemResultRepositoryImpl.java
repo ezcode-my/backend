@@ -4,9 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.ezcode.codetest.domain.submission.dto.DailyCorrectCount;
 import org.ezcode.codetest.domain.submission.model.entity.UserProblemResult;
 import org.ezcode.codetest.domain.submission.repository.UserProblemResultRepository;
 import org.ezcode.codetest.infrastructure.persistence.repository.submission.jpa.UserProblemResultJpaRepository;
+import org.ezcode.codetest.infrastructure.persistence.repository.submission.query.UserProblemResultQueryRepository;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class UserProblemResultRepositoryImpl implements UserProblemResultRepository {
 
     private final UserProblemResultJpaRepository userProblemResultJpaRepository;
+    private final UserProblemResultQueryRepository userProblemResultQueryRepository;
 
     @Override
     public Optional<UserProblemResult> findUserProblemResultByUserIdAndProblemId(Long userId, Long problemId) {
@@ -40,6 +43,11 @@ public class UserProblemResultRepositoryImpl implements UserProblemResultReposit
     @Override
     public Optional<Integer> sumPointByUserId(Long userId) {
         return userProblemResultJpaRepository.sumScoreByUserId(userId);
+    }
+
+    @Override
+    public List<DailyCorrectCount> countCorrectByUserGroupedByDate(Long userId) {
+        return userProblemResultQueryRepository.countCorrectByUserGroupedByDate(userId);
     }
 
 }

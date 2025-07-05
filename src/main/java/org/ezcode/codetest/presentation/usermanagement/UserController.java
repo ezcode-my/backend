@@ -4,8 +4,10 @@ import org.ezcode.codetest.application.usermanagement.user.dto.request.ModifyUse
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GrantAdminRoleResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.UserDailySolvedHistoryResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserInfoResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.UserReviewTokenResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.WithdrawUserResponse;
 import org.ezcode.codetest.application.usermanagement.user.service.UserService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
@@ -92,6 +94,21 @@ public class UserController {
 		@AuthenticationPrincipal AuthUser authUser
 	){
 		return ResponseEntity.status(HttpStatus.OK).body(userService.withdrawUser(authUser));
+	}
+
+	@Operation(summary = "회원 AI 리뷰 토큰 조회", description = "회원의 남은 AI리뷰용 토큰의 개수를 조회합니다.")
+	@GetMapping("/users/review-token")
+	public ResponseEntity<UserReviewTokenResponse> getReviewToken(
+		@AuthenticationPrincipal AuthUser authUser
+	){
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getReviewToken(authUser));
+	}
+
+	@GetMapping("/users/daily-solved")
+	public ResponseEntity<UserDailySolvedHistoryResponse> getUserDailySolvedHistory(
+		@AuthenticationPrincipal AuthUser authUser
+	){
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserDailySolvedHistory(authUser));
 	}
 
 }

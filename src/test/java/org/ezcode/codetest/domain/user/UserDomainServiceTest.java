@@ -13,7 +13,6 @@ import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.ezcode.codetest.domain.user.repository.UserAuthTypeRepository;
 import org.ezcode.codetest.domain.user.repository.UserRepository;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -58,7 +57,6 @@ public class UserDomainServiceTest {
     ) {
         public Long getId() { return 1L; }
         public int getReviewToken() { return 5; }
-        public int getZeroReviewToken() { return 0; }
     };
     private final UserAuthType testAuthType = new UserAuthType(testUser, AuthType.EMAIL);
 
@@ -171,6 +169,14 @@ public class UserDomainServiceTest {
     @Test
     void isDeletedUser_shouldPassWhenActive() {
         assertDoesNotThrow(() -> userDomainService.isDeletedUser(testUser));
+    }
+
+    // 9. 닉네임 자동 생성 테스트
+    @Test
+    void generateUniqueNickname_shouldReturnNonExistingNickname() {
+        when(userRepository.existsByNickname(any())).thenReturn(false);
+        String nickname = userDomainService.generateUniqueNickname();
+        assertNotNull(nickname);
     }
 
 }
