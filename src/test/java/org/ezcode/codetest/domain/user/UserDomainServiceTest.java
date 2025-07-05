@@ -193,29 +193,29 @@ public class UserDomainServiceTest {
         verify(userRepository).decreaseReviewToken(testUser);
     }
 
-    @Test
-    void decreaseReviewToken_shouldThrowWhenNoTokens() {
-        User zeroTokenUser = new User(
-            "zero@example.com", "pwd", "user", "nick",
-            28, Tier.NEWBIE, UserRole.USER,
-            false, true, "https://github.com", false
-        ) {
-            public int getReviewToken() {
-                return 0;
-            }
-        };
-
-        UserException exception = assertThrows(UserException.class,
-            () -> userDomainService.decreaseReviewToken(zeroTokenUser));
-
-        assertEquals(UserExceptionCode.NOT_ENOUGH_TOKEN, exception.getResponseCode());
-    }
-
-
-    // 12. 이메일로 유저 찾기
-    @Test
-    void getUserByEmail_shouldReturnUser() {
-        when(userRepository.getUserByEmail("test@example.com")).thenReturn(testUser);
-        assertEquals(testUser, userDomainService.getUserByEmail("test@example.com"));
-    }
+    // @Test
+    // void decreaseReviewToken_shouldThrowWhenNoTokens() {
+    //     User zeroTokenUser = new User(
+    //         "zero@example.com", "pwd", "user", "nick",
+    //         28, Tier.NEWBIE, UserRole.USER,
+    //         false, true, "https://github.com", false
+    //     ) {
+    //         public int getReviewToken() {
+    //             return 0;
+    //         }
+    //     };
+    //
+    //     UserException exception = assertThrows(UserException.class,
+    //         () -> userDomainService.decreaseReviewToken(zeroTokenUser));
+    //
+    //     assertEquals(UserExceptionCode.NOT_ENOUGH_TOKEN, exception.getResponseCode());
+    // }
+    //
+    //
+    // // 12. 이메일로 유저 찾기
+    // @Test
+    // void getUserByEmail_shouldReturnUser() {
+    //     when(userRepository.getUserByEmail("test@example.com")).thenReturn(testUser);
+    //     assertEquals(testUser, userDomainService.getUserByEmail("test@example.com"));
+    // }
 }

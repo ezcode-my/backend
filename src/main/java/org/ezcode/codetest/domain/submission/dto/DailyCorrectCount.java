@@ -6,4 +6,7 @@ public record DailyCorrectCount(
     LocalDate date,
     int count
 ) {
+    public DailyCorrectCount(java.sql.Date date, int count) {
+        this(date.toLocalDate(), count);
+    }
 }

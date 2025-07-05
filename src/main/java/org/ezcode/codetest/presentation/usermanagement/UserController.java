@@ -4,6 +4,7 @@ import org.ezcode.codetest.application.usermanagement.user.dto.request.ModifyUse
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GrantAdminRoleResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.UserDailySolvedHistoryResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserInfoResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserReviewTokenResponse;
@@ -100,7 +101,14 @@ public class UserController {
 	public ResponseEntity<UserReviewTokenResponse> getReviewToken(
 		@AuthenticationPrincipal AuthUser authUser
 	){
-		return ResponseEntity.status(HttpStatus.OK).body(userService.getReivewToken(authUser));
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getReviewToken(authUser));
+	}
+
+	@GetMapping("/users/daily-solved")
+	public ResponseEntity<UserDailySolvedHistoryResponse> getUserDailySolvedHistory(
+		@AuthenticationPrincipal AuthUser authUser
+	){
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserDailySolvedHistory(authUser));
 	}
 
 }

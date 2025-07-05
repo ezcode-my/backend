@@ -5,9 +5,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GrantAdminRoleResponse;
+import org.ezcode.codetest.application.usermanagement.user.dto.response.UserDailySolvedHistoryResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserReviewTokenResponse;
 import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
+import org.ezcode.codetest.domain.submission.dto.DailyCorrectCount;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ModifyUserInfoRequest;
@@ -178,9 +180,15 @@ public class UserService {
 		return new UserProfileImageResponse(null);
 	}
 
-	public UserReviewTokenResponse getReivewToken(AuthUser authUser) {
+	public UserReviewTokenResponse getReviewToken(AuthUser authUser) {
 		User user = userDomainService.getUserById(authUser.getId());
 
 		return new UserReviewTokenResponse(user.getReviewToken());
+	}
+
+	public UserDailySolvedHistoryResponse getUserDailySolvedHistory(AuthUser authUser) {
+		Long userId = authUser.getId();
+		List<DailyCorrectCount> solvedHistory = submissionDomainService.getSolvedHistoryByDate(authUser.getId());
+		return new UserDailySolvedHistoryResponse(userId, solvedHistory);
 	}
 }
