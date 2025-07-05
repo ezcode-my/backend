@@ -54,7 +54,7 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.logout(AbstractHttpConfigurer::disable)
-			.oauth2Login((outh2)-> outh2
+			.oauth2Login((oauth2)-> oauth2
 				.userInfoEndpoint((userInfo -> userInfo
 					.userService(customOAuth2UserService)))
 				.successHandler(customSuccessHandler))
