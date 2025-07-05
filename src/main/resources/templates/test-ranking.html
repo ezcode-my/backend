@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>EzCode 랭킹</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f111a;
+            color: #f0f2f5;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #header-placeholder {
+            margin-bottom: 40px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #00d084;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+        }
+
+        .jwt-box {
+            margin-bottom: 24px;
+        }
+
+        .jwt-box label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        .jwt-box input {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 16px;
+            background-color: #2a2d3d;
+            border: 1px solid #3a3d4d;
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background-color: #1e212f;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #ccc;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .tab.active {
+            background-color: #00d084;
+            color: #0f111a;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1c1e2b;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        th, td {
+            padding: 14px 20px;
+            text-align: left;
+            border-bottom: 1px solid #2a2d3d;
+            box-sizing: border-box;
+        }
+
+        th {
+            background-color: #12141f;
+            color: #00d084;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #2a2d3d;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            th, td {
+                padding: 12px 14px;
+            }
+
+            .tab {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="header-placeholder"></div>
+
+<div class="container">
+    <h1>사용자 랭킹</h1>
+
+    <div class="jwt-box">
+        <label for="jwt">JWT 토큰</label>
+        <input type="text" id="jwt" placeholder="Bearer ...">
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" data-api="/weekly">이번 주</div>
+        <div class="tab" data-api="/last-week">지난 주</div>
+        <div class="tab" data-api="/all-time">전체</div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>순위</th>
+            <th>닉네임</th>
+            <th>점수</th>
+        </tr>
+        </thead>
+        <tbody id="rankingBody">
+        <tr><td colspan="3">불러오는 중...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const tabs = document.querySelectorAll('.tab');
+    const tbody = document.getElementById('rankingBody');
+    const jwtInput = document.getElementById('jwt');
+
+    if (localStorage.getItem('jwtToken')) {
+        jwtInput.value = localStorage.getItem('jwtToken');
+    }
+
+    jwtInput.addEventListener('input', () => {
+        localStorage.setItem('jwtToken', jwtInput.value.trim());
+    });
+
+    function loadRanking(api) {
+        const jwt = jwtInput.value.trim();
+
+        fetch(`/api/rankings${api}`, {
+            headers: {
+                'Authorization': jwt.startsWith('Bearer ') ? jwt : 'Bearer ' + jwt,
+                'Accept': 'application/json'
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                const content = Array.isArray(data.result) ? data.result : data;
+                tbody.innerHTML = '';
+                if (!Array.isArray(content) || content.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3">데이터가 없습니다.</td></tr>';
+                    return;
+                }
+                content.forEach(r => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+              <td>${r.ranks}</td>
+              <td>${r.nickname}</td>
+              <td>${r.score}</td>
+            `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan="3">불러오기 실패</td></tr>';
+            });
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            loadRanking(tab.dataset.api);
+        });
+    });
+
+    loadRanking('/weekly');
+
+    fetch('/html/header.html')
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('header-placeholder').innerHTML = data;
+        });
+</script>
+</body>
+</html>

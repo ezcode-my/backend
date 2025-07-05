@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <title>EzCode 문제 리스트</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap"
+          rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f111a;
+            color: #f0f2f5;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            color: #00d084;
+            margin-bottom: 20px;
+        }
+
+        .problem-card {
+            background-color: #1c1e2b;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .problem-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .problem-meta {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .problem-meta span {
+            margin-right: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            background-color: #2f3242;
+            color: #ccc;
+            margin-right: 6px;
+        }
+
+        a {
+            color: #00d084;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div id="header-placeholder"></div>
+<div class="container">
+    <h1>문제 리스트</h1>
+    <div id="problemList">불러오는 중...</div>
+</div>
+
+<script>
+    const jwt = localStorage.getItem('jwtToken') || '';
+
+    fetch('/api/problems', {
+        headers: {
+            'Authorization': jwt.startsWith('Bearer ') ? jwt : 'Bearer ' + jwt,
+            'Accept': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+            const wrapper = data.result ?? data;
+            const content = wrapper.content;
+            const container = document.getElementById('problemList');
+            container.innerHTML = '';
+
+            if (!Array.isArray(content) || content.length === 0) {
+                container.innerHTML = '<p>문제가 없습니다.</p>';
+                return;
+            }
+
+            content.forEach(problem => {
+                const card = document.createElement('div');
+                card.className = 'problem-card';
+
+                card.innerHTML = `
+                    <div class="problem-title">
+                        <a href="/test/submit?problemId=${problem.id}">${problem.id}. ${problem.title}</a>
+                    </div>
+                    <div class="problem-meta">
+                        <span>출제자: ${problem.creator}</span>
+                        <span>점수: ${problem.score}</span>
+                        <span>난이도: ${problem.difficulty}</span>
+                        <span>출처: ${problem.reference}</span>
+                        <span>정답률: ${problem.correctSubmissions}/${problem.totalSubmissions}</span>
+                    </div>
+                    <div class="problem-meta">
+                        ${problem.categories.map(cat => `<span class="badge">${cat}</span>`).join(' ')}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('problemList').innerHTML = '<p>문제 목록을 불러오는 데 실패했습니다.</p>';
+        });
+    fetch('/html/header.html')
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('header-placeholder').innerHTML = data;
+        });
+</script>
+</body>
+</html>

@@ -2,82 +2,96 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>이벤트 채팅방</title>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <title>EzCode 채팅방</title>
+    <link rel="stylesheet" href="/css/header.css" />
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
+            background: #0f111a;
+            color: #f0f2f5;
+            min-height: 100vh;
         }
-        /* JWT 토큰 입력 폼 개선 */
+
+        header {
+            width: 100%;
+            background: #12141f;
+            padding: 16px 32px;
+            box-sizing: border-box;
+        }
+
         #tokenForm {
             width: 100%;
             max-width: 1000px;
             padding: 24px;
+            margin: 32px auto;
             box-sizing: border-box;
-            background: #ffffff;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
+            background: #1c1e2b;
+            border: 1px solid #2a2d3d;
+            border-radius: 12px;
         }
+
         #tokenForm label {
             font-size: 1em;
-            margin-bottom: 8px;
-            color: #333;
+            margin-bottom: 12px;
+            color: #ccc;
+            display: block;
         }
+
         #tokenInput {
             width: 100%;
             padding: 14px;
             font-size: 1.1em;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1px solid #3a3d4d;
+            border-radius: 8px;
+            background-color: #2a2d3d;
+            color: #fff;
+            margin-bottom: 16px;
         }
+
         #tokenSubmitBtn {
-            margin-top: 12px;
-            padding: 12px;
+            width: 100%;
+            padding: 14px;
             font-size: 1.05em;
-            background: #007bff;
+            background: #00d084;
             color: #fff;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
         }
+
         #tokenSubmitBtn:hover {
-            background: #0056b3;
+            background: #00b472;
         }
-        /* 채팅 인터페이스 숨김 */
+
         #app {
             display: none;
             width: 100%;
             max-width: 1000px;
-            height: calc(100% - 100px);
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            height: calc(100vh - 200px);
+            background: #1c1e2b;
+            border: 1px solid #2a2d3d;
+            border-radius: 12px;
             overflow: hidden;
             display: flex;
-            margin-top: 8px;
+            margin: 0 auto 64px auto;
         }
+
         #sidebar {
-            width: 180px;
-            border-right: 1px solid #ddd;
-            padding: 12px;
-            background: #fafafa;
+            width: 200px;
+            border-right: 1px solid #2a2d3d;
+            padding: 16px;
+            background: #1c1e2b;
         }
+
         #sidebar h2 {
             margin-bottom: 10px;
-            font-size: 1.1em;
-            color: #333;
+            font-size: 1em;
+            color: #00d084;
         }
+
         #roomList {
             list-style: none;
             margin: 0;
@@ -85,79 +99,91 @@
             height: calc(100% - 28px);
             overflow-y: auto;
         }
+
         #roomList li {
-            padding: 6px 10px;
-            margin-bottom: 4px;
-            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 0.95em;
-            background: #fff;
+            background: #2a2d3d;
             transition: background 0.2s ease;
         }
+
         #roomList li:hover {
-            background: #e6f7ff;
+            background: #334155;
         }
+
         #roomList li.active {
-            background: #bae7ff;
+            background: #00d084;
+            color: #0f111a;
         }
+
         #chatContainer {
             flex: 1;
             display: flex;
             flex-direction: column;
+            background: #12141f;
         }
+
         #messages {
             flex: 1;
             list-style: none;
             margin: 0;
             padding: 16px;
             overflow-y: auto;
-            background: #fefefe;
         }
+
         #messages li {
-            background: #f0f0f0;
-            padding: 6px 10px;
-            margin-bottom: 6px;
-            border-radius: 4px;
+            background: #2a2d3d;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
             font-size: 0.9em;
             word-break: break-word;
         }
+
         #inputArea {
             display: flex;
-            border-top: 1px solid #ddd;
-            background: #fafafa;
-            padding: 8px;
+            border-top: 1px solid #2a2d3d;
+            background: #1c1e2b;
+            padding: 12px;
+            margin: 0;
         }
+
         #msg {
             flex: 1;
             padding: 12px;
             font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            outline: none;
-            box-sizing: border-box;
+            border: 1px solid #3a3d4d;
+            border-radius: 8px;
+            background-color: #2a2d3d;
+            color: #fff;
         }
+
         #sendBtn {
             margin-left: 8px;
-            padding: 0 16px;
+            padding: 0 20px;
             border: none;
-            background: #28a745;
+            background: #00d084;
             color: #fff;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 1em;
         }
+
         #sendBtn:hover {
-            background: #218838;
+            background: #00b472;
         }
     </style>
 </head>
 <body>
+<div id="header-placeholder"></div>
 <form id="tokenForm">
     <label for="tokenInput">JWT 토큰을 아래에 입력 후 제출하세요:</label>
     <input id="tokenInput" type="text" placeholder="예: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required />
     <button id="tokenSubmitBtn" type="submit">제출</button>
 </form>
-
 <div id="app">
     <div id="sidebar">
         <h2>채팅방 목록</h2>
@@ -171,7 +197,6 @@
         </div>
     </div>
 </div>
-
 <script>
     let token, stompClient, chatSubscription, currentRoomId;
 
@@ -381,6 +406,11 @@
             }
         );
     }
+    fetch('/html/header.html')
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('header-placeholder').innerHTML = data;
+        });
 </script>
 </body>
 </html>

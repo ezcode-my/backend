@@ -52,7 +52,7 @@ public class SubmissionEventListener {
 
     @EventListener
     public void onGitPushStatus(GitPushStatusEvent event) {
-        GitPushStatusResponse wsDto = new GitPushStatusResponse(event.pushStatus());
+        GitPushStatusResponse wsDto = new GitPushStatusResponse(event.pushStatus().name());
         messageService.sendGitStatus(event.sessionKey(), event.principalName(), wsDto);
     }
 }
