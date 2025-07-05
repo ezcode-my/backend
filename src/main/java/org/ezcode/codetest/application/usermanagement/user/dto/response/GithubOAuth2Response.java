@@ -2,9 +2,13 @@ package org.ezcode.codetest.application.usermanagement.user.dto.response;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Schema(description = "Github OAuth2 응답 처리 클래스")
 public class GithubOAuth2Response implements OAuth2Response{
     private final Map<String, Object> attributes;
@@ -38,7 +42,11 @@ public class GithubOAuth2Response implements OAuth2Response{
     @Override
     @Schema(description = "사용자 이름", example = "홍길동")
     public String getName() {
-        return attributes.get("name").toString();
+        return Optional.ofNullable(attributes.get("name"))
+            .map(Object::toString)
+            .orElseGet(()-> Optional.ofNullable(attributes.get("login"))
+                .map(Object::toString)
+            .orElse("Github_"+UUID.randomUUID()));
     }
 
     @Override
