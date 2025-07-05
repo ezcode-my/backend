@@ -180,12 +180,14 @@ public class UserService {
 		return new UserProfileImageResponse(null);
 	}
 
+	@Transactional(readOnly = true)
 	public UserReviewTokenResponse getReviewToken(AuthUser authUser) {
 		User user = userDomainService.getUserById(authUser.getId());
 
 		return new UserReviewTokenResponse(user.getReviewToken());
 	}
 
+	@Transactional(readOnly = true)
 	public UserDailySolvedHistoryResponse getUserDailySolvedHistory(AuthUser authUser) {
 		Long userId = authUser.getId();
 		List<DailyCorrectCount> solvedHistory = submissionDomainService.getSolvedHistoryByDate(authUser.getId());
