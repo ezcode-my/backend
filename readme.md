@@ -94,11 +94,34 @@
 
 ![img.png](reademeimage/img.png)
 
+- **4 계층 아키텍처를 기반으로 헥사고날 아키텍처의 핵심 개념을 도입한 구조**
+
+- 패키지 구조
+
 > 자세한 논의 내용은 아래 링크를 참고하세요:
 - [ver1 아키텍처](https://www.notion.so/2012dc3ef51480e88b11fd1d69e9fc40?pvs=21)
 - [ver2 아키텍처](https://www.notion.so/ver2-2012dc3ef514801f8e80dab143a11088?pvs=21)
 - [ver3 아키텍처](https://www.notion.so/ver3-2022dc3ef51480ecb369f608ae0c3dc6?pvs=21)
 
+```
+my.ezcode.codetest
+├── common                    // 🌎 공통 관심사 (AOP, 예외 처리, 설정)
+│   ├── config
+│   └── exception
+├── presentation              // 💻 표현 계층 (컨트롤러)
+├── application               // 🚀 응용 계층 (UseCases)
+│   └── service
+│   └── dto
+│   └── port                  // 도메인 거치지 않는 써드 파티 기술 (judge0 등)
+├── domain                    // 🧠 도메인 계층 (Core Business Logic)
+│   ├── model                 // 도메인 모델 (Entity, VO)
+│   ├── service               // 도메인 서비스
+│   └── port                  // 도메인 DB 관련
+│   └── exception		      // 도메인 예외
+└── infrastructure            // 🔌 인프라 계층 (Outbound Adapter)
+    └── persistence		      // 영속성 (JPA repository, querydsl 등)
+
+```
 
 ### 🧩 System Architecture
 
@@ -112,18 +135,18 @@
 
 ## 💡 기술 스택
 
-| 구분                 | 사용 기술                                                |
-|--------------------|------------------------------------------------------|
-| **🖥️ 언어**         | Java 17                                              |
-| **🔧 백엔드**         | Spring Boot, Spring Data JPA, QueryDSL, Spring Batch |
-| **🔐 보안**          | Spring Security, JWT                                 |
-| **💾 데이터베이스**      | MySQL, Redis, MongoDB, Elastic search                |
-| **📨 메시지 큐**       | ActiveMQ, Redis Stream                               |
-| **🧠 개발 도구 (IDE)** | IntelliJ IDEA                                        |
-| **🌐 외부 API**      | Gmail SMTP, OpenAI, Judge0                           |
-| **📚 API 문서화**      | Swagger                                              |
-| **🧪 테스트 도구**      | Postman, JUnit5, nGrinder                            |
-| **☁️ 클라우드 서비스**      | AWS EC2, RDS, S3, LightSail, Cloudflare              |
-| **🚀 배포 도구**      | Jenkins, Docker, Nginx                               |
-| **📊 모니터링**      | Spring Actuator, Prometheus, Grafana                 |
-| **🤝 협업 도구**      | GitHub, Notion, Slack, Discord, jira                 |
+| 구분                 | 사용 기술                                        |
+|--------------------|----------------------------------------------|
+| **🖥️ 언어**         | Java 17                                      |
+| **🔧 백엔드**         | Spring Boot, Spring Data JPA, QueryDSL       |
+| **🔐 보안**          | Spring Security, JWT                         |
+| **💾 데이터베이스**      | MySQL, Redis, MongoDB, Elastic search        |
+| **📨 메시지 큐**       | ActiveMQ, Redis Stream                       |
+| **🧠 개발 도구 (IDE)** | IntelliJ IDEA                                |
+| **🌐 외부 API**      | Gmail SMTP, OpenAI, Judge0                   |
+| **📚 API 문서화**      | Swagger                                      |
+| **🧪 테스트 도구**      | Postman, JUnit5, nGrinder                    |
+| **☁️ 클라우드 서비스**      | AWS EC2, RDS, S3, LightSail, ELB, Cloudflare |
+| **🚀 배포 도구**      | Jenkins, Git Actions, Docker, Nginx          |
+| **📊 모니터링**      | Spring Actuator, Prometheus, Grafana         |
+| **🤝 협업 도구**      | GitHub, Notion, Slack, Discord               |
