@@ -96,12 +96,12 @@
 
 - **4 계층 아키텍처를 기반으로 헥사고날 아키텍처의 핵심 개념을 도입한 구조**
 
-- 패키지 구조
-
 > 자세한 논의 내용은 아래 링크를 참고하세요:
 - [ver1 아키텍처](https://www.notion.so/2012dc3ef51480e88b11fd1d69e9fc40?pvs=21)
 - [ver2 아키텍처](https://www.notion.so/ver2-2012dc3ef514801f8e80dab143a11088?pvs=21)
 - [ver3 아키텍처](https://www.notion.so/ver3-2022dc3ef51480ecb369f608ae0c3dc6?pvs=21)
+
+### 📦 패키지 구조
 
 ```
 my.ezcode.codetest
