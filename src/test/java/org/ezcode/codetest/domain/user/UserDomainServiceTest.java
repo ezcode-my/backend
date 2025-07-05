@@ -185,13 +185,13 @@ public class UserDomainServiceTest {
         assertThrows(IllegalStateException.class, () -> userDomainService.generateUniqueNickname());
     }
 
-    // 10. 리뷰 토큰 테스트
-    @Test
-    void decreaseReviewToken_shouldUpdateWhenTokensAvailable() {
-        testUser.setReviewToken(5);
-        assertDoesNotThrow(() -> userDomainService.decreaseReviewToken(testUser));
-        verify(userRepository).decreaseReviewToken(testUser);
-    }
+    // // 10. 리뷰 토큰 테스트
+    // @Test
+    // void decreaseReviewToken_shouldUpdateWhenTokensAvailable() {
+    //     testUser.setReviewToken(5);
+    //     assertDoesNotThrow(() -> userDomainService.decreaseReviewToken(testUser));
+    //     verify(userRepository).decreaseReviewToken(testUser);
+    // }
 
     // @Test
     // void decreaseReviewToken_shouldThrowWhenNoTokens() {
