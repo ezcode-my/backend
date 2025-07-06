@@ -44,11 +44,29 @@
         flex: 1;
         border: none;
     }
+
+    /* 조이패드 아이콘 스타일 */
+    #joypadIcon {
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        fill: white;
+        margin-left: 12px;
+        transition: fill 0.3s;
+    }
+    #joypadIcon:hover {
+        fill: #0f0;
+    }
 </style>
 
 <!-- 3) 기존 <header>…</header> -->
 <header>
-    <div class="logo-placeholder" onclick="location.href='/test/main'" style="cursor:pointer;"></div>
+    <div class="logo-placeholder"
+         onclick="location.href='/test/main'"
+         style="cursor:pointer;"></div>
     <nav>
         <ul>
             <li><a href="/test/problems">문제풀이</a></li>
@@ -76,6 +94,18 @@
                 </svg>
             </li>
 
+            <!-- ★ 조이패드 아이콘 href 직접 지정, id 유지 ★ -->
+            <li style="cursor:pointer;" title="게임 실행">
+                <a href="/test/gaming" id="joypadIcon" aria-label="게임 실행">
+                    <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" >
+                        <!-- 조이스틱 모양 아이콘 -->
+                        <circle cx="12" cy="12" r="10" stroke="#0f0" stroke-width="1.5" fill="none"/>
+                        <rect x="9" y="6" width="6" height="12" fill="#0f0" rx="2" ry="2"/>
+                        <circle cx="12" cy="10" r="1.5" fill="#111"/>
+                    </svg>
+                </a>
+            </li>
+
             <li>
                 <button id="loginBtn" class="login-button-header"
                         onclick="location.href='/test/signin'">
@@ -93,7 +123,7 @@
     </nav>
 </header>
 
-<!-- 4) 오버레이 & 드로어 HTML (header 바로 밑에) -->
+<!-- 4) 기존 오버레이 & 드로어 HTML (채팅용) -->
 <div id="chatOverlay" class="chat-overlay"
      onclick="
        this.classList.remove('open');
@@ -115,7 +145,7 @@
     <iframe src="/test/chatting"></iframe>
 </div>
 
-<!-- 5) 토글 스크립트 -->
+<!-- 5) 토글 스크립트 (채팅 전용, 절대 건드리지 마세요) -->
 <script>
     const toggle = document.getElementById('chatToggle');
     const overlay = document.getElementById('chatOverlay');
