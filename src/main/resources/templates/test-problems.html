@@ -4,8 +4,8 @@
     <meta charset="UTF-8"/>
     <title>EzCode 문제 리스트</title>
     <link rel="stylesheet" href="/css/header.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap"
-          rel="stylesheet">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: #0f111a;
@@ -21,11 +21,114 @@
             padding: 40px 20px;
         }
 
-        h1 {
-            color: #00d084;
+        .title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 20px;
         }
 
+        .title-bar h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #00d084;
+            margin: 0;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* 필터 셀렉트 + 초기화 버튼 공통 */
+        .filter-bar select,
+        .filter-bar button.reset-btn {
+            height: 40px;
+            padding: 6px 12px;
+            background-color: #2a2d3d;
+            color: #f0f2f5;
+            border: 1px solid #3a3d4d;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        /* ▼ 드롭다운 화살표 커스텀 */
+        .filter-bar select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23f0f2f5" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 36px;
+        }
+
+        /* 카테고리 필터 스크롤 */
+        .filter-bar select#categoryFilter {
+            max-height: 40px;
+            overflow-y: auto;
+        }
+
+        /* 드롭다운 옵션 커스텀 */
+        .filter-bar select option {
+            background-color: #2a2d3d;
+            color: #f0f2f5;
+        }
+
+        .filter-bar select option:hover {
+            background-color: #3d414f;
+            color: #00d084;
+        }
+
+        /* 스크롤바 커스텀 */
+        .filter-bar select::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .filter-bar select::-webkit-scrollbar-track {
+            background: #1a1c26;
+            border-radius: 10px;
+        }
+
+        .filter-bar select::-webkit-scrollbar-thumb {
+            background-color: #00d084;
+            border-radius: 10px;
+            border: 2px solid #1a1c26;
+        }
+
+        .filter-bar select::-webkit-scrollbar-thumb:hover {
+            background-color: #00b472;
+        }
+
+        /* 검색 버튼 (돋보기 버튼) */
+        #openSearch {
+            width: 48px;
+            height: 40px;
+            background-color: #0f111a;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: box-shadow 0.2s ease-in-out;
+        }
+
+        #openSearch:hover {
+            background-color: #1a1d28;
+            box-shadow: 0 6px 20px rgba(0, 208, 132, 0.25), 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #openSearch img {
+            width: 35px;
+            height: 35px;
+            filter: brightness(0) saturate(100%) invert(44%) sepia(87%) saturate(371%) hue-rotate(112deg) brightness(92%) contrast(96%);
+        }
+
+        /* 문제 카드 */
         .problem-card {
             background-color: #1c1e2b;
             padding: 20px;
@@ -73,41 +176,220 @@
         a:hover {
             text-decoration: underline;
         }
+
+        /* 페이지네이션 */
+        #pagination {
+            text-align: center;
+            margin-top: 24px;
+            margin-bottom: 60px;
+        }
+
+        #pagination button {
+            margin: 0 6px;
+            padding: 8px 14px;
+            min-width: 40px;
+            height: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            background-color: #2f3242;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #pagination button:not(.active):not(:disabled):hover {
+            background-color: #3a3d4f;
+        }
+
+        #pagination button.active {
+            background-color: #00d084;
+            color: #fff;
+        }
+
+        #pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        #searchModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #searchModal .modal-content {
+            background-color: #1c1e2b;
+            width: 90%;
+            max-width: 550px;
+            border-radius: 16px;
+            padding: 36px;
+            position: relative;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        #closeSearch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 24px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 <div id="header-placeholder"></div>
 <div class="container">
-    <h1>문제 리스트</h1>
+    <div class="title-bar">
+        <h1>문제 리스트</h1>
+        <div class="filter-bar">
+            <select id="difficultyFilter">
+                <option value="">전체 난이도</option>
+                <option value="LV1">레벨1</option>
+                <option value="LV2">레벨2</option>
+                <option value="LV3">레벨3</option>
+                <option value="LV4">레벨4</option>
+                <option value="LV5">레벨5</option>
+                <option value="LV6">레벨6</option>
+                <option value="LV7">레벨7</option>
+            </select>
+            <select id="categoryFilter">
+                <option value="">전체 카테고리</option>
+                <option value="OUTPUT">출력</option>
+                <option value="ARITHMETIC">사칙연산</option>
+                <option value="ARRAY">배열</option>
+                <option value="CONDITIONAL">조건문</option>
+                <option value="SORTING">정렬</option>
+                <option value="MATH">수학</option>
+                <option value="SIMULATION">시뮬레이션</option>
+                <option value="DATA_STRUCTURE">자료구조</option>
+                <option value="FOR_BEGINNER">입문자용</option>
+                <option value="IMPLEMENTATION">구현</option>
+                <option value="GREEDY">그리디</option>
+                <option value="STRING_PROCESSING">문자열 처리</option>
+                <option value="HASH_MAP">해시맵</option>
+                <option value="LINEAR_SEARCH">선형 탐색</option>
+                <option value="DP">동적 계획법</option>
+                <option value="CYCLE_DETECTION">순환 탐지</option>
+                <option value="BIT_OPERATION">비트 연산</option>
+                <option value="LOOP_CONTROL">반복 제어</option>
+                <option value="COUNTING">카운팅</option>
+                <option value="BFS">너비 우선 탐색</option>
+                <option value="DFS">깊이 우선 탐색</option>
+                <option value="BITMASK">비트마스킹</option>
+                <option value="HASH">해시</option>
+                <option value="MAP">맵</option>
+                <option value="LOOPS">반복문</option>
+                <option value="DIVIDE_AND_CONQUER">분할 정복</option>
+                <option value="STRING">문자열</option>
+                <option value="SET_THEORY">집합론</option>
+                <option value="PREFIX_SUM">누적 합</option>
+                <option value="GEOMETRY">기하학</option>
+                <option value="BINARY_SEARCH">이분 탐색</option>
+                <option value="TWO_POINTERS">투포인터</option>
+                <option value="GRAPH_THEORY">그래프 이론</option>
+                <option value="SEARCH">탐색</option>
+                <option value="PRIORITY_QUEUE">우선순위 큐</option>
+                <option value="BACKTRACKING">백트래킹</option>
+                <option value="ALGORITHM">알고리즘</option>
+                <option value="TREE">트리</option>
+                <option value="STATE_COMPRESSION">상태 압축</option>
+                <option value="RECURSION">재귀</option>
+                <option value="QUEUE">큐</option>
+                <option value="MAX_FLOW">최대 유량</option>
+                <option value="MIN_CUT">최소 컷</option>
+                <option value="MINIMUM_SPANNING_TREE">최소 스패닝 트리</option>
+                <option value="BRUTE_FORCE">완전 탐색</option>
+                <option value="COMBINATORICS">조합론</option>
+                <option value="SEGMENT_TREE">세그먼트 트리</option>
+                <option value="DEQUE">Deque</option>
+                <option value="HAMMING_DISTANCE">해밍 거리</option>
+                <option value="TWO_DIMENSIONAL_ARRAY">2차원 배열</option>
+                <option value="CUMULATIVE_SELECTION_OPTIMIZATION">누적 선택 최적화</option>
+                <option value="COORDINATE">좌표</option>
+                <option value="GCD">최대공약수(GCD)</option>
+                <option value="SEQUENCE">수열</option>
+                <option value="SET_PROCESSING">집합 처리</option>
+                <option value="GRAPH_SEARCH">그래프 탐색</option>
+                <option value="DISJOINT_SET">분리 집합</option>
+                <option value="COMBINATION">조합</option>
+            </select>
+            <button class="reset-btn" onclick="resetFilters()">초기화</button>
+            <button id="openSearch">
+                <img src="/images/search.svg" alt="검색"/>
+            </button>
+            <div id="searchModal">
+                <div class="modal-content">
+                    <button id="closeSearch">&times;</button>
+                    <div id="searchModalContent">불러오는 중...</div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="problemList">불러오는 중...</div>
+    <div id="pagination"></div>
 </div>
-
+<div id="footer-placeholder"></div>
 <script>
     const jwt = localStorage.getItem('jwtToken') || '';
+    let selectedCategory = '';
+    let selectedDifficulty = '';
 
-    fetch('/api/problems', {
-        headers: {
-            'Authorization': jwt.startsWith('Bearer ') ? jwt : 'Bearer ' + jwt,
-            'Accept': 'application/json'
-        }
-    })
-        .then(res => res.json())
-        .then(data => {
-            const wrapper = data.result ?? data;
-            const content = wrapper.content;
-            const container = document.getElementById('problemList');
-            container.innerHTML = '';
+    document.getElementById('categoryFilter').addEventListener('change', (e) => {
+        selectedCategory = e.target.value;
+        fetchProblems(0);
+    });
 
-            if (!Array.isArray(content) || content.length === 0) {
-                container.innerHTML = '<p>문제가 없습니다.</p>';
-                return;
+    document.getElementById('difficultyFilter').addEventListener('change', (e) => {
+        selectedDifficulty = e.target.value;
+        fetchProblems(0);
+    });
+
+    function resetFilters() {
+        selectedCategory = '';
+        selectedDifficulty = '';
+        document.getElementById('categoryFilter').value = '';
+        document.getElementById('difficultyFilter').value = '';
+        fetchProblems(0);
+    }
+
+    function fetchProblems(page = 0) {
+        const params = new URLSearchParams({ page });
+        if (selectedCategory) params.append('categoryCode', selectedCategory);
+        if (selectedDifficulty) params.append('difficulty', selectedDifficulty);
+
+        fetch(`/api/problems?${params.toString()}`, {
+            headers: {
+                'Authorization': jwt.startsWith('Bearer ') ? jwt : 'Bearer ' + jwt,
+                'Accept': 'application/json'
             }
+        })
+            .then(res => res.json())
+            .then(data => {
+                const wrapper = data.result ?? data;
+                const content = wrapper.content;
+                const container = document.getElementById('problemList');
+                container.innerHTML = '';
 
-            content.forEach(problem => {
-                const card = document.createElement('div');
-                card.className = 'problem-card';
+                if (!Array.isArray(content) || content.length === 0) {
+                    container.innerHTML = '<p>문제가 없습니다.</p>';
+                    return;
+                }
 
-                card.innerHTML = `
+                content.forEach(problem => {
+                    const card = document.createElement('div');
+                    card.className = 'problem-card';
+                    card.innerHTML = `
                     <div class="problem-title">
                         <a href="/test/submit?problemId=${problem.id}">${problem.id}. ${problem.title}</a>
                     </div>
@@ -122,19 +404,78 @@
                         ${problem.categories.map(cat => `<span class="badge">${cat}</span>`).join(' ')}
                     </div>
                 `;
+                    container.appendChild(card);
+                });
 
-                container.appendChild(card);
+                renderPagination(wrapper.number, wrapper.totalPages);
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('problemList').innerHTML = '<p>문제 목록을 불러오는 데 실패했습니다.</p>';
             });
-        })
-        .catch(err => {
-            console.error(err);
-            document.getElementById('problemList').innerHTML = '<p>문제 목록을 불러오는 데 실패했습니다.</p>';
-        });
-    fetch('/html/header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-        });
+    }
+
+    function renderPagination(currentPage, totalPages) {
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        const blockSize = 10;
+        const currentBlock = Math.floor(currentPage / blockSize);
+        const blockStart = currentBlock * blockSize;
+        const blockEnd = Math.min(blockStart + blockSize, totalPages);
+
+        const prevBtn = document.createElement('button');
+        prevBtn.textContent = '이전';
+        prevBtn.disabled = currentBlock === 0;
+        prevBtn.addEventListener('click', () => fetchProblems(blockStart - 1));
+        pagination.appendChild(prevBtn);
+
+        for (let i = blockStart; i < blockEnd; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i + 1;
+            if (i === currentPage) btn.classList.add('active');
+            btn.addEventListener('click', () => fetchProblems(i));
+            pagination.appendChild(btn);
+        }
+
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = '다음';
+        nextBtn.disabled = blockEnd >= totalPages;
+        nextBtn.addEventListener('click', () => fetchProblems(blockEnd));
+        pagination.appendChild(nextBtn);
+    }
+
+    fetchProblems(0);
+
+    document.getElementById('openSearch').addEventListener('click', async () => {
+        document.getElementById('searchModal').style.display = 'flex';
+        try {
+            const html = await fetch('/html/problem-search.html').then(res => res.text());
+            document.getElementById('searchModalContent').innerHTML = html;
+            const script = document.createElement('script');
+            script.src = '/js/problem-search.js';
+            script.onload = () => {
+                if (typeof initProblemSearch === 'function') {
+                    initProblemSearch();
+                }
+                const closeBtn = document.getElementById('closeSearch');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => {
+                        document.getElementById('searchModal').style.display = 'none';
+                    });
+                }
+            };
+            document.body.appendChild(script);
+        } catch {
+            document.getElementById('searchModalContent').innerHTML = '<p style="color:red">검색창 로드 실패</p>';
+        }
+    });
+</script>
+<script src="/js/headerUtils.js"></script>
+<script src="/js/footerUtils.js"></script>
+<script>
+    loadHeaderWithAuthCheck();
+    loadFooter(); // 푸터 로드
 </script>
 </body>
 </html>

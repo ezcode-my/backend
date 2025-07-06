@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;400;500;600&display=swap');
+
+
+body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Gmarket Sans', sans-serif; /* 피그마에서 사용된 폰트 패밀리 */
+    background-color: #0c151c; /* 피그마 배경색 */
+    color: #ffffff; /* 기본 글자색 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 화면 전체를 채우는 배경 */
+.background {
+    position: relative;
+    top: 0px;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('/images/main-background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+}
+.container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    overflow: visible; /* Ensure no overflow from background */
+    min-height: calc(100vh - 300px); /* 화면 높이에서 푸터 높이 뺀 값 */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 108px; /* 헤더 높이 */
+    padding: 0 130px; /* 좌우 패딩 */
+    background-color: #0c151c; /* 헤더 배경색 */
+    position: relative;
+    z-index: 10;
+}
+
+.logo-placeholder {
+    width: 132px; /* 로고 너비 */
+    height: 30px; /* 로고 높이 */
+    background-image: url('/images/textLogo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 40px; /* 메뉴 간격 */
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+nav a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 400; /* Medium */
+    line-height: 30px;
+}
+
+.login-button {
+    background-color: #214d35; /* 로그인 버튼 배경색 */
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px; /* 로그인 버튼 패딩 */
+    font-size: 20px;
+    font-weight: 400; /* Medium */
+    cursor: pointer;
+    line-height: 30px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 200px;
+    gap: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.logo-image{
+    width: 100vh;
+    max-width: 1000px;
+    height: 80vh;
+    max-height: 600px;
+    background-image: url('/images/logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.text-section {
+    display: flex;
+    flex-direction: column;     /* 세로 정렬 */
+    align-items: center;        /* 자식 요소 가운데 정렬 */
+    gap: 10px;                  /* 요소 사이 간격 */
+}
+
+.subtitle {
+    font-size: 0.7vw;
+    font-weight: 400; /* Medium */
+    line-height: 1vw;
+    margin-bottom: 1vw;
+    text-align: center; /* Center align subtitle */
+}
+
+.title {
+    font-size: 1.3vw;
+    font-weight: 500; /* Bold */
+    line-height: 2vw;
+    margin-bottom: 10px;
+    text-align: right; /* Right align title */
+}
+
+.brand-name {
+    font-size: 2.5vw;
+    font-weight: 600;
+    line-height: 70px;
+    margin-top: 0;
+    text-align: center;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.participate-button {
+    background-color: #ffffff; /* 참여하기 버튼 배경색 */
+    color: #214d35;
+    border: none;
+    border-radius: 20px;
+    padding: 20px 30px; /* 참여하기 버튼 패딩 */
+    font-size: 30px;
+    font-weight: 500; /* Bold */
+    cursor: pointer;
+    line-height: 60px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.image-placeholder {
+    width: 617.5px; /* 이미지 영역 너비 */
+    height: 617.5px; /* 이미지 영역 높이 */
+    /* 배경 그라데이션 또는 이미지 삽입 예시 */
+    /* background: linear-gradient(...) or background-image: url('...'); */
+    background-color: #555; /* Placeholder background */
+    position: absolute;
+    top: -485px; /* Adjust based on Figma position */
+    left: 2949px; /* Adjust based on Figma position */
+    /* Note: Absolute positioning based on Figma coordinates might need adjustment in a responsive layout */
+}
+
+.header-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #fff;
+}
+
+.header-login-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #fff;
+    padding: 0;
+}
+
+header ul {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+header li {
+    display: flex;
+    align-items: center;
+}
+
+header svg {
+    display: block;
+}
+

@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -42,12 +43,17 @@ public class SecurityConfig {
 	private final CustomOAuth2UserService customOAuth2UserService; //OAuth2.0 서비스
 	private final CustomSuccessHandler customSuccessHandler;
 
+
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		JwtFilter jwtFilter = new JwtFilter(jwtUtil, redisTemplate);
 		ExceptionHandlingFilter exceptionFilter = new ExceptionHandlingFilter();
 
 		return http
+			.headers(headers ->
+				headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+			)
 			// CSRF, Form 로그인, HTTP Basic 인증 비활성화
 			.cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
 			.csrf(AbstractHttpConfigurer::disable)

@@ -1,0 +1,169 @@
+/* problem-search.css */
+.search-container {
+    width: 100%;
+    max-width: 500px; /* 더 작게 줄임 */
+    margin: 0 auto;
+    background-color: #1c1e2b;
+    padding: 24px; /* 여백도 약간 줄임 */
+    border-radius: 14px;
+    box-sizing: border-box;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease-in-out;
+}
+
+h2 {
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #00d084;
+    margin-bottom: 24px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #ccc;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 14px 20px;
+    background-color: #2a2d3d;
+    border: 1px solid #3a3d4d;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+    border-color: #00d084;
+    outline: none;
+}
+
+button[type="submit"] {
+    margin-top: 24px;
+    background-color: #00d084;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.2s;
+}
+
+button[type="submit"]:hover {
+    background-color: #00b472;
+}
+
+.autocomplete-list {
+    background-color: #2a2d3d;
+    border: 1px solid #3a3d4d;
+    border-radius: 10px;
+    margin-top: 4px;
+    list-style: none;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    z-index: 999;
+}
+
+.autocomplete-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #3a3d4d;
+    color: #f0f2f5;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+    background-color: #3d414f;
+    color: #00d084;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#results {
+    background-color: #1c1e2b;
+    border: 1px solid #3a3d4d;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 20px;
+    font-size: 15px;
+    max-height: 400px;       /* 적절한 높이 지정 */
+    overflow-y: auto;        /* 스크롤 추가 */
+}
+
+/* Chrome, Edge, Safari 커스터마이징 */
+#results::-webkit-scrollbar {
+    width: 10px;
+}
+
+#results::-webkit-scrollbar-track {
+    background: #1a1c26; /* 어두운 배경과 자연스럽게 어우러지게 */
+    border-radius: 10px;
+}
+
+#results::-webkit-scrollbar-thumb {
+    background-color: #00d084;  /* 포인트 컬러 */
+    border-radius: 10px;
+    border: 2px solid #1a1c26;  /* 트랙 배경과 어울리게 */
+}
+
+#results::-webkit-scrollbar-thumb:hover {
+    background-color: #00b472; /* hover 시 살짝 밝은 초록 */
+}
+
+.result-title {
+    color: #00d084;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.result-item {
+    background-color: #2a2d3d;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #3a3d4d;
+}
+
+.result-item > div {
+    margin-bottom: 6px;
+}
+
+.result-item a {
+    color: #00d084;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.result-item a:hover {
+    text-decoration: underline;
+}
+
+.loader {
+    font-size: 2rem;
+    text-align: center;
+    padding: 30px 0;
+    color: #00d084;
+}
+
+@media (max-width: 768px) {
+    .search-container {
+        padding: 20px;
+        max-width: 90%;
+    }
+}

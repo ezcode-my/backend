@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>EzCode 랭킹</title>
     <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -22,7 +23,7 @@
         .container {
             width: 100%;
             max-width: 960px;
-            margin: 0 auto;
+            margin: 0 auto 60px auto;
             padding: 40px 20px;
             box-sizing: border-box;
         }
@@ -129,12 +130,6 @@
 
 <div class="container">
     <h1>사용자 랭킹</h1>
-
-    <div class="jwt-box">
-        <label for="jwt">JWT 토큰</label>
-        <input type="text" id="jwt" placeholder="Bearer ...">
-    </div>
-
     <div class="tabs">
         <div class="tab active" data-api="/weekly">이번 주</div>
         <div class="tab" data-api="/last-week">지난 주</div>
@@ -154,22 +149,19 @@
         </tbody>
     </table>
 </div>
-
+<div id="footer-placeholder"></div>
 <script>
     const tabs = document.querySelectorAll('.tab');
     const tbody = document.getElementById('rankingBody');
-    const jwtInput = document.getElementById('jwt');
-
-    if (localStorage.getItem('jwtToken')) {
-        jwtInput.value = localStorage.getItem('jwtToken');
-    }
-
-    jwtInput.addEventListener('input', () => {
-        localStorage.setItem('jwtToken', jwtInput.value.trim());
-    });
 
     function loadRanking(api) {
-        const jwt = jwtInput.value.trim();
+
+        const jwt = sessionStorage.getItem('accessToken');
+
+        if (!jwt) {
+            tbody.innerHTML = '<tr><td colspan="3">로그인이 필요합니다.</td></tr>';
+            return;
+        }
 
         fetch(`/api/rankings${api}`, {
             headers: {
@@ -219,6 +211,12 @@
         .then(data => {
             document.getElementById('header-placeholder').innerHTML = data;
         });
+</script>
+<script src="/js/headerUtils.js"></script>
+<script src="/js/footerUtils.js"></script>
+<script>
+    loadHeaderWithAuthCheck();
+    loadFooter(); // 푸터 로드
 </script>
 </body>
 </html>

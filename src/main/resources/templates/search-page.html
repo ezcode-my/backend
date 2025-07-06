@@ -4,8 +4,7 @@
     <meta charset="UTF-8"/>
     <title>EzCode 문제 검색</title>
     <link rel="stylesheet" href="/css/header.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: #0f111a;
@@ -16,7 +15,7 @@
         }
 
         #header-placeholder {
-            margin-bottom: 40px; /* 헤더와 본문 사이 간격 */
+            margin-bottom: 40px;
         }
 
         .search-container {
@@ -168,12 +167,7 @@
 <body>
 <div id="header-placeholder"></div>
 <div class="search-container">
-  <h2>문제 검색</h2>
-
-    <div class="form-group">
-        <label for="jwtToken">JWT 토큰 입력</label>
-        <input type="text" id="jwtToken" placeholder="여기에 JWT 토큰을 입력하세요" required/>
-    </div>
+    <h2>문제 검색</h2>
 
     <form id="searchForm" autocomplete="off">
         <div class="form-group" id="autocomplete-box">
@@ -191,7 +185,7 @@
     let debounceTimer = null, focusIndex = -1;
 
     function getToken() {
-        return document.getElementById('jwtToken').value;
+        return sessionStorage.getItem('accessToken');
     }
 
     function clearAutocomplete() {
@@ -204,7 +198,7 @@
         if (!keyword || !token) return;
         try {
             const resp = await fetch('/api/problems/suggestions?keyword=' + encodeURIComponent(keyword), {
-                headers: {'Authorization': 'Bearer ' + token}
+                headers: {'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token}
             });
             const data = await resp.json();
             if (!data.success || !Array.isArray(data.result)) return;
@@ -255,22 +249,11 @@
         items.forEach((it, idx) => it.classList.toggle('active', idx === focusIndex));
     }
 
-    function toggleSearchForm() {
-        const token = getToken();
-        document.getElementById('keyword').disabled = !token;
-        document.getElementById('searchBtn').disabled = !token;
-        clearAutocomplete();
-    }
-
     async function handleSearchSubmit(e) {
         e.preventDefault();
         const token = getToken();
         const kw = document.getElementById('keyword').value.trim();
-        if (kw.length < 2) return;
-        if (!token) {
-            alert('JWT 토큰을 먼저 입력하세요.');
-            return;
-        }
+        if (kw.length < 2 || !token) return;
 
         const resultsDiv = document.getElementById('results');
         resultsDiv.innerHTML = '<div class="loader">⏳</div>';
@@ -279,7 +262,7 @@
         try {
             const resp = await fetch('/api/problems/search?keyword=' + encodeURIComponent(kw), {
                 method: 'GET',
-                headers: {'Authorization': 'Bearer ' + token}
+                headers: {'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token}
             });
             const data = await resp.json();
 
@@ -312,18 +295,22 @@
 
     window.onload = function () {
         clearAutocomplete();
-        document.getElementById('jwtToken').addEventListener('input', toggleSearchForm);
-        document.getElementById('searchForm').addEventListener('submit', handleSearchSubmit);
         const ki = document.getElementById('keyword');
         ki.addEventListener('input', handleKeywordInput);
         ki.addEventListener('keydown', handleKeyDown);
-        toggleSearchForm();
+        document.getElementById('searchForm').addEventListener('submit', handleSearchSubmit);
     };
+
     fetch('/html/header.html')
         .then(res => res.text())
         .then(data => {
             document.getElementById('header-placeholder').innerHTML = data;
         });
+
+</script>
+<script src="/js/headerUtils.js"></script>
+<script>
+    loadHeaderWithAuthCheck();
 </script>
 </body>
 </html>

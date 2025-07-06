@@ -1,0 +1,25 @@
+<!-- /html/problem-search.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>문제 검색</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/problem-search.css">
+</head>
+<body>
+<div class="search-container">
+    <h2>문제 검색</h2>
+    <form id="searchForm" autocomplete="off">
+        <div class="form-group" id="autocomplete-box">
+            <label for="keyword">검색어 입력</label>
+            <input type="text" id="keyword" name="keyword" required placeholder="검색어를 입력하세요" />
+            <ul id="autocomplete-list" class="autocomplete-list"></ul>
+        </div>
+        <button type="submit" id="searchBtn">검색</button>
+    </form>
+    <div id="results"></div>
+</div>
+<script src="/js/problem-search.js"></script>
+</body>
+</html>

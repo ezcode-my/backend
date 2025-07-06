@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인페이지</title>
+    <link rel="stylesheet" href="/css/test-main.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+</head>
+<body>
+<div class="container">
+    <div id="header-placeholder"></div>
+    <div class="background">
+        <main>
+            <div class="logo-image">
+            </div>
+            <div class="text-section">
+                <div class="subtitle">EzCode [ez:code] 코딩을 쉽게, 성장은 빠르게</div>
+                <div class="title">코드가 쉬워지는 순간, <br><span class="brand-name">EzCode</span>와 함께</div>
+                <button class="participate-button">여정 참여하기</button>
+            </div>
+        </main>
+    </div>
+    <div id="footer-placeholder"></div>
+</div>
+</body>
+<script src="/js/headerUtils.js"></script>
+<script src="/js/footerUtils.js"></script>
+<script>
+    loadHeaderWithAuthCheck();
+    loadFooter(); // 푸터 로드
+</script>
+</html>

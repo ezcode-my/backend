@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ezcode Login</title>
+  <link rel="stylesheet" href="/css/test-login.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="header-placeholder"></div>
+<div class="container">
+  <div class="login-section">
+    <div class="login-main">
+      <div class="login-header">LOGIN</div>
+      <div class="input-group">
+        <div class="input-field email">
+          <input type="text" placeholder="이메일을 입력해주세요">
+        </div>
+        <div class="input-field password">
+          <input type="password" placeholder="비밀번호를 입력해주세요">
+        </div>
+      </div>
+      <button class="login-button default">로그인</button>
+      <button class="signup-email-button">이메일 회원가입</button>
+      <div class="find-account">아이디 | 비밀번호 찾기</div>
+      <div class="social-login-divider">
+        <span class="social-login-text">소셜 로그인</span>
+      </div>
+      <div class="social-icons">
+        <a href="http://localhost:8080/login" class="social-icon google">
+          <img src="/images/googleIcon.png" alt="Google">
+        </a>
+        <div class="social-icon github">
+          <img src="/images/githubIcon.png" alt="GitHub">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="welcome-section">
+    <div class="welcome-text">
+      어서오세요,<br>당신의코딩을 돕는 EzCode입니다
+    </div>
+    <div class="logo-image">
+      <img src="/images/logo.png" alt="EzCode Logo">
+    </div>
+  </div>
+</div>
+</body>
+<script>
+  const emailInput = document.querySelector('.input-field.email input');
+  const passwordInput = document.querySelector('.input-field.password input');
+  const loginButton = document.querySelector('.login-button');
+
+  function updateLoginButtonState() {
+    if (emailInput.value.trim() && passwordInput.value.trim()) {
+      loginButton.classList.add('active');
+    } else {
+      loginButton.classList.remove('active');
+    }
+  }
+
+  emailInput.addEventListener('input', updateLoginButtonState);
+  passwordInput.addEventListener('input', updateLoginButtonState);
+
+  loginButton.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!email || !password) {
+      alert("이메일과 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert("로그인 실패: " + (errorData.message || response.status));
+        return;
+      }
+
+      const responseJson = await response.json();
+      console.log("응답 데이터:", responseJson);
+      const tokens = responseJson.result;
+
+      if (tokens?.accessToken) {
+        sessionStorage.setItem("accessToken", tokens.accessToken);
+        window.location.href = "/test/main"; // 또는 /dashboard 등 이동할 경로
+      } else {
+        alert("accessToken이 응답에 없습니다.");
+      }
+    } catch (e) {
+      console.error("로그인 에러", e);
+      alert("로그인 중 오류 발생");
+    }
+  });
+
+  // 헤더 include
+  fetch('/html/header.html')
+          .then(res => res.text())
+          .then(data => {
+            document.getElementById('header-placeholder').innerHTML = data;
+          });
+</script>
+</html>

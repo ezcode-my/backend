@@ -30,6 +30,7 @@ public class SecurityPath {
 		"/gaming",
 		"/problems-test",
 		"/test/**",
-		"/html/**"
+		"/html/**",
+		"/js/**"
 	};
 }
