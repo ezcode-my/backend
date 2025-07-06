@@ -8,6 +8,9 @@ header {
     position: relative;
     z-index: 10;
 }
+header * {
+    font-family: 'Gmarket Sans', sans-serif !important;
+}
 
 .logo-placeholder {
     width: 132px; /* 로고 너비 */
@@ -34,7 +37,7 @@ nav a {
     line-height: 30px;
 }
 
-.login-button {
+.login-button-header {
     background-color: #214d35; /* 로그인 버튼 배경색 */
     color: #ffffff;
     border: none;
@@ -66,4 +69,19 @@ header li {
 
 header svg {
     display: block;
-} 
+}
+
+/* 헤더 내 모든 메뉴(텍스트, 버튼, 아이콘, 로고)에 호버 시 그림자 효과 */
+header .logo-placeholder:hover,
+header nav a:hover,
+header .login-button-header:hover,
+header svg:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 1.5px 4px rgba(33,77,53,0.15);
+    transition: box-shadow 0.2s;
+}
+
+/* SVG(아이콘)는 box-shadow가 잘 안 보일 수 있으니, 배경색과 radius도 추가해주면 더 자연스럽습니다 */
+header svg:hover {
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+}

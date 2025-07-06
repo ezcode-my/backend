@@ -6,6 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ViewController {
 
+    @GetMapping("/test/main")
+    public String getMainView(){
+        return "test-main";
+    }
+
+    @GetMapping("/test/signin")
+    public String getSigninView(){
+        return "test-login";
+    }
+
     @GetMapping("/test/submit")
     public String getSubmitView() {
         return "test-submit";
