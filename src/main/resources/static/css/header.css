@@ -9,7 +9,7 @@ header {
     padding: 0 130px; /* 좌우 패딩 */
     background-color: #0c151c; /* 헤더 배경색 */
     position: relative;
-    z-index: 10;
+    z-index: 1000;
 }
 header * {
     font-family: 'Gmarket Sans', sans-serif !important;
@@ -56,6 +56,12 @@ nav a {
     justify-content: center;
 }
 
+.login-button-header:hover {
+    background-color: #2a5f44; /* 약간 밝은 녹색 */
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2), 0 2px 6px rgba(33,77,53,0.2);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
 header ul {
     display: flex;
     gap: 30px;
@@ -77,8 +83,9 @@ header svg {
 /* 헤더 내 모든 메뉴(텍스트, 버튼, 아이콘, 로고)에 호버 시 그림자 효과 */
 header .logo-placeholder:hover,
 header nav a:hover,
-header .login-button-header:hover,
 header svg:hover {
+    background-color: rgba(255, 255, 255, 0.08); /* 은은한 반투명 밝은 배경 */
+    border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 1.5px 4px rgba(33,77,53,0.15);
     transition: box-shadow 0.2s;
 }
@@ -87,4 +94,60 @@ header svg:hover {
 header svg:hover {
     background: rgba(255,255,255,0.08);
     border-radius: 50%;
+}
+
+/* 유저 아이콘 컨테이너 */
+.user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 유저 프로필 이미지 */
+.user-menu img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+    background-color: #333; /* 없으면 투명일 수 있음 */
+    padding: 2px; /* 흰 배경과 겹치지 않게 */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+/* 드롭다운 메뉴 */
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 52px; /* 아이콘보다 아래에 자연스럽게 위치하도록 */
+    right: 0;
+    background-color: #1c1e2b;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 0;
+    min-width: 140px;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* 드롭다운 항목 */
+.dropdown a,
+.dropdown button {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    color: #f0f2f5;
+    background: none;
+    border: none;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* 호버 효과 */
+.dropdown a:hover,
+.dropdown button:hover {
+    background-color: #2a2d3d;
 }
