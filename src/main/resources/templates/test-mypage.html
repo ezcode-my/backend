@@ -64,15 +64,12 @@
         </main>
     </div>
 </div>
-<script src="/js/test-mypage.js">
-</script>
-<script>
 
-    fetch('/html/header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-        });
+<script src="/js/headerUtils.js"></script>
+<script>
+    loadHeaderWithAuthCheck();
+</script>
+<script src="/js/test-mypage.js">
 </script>
 </body>
 </html>

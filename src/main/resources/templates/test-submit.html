@@ -70,7 +70,7 @@
             color: #ccc;
         }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 12px;
             background-color: #2a2d3d;
@@ -84,7 +84,6 @@
 
         textarea {
             resize: vertical;
-            width: 100%;
         }
 
         button {
@@ -160,7 +159,7 @@
         }
 
         .init {
-            background-color: #374157; /* 채점 중인 상태 강조 */
+            background-color: #374157;
             color: #ccd6f6;
         }
 
@@ -204,20 +203,17 @@
             <h2>코드 제출</h2>
             <div class="grid">
                 <div>
-                    <label for="jwtToken">JWT 토큰</label>
-                    <input type="text" id="jwtToken" placeholder="Bearer …" />
-                </div>
-                <div>
-                    <label for="problemId">문제 ID</label>
-                    <input type="number" id="problemId" placeholder="문제 ID" />
-                </div>
-                <div>
-                    <label for="languageId">언어 ID</label>
-                    <input type="number" id="languageId" placeholder="언어 ID" />
+                    <label for="language">언어 선택</label>
+                    <select id="language">
+                        <option value="1">Java</option>
+                        <option value="2">C</option>
+                        <option value="3">C++</option>
+                        <option value="4">Python</option>
+                    </select>
                 </div>
             </div>
             <label for="sourceCode">소스코드</label>
-            <textarea id="sourceCode" rows="10" placeholder="// 여기에 Java 코드를 입력하세요"></textarea>
+            <textarea id="sourceCode" rows="10" placeholder="// 여기에 코드를 입력하세요"></textarea>
             <button onclick="submitCode()">코드 제출 (WebSocket)</button>
         </div>
         <div class="section">
@@ -229,6 +225,7 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -236,41 +233,30 @@
     let stompClient;
     let connected = false;
     const gitDot = document.getElementById('gitDot');
-    const jwtInput = document.getElementById('jwtToken');
-    const pidInput = document.getElementById('problemId');
     const probTitleEl = document.getElementById('prob-title');
     const probDescEl = document.getElementById('prob-desc');
     const probTimeEl = document.getElementById('prob-time');
     const probMemEl = document.getElementById('prob-mem');
     const probCatsEl = document.getElementById('prob-cats');
 
-    if (localStorage.getItem('jwtToken')) jwtInput.value = localStorage.getItem('jwtToken');
-    jwtInput.addEventListener('input', () => localStorage.setItem('jwtToken', jwtInput.value.trim()));
+    function tokenHeader() {
+        const token = sessionStorage.getItem('accessToken');
+        return token ? { 'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token } : {};
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
         const pid = new URLSearchParams(location.search).get('problemId');
-        if (pid) pidInput.value = pid;
-        loadProblem();
+        if (pid) {
+            window.problemId = pid;
+            loadProblem(pid);
+        }
     });
 
-    pidInput.addEventListener('change', loadProblem);
-
-    async function loadProblem() {
-        const pid = pidInput.value.trim();
-        if (!pid) {
-            probTitleEl.textContent = '문제 ID를 입력하세요';
-            probDescEl.innerHTML = '';
-            probTimeEl.textContent = probMemEl.textContent = probCatsEl.textContent = '--';
-            return;
-        }
+    async function loadProblem(pid) {
         try {
             const res = await fetch(`/api/problems/${pid}`, {
                 headers: { 'Accept': 'application/json', ...tokenHeader() }
             });
-            if (res.status === 401) {
-                probTitleEl.textContent = '인증 필요: JWT 토큰을 입력하세요';
-                return;
-            }
             if (!res.ok) {
                 probTitleEl.textContent = `조회 실패 (HTTP ${res.status})`;
                 return;
@@ -288,24 +274,14 @@
         }
     }
 
-    function getTokenValue() {
-        const raw = jwtInput.value.trim();
-        return raw.startsWith('Bearer ') ? raw : 'Bearer ' + raw;
-    }
-
-    function tokenHeader() {
-        const raw = jwtInput.value.trim();
-        return raw ? { 'Authorization': getTokenValue() } : {};
-    }
-
     async function submitCode() {
-        const pid = pidInput.value.trim();
-        const payload = {
-            languageId: +document.getElementById('languageId').value,
-            sourceCode: document.getElementById('sourceCode').value
-        };
+        const pid = window.problemId;
+        const languageId = +document.getElementById('language').value;
+        const sourceCode = document.getElementById('sourceCode').value;
+        const payload = { languageId, sourceCode };
         const judgeEl = document.getElementById('judgeResult');
         judgeEl.innerHTML = '';
+
         try {
             const res = await fetch(`/api/problems/${pid}/submit-ws`, {
                 method: 'POST',
@@ -324,12 +300,12 @@
             initWebSocket(sessionKey);
         } catch (err) {
             console.error(err);
-            document.getElementById('judgeResult').textContent = '채점 요청 실패';
+            judgeEl.textContent = '채점 요청 실패';
         }
     }
 
     function initWebSocket(sessionKey) {
-        const tokenOnly = jwtInput.value.trim().replace(/^Bearer /, '');
+        const tokenOnly = (sessionStorage.getItem('accessToken') || '').replace(/^Bearer /, '');
         const socket = new SockJS(`/ws?token=${encodeURIComponent(tokenOnly)}`);
         stompClient = Stomp.over(socket);
         stompClient.debug = msg => console.log('[STOMP]', msg);
@@ -377,7 +353,7 @@
 
     function handleFinal(res) {
         const sum = document.createElement('div');
-        sum.style.marginTop = '12px';
+        sum.className = 'final-summary';
         sum.innerHTML = `<strong>최종:</strong> ${res.passedCount}/${res.totalCount} 통과 — ${res.message}`;
         document.getElementById('judgeResult').appendChild(sum);
     }
@@ -387,6 +363,10 @@
         .then(data => {
             document.getElementById('header-placeholder').innerHTML = data;
         });
+</script>
+<script src="/js/headerUtils.js"></script>
+<script>
+    loadHeaderWithAuthCheck();
 </script>
 </body>
 </html>
