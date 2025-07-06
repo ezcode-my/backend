@@ -22,6 +22,7 @@
             min-height: 100vh;
         }
 
+
         header {
             width: 100%;
             background: #12141f;
@@ -199,6 +200,14 @@
     </style>
 </head>
 <body>
+<div id="loginMessage" style="
+     position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(0,0,0,0.8); color:#fff;
+     align-items:center; justify-content:center;
+     font-size:1.5rem; z-index:10000;
+     display:none;">
+    로그인이 필요합니다.
+</div>
 <div id="app">
     <div id="sidebar">
         <h2>채팅방 목록</h2>
@@ -213,14 +222,17 @@
     </div>
 </div>
 <script>
+
     let token, stompClient, chatSubscription, currentRoomId;
 
-    token = sessionStorage.getItem('accessToken').replace(/^Bearer\s+/, '');
-    if (!token) {
-        alert('로그인이 필요합니다.');
-        location.href = '/test/signin';
+    const rawToken = sessionStorage.getItem('accessToken');
+    if (!rawToken) {
+        // 로그인 메시지만 띄우고 종료
+        document.getElementById('loginMessage').style.display = 'flex';
     } else {
-        // 3) app 보이기 & 채팅 시작
+        // 토큰이 있으면 로그인 메시지 숨기고 채팅 시작
+        token = rawToken.replace(/^Bearer\s+/, '');
+        document.getElementById('loginMessage').style.display = 'none';
         document.getElementById('app').style.display = 'flex';
         initChat();
     }
