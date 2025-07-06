@@ -117,6 +117,35 @@
             z-index: 5;
         }
 
+        /* WebKit 기반 브라우저 스크롤바 스타일 */
+        .side-panel-right::-webkit-scrollbar,
+        .side-panel-left::-webkit-scrollbar,
+        .button-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .side-panel-right::-webkit-scrollbar-track,
+        .side-panel-left::-webkit-scrollbar-track,
+        .button-container::-webkit-scrollbar-track {
+            background: #111; /* 배경색: 어두운 검정계열 */
+        }
+
+        .side-panel-right::-webkit-scrollbar-thumb,
+        .side-panel-left::-webkit-scrollbar-thumb,
+        .button-container::-webkit-scrollbar-thumb {
+            background-color: #0f0; /* 초록색 막대 */
+            border-radius: 6px;
+            border: 2px solid #111; /* 트랙과 구분 위한 테두리 */
+        }
+
+        /* Firefox 스크롤바 스타일 */
+        .side-panel-right,
+        .side-panel-left,
+        .button-container {
+            scrollbar-width: thin;
+            scrollbar-color: #0f0 #111;
+        }
+
         .side-panel-right.active {
             display: block;
             right: 40px;
