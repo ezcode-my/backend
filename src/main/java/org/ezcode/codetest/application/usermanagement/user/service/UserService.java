@@ -54,6 +54,7 @@ public class UserService {
 	public UserInfoResponse getUserInfo(AuthUser authUser) {
 		log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
 		User user = userDomainService.getUserById(authUser.getId());
+		int userSubmissionCount = submissionDomainService.findSubmissionCountByUserId(user.getId());
 
 		return UserInfoResponse.builder()
 			.username(user.getUsername())
@@ -67,6 +68,7 @@ public class UserService {
 			.userRole(user.getRole())
 			.tier(user.getTier())
 			.verified(user.isVerified())
+			.totalSolvedCount(userSubmissionCount)
 			.build();
 	}
 

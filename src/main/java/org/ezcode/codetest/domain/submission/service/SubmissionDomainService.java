@@ -119,4 +119,8 @@ public class SubmissionDomainService {
     private void modifyUserProblemResult(UserProblemResult userProblemResult, boolean isCorrect) {
         userProblemResultRepository.updateUserProblemResult(userProblemResult, isCorrect);
     }
+
+    public int findSubmissionCountByUserId(Long userId) {
+        return submissionRepository.findSubmissionCountByUserId(userId);
+    }
 }

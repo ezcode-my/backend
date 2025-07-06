@@ -44,9 +44,13 @@ public class UserInfoResponse {
 	@Schema(description = "인증 여부", example = "true")
 	private final boolean verified;
 
+	@Schema(description = "사용자가 푼 문제 총 개수", example = "1235")
+	private final int totalSolvedCount;
+
 	@Builder
 	public UserInfoResponse(String username, String email, String nickname, UserRole userRole, Tier tier,
-		Integer age, String githubUrl, String blogUrl, String profileImageUrl, String introduction, boolean verified) {
+		Integer age, String githubUrl, String blogUrl, String profileImageUrl, String introduction, boolean verified,
+        int totalSolvedCount) {
 		this.username = username;
 		this.email = email;
 		this.nickname = nickname;
@@ -58,6 +62,7 @@ public class UserInfoResponse {
 		this.tier = tier;
 		this.userRole = userRole;
         this.verified = verified;
+        this.totalSolvedCount = totalSolvedCount;
     }
 
 	public static UserInfoResponse fromEntity(User user) {

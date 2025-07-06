@@ -12,4 +12,6 @@ public interface SubmissionRepository {
     List<Submission> findSubmissionsByUserId(Long userId);
 
     List<WeeklySolveCount> fetchWeeklySolveCounts(LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    Integer findSubmissionCountByUserId(Long userId);
 }
