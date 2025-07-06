@@ -40,4 +40,19 @@ public class ViewController {
     public String getSearchingPage() {
         return "search-page";
     }
+
+    @GetMapping("/test/gaming")
+    public String getGamePage() {
+        return "game-page";
+    }
+
+    @GetMapping("/ezlogin")
+    public String loginPage(){
+        return "login-page";
+    }
+
+    @GetMapping("/login/oauth")
+    public String oAuthLogin(){
+        return "redirect:/oauth2/authorization/google";
+    }
 }

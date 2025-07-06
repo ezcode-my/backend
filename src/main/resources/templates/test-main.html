@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="/css/header.css">
 </head>
 <body>
-
 <div class="container">
     <div id="header-placeholder"></div>
     <div class="background">
@@ -24,11 +23,8 @@
     </div>
 </div>
 </body>
+<script src="/js/headerUtils.js"></script>
 <script>
-    fetch('/html/header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-        });
+    loadHeaderWithAuthCheck();
 </script>
 </html>

@@ -64,7 +64,45 @@
   emailInput.addEventListener('input', updateLoginButtonState);
   passwordInput.addEventListener('input', updateLoginButtonState);
 
-  // 헤더 include 스크립트
+  loginButton.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!email || !password) {
+      alert("이메일과 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert("로그인 실패: " + (errorData.message || response.status));
+        return;
+      }
+
+      const responseJson = await response.json();
+      console.log("응답 데이터:", responseJson);
+      const tokens = responseJson.result;
+
+      if (tokens?.accessToken) {
+        sessionStorage.setItem("accessToken", tokens.accessToken);
+        window.location.href = "/test/main"; // 또는 /dashboard 등 이동할 경로
+      } else {
+        alert("accessToken이 응답에 없습니다.");
+      }
+    } catch (e) {
+      console.error("로그인 에러", e);
+      alert("로그인 중 오류 발생");
+    }
+  });
+
+  // 헤더 include
   fetch('/html/header.html')
           .then(res => res.text())
           .then(data => {

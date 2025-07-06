@@ -29,7 +29,7 @@ body {
     margin: 0 auto;
     padding: 0;
     position: relative;
-    overflow: hidden; /* Ensure no overflow from background */
+    overflow: visible; /* Ensure no overflow from background */
 }
 
 header {
@@ -198,3 +198,4 @@ header li {
 header svg {
     display: block;
 }
+
