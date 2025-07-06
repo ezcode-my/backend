@@ -136,6 +136,8 @@ header svg:hover {
 .dropdown button {
     display: block;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box; /* ← 패딩 포함해서 너비 계산 */
     padding: 12px 20px;
     color: #f0f2f5;
     background: none;
