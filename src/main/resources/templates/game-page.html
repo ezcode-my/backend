@@ -346,10 +346,12 @@
 
     function saveToken(event) {
         event.preventDefault();
-        savedToken = document.getElementById('jwt-token').value;
+        const tokenInput = document.getElementById('jwt-token');
+        savedToken = tokenInput.value.trim();
         if (savedToken) {
             document.getElementById('main-container').classList.add('main-visible');
             document.querySelector('.token-form').style.display = 'none';
+            sessionStorage.setItem('accessToken', 'Bearer ' + savedToken);
         }
     }
 
@@ -688,6 +690,17 @@ ${r.skills.map(skill => `
                 .addEventListener('click', () => pop.style.display = 'none');
         }
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const rawToken = sessionStorage.getItem('accessToken') || '';
+        const token = rawToken.replace(/^Bearer\s+/, '');
+        const tokenInput = document.getElementById('jwt-token');
+        if (token) {
+            tokenInput.value = token;
+            // 자동 제출
+            saveToken(new Event('submit'));
+        }
+    });
 
     // Encounter 선택 POST 및 결과 처리
     async function sendEncounterChoice(encounterToken, playerDecision) {
@@ -1031,6 +1044,16 @@ ${r.skills.map(skill => `
                 .addEventListener('click', () => pop.style.display = 'none');
         }
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const rawToken = sessionStorage.getItem('accessToken') || '';
+        const token = rawToken.replace(/^Bearer\s+/, '');
+        const tokenInput = document.getElementById('jwt-token');
+        if (token) {
+            tokenInput.value = token;
+        }
+        // 토큰 없으면 입력 빈칸 유지, 자동 제출 안 함
+    });
 
     async function gambleItem(category) {
         const pop = document.getElementById('popup');
