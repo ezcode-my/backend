@@ -21,6 +21,7 @@
     <!-- Python 모드 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
     <link rel="stylesheet" href="/css/header.css"/>
+    <link rel="stylesheet" href="/css/footer.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap"
           rel="stylesheet"/>
     <style>
@@ -40,6 +41,7 @@
             display: flex;
             padding: 30px 40px;
             gap: 30px;
+            margin-bottom: 60px;
         }
 
         .left {
@@ -296,7 +298,7 @@
         </div>
     </div>
 </div>
-
+<div id="footer-placeholder"></div>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -494,8 +496,10 @@ if __name__ == "__main__":
         });
 </script>
 <script src="/js/headerUtils.js"></script>
+<script src="/js/footerUtils.js"></script>
 <script>
     loadHeaderWithAuthCheck();
+    loadFooter(); // 푸터 로드
 </script>
 </body>
 </html>
