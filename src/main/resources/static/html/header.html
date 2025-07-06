@@ -1,29 +1,147 @@
+<!-- 1) 기존 header.css 로딩 -->
+<link rel="stylesheet" href="/css/header.css" />
+
+<!-- 2) 채팅 오버레이·드로어용 CSS -->
+<style>
+    /* 반투명 뒤배경 */
+    .chat-overlay {
+        display: none;
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4);
+        z-index: 9998;
+    }
+    .chat-overlay.open {
+        display: block;
+    }
+
+    /* 우측 슬라이드 패널 */
+    .chat-drawer {
+        position: fixed; top: 0; right: 0; bottom: 0;
+        width: 90%; max-width: 800px;
+        background: #1c1e2b;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-out;
+        z-index: 9999;
+        display: flex; flex-direction: column;
+        box-shadow: -2px 0 8px rgba(0,0,0,0.3);
+    }
+    .chat-drawer.open {
+        transform: translateX(0);
+    }
+
+    /* 닫기 버튼 */
+    .chat-drawer-close {
+        align-self: flex-end;
+        padding: 12px;
+        font-size: 24px;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    /* iframe 꽉 채우기 */
+    .chat-drawer iframe {
+        flex: 1;
+        border: none;
+    }
+</style>
+
+<!-- 3) 기존 <header>…</header> -->
 <header>
     <div class="logo-placeholder" onclick="location.href='/test/main'" style="cursor:pointer;"></div>
+    <div class="logo-placeholder"
+         onclick="location.href='/test/main'"
+         style="cursor:pointer;"></div>
     <nav>
         <ul>
-            <li>
-                <a href="/test/problems">문제풀이</a>
-            </li>
-            <li>
-                <a href="/test/ranking">랭킹</a>
-            </li>
-            <li>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="#fff"/>
+            <li><a href="/test/problems">문제풀이</a></li>
+            <li><a href="/test/ranking">랭킹</a></li>
+
+            <!-- ★ 알람 벨 아이콘 복구 ★ -->
+            <li id="notificationBtn" style="cursor:pointer;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5
+                   c0-3.07-1.64-5.64-4.5-6.32V4a1.5 1.5 0 0
+                   0-3 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1
+                   l-2-2z"/>
                 </svg>
             </li>
-            <li>
-                <button id="loginBtn" class="login-button-header" onclick="location.href='/test/signin'">로그인</button>
+
+            <!-- ★ 채팅 아이콘: 클릭 시 overlay·drawer 에 .open 추가 ★ -->
+            <li id="chatToggle" style="cursor:pointer;"
+                onclick="
+            document.getElementById('chatOverlay').classList.add('open');
+            document.getElementById('chatDrawer').classList.add('open');
+          ">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
+                    <path d="M4 4H20V16H7L4 19V4Z"/>
+                </svg>
             </li>
-            <li class="user-menu" style="display: none;" id="userMenu">
-                <img id="userIcon" src="/images/user-icon.png" alt="유저 아이콘" />
+
+            <li>
+                <button id="loginBtn" class="login-button-header"
+                        onclick="location.href='/test/signin'">
+                    로그인
+                </button>
+            </li>
+            <li class="user-menu" style="display:none;" id="userMenu">
+                <img id="userIcon" src="/images/user-icon.png" alt="유저 아이콘"/>
                 <div class="dropdown" id="userDropdown">
                     <a href="/test/mypage">마이페이지</a>
                     <button id="logoutBtn">로그아웃</button>
                 </div>
             </li>
-
         </ul>
     </nav>
 </header>
+
+<!-- 4) 오버레이 & 드로어 HTML (header 바로 밑에) -->
+<div id="chatOverlay" class="chat-overlay"
+     onclick="
+       this.classList.remove('open');
+       document.getElementById('chatDrawer').classList.remove('open');
+     ">
+</div>
+
+<div id="chatDrawer" class="chat-drawer">
+    <!-- 닫기 버튼 (×) -->
+    <span class="chat-drawer-close"
+          onclick="
+          document.getElementById('chatOverlay').classList.remove('open');
+          document.getElementById('chatDrawer').classList.remove('open');
+        ">
+    &times;
+  </span>
+
+    <!-- 실제 채팅 페이지 -->
+    <iframe src="/test/chatting"></iframe>
+</div>
+
+<!-- 5) 토글 스크립트 -->
+<script>
+    const toggle = document.getElementById('chatToggle');
+    const overlay = document.getElementById('chatOverlay');
+    const drawer  = document.getElementById('chatDrawer');
+    const closeBtn= document.querySelector('.chat-drawer-close');
+
+    function openChat() {
+        overlay.classList.add('open');
+        drawer.classList.add('open');
+    }
+    function closeChat() {
+        overlay.classList.remove('open');
+        drawer.classList.remove('open');
+    }
+
+    toggle.addEventListener('click', () =>
+        drawer.classList.contains('open') ? closeChat() : openChat()
+    );
+    closeBtn.addEventListener('click', closeChat);
+    overlay.addEventListener('click', closeChat);
+
+    // 알람 클릭 이벤트 (필요시 추가 기능 구현)
+    document.getElementById('notificationBtn').addEventListener('click', () => {
+        alert('알림 기능은 곧 제공됩니다.');
+    });
+</script>

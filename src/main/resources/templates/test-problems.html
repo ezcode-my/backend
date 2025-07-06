@@ -4,6 +4,7 @@
     <meta charset="UTF-8"/>
     <title>EzCode 문제 리스트</title>
     <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -180,6 +181,7 @@
         #pagination {
             text-align: center;
             margin-top: 24px;
+            margin-bottom: 60px;
         }
 
         #pagination button {
@@ -247,7 +249,6 @@
 </head>
 <body>
 <div id="header-placeholder"></div>
-
 <div class="container">
     <div class="title-bar">
         <h1>문제 리스트</h1>
@@ -335,11 +336,10 @@
             </div>
         </div>
     </div>
-
     <div id="problemList">불러오는 중...</div>
     <div id="pagination"></div>
 </div>
-
+<div id="footer-placeholder"></div>
 <script>
     const jwt = localStorage.getItem('jwtToken') || '';
     let selectedCategory = '';
@@ -472,8 +472,10 @@
     });
 </script>
 <script src="/js/headerUtils.js"></script>
+<script src="/js/footerUtils.js"></script>
 <script>
     loadHeaderWithAuthCheck();
+    loadFooter(); // 푸터 로드
 </script>
 </body>
 </html>

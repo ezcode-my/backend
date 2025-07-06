@@ -68,8 +68,51 @@ public class RedisRankingService {
 
     public List<TargetRankingResponse> getRanking(String key, Long userId) {
         Long myRank = redisTemplate.opsForZSet().reverseRank(key, userId.toString());
-        if (myRank == null) return List.of();
 
+        // 랭킹에 없을 경우
+        if (myRank == null) {
+            long total = Optional.ofNullable(redisTemplate.opsForZSet().zCard(key)).orElse(0L);
+
+            // 점수 있는 가장 꼴찌 유저 조회
+            Set<ZSetOperations.TypedTuple<String>> lastOneSet = redisTemplate.opsForZSet()
+                    .rangeWithScores(key, 0, 0); // 정방향 range로 가장 낮은 점수 유저
+            List<TargetRankingResponse> result = new ArrayList<>();
+
+            if (lastOneSet != null && !lastOneSet.isEmpty()) {
+                ZSetOperations.TypedTuple<String> last = lastOneSet.iterator().next();
+                Long lastUserId = Long.parseLong(last.getValue());
+                int lastScore = last.getScore().intValue();
+                String lastNickname = userJpaRepository.findById(lastUserId)
+                        .map(u -> u.getNickname())
+                        .orElse("알 수 없음");
+
+                Long lastUserRank = redisTemplate.opsForZSet().reverseRank(key, last.getValue());
+                result.add(new TargetRankingResponse(
+                        lastUserId,
+                        lastNickname,
+                        lastUserRank != null ? lastUserRank.intValue() + 1 : -1,
+                        lastScore,
+                        false
+                ));
+            }
+
+            // 0점인 본인 유저 추가
+            String myNickname = userJpaRepository.findById(userId)
+                    .map(u -> u.getNickname())
+                    .orElse("알 수 없음");
+
+            result.add(new TargetRankingResponse(
+                    userId,
+                    myNickname,
+                    (int) total + 1,
+                    0,
+                    true
+            ));
+
+            return result;
+        }
+
+        // 내가 랭킹 안에 있는 경우: 위 1명, 나, 아래 1명 조회
         long start = Math.max(0, myRank - 1);
         long end = myRank + 1;
 
@@ -99,5 +142,6 @@ public class RedisRankingService {
             );
         }).sorted(Comparator.comparingInt(TargetRankingResponse::ranks)).toList();
     }
+
 
 }

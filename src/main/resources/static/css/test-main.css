@@ -2,6 +2,7 @@
 
 
 body {
+    height: 100%;
     margin: 0;
     font-family: 'Gmarket Sans', sans-serif; /* 피그마에서 사용된 폰트 패밀리 */
     background-color: #0c151c; /* 피그마 배경색 */
@@ -16,7 +17,7 @@ body {
 
 /* 화면 전체를 채우는 배경 */
 .background {
-    position: fixed;
+    position: relative;
     top: 0px;
     left: 0;
     width: 100vw;
@@ -25,7 +26,7 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    z-index: -1; /* 가장 뒤에 배치 */
+    z-index: 0;
 }
 .container {
     width: 100%;
@@ -33,6 +34,7 @@ body {
     padding: 0;
     position: relative;
     overflow: visible; /* Ensure no overflow from background */
+    min-height: calc(100vh - 300px); /* 화면 높이에서 푸터 높이 뺀 값 */
 }
 
 header {

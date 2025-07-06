@@ -33,4 +33,9 @@ public class SubmissionRepositoryImpl implements SubmissionRepository {
     public List<WeeklySolveCount> fetchWeeklySolveCounts(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return submissionQueryRepository.fetchWeeklySolveCounts(startDateTime, endDateTime);
     }
+
+    @Override
+    public Integer findSubmissionCountByUserId(Long userId) {
+        return submissionJpaRepository.findAllByUserIdAndStatus(userId);
+    }
 }

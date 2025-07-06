@@ -7,6 +7,12 @@
     <title>EzCode 채팅방</title>
     <link rel="stylesheet" href="/css/header.css" />
     <style>
+
+        html, body {
+            overflow: hidden; /* 전체 페이지 상하좌우 스크롤 제거 */
+            height: 100%;     /* 100vh height 보장 */
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -72,13 +78,13 @@
             display: none;
             width: 100%;
             max-width: 1000px;
-            height: calc(100vh - 200px);
+            height: 100vh;
             background: #1c1e2b;
             border: 1px solid #2a2d3d;
             border-radius: 12px;
             overflow: hidden;
             display: flex;
-            margin: 0 auto 64px auto;
+            margin: 0 auto;
         }
 
         #sidebar {
@@ -119,6 +125,19 @@
         #roomList li.active {
             background: #00d084;
             color: #0f111a;
+        }
+
+        #roomList li {
+            font-size: 1rem;      /* 조금 더 크게 */
+            font-weight: 500;     /* 살짝 굵게 */
+            color: #e0e6f1;        /* 연한 회색 계열 */
+            padding: 12px 16px;    /* 위아래 여유 추가 */
+            margin-bottom: 8px;    /* 아래 여백 */
+            border-radius: 6px;
+        }
+        #roomList li.active {
+            background: #00d084;   /* 활성 방 강조색 유지 */
+            color: #0f111a;        /* 대비되는 글자색 */
         }
 
         #chatContainer {
@@ -180,12 +199,6 @@
     </style>
 </head>
 <body>
-<div id="header-placeholder"></div>
-<form id="tokenForm">
-    <label for="tokenInput">JWT 토큰을 아래에 입력 후 제출하세요:</label>
-    <input id="tokenInput" type="text" placeholder="예: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required />
-    <button id="tokenSubmitBtn" type="submit">제출</button>
-</form>
 <div id="app">
     <div id="sidebar">
         <h2>채팅방 목록</h2>
@@ -202,15 +215,15 @@
 <script>
     let token, stompClient, chatSubscription, currentRoomId;
 
-    document.getElementById('tokenForm').addEventListener('submit', e => {
-        e.preventDefault();
-        const v = document.getElementById('tokenInput').value.trim();
-        if (!v) return;
-        token = v;
-        document.getElementById('tokenForm').style.display = 'none';
+    token = sessionStorage.getItem('accessToken').replace(/^Bearer\s+/, '');
+    if (!token) {
+        alert('로그인이 필요합니다.');
+        location.href = '/test/signin';
+    } else {
+        // 3) app 보이기 & 채팅 시작
         document.getElementById('app').style.display = 'flex';
         initChat();
-    });
+    }
 
     function initChat() {
         const socket = new SockJS('/ws?chat-token=' + encodeURIComponent(token));
@@ -246,7 +259,7 @@
                     roomListEl.innerHTML = '';
                     rooms.forEach(r => {
                         const li = document.createElement('li');
-                        li.textContent = `${r.title} (${r.roomId}) — ${r.headCount}명`;
+                        li.textContent = `${r.title} — ${r.headCount}명`;
                         li.dataset.roomId = r.roomId;
                         roomListEl.appendChild(li);
                     });
@@ -283,7 +296,7 @@
                         // 신규 방 append (중복 방지)
                         if (!roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`)) {
                             const li = document.createElement('li');
-                            li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
+                            li.textContent = `${room.title}  — ${room.headCount}명`;
                             li.dataset.roomId = room.roomId;
                             roomListEl.appendChild(li);
                         }
@@ -297,10 +310,10 @@
                         // 방 정보 변경, 없으면 추가
                         let li = roomListEl.querySelector(`li[data-room-id="${room.roomId}"]`);
                         if (li) {
-                            li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
+                            li.textContent = `${room.title}  — ${room.headCount}명`;
                         } else {
                             li = document.createElement('li');
-                            li.textContent = `${room.title} (${room.roomId}) — ${room.headCount}명`;
+                            li.textContent = `${room.title}  — ${room.headCount}명`;
                             li.dataset.roomId = room.roomId;
                             roomListEl.appendChild(li);
                         }
@@ -322,7 +335,8 @@
                             .sort((a, b) => Number(a.roomId) - Number(b.roomId))
                             .forEach(r => {
                                 const li = document.createElement('li');
-                                li.textContent = `${r.title} (${r.roomId}) — ${r.headCount}명`;
+                                // → 여기서 올바르게 r 객체의 프로퍼티를 사용합니다.
+                                li.textContent = `${r.title}  — ${r.headCount}명`;
                                 li.dataset.roomId = r.roomId;
                                 roomListEl.appendChild(li);
                             });
@@ -408,11 +422,6 @@
             }
         );
     }
-    fetch('/html/header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-        });
 </script>
 </body>
 </html>
