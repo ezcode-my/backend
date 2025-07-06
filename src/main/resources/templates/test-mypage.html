@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1728">
+    <title>마이페이지</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/test-mypage.css">
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,700,800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="header-placeholder"></div>
+<div class="mypage-bg">
+    <div class="mypage-container">
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <button class="menu-btn active">내 정보 확인</button>
+                <button class="menu-btn">푼 문제 목록</button>
+                <button class="menu-btn">문의하기</button>
+                <button class="menu-btn">신고하기</button>
+            </div>
+        </aside>
+        <main class="main-content">
+            <section class="user-infos">
+            <section class="profile-section">
+                <div class="profile-img">
+                    <!-- 프로필 이미지: DB에 없으면 기본 이미지로 대체 -->
+                    <img src="/images/logo.png" alt="프로필 이미지" id="profileImage">
+                </div>
+                <div class="nickname" id="nickname">ezcode</div>
+            </section>
+            <section class="info-section">
+                <div class="info-row info-row-1">
+                    <div class="info-label">랭킹</div>
+                    <div class="info-value" id="ranking">7th</div>
+                    <div class="info-label">푼 문제 수</div>
+                    <div class="info-value" id="solvedCount">134,452,565 문제</div>
+                    <div class="info-label">남은 AI 리뷰 횟수</div>
+                    <div class="info-value" id="aiReview">5번</div>
+                </div>
+                <div class="info-row info-row-2">
+                    <div class="info-label">티어</div>
+                    <div class="info-value" id="tier">-</div>
+                    <div class="info-label">아이디</div>
+                    <div class="info-value" id="userId">-</div>
+                    <div class="info-label">이메일</div>
+                    <div class="info-value" id="email">-</div>
+                    <div class="info-label email-verify">
+                        <span id="emailVerify">이메일 인증</span>
+                    </div>
+                </div>
+                <div class="info-row github-row">
+                    <div class="github-btns">
+                        <button class="github-btn">github</button>
+                        <button class="blog-btn">blog</button>
+                    </div>
+                </div>
+            </section>
+            </section>
+            <section class="github-heatmap-section">
+                <!-- 깃허브 히트맵: DB 연동시 색상 하이라이트 처리 -->
+                <div class="heatmap-placeholder">깃허브 히트맵 영역 (DB 연동 필요)</div>
+            </section>
+        </main>
+    </div>
+</div>
+<script src="/js/test-mypage.js">
+</script>
+<script>
+    fetch('/html/header.html')
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('header-placeholder').innerHTML = data;
+        });
+</script>
+</body>
+</html>
