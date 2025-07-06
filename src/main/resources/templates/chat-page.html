@@ -185,6 +185,24 @@
         initChat();
     });
 
+    let wsLatencyStart = 0;
+
+    /**
+     * @param {number} page 조회할 페이지 (default: 1)
+     * 호출 시각을 기록하고 GET 요청을 보냄 → WS 콜백에서 latency 계산
+     */
+    function requestNotifications(page = 1) {
+        wsLatencyStart = performance.now();
+        fetch(`/api/notifications?page=${page}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).catch(err => console.error('Fetch error:', err));
+    }
+
+    // 전역으로 노출해두면 콘솔에서 직접 호출 가능
+    window.requestNotifications = requestNotifications;
+
     function initChat() {
         const socket = new SockJS('/ws?chat-token=' + encodeURIComponent(token));
         stompClient = Stomp.over(socket);
@@ -203,11 +221,13 @@
                 const receiptId = 'sub-1';
 
                 stompClient.subscribe('/user/queue/notification', msg => {
-                    console.log(msg);
+                    console.log('Payload:', msg);
                 });
-
                 stompClient.subscribe('/user/queue/notifications', msg => {
-                    console.log(msg);
+                    const latency = performance.now() - wsLatencyStart;
+                    console.log(`⏱ Notification round-trip: ${latency.toFixed(2)} ms`);
+                    wsLatencyStart = 0;
+                    console.log('Bulk notifications:', msg);
                 });
 
                 // 채팅방 목록 초기 구독 및 오름차순 정렬
