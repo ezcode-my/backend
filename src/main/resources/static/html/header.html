@@ -14,8 +14,16 @@
                 </svg>
             </li>
             <li>
-                <button class="login-button-header" onclick="location.href='/test/signin'">로그인</button>
+                <button id="loginBtn" class="login-button-header" onclick="location.href='/test/signin'">로그인</button>
             </li>
+            <li class="user-menu" style="display: none;" id="userMenu">
+                <img id="userIcon" src="/images/user-icon.png" alt="유저 아이콘" />
+                <div class="dropdown" id="userDropdown">
+                    <a href="/test/mypage">마이페이지</a>
+                    <button id="logoutBtn">로그아웃</button>
+                </div>
+            </li>
+
         </ul>
     </nav>
 </header>
