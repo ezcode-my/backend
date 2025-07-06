@@ -1,0 +1,205 @@
+body {
+    margin: 0;
+    font-family: 'Inter', 'NanumGothic', sans-serif;
+    background: #10111A;
+}
+.mypage-bg {
+    width: 100vw;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #00000099 0%, #000000 100%);
+}
+.mypage-container {
+    display: flex;
+    flex-direction: row;
+    width: 1728px;
+    margin: 0 auto;
+    padding-top: 60px;
+}
+.sidebar {
+    width: 300px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 25px;
+    margin-right: 20px;
+    height: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+}
+.sidebar-menu {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.menu-btn {
+    width: 300px;
+    height: 60px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 15px;
+    font-family: 'Inter', 'NanumGothic', sans-serif;
+    border-radius: 15px;
+    transition: box-shadow 0.2s, color 0.2s;
+    cursor: pointer;
+}
+.menu-btn.active {
+    color: #00e35b;
+    font-weight: 800;
+    font-size: 20px;
+    background: none;
+}
+.menu-btn:not(.active):hover {
+    box-shadow: 0 4px 16px 0 rgba(0, 75, 17, 0.25);
+    color: #00e35b;
+}
+.main-content {
+    flex: 1;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start; /* 위쪽 정렬 */
+    flex-direction: column;
+}
+.user-infos {
+    display: flex;
+    flex-direction: row;      /* 가로 정렬 */
+    align-items: flex-start;  /* 위쪽 정렬 (선택) */
+    gap: 0px;                /* 두 영역 사이 간격 */
+    border-radius: 20px;
+    border: 2px solid #6c6c6c;
+    padding: 0px;
+}
+
+/* profile-section에 테두리와 배경, 패딩 등 원하는 스타일 추가 */
+.profile-section {
+    background: #000;
+    padding: 40px 60px;
+    min-width: 350px;         /* 적당한 최소 너비 (조절 가능) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.profile-img {
+    width: 150px;      /* 원하는 고정 크기(예: 150px)로 줄이세요 */
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.48);
+    overflow: hidden;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* 비율 유지하며 꽉 채우기 */
+    object-position: center;
+    display: block;
+}
+
+
+.info-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   /* info-row-1,2를 info-section 세로 중앙에 */
+    gap: 32px;                 /* info-row 사이 간격 */
+    min-width: 0;
+    padding: 80px;
+}
+
+/* info-row-1: 상단(랭킹/문제수/리뷰), info-row-2: 하단(티어/아이디/이메일/인증/버튼) */
+.info-row-1, .info-row-2 {
+    margin-top : 20px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 40px;
+}
+
+/* info-row-1은 3등분 정렬 */
+.info-row-1 {
+    justify-content: space-between;
+    border-bottom: 1px solid #2d3e36;
+    padding-bottom: 24px;
+    margin-bottom: 16px;
+}
+
+/* info-row-2는 좌측정렬, 필요시 각 요소에 margin-right 부여 */
+.info-row-2 {
+    justify-content: flex-start;
+    gap: 36px;
+}
+
+/* info-label, info-value 등 기존 스타일 유지 */
+.info-label {
+    color: #ebebeb;
+    font-size: 12px;
+    font-weight: 700;
+    opacity: 0.67;
+    min-width: 60px;
+}
+.info-value {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    min-width: 80px;
+}
+.info-label.email-verify {
+    margin-left: 20px;
+    color: #0a1d15;
+    background: #00a141;
+    border-radius: 3px;
+    padding: 2px 10px;
+    font-size: 10px;
+    font-weight: 700;
+}
+.github-btns {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-left: 40px;
+}
+.github-btn, .blog-btn {
+    background: #222;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 20px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.github-btn:hover, .blog-btn:hover {
+    background: #00a141;
+    color: #0a1d15;
+}
+
+.github-heatmap-section {
+    background: #fff;
+    border-radius: 10px;
+    min-height: 200px;
+    padding: 20px;
+    margin-top: 30px;
+}
+.heatmap-placeholder {
+    color: #6c6c6c;
+    text-align: center;
+    font-size: 18px;
+    padding: 60px 0;
+}
+.email-verify .checkmark {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+}
+.email-verify .checkmark svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}

@@ -10,6 +10,10 @@ public class ViewController {
     public String getMainView(){
         return "test-main";
     }
+    @GetMapping("/test/mypage")
+    public String getMypageView(){
+        return "test-mypage";
+    }
 
     @GetMapping("/test/signin")
     public String getSigninView(){
