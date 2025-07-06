@@ -88,6 +88,26 @@
             margin: 0 auto;
         }
 
+        #messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #messages::-webkit-scrollbar-track {
+            background: #12141f;
+        }
+
+        #messages::-webkit-scrollbar-thumb {
+            background-color: #00d084;
+            border-radius: 4px;
+            border: 2px solid #12141f;
+        }
+
+        /* Firefox용 */
+        #messages {
+            scrollbar-width: thin;
+            scrollbar-color: #00d084 #12141f;
+        }
+
         #sidebar {
             width: 200px;
             border-right: 1px solid #2a2d3d;
