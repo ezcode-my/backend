@@ -48,7 +48,10 @@ public record ProblemDetailResponse(
 	LocalDateTime createdAt,
 
 	@Schema(description = "수정일", example = "2025-06-11 08:12:43.506032")
-	LocalDateTime modifiedAt
+	LocalDateTime modifiedAt,
+
+	@Schema(description = "문제 이미지 URL", example = "https://bucket.s3.ap-northeast-2.amazonaws.com/problem/example.jpg")
+	String imageUrl
 
 ) {
 
@@ -67,6 +70,7 @@ public record ProblemDetailResponse(
 			.reference(problem.getReference())
 			.createdAt(problem.getCreatedAt())
 			.modifiedAt(problem.getModifiedAt())
+			.imageUrl(problem.getImageUrl().isEmpty() ? null : problem.getImageUrl().get(0))
 			.build();
 	}
 }

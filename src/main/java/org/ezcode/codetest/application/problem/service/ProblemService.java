@@ -178,5 +178,20 @@ public class ProblemService {
 		String newImageUrl = uploadImageAfterTransaction(newImage, problem.getId());
 		problem.addImage(newImageUrl);
 	}
+
+	@Transactional
+	public void addImageToExistingProblem(Long problemId, MultipartFile imageFile) {
+		Problem problem = problemDomainService.getProblem(problemId);
+
+		// 1. S3 업로드
+		String key = s3Uploader.upload(imageFile, "problem");
+
+		// 2. 문제에 이미지 연결
+		problem.addImage(key); // 또는 setImageUrl(List.of(key))
+
+		// 3. 저장
+		problemDomainService.saveProblem(problem);
+	}
+
 }
 

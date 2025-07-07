@@ -819,77 +819,77 @@
     const probTimeEl = document.getElementById('prob-time');
     const probMemEl = document.getElementById('prob-mem');
     const probCatsEl = document.getElementById('prob-cats');
+    const probImageEl = document.getElementById('prob-image');
 
-        const DEFAULT_PROFILE_IMG = "/static/images/user-icon.png"; // 임의 프사 경로
+      const DEFAULT_PROFILE_IMG = "/static/images/user-icon.png"; // 임의 프사 경로
 
-        function tokenHeader() {
-            const token = sessionStorage.getItem('accessToken');
-            return token ? { 'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token } : {};
-        }
+      function tokenHeader() {
+          const token = sessionStorage.getItem('accessToken');
+          return token ? { 'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token } : {};
+      }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const pid = new URLSearchParams(location.search).get('problemId');
-            if (pid) {
-                window.problemId = pid;
-                loadProblem(pid);
-            }
-        });
+      window.addEventListener('DOMContentLoaded', () => {
+          const pid = new URLSearchParams(location.search).get('problemId');
+          if (pid) {
+              window.problemId = pid;
+              loadProblem(pid);
+          }
+      });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const tabs = document.querySelectorAll('.tabbar button');
-            const contents = document.querySelectorAll('.left-content');
+      document.addEventListener('DOMContentLoaded', () => {
+          const tabs = document.querySelectorAll('.tabbar button');
+          const contents = document.querySelectorAll('.left-content');
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    // 1. 모든 탭과 콘텐츠에서 'active' 클래스 제거
-                    tabs.forEach(t => t.classList.remove('active'));
-                    contents.forEach(c => c.classList.remove('active'));
+          tabs.forEach(tab => {
+              tab.addEventListener('click', () => {
+                  // 1. 모든 탭과 콘텐츠에서 'active' 클래스 제거
+                  tabs.forEach(t => t.classList.remove('active'));
+                  contents.forEach(c => c.classList.remove('active'));
 
-                    // 2. 클릭된 탭에 'active' 클래스 추가
-                    tab.classList.add('active');
+                  // 2. 클릭된 탭에 'active' 클래스 추가
+                  tab.classList.add('active');
 
-                    // 3. 클릭된 탭과 연결된 콘텐츠를 찾아 'active' 클래스 추가
-                    const targetContent = document.querySelector(tab.dataset.target);
-                    if (targetContent) {
-                        targetContent.classList.add('active');
-                    }
-                });
-            });
+                  // 3. 클릭된 탭과 연결된 콘텐츠를 찾아 'active' 클래스 추가
+                  const targetContent = document.querySelector(tab.dataset.target);
+                  if (targetContent) {
+                      targetContent.classList.add('active');
+                  }
+              });
+          });
 
-            document.getElementById('discussion-tab').addEventListener('click', () => {
-                if (window.problemId) loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
-            });
+          document.getElementById('discussion-tab').addEventListener('click', () => {
+              if (window.problemId) loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
+          });
 
-            // 정렬 드롭다운 변경 시 토론글 새로고침
-            const sortEl = document.getElementById('discussion-sort');
-            if (sortEl) {
-                sortEl.addEventListener('change', (e) => {
-                    if (window.problemId) loadDiscussions(window.problemId, 0, 10, e.target.value);
-                });
-            }
-        });
+          // 정렬 드롭다운 변경 시 토론글 새로고침
+          const sortEl = document.getElementById('discussion-sort');
+          if (sortEl) {
+              sortEl.addEventListener('change', (e) => {
+                  if (window.problemId) loadDiscussions(window.problemId, 0, 10, e.target.value);
+              });
+          }
+      });
 
-        async function loadProblem(pid) {
-            try {
-                const res = await fetch(`/api/problems/${pid}`, {
-                    headers: { 'Accept': 'application/json', ...tokenHeader() }
-                });
-                if (!res.ok) {
-                    probTitleEl.textContent = `조회 실패 (HTTP ${res.status})`;
-                    return;
-                }
-                const wrapper = await res.json();
-                const data = wrapper.result ?? wrapper;
-                probTitleEl.textContent = `${data.id}. ${data.title}`;
-                probDescEl.innerHTML = data.description ? marked.parse(data.description) : '';
-                probTimeEl.textContent = data.timeLimit ?? '--';
-                probMemEl.textContent = data.memoryLimit ?? '--';
-                probCatsEl.textContent = Array.isArray(data.categories) ? data.categories.join(', ') : '';
-            } catch (err) {
-                console.error(err);
-                probTitleEl.textContent = '네트워크 오류';
-            }
-        }
+      async function loadProblem(pid) {
+      try {
+          const res = await fetch(`/api/problems/${pid}`, {
+              headers: {'Accept': 'application/json', ...tokenHeader()}
+          });
+          if (!res.ok) {
+              probTitleEl.textContent = `조회 실패 (HTTP ${res.status})`;
+              return;
+          }
+          const wrapper = await res.json();
+          const data = wrapper.result ?? wrapper;
+          probTitleEl.textContent = `${data.id}. ${data.title}`;
+          probDescEl.innerHTML = data.description ? marked.parse(data.description) : '';
+          probTimeEl.textContent = data.timeLimit ?? '--';
+          probMemEl.textContent = data.memoryLimit ?? '--';
+          probCatsEl.textContent = Array.isArray(data.categories) ? data.categories.join(', ') : '';
+      } catch (err) {
+          console.error(err);
+          probTitleEl.textContent = '네트워크 오류';
+      }
 
     async function submitCode() {
         const pid = window.problemId;
