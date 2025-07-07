@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 
 import org.ezcode.codetest.infrastructure.event.listener.RedisJudgeQueueConsumer;
@@ -52,7 +53,7 @@ public class RedisStreamConfig {
                     connection.xGroupDelConsumer(
                         "judge-queue".getBytes(),
                         "judge-group",
-                        "consumer-1"
+                        getConsumerName().replace("consumer-", "")
                     );
                     return null;
                 });
@@ -78,7 +79,7 @@ public class RedisStreamConfig {
     public StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer(
         RedisConnectionFactory factory,
         RedisJudgeQueueConsumer consumer
-    ) throws UnknownHostException {
+    ) {
         StreamMessageListenerContainer
             .StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
             StreamMessageListenerContainer
@@ -92,12 +93,21 @@ public class RedisStreamConfig {
             StreamMessageListenerContainer.create(factory, options);
 
         container.receive(
-            Consumer.from("judge-group", "consumer-" + InetAddress.getLocalHost().getHostName()),
+            Consumer.from("judge-group", getConsumerName()),
             StreamOffset.create("judge-queue", ReadOffset.lastConsumed()),
             consumer
         );
 
         container.start();
         return container;
+    }
+
+    private String getConsumerName() {
+        try {
+            return "consumer-" + InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            log.warn("호스트명 확인 실패, UUID 사용: {}", e.getMessage());
+            return "consumer-" + UUID.randomUUID().toString().substring(0, 8);
+        }
     }
 }
