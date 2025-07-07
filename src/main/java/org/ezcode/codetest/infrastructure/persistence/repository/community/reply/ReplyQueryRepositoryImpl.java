@@ -66,12 +66,15 @@ public class ReplyQueryRepositoryImpl implements ReplyQueryRepository {
 		Expression<Long> childReplyCount = childReply.id.count();
 
 		Expression<VoteType> userVoteType;
+		BooleanExpression isAuthor;
 		if (currentUserId != null) {
 			userVoteType = new CaseBuilder()
 				.when(replyVote.voter.id.eq(currentUserId)).then(replyVote.voteType)
 				.otherwise(Expressions.nullExpression(VoteType.class)).max();
+			isAuthor = reply.user.id.eq(currentUserId);
 		} else {
 			userVoteType = Expressions.nullExpression(VoteType.class);
+			isAuthor = Expressions.FALSE;
 		}
 
 		return jpaQueryFactory
@@ -90,13 +93,14 @@ public class ReplyQueryRepositoryImpl implements ReplyQueryRepository {
 				upvoteCount,
 				downvoteCount,
 				childReplyCount,
-				userVoteType
+				userVoteType,
+				isAuthor
 			))
 			.from(reply)
 			.join(reply.user, user)
 			.leftJoin(replyVote).on(replyVote.reply.eq(reply))
 			.leftJoin(childReply).on(childReply.parent.eq(reply))
-			.where(condition)
+			.where(condition.and(reply.isDeleted.isFalse()))
 			.groupBy(reply.id)
 			.orderBy(reply.id.asc())
 			.offset(pageable.getOffset())

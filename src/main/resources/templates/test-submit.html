@@ -641,6 +641,53 @@
         .discussion-create-box {
             margin-bottom: 18px;
         }
+
+        .edit-input-box {
+            margin-top: 8px;
+            background: #18191c;
+            border-radius: 6px;
+            padding: 12px 14px;
+            border: 1px solid #23272f;
+            width: 100%;
+            box-sizing: border-box;
+            display: block;
+        }
+        .edit-input-text {
+            width: 100%;
+            min-height: 60px;
+            background: #23272f;
+            color: #eee;
+            border: 1px solid #333;
+            border-radius: 4px;
+            font-size: 15px;
+            padding: 10px 12px;
+            resize: vertical;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        .edit-btn, .delete-btn {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 2px;
+            transition: color 0.13s, background 0.13s;
+            outline: none;
+        }
+        .edit-btn:hover {
+            color: #00d084;
+            background: #181f1a;
+        }
+        .delete-btn:hover {
+            color: #ff4d4d;
+            background: #2a1818;
+        }
     </style>
 </head>
 
@@ -938,7 +985,12 @@ if __name__ == "__main__":
         async function loadDiscussions(pid, page = 0, size = 10, sortBy) {
             sortBy = sortBy || (window.currentDiscussionSortBy || 'best');
             window.currentDiscussionSortBy = sortBy;
-            const res = await fetch(`/api/problems/${pid}/discussions?page=${page}&size=${size}&sortBy=${sortBy}`);
+            const res = await fetch(`/api/problems/${pid}/discussions?page=${page}&size=${size}&sortBy=${sortBy}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    ...tokenHeader()
+                }
+            });
             const data = await res.json();
             if (!data.success) {
                 document.getElementById('discussion-list').innerHTML = "토론글을 불러오지 못했습니다.";
@@ -960,14 +1012,19 @@ if __name__ == "__main__":
                      <div class="discussion-header">
                          <img src="${d.userInfo.profileImageUrl || DEFAULT_PROFILE_IMG}" alt="profile">
                          <span class="nickname">${d.userInfo.nickname}</span>
+                         <span style="flex:1"></span>
+                         ${d.isAuthor ? `
+                             <button class="edit-btn" data-id="${d.discussionId}">수정</button>
+                             <button class="delete-btn" data-id="${d.discussionId}">삭제</button>
+                         ` : ''}
                      </div>
                      <div class="discussion-content">${d.content}</div>
                      <div class="comment-actions">
-                         <button class="icon-btn upvote-btn" data-id="${d.discussionId}">
+                         <button class="icon-btn upvote-btn" data-id="${d.discussionId}" data-votestatus="${d.voteStatus}">
                              ${getUpvoteIcon(d.voteStatus === 'UP')}
                          </button>
                          <span class="vote-count">${d.upvoteCount}</span>
-                         <button class="icon-btn downvote-btn" data-id="${d.discussionId}">
+                         <button class="icon-btn downvote-btn" data-id="${d.discussionId}" data-votestatus="${d.voteStatus}">
                              ${getDownvoteIcon(d.voteStatus === 'DOWN')}
                          </button>
                          <button class="reply-btn" data-id="${d.discussionId}">댓글 달기</button>
@@ -1004,20 +1061,31 @@ if __name__ == "__main__":
         // 댓글(1차) 조회
         async function fetchReplies(discussionId) {
             const url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies`;
-            const res = await fetch(url);
+            const res = await fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    ...tokenHeader()
+                }
+            });
             const data = await res.json();
             return data.success ? data.result.content : [];
         }
         // 대댓글(2차) 조회
         async function fetchChildReplies(discussionId, replyId) {
             const url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${replyId}`;
-            const res = await fetch(url);
+            const res = await fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    ...tokenHeader()
+                }
+            });
             const data = await res.json();
             return data.success ? data.result.content : [];
         }
 
         function renderReplies(container, replies, discussionId, depth) {
             container.innerHTML = replies.map(r => {
+                console.log(r.replyId, r.voteStatus);
                 return `
                 <div class="reply-item" style="margin-left:${depth * 32}px" data-reply-id="${r.replyId}">
                     <div class="discussion-header">
@@ -1026,14 +1094,19 @@ if __name__ == "__main__":
                     </div>
                     <div class="discussion-content">${r.content}</div>
                     <div class="comment-actions">
-                        <button class="icon-btn upvote-btn" data-id="${r.replyId}">
+                        <button class="icon-btn upvote-btn" data-id="${r.replyId}" data-votestatus="${r.voteStatus}">
                             ${getUpvoteIcon(r.voteStatus === 'UP')}
                         </button>
                         <span class="vote-count">${r.upvoteCount}</span>
-                        <button class="icon-btn downvote-btn" data-id="${r.replyId}">
+                        <button class="icon-btn downvote-btn" data-id="${r.replyId}" data-votestatus="${r.voteStatus}">
                             ${getDownvoteIcon(r.voteStatus === 'DOWN')}
                         </button>
                         ${depth === 0 ? `<button class="reply-btn" data-id="${r.replyId}">대댓글 달기</button>` : ''}
+                        <span style="flex:1"></span>
+                        ${r.isAuthor ? `
+                            <button class="edit-btn" data-id="${r.replyId}">수정</button>
+                            <button class="delete-btn" data-id="${r.replyId}">삭제</button>
+                        ` : ''}
                     </div>
                     ${(r.childReplyCount > 0 && depth === 0) ? `<div class=\"toggle-replies-row\"><button class=\"toggle-child-replies-btn\" data-id=\"${r.replyId}\" data-open=\"false\">대댓글 펼치기</button></div>` : ''}
                     <div class="child-replies-container" id="child-replies-for-${r.replyId}" style="display:none;"></div>
@@ -1097,7 +1170,39 @@ if __name__ == "__main__":
         }
 
         // 댓글/대댓글 달기 버튼 이벤트 바인딩
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', async function(e) {
+            // 댓글/대댓글 추천/비추천 (reply-item 먼저!)
+            if (e.target.closest('.upvote-btn') && e.target.closest('.reply-item')) {
+                const btn = e.target.closest('.upvote-btn');
+                const replyId = btn.dataset.id;
+                const discussionId = btn.closest('.discussion-item').dataset.discussionId;
+                const voteStatus = btn.dataset.votestatus;
+                await voteReply(discussionId, replyId, voteStatus === 'UP' ? 'NONE' : 'UP');
+                return;
+            }
+            if (e.target.closest('.downvote-btn') && e.target.closest('.reply-item')) {
+                const btn = e.target.closest('.downvote-btn');
+                const replyId = btn.dataset.id;
+                const discussionId = btn.closest('.discussion-item').dataset.discussionId;
+                const voteStatus = btn.dataset.votestatus;
+                await voteReply(discussionId, replyId, voteStatus === 'DOWN' ? 'NONE' : 'DOWN');
+                return;
+            }
+            // 토론글 추천/비추천 (discussion-item는 reply-item보다 나중에 체크)
+            if (e.target.closest('.upvote-btn') && e.target.closest('.discussion-item')) {
+                const btn = e.target.closest('.upvote-btn');
+                const discussionId = btn.dataset.id;
+                const voteStatus = btn.dataset.votestatus;
+                await voteDiscussion(discussionId, voteStatus === 'UP' ? 'NONE' : 'UP');
+                return;
+            }
+            if (e.target.closest('.downvote-btn') && e.target.closest('.discussion-item')) {
+                const btn = e.target.closest('.downvote-btn');
+                const discussionId = btn.dataset.id;
+                const voteStatus = btn.dataset.votestatus;
+                await voteDiscussion(discussionId, voteStatus === 'DOWN' ? 'NONE' : 'DOWN');
+                return;
+            }
             // 댓글 달기
             if (e.target.classList.contains('reply-btn') && !e.target.closest('.reply-item')) {
                 const discussionId = e.target.dataset.id;
@@ -1109,7 +1214,185 @@ if __name__ == "__main__":
                 const discussionId = e.target.closest('.discussion-item').dataset.discussionId;
                 showReplyInput(discussionId, replyId, e.target);
             }
+            // 토론글/댓글/대댓글 수정
+            if (e.target.classList.contains('edit-btn')) {
+                const item = e.target.closest('.discussion-item, .reply-item');
+                const contentEl = item.querySelector('.discussion-content');
+                const oldContent = contentEl.textContent;
+                // 이미 수정창이 열려있으면 return
+                if (item.querySelector('.edit-input-box')) return;
+                // textarea + 취소/저장 버튼
+                const box = document.createElement('div');
+                box.className = 'edit-input-box';
+                box.innerHTML = `
+                    <textarea class="edit-input-text" style="width:100%;min-height:60px;">${oldContent}</textarea>
+                    <div style="display:flex;gap:8px;justify-content:flex-end;">
+                        <button class="edit-cancel-btn">취소</button>
+                        <button class="edit-save-btn">저장</button>
+                    </div>
+                `;
+                contentEl.style.display = 'none';
+                contentEl.after(box);
+
+                // 취소
+                box.querySelector('.edit-cancel-btn').onclick = () => {
+                    box.remove();
+                    contentEl.style.display = '';
+                };
+
+                // 저장
+                box.querySelector('.edit-save-btn').onclick = async () => {
+                    const newContent = box.querySelector('.edit-input-text').value.trim();
+                    if (!newContent) return alert('내용을 입력하세요.');
+                    let url, method = 'PUT', payload = { languageId: 1, content: newContent };
+                    if (item.classList.contains('discussion-item')) {
+                        url = `/api/problems/${window.problemId}/discussions/${e.target.dataset.id}`;
+                    } else {
+                        const discussionId = item.closest('.discussion-item').dataset.discussionId;
+                        url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${e.target.dataset.id}`;
+                    }
+                    const res = await fetch(url, {
+                        method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...tokenHeader()
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) {
+                        // 성공: 목록 새로고침
+                        if (item.classList.contains('discussion-item')) {
+                            loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
+                        } else {
+                            const discussionId = item.closest('.discussion-item').dataset.discussionId;
+                            const container = document.getElementById(`replies-for-${discussionId}`);
+                            if (container) {
+                                container.dataset.loaded = '';
+                                const replies = await fetchReplies(discussionId);
+                                renderReplies(container, replies, discussionId, 0);
+                            }
+                        }
+                    } else {
+                        alert('수정에 실패했습니다.');
+                    }
+                };
+            }
+            // 삭제
+            if (e.target.classList.contains('delete-btn')) {
+                if (!confirm('정말 삭제하시겠습니까?')) return;
+                const item = e.target.closest('.discussion-item, .reply-item');
+                let url, method = 'DELETE';
+                if (item.classList.contains('discussion-item')) {
+                    url = `/api/problems/${window.problemId}/discussions/${e.target.dataset.id}`;
+                } else {
+                    const discussionId = item.closest('.discussion-item').dataset.discussionId;
+                    url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${e.target.dataset.id}`;
+                }
+                (async () => {
+                    const res = await fetch(url, {
+                        method,
+                        headers: {
+                            ...tokenHeader()
+                        }
+                    });
+                    if (res.ok) {
+                        if (item.classList.contains('discussion-item')) {
+                            loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
+                        } else {
+                            const discussionId = item.closest('.discussion-item').dataset.discussionId;
+                            const container = document.getElementById(`replies-for-${discussionId}`);
+                            if (container) {
+                                container.dataset.loaded = '';
+                                const replies = await fetchReplies(discussionId);
+                                renderReplies(container, replies, discussionId, 0);
+                            }
+                        }
+                    } else {
+                        alert('삭제에 실패했습니다.');
+                    }
+                })();
+            }
         });
+
+        async function voteDiscussion(discussionId, voteType) {
+            const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/votes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...tokenHeader()
+                },
+                body: JSON.stringify({ voteType })
+            });
+            if (res.ok) {
+                updateDiscussionVoteUI(discussionId);
+            } else {
+                alert('추천/비추천에 실패했습니다.');
+            }
+        }
+
+        async function updateDiscussionVoteUI(discussionId) {
+            const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/votes`, {
+                headers: {
+                    'Accept': 'application/json',
+                    ...tokenHeader()
+                }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data.success) return;
+            const { voteType, upvoteCount, downvoteCount } = data.result;
+            // 버튼/카운트 갱신
+            const item = document.querySelector(`.discussion-item[data-discussion-id="${discussionId}"]`);
+            if (!item) return;
+            const upBtn = item.querySelector('.upvote-btn');
+            const downBtn = item.querySelector('.downvote-btn');
+            const upCount = item.querySelector('.vote-count');
+            upBtn.dataset.votestatus = voteType;
+            downBtn.dataset.votestatus = voteType;
+            upCount.textContent = upvoteCount;
+            // 아이콘도 갱신
+            upBtn.innerHTML = getUpvoteIcon(voteType === 'UP');
+            downBtn.innerHTML = getDownvoteIcon(voteType === 'DOWN');
+        }
+
+        async function voteReply(discussionId, replyId, voteType) {
+            const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/replies/${replyId}/votes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...tokenHeader()
+                },
+                body: JSON.stringify({ voteType })
+            });
+            if (res.ok) {
+                updateReplyVoteUI(discussionId, replyId);
+            } else {
+                alert('추천/비추천에 실패했습니다.');
+            }
+        }
+
+        async function updateReplyVoteUI(discussionId, replyId) {
+            const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/replies/${replyId}/votes`, {
+                headers: {
+                    'Accept': 'application/json',
+                    ...tokenHeader()
+                }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data.success) return;
+            const { voteType, upvoteCount, downvoteCount } = data.result;
+            const item = document.querySelector(`.reply-item[data-reply-id="${replyId}"]`);
+            if (!item) return;
+            const upBtn = item.querySelector('.upvote-btn');
+            const downBtn = item.querySelector('.downvote-btn');
+            const upCount = item.querySelector('.vote-count');
+            upBtn.dataset.votestatus = voteType;
+            downBtn.dataset.votestatus = voteType;
+            upCount.textContent = upvoteCount;
+            upBtn.innerHTML = getUpvoteIcon(voteType === 'UP');
+            downBtn.innerHTML = getDownvoteIcon(voteType === 'DOWN');
+        }
 
         function showReplyInput(discussionId, parentReplyId, btnEl) {
             // 이미 열려있으면 return

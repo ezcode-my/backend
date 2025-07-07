@@ -19,6 +19,7 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
@@ -44,7 +45,7 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 			.select(discussion.id)
 			.from(discussion)
 			.leftJoin(discussionVote).on(discussionVote.discussion.eq(discussion))
-			.where(discussion.problem.id.eq(problemId))
+			.where(discussion.problem.id.eq(problemId).and(discussion.isDeleted.isFalse()))
 			.groupBy(discussion.id)
 			.orderBy(getOrderSpecifier(sortBy, bestScore, upvoteCount))
 			.offset(pageable.getOffset())
@@ -65,12 +66,15 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 		Expression<Long> replyCount = reply.id.countDistinct();
 
 		Expression<VoteType> userVoteType;
+		BooleanExpression isAuthor;
 		if (currentUserId != null) {
 			userVoteType = new CaseBuilder()
 				.when(discussionVote.voter.id.eq(currentUserId)).then(discussionVote.voteType)
 				.otherwise(Expressions.nullExpression(VoteType.class)).max();
+			isAuthor = discussion.user.id.eq(currentUserId);
 		} else {
 			userVoteType = Expressions.nullExpression(VoteType.class);
+			isAuthor = Expressions.FALSE;
 		}
 
 		return jpaQueryFactory
@@ -88,7 +92,8 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 				upvoteCount,
 				downvoteCount,
 				replyCount,
-				userVoteType
+				userVoteType,
+				isAuthor
 			))
             .from(discussion)
 			.join(discussion.user, user)
