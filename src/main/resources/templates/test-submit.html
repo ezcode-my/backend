@@ -286,6 +286,9 @@
             <li>메모리 제한: <span id="prob-mem">--</span> KB</li>
             <li>카테고리: <span id="prob-cats">--</span></li>
         </ul>
+        <div id="prob-image-wrapper">
+            <img id="prob-image" src="" alt="문제 이미지" style="max-width: 100%; height: auto;" />
+        </div>
     </div>
     <div class="right">
         <div class="section">
@@ -335,6 +338,7 @@
     const probTimeEl = document.getElementById('prob-time');
     const probMemEl = document.getElementById('prob-mem');
     const probCatsEl = document.getElementById('prob-cats');
+    const probImageEl = document.getElementById('prob-image');
 
     function tokenHeader() {
         const token = sessionStorage.getItem('accessToken');
@@ -365,6 +369,12 @@
             probTimeEl.textContent = data.timeLimit ?? '--';
             probMemEl.textContent = data.memoryLimit ?? '--';
             probCatsEl.textContent = Array.isArray(data.categories) ? data.categories.join(', ') : '';
+            if (data.imageUrl) {
+                probImageEl.src = data.imageUrl;
+                probImageEl.style.display = 'block';
+            } else {
+                probImageEl.style.display = 'none';
+            }
         } catch (err) {
             console.error(err);
             probTitleEl.textContent = '네트워크 오류';
