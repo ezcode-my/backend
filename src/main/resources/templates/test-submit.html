@@ -409,7 +409,6 @@
             display: flex;
             align-items: center;
             gap: 2px;
-            font-size: 13px;
             margin-top: 2px;
         }
 
@@ -1203,7 +1202,9 @@ if __name__ == "__main__":
                             <button class="delete-btn" data-id="${r.replyId}">삭제</button>
                         ` : ''}
                     </div>
-                    ${(r.childReplyCount > 0 && depth === 0) ? `<div class=\"toggle-replies-row\"><button class=\"toggle-child-replies-btn\" data-id=\"${r.replyId}\" data-open=\"false\">대댓글 펼치기</button></div>` : ''}
+                    <div class="toggle-replies-row">
+                        <button class="toggle-child-replies-btn" data-id="${r.replyId}" data-open="false">대댓글 펼치기</button>
+                    </div>
                     <div class="child-replies-container" id="child-replies-for-${r.replyId}" style="display:none;"></div>
                 </div>
                 `;
@@ -1217,7 +1218,7 @@ if __name__ == "__main__":
                     const isOpen = this.dataset.open === 'true';
                     if (isOpen) {
                         childContainer.style.display = 'none';
-                        this.textContent = '대댓글 펼치기';
+                        this.textContent = '대댓글 접기';
                         this.dataset.open = 'false';
                     } else {
                         if (!childContainer.dataset.loaded) {
@@ -1622,6 +1623,7 @@ if __name__ == "__main__":
 </script>
 <script src="/js/headerUtils.js"></script>
 <script src="/js/footerUtils.js"></script>
+<script src="/js/headerNotification.js"></script>
 <script>
     loadHeaderWithAuthCheck();
     loadFooter(); // 푸터 로드
