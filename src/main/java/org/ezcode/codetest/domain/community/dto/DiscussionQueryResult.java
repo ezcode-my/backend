@@ -30,6 +30,8 @@ public class DiscussionQueryResult {
 
 	private final VoteType voteStatus;
 
+	private final boolean isAuthor;
+
 	@QueryProjection
 	public DiscussionQueryResult(
 		Long discussionId,
@@ -40,7 +42,7 @@ public class DiscussionQueryResult {
 		Long upvoteCount,
 		Long downvoteCount,
 		Long replyCount,
-		VoteType voteType
+		VoteType voteType, boolean isAuthor
 	) {
 
 		this.discussionId = discussionId;
@@ -59,5 +61,7 @@ public class DiscussionQueryResult {
 		} else {
 			this.voteStatus = VoteType.DOWN;
 		}
+
+		this.isAuthor = isAuthor;
 	}
 }

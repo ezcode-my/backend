@@ -39,7 +39,10 @@ public record DiscussionResponse(
 	Long replyCount,
 
 	@Schema(description = "현재 사용자의 추천 상태 (UP, DOWN, NONE)", example = "UP")
-	VoteType voteStatus
+	VoteType voteStatus,
+	
+	@Schema(description = "로그인한 유저의 해당 토론글 작성 여부", example = "true")
+	boolean isAuthor
 
 ) {
 
@@ -53,7 +56,8 @@ public record DiscussionResponse(
 			null,
 			null,
 			null,
-			null
+			null,
+			false
 		);
 	}
 
@@ -67,7 +71,8 @@ public record DiscussionResponse(
 			result.getUpvoteCount(),
 			result.getDownvoteCount(),
 			result.getReplyCount(),
-			result.getVoteStatus()
+			result.getVoteStatus(),
+			result.isAuthor()
 		);
 	}
 }

@@ -6,6 +6,10 @@ function loadHeaderWithAuthCheck() {
             // 헤더 삽입
             document.getElementById('header-placeholder').innerHTML = data;
 
+            // header가 삽입된 후 connectNotificationWS가 있으면 실행
+            if (window.connectNotificationWS) window.connectNotificationWS();
+            if (window.bindHeaderNotificationEvents) window.bindHeaderNotificationEvents();
+
             // 삽입 이후에 요소들 찾아야 함
             const accessToken = sessionStorage.getItem("accessToken");
 
