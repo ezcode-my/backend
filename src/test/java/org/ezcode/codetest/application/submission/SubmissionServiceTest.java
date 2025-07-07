@@ -10,6 +10,7 @@ import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewR
 import org.ezcode.codetest.application.submission.dto.request.submission.CodeSubmitRequest;
 import org.ezcode.codetest.application.submission.dto.response.review.CodeReviewResponse;
 import org.ezcode.codetest.application.submission.dto.response.submission.GroupedSubmissionResponse;
+import org.ezcode.codetest.application.submission.dto.response.submission.SubmitResponse;
 import org.ezcode.codetest.application.submission.model.ReviewResult;
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.application.submission.port.ExceptionNotifier;
@@ -26,6 +27,7 @@ import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
+import org.ezcode.codetest.domain.problem.service.TestcaseDomainService;
 import org.ezcode.codetest.domain.submission.exception.SubmissionException;
 import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
 import org.ezcode.codetest.domain.submission.model.entity.Submission;
@@ -65,6 +67,9 @@ public class SubmissionServiceTest {
 
     @Mock
     private SubmissionDomainService submissionDomainService;
+
+    @Mock
+    private TestcaseDomainService testcaseDomainService;
 
     @Mock
     private QueueProducer queueProducer;
@@ -130,9 +135,10 @@ public class SubmissionServiceTest {
             given(request.sourceCode()).willReturn(sourceCode);
             given(lockManager.tryLock("submission", authUser.getId(), problemId))
                 .willReturn(true);
+            given(testcaseDomainService.getTestcaseListByProblemId(problemId)).willReturn(List.of());
 
             // when
-            String result = submissionService.enqueueCodeSubmission(problemId, request, authUser);
+            SubmitResponse result = submissionService.enqueueCodeSubmission(problemId, request, authUser);
 
             then(queueProducer).should()
                 .enqueue(argThat(msg ->
@@ -141,7 +147,7 @@ public class SubmissionServiceTest {
                         msg.languageId().equals(languageId) &&
                         msg.sourceCode().equals(sourceCode)
                 ));
-            assertThat(result).startsWith(sessionKey);
+            assertThat(result.sessionKey()).startsWith(sessionKey);
         }
 
         @Test
@@ -160,13 +166,9 @@ public class SubmissionServiceTest {
             submissionService.processSubmissionAsync(msg);
 
             // then
-            ArgumentCaptor<SubmissionContext> captor = ArgumentCaptor.forClass(SubmissionContext.class);
-            then(judgementService).should().publishInitTestcases(captor.capture());
-            SubmissionContext ctx = captor.getValue();
-
-            then(judgementService).should().runTestcases(ctx);
-            then(judgementService).should().finalizeAndPublish(ctx);
-            then(gitHubPushService).should().pushSolutionToRepo(ctx);
+            then(judgementService).should().runTestcases(any(SubmissionContext.class));
+            then(judgementService).should().finalizeAndPublish(any(SubmissionContext.class));
+            then(gitHubPushService).should().pushSolutionToRepo(any(SubmissionContext.class));
 
             then(lockManager).should().releaseLock("submission", userId, problemId);
         }

@@ -1,27 +1,21 @@
 package org.ezcode.codetest.presentation.submission;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
 
 import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewRequest;
 import org.ezcode.codetest.application.submission.dto.request.submission.CodeSubmitRequest;
 import org.ezcode.codetest.application.submission.dto.response.review.CodeReviewResponse;
 import org.ezcode.codetest.application.submission.dto.response.submission.GroupedSubmissionResponse;
+import org.ezcode.codetest.application.submission.dto.response.submission.SubmitResponse;
 import org.ezcode.codetest.application.submission.service.SubmissionService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,9 +40,7 @@ public class SubmissionController {
         서버는 WebSocket(STOMP)을 통해 채점 결과를 실시간으로 전송합니다.
 
         반환된 sessionKey를 사용해 다음 경로로 구독하세요.
-        
-        • /user/queue/submission/{sessionKey}/init
-        
+ 
         • /user/queue/submission/{sessionKey}/case
         
         • /user/queue/submission/{sessionKey}/final
@@ -63,16 +55,14 @@ public class SubmissionController {
         @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 데이터"),
         @ApiResponse(responseCode = "409", description = "이미 해당 문제를 채점 중인 경우"),
     })
-    public ResponseEntity<HashSet<String>> submitCodeStream(
+    public ResponseEntity<SubmitResponse> submitCodeStream(
         @Parameter(description = "제출할 문제 ID", required = true) @PathVariable Long problemId,
         @RequestBody @Valid CodeSubmitRequest request,
         @AuthenticationPrincipal AuthUser authUser
     ) {
-        HashSet<String> set = new HashSet<>();
-        set.add(submissionService.enqueueCodeSubmission(problemId, request, authUser));
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(set);
+            .body(submissionService.enqueueCodeSubmission(problemId, request, authUser));
     }
 
     @Operation(

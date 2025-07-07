@@ -326,7 +326,7 @@
     let stompClient;
     let connected = false;
     let finalIsCorrect = null;
-
+    const testcaseSlotMap = {}; // { pk값: index }
     const gitDot = document.getElementById('gitDot');
     const reviewBtn = document.getElementById('reviewBtn');
     const reviewBox = document.getElementById('reviewBox');
@@ -392,16 +392,34 @@
                 body: JSON.stringify(payload)
             });
             const resp = await res.json();
+            console.log('[DEBUG] 전체 응답:', resp);
+            console.log('[DEBUG] result:', resp.result);
             if (!resp.success) {
                 judgeEl.textContent = `Error: ${resp.message}`;
                 return;
             }
-            const sessionKey = resp.result;
+            const { sessionKey, testcaseIds } = resp.result;
             initWebSocket(sessionKey);
+            renderInitSlots(testcaseIds);
         } catch (err) {
             console.error(err);
             judgeEl.textContent = '채점 요청 실패';
         }
+    }
+
+    function renderInitSlots(testcaseIds) {
+        console.log('[DEBUG] init 호출됨:', testcaseIds); // 추가
+        const judgeEl = document.getElementById('judgeResult');
+        testcaseIds.forEach((pk, index) => {
+            const visibleIdx = index + 1;
+            testcaseSlotMap[pk] = visibleIdx;
+
+            const d = document.createElement('div');
+            d.id = `slot-${visibleIdx}`;
+            d.className = 'slot init';
+            d.textContent = `[${visibleIdx}] 상태: 채점 중...`;
+            judgeEl.appendChild(d);
+        });
     }
 
     const languageTemplates = {
@@ -471,6 +489,8 @@ if __name__ == "__main__":
         stompClient.connect({}, () => {
             connected = true;
             const base = `/user/queue/submission/${sessionKey}`;
+            stompClient.subscribe(`${base}/case`, msg => handleCase(JSON.parse(msg.body)));
+            stompClient.subscribe(`${base}/final`, msg => handleFinal(JSON.parse(msg.body)));
             stompClient.subscribe(`${base}/git-status`, msg => {
                 let status;
                 try {
@@ -484,29 +504,19 @@ if __name__ == "__main__":
                 else if (status === 'FAILED') gitDot.style.backgroundColor = '#ff4d4d';
                 else gitDot.style.backgroundColor = 'gray';
             });
-            stompClient.subscribe(`${base}/init`, msg => handleInit(JSON.parse(msg.body)));
-            stompClient.subscribe(`${base}/case`, msg => handleCase(JSON.parse(msg.body)));
-            stompClient.subscribe(`${base}/final`, msg => handleFinal(JSON.parse(msg.body)));
         }, err => console.error('[STOMP] 연결 오류:', err));
     }
 
-    function handleInit(slots) {
-        const judgeEl = document.getElementById('judgeResult');
-        judgeEl.innerHTML = '';
-        slots.forEach(s => {
-            const d = document.createElement('div');
-            d.id = `slot-${s.seqId}`;
-            d.className = 'slot init';
-            d.textContent = `[${s.seqId}] 상태: ${s.status}`;
-            judgeEl.appendChild(d);
-        });
-    }
-
     function handleCase(data) {
-        const d = document.getElementById(`slot-${data.seqId}`);
+        const pk = data.testcaseId || data.id; // 서버에서 오는 실제 PK
+        const slotIndex = testcaseSlotMap[pk];
+        if (!slotIndex) return;
+
+        const d = document.getElementById(`slot-${slotIndex}`);
         if (!d) return;
+
         d.className = data.isPassed ? 'slot passed' : 'slot failed';
-        d.textContent = `[${data.seqId}] ${data.message} (${data.executionTime}ms, ${data.memoryUsage}KB)`;
+        d.textContent = `[${slotIndex}] ${data.message} (${data.executionTime}ms, ${data.memoryUsage}KB)`;
     }
 
     function handleFinal(res) {
@@ -546,7 +556,6 @@ if __name__ == "__main__":
         }
     }
 </script>
-
 <script src="/js/headerUtils.js"></script>
 <script src="/js/footerUtils.js"></script>
 <script>

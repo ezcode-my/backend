@@ -28,6 +28,11 @@ public class TestcaseRepositoryImpl implements TestcaseRepository {
 	}
 
 	@Override
+	public List<Testcase> findAllByProblemId(Long problemId) {
+		return testcaseJpaRepository.findAllByProblem_Id(problemId);
+	}
+
+	@Override
 	public Testcase findByTestcase(Long testcaseId) {
 
 		return testcaseJpaRepository.findById(testcaseId)

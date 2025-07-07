@@ -9,8 +9,8 @@ import lombok.Builder;
 @Schema(description = "각 테스트케이스에 대한 채점 결과")
 public record JudgeResultResponse(
 
-    @Schema(description = "테스트케이스 번호", example = "1")
-    int seqId,
+    @Schema(description = "테스트케이스 아이디", example = "1")
+    Long testcaseId,
 
     @Schema(description = "테스트케이스 통과 여부", example = "true")
     boolean isPassed,
@@ -30,7 +30,7 @@ public record JudgeResultResponse(
 ) {
     public static JudgeResultResponse from(TestcaseResultPayload payload) {
         return new JudgeResultResponse(
-            payload.seqId(),
+            payload.testcaseId(),
             payload.isPassed(),
             payload.actualOutput(),
             payload.executionTime(),
