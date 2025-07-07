@@ -1,5 +1,7 @@
 package org.ezcode.codetest.infrastructure.event.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -76,7 +78,7 @@ public class RedisStreamConfig {
     public StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer(
         RedisConnectionFactory factory,
         RedisJudgeQueueConsumer consumer
-    ) {
+    ) throws UnknownHostException {
         StreamMessageListenerContainer
             .StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
             StreamMessageListenerContainer
@@ -90,7 +92,7 @@ public class RedisStreamConfig {
             StreamMessageListenerContainer.create(factory, options);
 
         container.receive(
-            Consumer.from("judge-group", "consumer-1"),
+            Consumer.from("judge-group", "consumer-" + InetAddress.getLocalHost().getHostName()),
             StreamOffset.create("judge-queue", ReadOffset.lastConsumed()),
             consumer
         );
