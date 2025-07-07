@@ -121,6 +121,24 @@
             background-color: #00b472;
         }
 
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        .review-box {
+            margin-top: 16px;
+            background-color: #2a2d3d;
+            padding: 20px;
+            border-radius: 10px;
+            color: #f0f2f5;
+        }
+
+        .review-box strong,
+        .review-box b {
+            color: #00d084;
+        }
+
         .result-box {
             background-color: #1e212f;
             padding: 16px;
@@ -288,6 +306,7 @@
                 <div id="editor" class="cm-theme" style="height: 300px;"></div>
             </div>
             <button onclick="submitCode()">코드 제출 (WebSocket)</button>
+            <button id="reviewBtn" onclick="requestReview()" disabled>리뷰 요청 (AI)</button>
         </div>
         <div class="section">
             <h3>채점 결과</h3>
@@ -295,6 +314,7 @@
                 <div class="git-status-dot" id="gitDot"></div>
             </div>
             <div id="judgeResult" class="result-box">여기에 테스트 결과가 표시됩니다</div>
+            <div id="reviewBox" class="review-box" style="display: none"></div>
         </div>
     </div>
 </div>
@@ -305,7 +325,11 @@
 <script defer>
     let stompClient;
     let connected = false;
+    let finalIsCorrect = null;
+
     const gitDot = document.getElementById('gitDot');
+    const reviewBtn = document.getElementById('reviewBtn');
+    const reviewBox = document.getElementById('reviewBox');
     const probTitleEl = document.getElementById('prob-title');
     const probDescEl = document.getElementById('prob-desc');
     const probTimeEl = document.getElementById('prob-time');
@@ -354,6 +378,9 @@
         const payload = {languageId, sourceCode};
         const judgeEl = document.getElementById('judgeResult');
         judgeEl.innerHTML = '';
+        reviewBox.style.display = 'none';
+        reviewBtn.disabled = true;
+        finalIsCorrect = null;
 
         try {
             const res = await fetch(`/api/problems/${pid}/submit-ws`, {
@@ -487,14 +514,39 @@ if __name__ == "__main__":
         sum.className = 'final-summary';
         sum.innerHTML = `<strong>최종:</strong> ${res.passedCount}/${res.totalCount} 통과 — ${res.message}`;
         document.getElementById('judgeResult').appendChild(sum);
+        finalIsCorrect = res.passedCount === res.totalCount;
+        reviewBtn.disabled = false;
     }
 
-    fetch('/html/header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-        });
+    async function requestReview() {
+        if (!window.problemId || finalIsCorrect === null) return;
+        const languageId = +document.getElementById('language').value;
+        const sourceCode = window.getEditorCode();
+        try {
+            const res = await fetch(`/api/problems/${window.problemId}/review`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...tokenHeader()
+                },
+                body: JSON.stringify({ languageId, sourceCode, isCorrect: finalIsCorrect })
+            });
+            const json = await res.json();
+            const content = json.result?.reviewContent || json.reviewContent;
+            reviewBox.style.display = 'block';
+            const markdownSafe = content
+                .replace(/\n[\t ]*-/g, '\n-')      // 리스트용 하이픈 앞 공백 제거
+                .replace(/\n/g, '  \n');           // 줄바꿈을 마크다운 줄바꿈으로 변환
+            reviewBox.innerHTML = marked.parse(markdownSafe || '리뷰 결과가 없습니다.');
+            console.log(JSON.stringify(content));
+        } catch (e) {
+            console.error('리뷰 요청 실패', e);
+            reviewBox.style.display = 'block';
+            reviewBox.textContent = '리뷰 요청 중 오류가 발생했습니다';
+        }
+    }
 </script>
+
 <script src="/js/headerUtils.js"></script>
 <script src="/js/footerUtils.js"></script>
 <script>
