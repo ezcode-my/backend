@@ -277,7 +277,7 @@
             /* 비활성 상태의 밑줄 */
             color: #ccc;
             /* 기본 글자색 */
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 600;
             transition: all 0.2s ease-in-out;
         }
@@ -687,6 +687,38 @@
         .delete-btn:hover {
             color: #ff4d4d;
             background: #2a1818;
+        }
+
+        #discussion-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2px;
+            margin: 18px 0 0 0;
+            flex-wrap: wrap;
+        }
+        #discussion-pagination button {
+            background: none;
+            color: #00d084;
+            border: 1px solid #222;
+            border-radius: 4px;
+            padding: 3px 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.13s, color 0.13s;
+        }
+        #discussion-pagination button:disabled {
+            color: #888;
+            border-color: #333;
+            background: #181818;
+            cursor: not-allowed;
+        }
+        #discussion-pagination .current {
+            background: #00d084;
+            color: #18191c;
+            border-color: #00d084;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -1141,19 +1173,34 @@ if __name__ == "__main__":
 
         function renderDiscussionPagination(pageData, pid) {
             const pagEl = document.getElementById('discussion-pagination');
+            const totalPages = pageData.totalPages > 0 ? pageData.totalPages : 1;
+            const currentPage = pageData.number + 1; // 1-based
             let html = '';
-            const sortBy = window.currentDiscussionSortBy || 'best';
-            // 항상 페이지네이션을 보여주되, 이전/다음 버튼은 비활성화
-            html += `<button disabled onclick="loadDiscussions('${pid}',${pageData.number-1},10,'${sortBy}')">이전</button>`;
-            html += ` <span>${pageData.number+1} / ${pageData.totalPages > 0 ? pageData.totalPages : 1}</span> `;
-            html += `<button disabled onclick="loadDiscussions('${pid}',${pageData.number+1},10,'${sortBy}')">다음</button>`;
-            // 2페이지 이상이면 버튼 활성화
-            if (pageData.totalPages > 1) {
-                html = '';
-                html += `<button ${pageData.first ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${pageData.number-1},10,'${sortBy}')">이전</button>`;
-                html += ` <span>${pageData.number+1} / ${pageData.totalPages}</span> `;
-                html += `<button ${pageData.last ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${pageData.number+1},10,'${sortBy}')">다음</button>`;
+
+            // << (맨앞)
+            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="loadDiscussions('${pid}',0,10,window.currentDiscussionSortBy)">&#171;</button> `;
+
+            // < (이전)
+            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${currentPage-2},10,window.currentDiscussionSortBy)">&#60;</button> `;
+
+            // 페이지 숫자 (최대 10개씩)
+            let start = Math.max(1, currentPage - 4);
+            let end = Math.min(totalPages, start + 9);
+            if (end - start < 9) start = Math.max(1, end - 9);
+            for (let i = start; i <= end; i++) {
+                if (i === currentPage) {
+                    html += `<button class="page-btn current" disabled>${i}</button> `;
+                } else {
+                    html += `<button class="page-btn" onclick="loadDiscussions('${pid}',${i-1},10,window.currentDiscussionSortBy)">${i}</button> `;
+                }
             }
+
+            // > (다음)
+            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${currentPage},10,window.currentDiscussionSortBy)">&#62;</button> `;
+
+            // >> (맨뒤)
+            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${totalPages-1},10,window.currentDiscussionSortBy)">&#187;</button>`;
+
             pagEl.innerHTML = html;
         }
 
@@ -1396,7 +1443,9 @@ if __name__ == "__main__":
 
         function showReplyInput(discussionId, parentReplyId, btnEl) {
             // 이미 열려있으면 return
-            if (btnEl.parentNode.querySelector('.reply-input-box')) return;
+            const next = btnEl.closest('.comment-actions').nextElementSibling;
+            if (next && next.classList.contains('reply-input-box')) return;
+
             const box = document.createElement('div');
             box.className = 'reply-input-box';
             box.innerHTML = `

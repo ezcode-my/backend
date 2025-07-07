@@ -41,6 +41,10 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 
 		NumberExpression<Long> bestScore = upvoteCount.subtract(downvoteCount);
 
+		long offset = pageable.getOffset();
+		int pageNumber = pageable.getPageNumber();
+		int pageSize = pageable.getPageSize();
+
 		return jpaQueryFactory
 			.select(discussion.id)
 			.from(discussion)
@@ -119,7 +123,7 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 		Long count = jpaQueryFactory
 			.select(discussion.count())
 			.from(discussion)
-			.where(discussion.problem.id.eq(problemId))
+			.where(discussion.problem.id.eq(problemId).and(discussion.isDeleted.isFalse()))
 			.fetchOne();
 
 		return count != null ? count : 0L;

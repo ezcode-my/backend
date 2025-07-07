@@ -113,7 +113,7 @@ public class ReplyQueryRepositoryImpl implements ReplyQueryRepository {
 		return jpaQueryFactory
 			.select(reply.count())
 			.from(reply)
-			.where(reply.discussion.id.eq(discussionId).and(reply.parent.isNull()))
+			.where(reply.discussion.id.eq(discussionId).and(reply.parent.isNull()).and(reply.isDeleted.isFalse()))
 			.fetchOne();
 	}
 
@@ -122,7 +122,7 @@ public class ReplyQueryRepositoryImpl implements ReplyQueryRepository {
 		return jpaQueryFactory
 			.select(reply.count())
 			.from(reply)
-			.where(reply.parent.id.eq(parentId))
+			.where(reply.parent.id.eq(parentId).and(reply.isDeleted.isFalse()))
 			.fetchOne();
 	}
 
