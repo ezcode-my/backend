@@ -581,6 +581,66 @@
             text-decoration: underline;
             color: #00e09e;
         }
+
+        .reply-input-box {
+            margin-top: 12px;
+            margin-bottom: 4px;
+            background: #18191c;
+            border-radius: 6px;
+            padding: 14px 16px;
+            border: 1px solid #23272f;
+            width: 100%;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        .reply-input-text {
+            width: 100%;
+            min-height: 60px;
+            background: #23272f;
+            color: #eee;
+            border: 1px solid #333;
+            border-radius: 4px;
+            font-size: 15px;
+            padding: 10px 12px;
+            resize: vertical;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        .reply-input-box > div {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .reply-cancel-btn, .reply-submit-btn {
+            background: none;
+            border: 1px solid #333;
+            color: #aaa;
+            border-radius: 4px;
+            padding: 4px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.13s, color 0.13s;
+        }
+        .reply-submit-btn {
+            color: #00d084;
+            border-color: #00d084;
+        }
+        .reply-submit-btn:hover {
+            background: #00d084;
+            color: #18191c;
+        }
+        .reply-cancel-btn:hover {
+            background: #23272f;
+            color: #fff;
+        }
+
+        .discussion-create-box {
+            margin-bottom: 18px;
+        }
     </style>
 </head>
 
@@ -605,6 +665,7 @@
             </div>
 
             <div id="discussion-content" class="left-content">
+                <div id="discussion-create-box" class="discussion-create-box"></div>
                 <div class="discussion-sortbar">
                     <span class="discussion-sort-label">Sort by:</span>
                     <select id="discussion-sort" class="discussion-sort-select">
@@ -909,9 +970,9 @@ if __name__ == "__main__":
                          <button class="icon-btn downvote-btn" data-id="${d.discussionId}">
                              ${getDownvoteIcon(d.voteStatus === 'DOWN')}
                          </button>
-                         <button class="reply-btn" data-id="${d.discussionId}">답글</button>
+                         <button class="reply-btn" data-id="${d.discussionId}">댓글 달기</button>
                      </div>
-                     ${d.replyCount > 0 ? `<div class="toggle-replies-row"><button class="toggle-replies-btn" data-id="${d.discussionId}" data-open="false">답글 ${d.replyCount}개</button></div>` : ''}
+                     ${d.replyCount > 0 ? `<div class="toggle-replies-row"><button class="toggle-replies-btn" data-id="${d.discussionId}" data-open="false">댓글 ${d.replyCount}개</button></div>` : ''}
                      <div class="replies-container" id="replies-for-${d.discussionId}" style="display:none;"></div>
                  </div>
              `;
@@ -972,7 +1033,7 @@ if __name__ == "__main__":
                         <button class="icon-btn downvote-btn" data-id="${r.replyId}">
                             ${getDownvoteIcon(r.voteStatus === 'DOWN')}
                         </button>
-                        <button class="reply-btn" data-id="${r.replyId}">대댓글 달기</button>
+                        ${depth === 0 ? `<button class="reply-btn" data-id="${r.replyId}">대댓글 달기</button>` : ''}
                     </div>
                     ${(r.childReplyCount > 0 && depth === 0) ? `<div class=\"toggle-replies-row\"><button class=\"toggle-child-replies-btn\" data-id=\"${r.replyId}\" data-open=\"false\">대댓글 펼치기</button></div>` : ''}
                     <div class="child-replies-container" id="child-replies-for-${r.replyId}" style="display:none;"></div>
@@ -1034,6 +1095,135 @@ if __name__ == "__main__":
                 ? `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 17l-6-8h4V3h4v6h4l-6 8z" fill="#ff4d4d"/></svg>`
                 : `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 17l-6-8h4V3h4v6h4l-6 8z" fill="none" stroke="#aaa" stroke-width="2"/></svg>`;
         }
+
+        // 댓글/대댓글 달기 버튼 이벤트 바인딩
+        document.addEventListener('click', function(e) {
+            // 댓글 달기
+            if (e.target.classList.contains('reply-btn') && !e.target.closest('.reply-item')) {
+                const discussionId = e.target.dataset.id;
+                showReplyInput(discussionId, null, e.target);
+            }
+            // 대댓글 달기
+            if (e.target.classList.contains('reply-btn') && e.target.closest('.reply-item')) {
+                const replyId = e.target.dataset.id;
+                const discussionId = e.target.closest('.discussion-item').dataset.discussionId;
+                showReplyInput(discussionId, replyId, e.target);
+            }
+        });
+
+        function showReplyInput(discussionId, parentReplyId, btnEl) {
+            // 이미 열려있으면 return
+            if (btnEl.parentNode.querySelector('.reply-input-box')) return;
+            const box = document.createElement('div');
+            box.className = 'reply-input-box';
+            box.innerHTML = `
+                <textarea class="reply-input-text" rows="3" style="width:100%;resize:vertical;margin-bottom:6px;"></textarea>
+                <div style="display:flex;gap:8px;">
+                    <button class="reply-cancel-btn">취소</button>
+                    <button class="reply-submit-btn">작성</button>
+                </div>
+            `;
+            btnEl.closest('.comment-actions').after(box);
+
+            // 취소
+            box.querySelector('.reply-cancel-btn').onclick = () => box.remove();
+
+            // 작성
+            box.querySelector('.reply-submit-btn').onclick = async () => {
+                const content = box.querySelector('.reply-input-text').value.trim();
+                if (!content) return alert('내용을 입력하세요.');
+                const payload = parentReplyId ? { parentReplyId: Number(parentReplyId), content } : { content };
+                const token = sessionStorage.getItem('accessToken');
+                const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/replies`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        ...tokenHeader() 
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    if (parentReplyId) {
+                        // 대댓글: 해당 댓글의 대댓글만 새로고침
+                        const childContainer = document.getElementById(`child-replies-for-${parentReplyId}`);
+                        if (childContainer) {
+                            childContainer.dataset.loaded = 'true';
+                            const discussionId = btnEl.closest('.discussion-item').dataset.discussionId;
+                            const childReplies = await fetchChildReplies(discussionId, parentReplyId);
+                            renderReplies(childContainer, childReplies, discussionId, 1);
+                            // 펼쳐진 상태로 유지
+                            childContainer.style.display = 'block';
+                            // 버튼 텍스트/상태 갱신
+                            const toggleBtn = btnEl.closest('.reply-item').querySelector('.toggle-child-replies-btn');
+                            if (toggleBtn) {
+                                toggleBtn.textContent = '대댓글 접기';
+                                toggleBtn.dataset.open = 'true';
+                            }
+                        }
+                    } else {
+                        // 댓글: 전체 댓글 새로고침
+                        const container = document.getElementById(`replies-for-${discussionId}`);
+                        if (container) {
+                            container.dataset.loaded = 'true';
+                            const replies = await fetchReplies(discussionId);
+                            renderReplies(container, replies, discussionId, 0);
+                            // 펼쳐진 상태로 유지
+                            container.style.display = 'block';
+                            // 버튼 텍스트/상태 갱신
+                            const toggleBtn = btnEl.closest('.discussion-item').querySelector('.toggle-replies-btn');
+                            if (toggleBtn) {
+                                toggleBtn.textContent = '댓글 접기';
+                                toggleBtn.dataset.open = 'true';
+                            }
+                        }
+                    }
+                    box.remove();
+                } else {
+                    alert('작성에 실패했습니다.');
+                }
+            };
+        }
+
+        function renderDiscussionCreateBox() {
+            const box = document.getElementById('discussion-create-box');
+            box.innerHTML = `
+                <textarea id="discussion-create-text" class="reply-input-text" rows="4" placeholder="토론글을 작성해보세요"></textarea>
+                <div style="display:flex;gap:10px;justify-content:flex-end;">
+                    <button id="discussion-create-cancel" class="reply-cancel-btn">취소</button>
+                    <button id="discussion-create-submit" class="reply-submit-btn">작성</button>
+                </div>
+            `;
+            // 취소: 입력 내용만 비움
+            box.querySelector('#discussion-create-cancel').onclick = () => {
+                box.querySelector('#discussion-create-text').value = '';
+            };
+            // 작성
+            box.querySelector('#discussion-create-submit').onclick = async () => {
+                const content = box.querySelector('#discussion-create-text').value.trim();
+                if (!content) return alert('내용을 입력하세요.');
+                const token = sessionStorage.getItem('accessToken');
+                const res = await fetch(`/api/problems/${window.problemId}/discussions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...tokenHeader()
+                    },
+                    body: JSON.stringify({ languageId: 1, content })
+                });
+                if (res.ok) {
+                    // 성공: 입력창 비우고 목록 새로고침
+                    box.querySelector('#discussion-create-text').value = '';
+                    loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
+                } else {
+                    alert('토론글 작성에 실패했습니다.');
+                }
+            };
+        }
+
+        // 페이지 진입 시 항상 렌더링
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDiscussionCreateBox();
+        });
 
         fetch('/html/header.html')
             .then(res => res.text())
