@@ -295,7 +295,7 @@
             /* 비활성 상태의 밑줄 */
             color: #ccc;
             /* 기본 글자색 */
-            font-size: 20px;
+             font-size: 20px;
             font-weight: 600;
             transition: all 0.2s ease-in-out;
         }
@@ -816,6 +816,10 @@
                 <div id="discussion-pagination"></div>
             </div>
 
+            <div id="prob-image-wrapper">
+                <img id="prob-image" src="" alt="문제 이미지" style="max-width: 100%; height: auto;" />
+            </div>
+
         </div>
         <div class="right">
             <div class="section">
@@ -932,6 +936,13 @@
                 probTimeEl.textContent = data.timeLimit ?? '--';
                 probMemEl.textContent = data.memoryLimit ?? '--';
                 probCatsEl.textContent = Array.isArray(data.categories) ? data.categories.join(', ') : '';
+
+                if (data.imageUrl) {
+                    probImageEl.src = data.imageUrl;
+                    probImageEl.style.display = 'block';
+                } else {
+                    probImageEl.style.display = 'none';
+                }
             } catch (err) {
                 console.error(err);
                 probTitleEl.textContent = '네트워크 오류';
