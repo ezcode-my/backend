@@ -34,6 +34,10 @@ public class TestcaseDomainService {
 		return testcaseRepository.findAllByProblem(problem);
 	}
 
+	public List<Testcase> getTestcaseListByProblemId(Long problemId) {
+		return testcaseRepository.findAllByProblemId(problemId);
+	}
+
 	public Testcase getTestcase(Long testcaseId) {
 		return testcaseRepository.findByTestcase(testcaseId);
 	}

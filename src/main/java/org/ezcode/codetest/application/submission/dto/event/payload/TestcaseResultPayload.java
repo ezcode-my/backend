@@ -4,7 +4,7 @@ import org.ezcode.codetest.application.submission.model.JudgeResult;
 
 public record TestcaseResultPayload(
 
-    int seqId,
+    Long testcaseId,
 
     boolean isPassed,
 
@@ -17,9 +17,9 @@ public record TestcaseResultPayload(
     String message
 
 ) {
-    public static TestcaseResultPayload fromEvaluation(int seqId, boolean isPassed, JudgeResult result) {
+    public static TestcaseResultPayload fromEvaluation(Long testcaseId, boolean isPassed, JudgeResult result) {
         return new TestcaseResultPayload(
-            seqId,
+            testcaseId,
             isPassed,
             result.actualOutput(),
             result.executionTime(),

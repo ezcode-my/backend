@@ -19,10 +19,6 @@
     <link rel="stylesheet" href="/css/footer.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Inter:wght@400;600&display=swap"
         rel="stylesheet" />
-
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-        
     <style>
         body {
             background-color: #0f111a;
@@ -66,8 +62,7 @@
             position: relative;
         }
 
-        h2,
-        h3 {
+        h2, h3 {
             color: #00d084;
             margin-bottom: 20px;
         }
@@ -79,7 +74,7 @@
             margin-bottom: 20px;
         }
 
-        .grid>div {
+        .grid > div {
             flex: 1;
         }
 
@@ -90,9 +85,7 @@
             color: #ccc;
         }
 
-        input,
-        textarea,
-        select {
+        input, textarea, select {
             width: 100%;
             padding: 12px;
             background-color: #2a2d3d;
@@ -121,6 +114,24 @@
 
         button:hover {
             background-color: #00b472;
+        }
+
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        .review-box {
+            margin-top: 16px;
+            background-color: #2a2d3d;
+            padding: 20px;
+            border-radius: 10px;
+            color: #f0f2f5;
+        }
+
+        .review-box strong,
+        .review-box b {
+            color: #00d084;
         }
 
         .result-box {
@@ -726,84 +737,89 @@
         }
     </style>
 </head>
-
 <body>
-    <div id="header-placeholder"></div>
-    <div class="container">
-        <div class="left">
+<div id="header-placeholder"></div>
+<div class="container">
+    <div class="left">
 
-            <div id="section-tabbar" class="tabbar">
-                <button class="active" id="description-tab" data-target="#description-content">문제 설명</button>
-                <button id="discussion-tab" data-target="#discussion-content">토론글</button>
+        <div id="section-tabbar" class="tabbar">
+            <button class="active" id="description-tab" data-target="#description-content">문제 설명</button>
+            <button id="discussion-tab" data-target="#discussion-content">토론글</button>
+        </div>
+
+        <div id="description-content" class="left-content active">
+            <div id="prob-title">문제 제목</div>
+            <div id="prob-desc">문제 설명이 여기에 표시됩니다.</div>
+            <ul>
+                <li>시간 제한: <span id="prob-time">--</span> ms</li>
+                <li>메모리 제한: <span id="prob-mem">--</span> KB</li>
+                <li>카테고리: <span id="prob-cats">--</span></li>
+            </ul>
+        </div>
+
+        <div id="discussion-content" class="left-content">
+            <div id="discussion-create-box" class="discussion-create-box"></div>
+            <div class="discussion-sortbar">
+                <span class="discussion-sort-label">Sort by:</span>
+                <select id="discussion-sort" class="discussion-sort-select">
+                    <option value="best">Best</option>
+                    <option value="upvote">Upvotes</option>
+                    <option value="latest">Latest</option>
+                </select>
             </div>
+            <div id="discussion-list"></div>
+            <div id="discussion-pagination"></div>
+        </div>
 
-            <div id="description-content" class="left-content active">
-                <div id="prob-title">문제 제목</div>
-                <div id="prob-desc">문제 설명이 여기에 표시됩니다.</div>
-                <ul>
-                    <li>시간 제한: <span id="prob-time">--</span> ms</li>
-                    <li>메모리 제한: <span id="prob-mem">--</span> KB</li>
-                    <li>카테고리: <span id="prob-cats">--</span></li>
-                </ul>
-            </div>
-
-            <div id="discussion-content" class="left-content">
-                <div id="discussion-create-box" class="discussion-create-box"></div>
-                <div class="discussion-sortbar">
-                    <span class="discussion-sort-label">Sort by:</span>
-                    <select id="discussion-sort" class="discussion-sort-select">
-                        <option value="best">Best</option>
-                        <option value="upvote">Upvotes</option>
-                        <option value="latest">Latest</option>
+    </div>
+    <div class="right">
+        <div class="section">
+            <h2>코드 제출</h2>
+            <div class="grid">
+                <div>
+                    <label for="language">언어 선택</label>
+                    <select id="language">
+                        <option value="1">Java</option>
+                        <option value="2">C</option>
+                        <option value="3">C++</option>
+                        <option value="4">Python</option>
                     </select>
                 </div>
-                <div id="discussion-list"></div>
-                <div id="discussion-pagination"></div>
             </div>
-
+            <label for="editor">소스코드</label>
+            <div class="editor-wrapper">
+                <div id="editor" class="cm-theme" style="height: 300px;"></div>
+            </div>
+            <button onclick="submitCode()">코드 제출 (WebSocket)</button>
+            <button id="reviewBtn" onclick="requestReview()" disabled>리뷰 요청 (AI)</button>
         </div>
-        <div class="right">
-            <div class="section">
-                <h2>코드 제출</h2>
-                <div class="grid">
-                    <div>
-                        <label for="language">언어 선택</label>
-                        <select id="language">
-                            <option value="1">Java</option>
-                            <option value="2">C</option>
-                            <option value="3">C++</option>
-                            <option value="4">Python</option>
-                        </select>
-                    </div>
-                </div>
-                <label for="editor">소스코드</label>
-                <div class="editor-wrapper">
-                    <div id="editor" class="cm-theme" style="height: 300px;"></div>
-                </div>
-                <button onclick="submitCode()">코드 제출 (WebSocket)</button>
+        <div class="section">
+            <h3>채점 결과</h3>
+            <div class="git-sidebar">
+                <div class="git-status-dot" id="gitDot"></div>
             </div>
-            <div class="section">
-                <h3>채점 결과</h3>
-                <div class="git-sidebar">
-                    <div class="git-status-dot" id="gitDot"></div>
-                </div>
-                <div id="judgeResult" class="result-box">여기에 테스트 결과가 표시됩니다</div>
-            </div>
+            <div id="judgeResult" class="result-box">여기에 테스트 결과가 표시됩니다</div>
+            <div id="reviewBox" class="review-box" style="display: none"></div>
         </div>
     </div>
-    <div id="footer-placeholder"></div>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script defer>
-        let stompClient;
-        let connected = false;
-        const gitDot = document.getElementById('gitDot');
-        const probTitleEl = document.getElementById('prob-title');
-        const probDescEl = document.getElementById('prob-desc');
-        const probTimeEl = document.getElementById('prob-time');
-        const probMemEl = document.getElementById('prob-mem');
-        const probCatsEl = document.getElementById('prob-cats');
+</div>
+<div id="footer-placeholder"></div>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script defer>
+    let stompClient;
+    let connected = false;
+    let finalIsCorrect = null;
+    const testcaseSlotMap = {}; // { pk값: index }
+    const gitDot = document.getElementById('gitDot');
+    const reviewBtn = document.getElementById('reviewBtn');
+    const reviewBox = document.getElementById('reviewBox');
+    const probTitleEl = document.getElementById('prob-title');
+    const probDescEl = document.getElementById('prob-desc');
+    const probTimeEl = document.getElementById('prob-time');
+    const probMemEl = document.getElementById('prob-mem');
+    const probCatsEl = document.getElementById('prob-cats');
 
         const DEFAULT_PROFILE_IMG = "/static/images/user-icon.png"; // 임의 프사 경로
 
@@ -876,51 +892,72 @@
             }
         }
 
-        async function submitCode() {
-            const pid = window.problemId;
-            const languageId = +document.getElementById('language').value;
-            const sourceCode = window.getEditorCode();
-            const payload = { languageId, sourceCode };
-            const judgeEl = document.getElementById('judgeResult');
-            judgeEl.innerHTML = '';
+    async function submitCode() {
+        const pid = window.problemId;
+        const languageId = +document.getElementById('language').value;
+        const sourceCode = window.getEditorCode();
+        const payload = {languageId, sourceCode};
+        const judgeEl = document.getElementById('judgeResult');
+        judgeEl.innerHTML = '';
+        reviewBox.style.display = 'none';
+        reviewBtn.disabled = true;
+        finalIsCorrect = null;
 
-            try {
-                const res = await fetch(`/api/problems/${pid}/submit-ws`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...tokenHeader()
-                    },
-                    body: JSON.stringify(payload)
-                });
-                const resp = await res.json();
-                if (!resp.success) {
-                    judgeEl.textContent = `Error: ${resp.message}`;
-                    return;
-                }
-                const sessionKey = resp.result;
-                initWebSocket(sessionKey);
-            } catch (err) {
-                console.error(err);
-                judgeEl.textContent = '채점 요청 실패';
+        try {
+            const res = await fetch(`/api/problems/${pid}/submit-ws`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...tokenHeader()
+                },
+                body: JSON.stringify(payload)
+            });
+            const resp = await res.json();
+            console.log('[DEBUG] 전체 응답:', resp);
+            console.log('[DEBUG] result:', resp.result);
+            if (!resp.success) {
+                judgeEl.textContent = `Error: ${resp.message}`;
+                return;
             }
+            const { sessionKey, testcaseIds } = resp.result;
+            initWebSocket(sessionKey);
+            renderInitSlots(testcaseIds);
+        } catch (err) {
+            console.error(err);
+            judgeEl.textContent = '채점 요청 실패';
         }
+    }
 
-        const languageTemplates = {
-            1: `public class Main {
+    function renderInitSlots(testcaseIds) {
+        console.log('[DEBUG] init 호출됨:', testcaseIds); // 추가
+        const judgeEl = document.getElementById('judgeResult');
+        testcaseIds.forEach((pk, index) => {
+            const visibleIdx = index + 1;
+            testcaseSlotMap[pk] = visibleIdx;
+
+            const d = document.createElement('div');
+            d.id = `slot-${visibleIdx}`;
+            d.className = 'slot init';
+            d.textContent = `[${visibleIdx}] 상태: 채점 중...`;
+            judgeEl.appendChild(d);
+        });
+    }
+
+    const languageTemplates = {
+        1: `public class Main {
     public static void main(String[] args) {
         // 코드 작성
     }
 }`, // Java
 
-            2: `#include <stdio.h>
+        2: `#include <stdio.h>
 
 int main() {
     // 코드 작성
     return 0;
 }`, // C
 
-            3: `#include <iostream>
+        3: `#include <iostream>
 using namespace std;
 
 int main() {
@@ -928,122 +965,144 @@ int main() {
     return 0;
 }`, // C++
 
-            4: `def main():
+        4: `def main():
     # 코드 작성
     pass
 
 if __name__ == "__main__":
     main()`, // Python
-        };
-        // CodeMirror 인스턴스 생성
-        const editor = CodeMirror(document.getElementById("editor"), {
-            value: "",
-            mode: "text/x-java",      // 기본 Java 모드
-            theme: "dracula",         // dracula 테마
-            lineNumbers: true,
-            indentUnit: 4,
-            tabSize: 4
-        });
-        editor.setSize(null, 300);
-        editor.setValue(languageTemplates[1]);
+    };
+    // CodeMirror 인스턴스 생성
+    const editor = CodeMirror(document.getElementById("editor"), {
+        value: "",
+        mode: "text/x-java",      // 기본 Java 모드
+        theme: "dracula",         // dracula 테마
+        lineNumbers: true,
+        indentUnit: 4,
+        tabSize: 4
+    });
+    editor.setSize(null, 300);
+    editor.setValue(languageTemplates[1]);
 
-        // 언어 선택 드롭다운과 연동
-        document.getElementById("language").addEventListener("change", e => {
-            const m = +e.target.value;
-            let mode;
-            if (m === 1) mode = "text/x-java";
-            else if (m === 2) mode = "text/x-csrc";
-            else if (m === 3) mode = "text/x-c++src";
-            else if (m === 4) mode = "python";
-            editor.setOption("mode", mode);
+    // 언어 선택 드롭다운과 연동
+    document.getElementById("language").addEventListener("change", e => {
+        const m = +e.target.value;
+        let mode;
+        if (m === 1) mode = "text/x-java";
+        else if (m === 2) mode = "text/x-csrc";
+        else if (m === 3) mode = "text/x-c++src";
+        else if (m === 4) mode = "python";
+        editor.setOption("mode", mode);
 
-            // 메인 함수 템플릿 자동 입력
-            const template = languageTemplates[m];
-            if (template) editor.setValue(template);
-        });
-        // submitCode() 에서 호출할 함수
-        window.getEditorCode = () => editor.getValue();
+        // 메인 함수 템플릿 자동 입력
+        const template = languageTemplates[m];
+        if (template) editor.setValue(template);
+    });
+    // submitCode() 에서 호출할 함수
+    window.getEditorCode = () => editor.getValue();
 
-        function initWebSocket(sessionKey) {
-            const tokenOnly = (sessionStorage.getItem('accessToken') || '').replace(/^Bearer /, '');
-            const socket = new SockJS(`/ws?token=${encodeURIComponent(tokenOnly)}`);
-            stompClient = Stomp.over(socket);
-            stompClient.debug = msg => console.log('[STOMP]', msg);
+    function initWebSocket(sessionKey) {
+        const tokenOnly = (sessionStorage.getItem('accessToken') || '').replace(/^Bearer /, '');
+        const socket = new SockJS(`/ws?token=${encodeURIComponent(tokenOnly)}`);
+        stompClient = Stomp.over(socket);
+        stompClient.debug = msg => console.log('[STOMP]', msg);
 
-            stompClient.connect({}, () => {
-                connected = true;
-                const base = `/user/queue/submission/${sessionKey}`;
-                stompClient.subscribe(`${base}/git-status`, msg => {
-                    let status;
-                    try {
-                        const parsed = JSON.parse(msg.body);
-                        status = parsed.pushStatus ?? msg.body;
-                    } catch (e) {
-                        status = msg.body;
-                    }
-                    if (status === 'STARTED') gitDot.style.backgroundColor = '#ff9900';
-                    else if (status === 'SUCCESS') gitDot.style.backgroundColor = '#00d084';
-                    else if (status === 'FAILED') gitDot.style.backgroundColor = '#ff4d4d';
-                    else gitDot.style.backgroundColor = 'gray';
-                });
-                stompClient.subscribe(`${base}/init`, msg => handleInit(JSON.parse(msg.body)));
-                stompClient.subscribe(`${base}/case`, msg => handleCase(JSON.parse(msg.body)));
-                stompClient.subscribe(`${base}/final`, msg => handleFinal(JSON.parse(msg.body)));
-            }, err => console.error('[STOMP] 연결 오류:', err));
-        }
-
-        function handleInit(slots) {
-            const judgeEl = document.getElementById('judgeResult');
-            judgeEl.innerHTML = '';
-            slots.forEach(s => {
-                const d = document.createElement('div');
-                d.id = `slot-${s.seqId}`;
-                d.className = 'slot init';
-                d.textContent = `[${s.seqId}] 상태: ${s.status}`;
-                judgeEl.appendChild(d);
-            });
-        }
-
-        function handleCase(data) {
-            const d = document.getElementById(`slot-${data.seqId}`);
-            if (!d) return;
-            d.className = data.isPassed ? 'slot passed' : 'slot failed';
-            d.textContent = `[${data.seqId}] ${data.message} (${data.executionTime}ms, ${data.memoryUsage}KB)`;
-        }
-
-        function handleFinal(res) {
-            const sum = document.createElement('div');
-            sum.className = 'final-summary';
-            sum.innerHTML = `<strong>최종:</strong> ${res.passedCount}/${res.totalCount} 통과 — ${res.message}`;
-            document.getElementById('judgeResult').appendChild(sum);
-        }
-
-        async function loadDiscussions(pid, page = 0, size = 10, sortBy) {
-            sortBy = sortBy || (window.currentDiscussionSortBy || 'best');
-            window.currentDiscussionSortBy = sortBy;
-            const res = await fetch(`/api/problems/${pid}/discussions?page=${page}&size=${size}&sortBy=${sortBy}`, {
-                headers: {
-                    'Accept': 'application/json',
-                    ...tokenHeader()
+        stompClient.connect({}, () => {
+            connected = true;
+            const base = `/user/queue/submission/${sessionKey}`;
+            stompClient.subscribe(`${base}/case`, msg => handleCase(JSON.parse(msg.body)));
+            stompClient.subscribe(`${base}/final`, msg => handleFinal(JSON.parse(msg.body)));
+            stompClient.subscribe(`${base}/git-status`, msg => {
+                let status;
+                try {
+                    const parsed = JSON.parse(msg.body);
+                    status = parsed.pushStatus ?? msg.body;
+                } catch (e) {
+                    status = msg.body;
                 }
+                if (status === 'STARTED') gitDot.style.backgroundColor = '#ff9900';
+                else if (status === 'SUCCESS') gitDot.style.backgroundColor = '#00d084';
+                else if (status === 'FAILED') gitDot.style.backgroundColor = '#ff4d4d';
+                else gitDot.style.backgroundColor = 'gray';
             });
-            const data = await res.json();
-            if (!data.success) {
-                document.getElementById('discussion-list').innerHTML = "토론글을 불러오지 못했습니다.";
-                return;
-            }
-            renderDiscussionList(data.result.content);
-            renderDiscussionPagination(data.result, pid);
-        }
+        }, err => console.error('[STOMP] 연결 오류:', err));
+    }
 
-        function renderDiscussionList(discussions) {
-            const listEl = document.getElementById('discussion-list');
-            if (!discussions.length) {
-                listEl.innerHTML = "<p>토론글이 없습니다.</p>";
-                return;
+    function handleCase(data) {
+        const pk = data.testcaseId || data.id; // 서버에서 오는 실제 PK
+        const slotIndex = testcaseSlotMap[pk];
+        if (!slotIndex) return;
+
+        const d = document.getElementById(`slot-${slotIndex}`);
+        if (!d) return;
+
+        d.className = data.isPassed ? 'slot passed' : 'slot failed';
+        d.textContent = `[${slotIndex}] ${data.message} (${data.executionTime}ms, ${data.memoryUsage}KB)`;
+    }
+
+    function handleFinal(res) {
+        const sum = document.createElement('div');
+        sum.className = 'final-summary';
+        sum.innerHTML = `<strong>최종:</strong> ${res.passedCount}/${res.totalCount} 통과 — ${res.message}`;
+        document.getElementById('judgeResult').appendChild(sum);
+        finalIsCorrect = res.passedCount === res.totalCount;
+        reviewBtn.disabled = false;
+    }
+
+    async function requestReview() {
+        if (!window.problemId || finalIsCorrect === null) return;
+        const languageId = +document.getElementById('language').value;
+        const sourceCode = window.getEditorCode();
+        try {
+            const res = await fetch(`/api/problems/${window.problemId}/review`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...tokenHeader()
+                },
+                body: JSON.stringify({ languageId, sourceCode, isCorrect: finalIsCorrect })
+            });
+            const json = await res.json();
+            const content = json.result?.reviewContent || json.reviewContent;
+            reviewBox.style.display = 'block';
+            const markdownSafe = content
+                .replace(/\n[\t ]*-/g, '\n-')      // 리스트용 하이픈 앞 공백 제거
+                .replace(/\n/g, '  \n');           // 줄바꿈을 마크다운 줄바꿈으로 변환
+            reviewBox.innerHTML = marked.parse(markdownSafe || '리뷰 결과가 없습니다.');
+            console.log(JSON.stringify(content));
+        } catch (e) {
+            console.error('리뷰 요청 실패', e);
+            reviewBox.style.display = 'block';
+            reviewBox.textContent = '리뷰 요청 중 오류가 발생했습니다';
+        }
+    }
+
+    async function loadDiscussions(pid, page = 0, size = 10, sortBy) {
+        sortBy = sortBy || (window.currentDiscussionSortBy || 'best');
+        window.currentDiscussionSortBy = sortBy;
+        const res = await fetch(`/api/problems/${pid}/discussions?page=${page}&size=${size}&sortBy=${sortBy}`, {
+            headers: {
+                'Accept': 'application/json',
+                ...tokenHeader()
             }
-            listEl.innerHTML = discussions.map(d => {
-                return `
+        });
+        const data = await res.json();
+        if (!data.success) {
+            document.getElementById('discussion-list').innerHTML = "토론글을 불러오지 못했습니다.";
+            return;
+        }
+        renderDiscussionList(data.result.content);
+        renderDiscussionPagination(data.result, pid);
+    }
+
+    function renderDiscussionList(discussions) {
+        const listEl = document.getElementById('discussion-list');
+        if (!discussions.length) {
+            listEl.innerHTML = "<p>토론글이 없습니다.</p>";
+            return;
+        }
+        listEl.innerHTML = discussions.map(d => {
+            return `
                  <div class="discussion-item" data-discussion-id="${d.discussionId}">
                      <div class="discussion-header">
                          <img src="${d.userInfo.profileImageUrl || DEFAULT_PROFILE_IMG}" alt="profile">
@@ -1069,60 +1128,60 @@ if __name__ == "__main__":
                      <div class="replies-container" id="replies-for-${d.discussionId}" style="display:none;"></div>
                  </div>
              `;
-         }).join('');
-            // 댓글 펼치기 버튼 이벤트 바인딩
-            document.querySelectorAll('.toggle-replies-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const discussionId = this.dataset.id;
-                    const container = document.getElementById(`replies-for-${discussionId}`);
-                    const isOpen = this.dataset.open === 'true';
-                    if (isOpen) {
-                        container.style.display = 'none';
-                        this.textContent = '댓글 펼치기';
-                        this.dataset.open = 'false';
-                    } else {
-                        if (!container.dataset.loaded) {
-                            const replies = await fetchReplies(discussionId);
-                            renderReplies(container, replies, discussionId, 0);
-                            container.dataset.loaded = 'true';
-                        }
-                        container.style.display = 'block';
-                        this.textContent = '댓글 접기';
-                        this.dataset.open = 'true';
+        }).join('');
+        // 댓글 펼치기 버튼 이벤트 바인딩
+        document.querySelectorAll('.toggle-replies-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const discussionId = this.dataset.id;
+                const container = document.getElementById(`replies-for-${discussionId}`);
+                const isOpen = this.dataset.open === 'true';
+                if (isOpen) {
+                    container.style.display = 'none';
+                    this.textContent = '댓글 펼치기';
+                    this.dataset.open = 'false';
+                } else {
+                    if (!container.dataset.loaded) {
+                        const replies = await fetchReplies(discussionId);
+                        renderReplies(container, replies, discussionId, 0);
+                        container.dataset.loaded = 'true';
                     }
-                });
-            });
-        }
-
-        // 댓글(1차) 조회
-        async function fetchReplies(discussionId) {
-            const url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies`;
-            const res = await fetch(url, {
-                headers: {
-                    'Accept': 'application/json',
-                    ...tokenHeader()
+                    container.style.display = 'block';
+                    this.textContent = '댓글 접기';
+                    this.dataset.open = 'true';
                 }
             });
-            const data = await res.json();
-            return data.success ? data.result.content : [];
-        }
-        // 대댓글(2차) 조회
-        async function fetchChildReplies(discussionId, replyId) {
-            const url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${replyId}`;
-            const res = await fetch(url, {
-                headers: {
-                    'Accept': 'application/json',
-                    ...tokenHeader()
-                }
-            });
-            const data = await res.json();
-            return data.success ? data.result.content : [];
-        }
+        });
+    }
 
-        function renderReplies(container, replies, discussionId, depth) {
-            container.innerHTML = replies.map(r => {
-                console.log(r.replyId, r.voteStatus);
-                return `
+    // 댓글(1차) 조회
+    async function fetchReplies(discussionId) {
+        const url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies`;
+        const res = await fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                ...tokenHeader()
+            }
+        });
+        const data = await res.json();
+        return data.success ? data.result.content : [];
+    }
+    // 대댓글(2차) 조회
+    async function fetchChildReplies(discussionId, replyId) {
+        const url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${replyId}`;
+        const res = await fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                ...tokenHeader()
+            }
+        });
+        const data = await res.json();
+        return data.success ? data.result.content : [];
+    }
+
+    function renderReplies(container, replies, discussionId, depth) {
+        container.innerHTML = replies.map(r => {
+            console.log(r.replyId, r.voteStatus);
+            return `
                 <div class="reply-item" style="margin-left:${depth * 32}px" data-reply-id="${r.replyId}">
                     <div class="discussion-header">
                         <img src="${r.userInfo.profileImageUrl || DEFAULT_PROFILE_IMG}" alt="profile">
@@ -1148,432 +1207,424 @@ if __name__ == "__main__":
                     <div class="child-replies-container" id="child-replies-for-${r.replyId}" style="display:none;"></div>
                 </div>
                 `;
-            }).join('');
-            // 대댓글 펼치기 버튼 이벤트 바인딩 (대댓글의 대댓글은 없음)
-            if (depth === 0) {
-                container.querySelectorAll('.toggle-child-replies-btn').forEach(btn => {
-                    btn.addEventListener('click', async function() {
-                        const replyId = this.dataset.id;
-                        const childContainer = container.querySelector(`#child-replies-for-${replyId}`);
-                        const isOpen = this.dataset.open === 'true';
-                        if (isOpen) {
-                            childContainer.style.display = 'none';
-                            this.textContent = '대댓글 펼치기';
-                            this.dataset.open = 'false';
-                        } else {
-                            if (!childContainer.dataset.loaded) {
-                                const childReplies = await fetchChildReplies(discussionId, replyId);
-                                renderReplies(childContainer, childReplies, discussionId, 1);
-                                childContainer.dataset.loaded = 'true';
-                            }
-                            childContainer.style.display = 'block';
-                            this.textContent = '대댓글 접기';
-                            this.dataset.open = 'true';
+        }).join('');
+        // 대댓글 펼치기 버튼 이벤트 바인딩 (대댓글의 대댓글은 없음)
+        if (depth === 0) {
+            container.querySelectorAll('.toggle-child-replies-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const replyId = this.dataset.id;
+                    const childContainer = container.querySelector(`#child-replies-for-${replyId}`);
+                    const isOpen = this.dataset.open === 'true';
+                    if (isOpen) {
+                        childContainer.style.display = 'none';
+                        this.textContent = '대댓글 펼치기';
+                        this.dataset.open = 'false';
+                    } else {
+                        if (!childContainer.dataset.loaded) {
+                            const childReplies = await fetchChildReplies(discussionId, replyId);
+                            renderReplies(childContainer, childReplies, discussionId, 1);
+                            childContainer.dataset.loaded = 'true';
                         }
-                    });
+                        childContainer.style.display = 'block';
+                        this.textContent = '대댓글 접기';
+                        this.dataset.open = 'true';
+                    }
                 });
+            });
+        }
+    }
+
+    function renderDiscussionPagination(pageData, pid) {
+        const pagEl = document.getElementById('discussion-pagination');
+        const totalPages = pageData.totalPages > 0 ? pageData.totalPages : 1;
+        const currentPage = pageData.number + 1; // 1-based
+        let html = '';
+
+        // << (맨앞)
+        html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="loadDiscussions('${pid}',0,10,window.currentDiscussionSortBy)">&#171;</button> `;
+
+        // < (이전)
+        html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${currentPage-2},10,window.currentDiscussionSortBy)">&#60;</button> `;
+
+        // 페이지 숫자 (최대 10개씩)
+        let start = Math.max(1, currentPage - 4);
+        let end = Math.min(totalPages, start + 9);
+        if (end - start < 9) start = Math.max(1, end - 9);
+        for (let i = start; i <= end; i++) {
+            if (i === currentPage) {
+                html += `<button class="page-btn current" disabled>${i}</button> `;
+            } else {
+                html += `<button class="page-btn" onclick="loadDiscussions('${pid}',${i-1},10,window.currentDiscussionSortBy)">${i}</button> `;
             }
         }
 
-        function renderDiscussionPagination(pageData, pid) {
-            const pagEl = document.getElementById('discussion-pagination');
-            const totalPages = pageData.totalPages > 0 ? pageData.totalPages : 1;
-            const currentPage = pageData.number + 1; // 1-based
-            let html = '';
+        // > (다음)
+        html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${currentPage},10,window.currentDiscussionSortBy)">&#62;</button> `;
 
-            // << (맨앞)
-            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="loadDiscussions('${pid}',0,10,window.currentDiscussionSortBy)">&#171;</button> `;
+        // >> (맨뒤)
+        html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${totalPages-1},10,window.currentDiscussionSortBy)">&#187;</button>`;
 
-            // < (이전)
-            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${currentPage-2},10,window.currentDiscussionSortBy)">&#60;</button> `;
+        pagEl.innerHTML = html;
+    }
 
-            // 페이지 숫자 (최대 10개씩)
-            let start = Math.max(1, currentPage - 4);
-            let end = Math.min(totalPages, start + 9);
-            if (end - start < 9) start = Math.max(1, end - 9);
-            for (let i = start; i <= end; i++) {
-                if (i === currentPage) {
-                    html += `<button class="page-btn current" disabled>${i}</button> `;
-                } else {
-                    html += `<button class="page-btn" onclick="loadDiscussions('${pid}',${i-1},10,window.currentDiscussionSortBy)">${i}</button> `;
-                }
-            }
+    // 추천/비추천 SVG 함수
+    function getUpvoteIcon(filled) {
+        return filled
+            ? `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 3l6 8h-4v6h-4v-6H4l6-8z" fill="#00d084"/></svg>`
+            : `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 3l6 8h-4v6h-4v-6H4l6-8z" fill="none" stroke="#aaa" stroke-width="2"/></svg>`;
+    }
+    function getDownvoteIcon(filled) {
+        return filled
+            ? `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 17l-6-8h4V3h4v6h4l-6 8z" fill="#ff4d4d"/></svg>`
+            : `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 17l-6-8h4V3h4v6h4l-6 8z" fill="none" stroke="#aaa" stroke-width="2"/></svg>`;
+    }
 
-            // > (다음)
-            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${currentPage},10,window.currentDiscussionSortBy)">&#62;</button> `;
-
-            // >> (맨뒤)
-            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="loadDiscussions('${pid}',${totalPages-1},10,window.currentDiscussionSortBy)">&#187;</button>`;
-
-            pagEl.innerHTML = html;
+    // 댓글/대댓글 달기 버튼 이벤트 바인딩
+    document.addEventListener('click', async function(e) {
+        // 댓글/대댓글 추천/비추천 (reply-item 먼저!)
+        if (e.target.closest('.upvote-btn') && e.target.closest('.reply-item')) {
+            const btn = e.target.closest('.upvote-btn');
+            const replyId = btn.dataset.id;
+            const discussionId = btn.closest('.discussion-item').dataset.discussionId;
+            const voteStatus = btn.dataset.votestatus;
+            await voteReply(discussionId, replyId, voteStatus === 'UP' ? 'NONE' : 'UP');
+            return;
         }
-
-        // 추천/비추천 SVG 함수
-        function getUpvoteIcon(filled) {
-            return filled
-                ? `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 3l6 8h-4v6h-4v-6H4l6-8z" fill="#00d084"/></svg>`
-                : `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 3l6 8h-4v6h-4v-6H4l6-8z" fill="none" stroke="#aaa" stroke-width="2"/></svg>`;
+        if (e.target.closest('.downvote-btn') && e.target.closest('.reply-item')) {
+            const btn = e.target.closest('.downvote-btn');
+            const replyId = btn.dataset.id;
+            const discussionId = btn.closest('.discussion-item').dataset.discussionId;
+            const voteStatus = btn.dataset.votestatus;
+            await voteReply(discussionId, replyId, voteStatus === 'DOWN' ? 'NONE' : 'DOWN');
+            return;
         }
-        function getDownvoteIcon(filled) {
-            return filled
-                ? `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 17l-6-8h4V3h4v6h4l-6 8z" fill="#ff4d4d"/></svg>`
-                : `<svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 17l-6-8h4V3h4v6h4l-6 8z" fill="none" stroke="#aaa" stroke-width="2"/></svg>`;
+        // 토론글 추천/비추천 (discussion-item는 reply-item보다 나중에 체크)
+        if (e.target.closest('.upvote-btn') && e.target.closest('.discussion-item')) {
+            const btn = e.target.closest('.upvote-btn');
+            const discussionId = btn.dataset.id;
+            const voteStatus = btn.dataset.votestatus;
+            await voteDiscussion(discussionId, voteStatus === 'UP' ? 'NONE' : 'UP');
+            return;
         }
-
-        // 댓글/대댓글 달기 버튼 이벤트 바인딩
-        document.addEventListener('click', async function(e) {
-            // 댓글/대댓글 추천/비추천 (reply-item 먼저!)
-            if (e.target.closest('.upvote-btn') && e.target.closest('.reply-item')) {
-                const btn = e.target.closest('.upvote-btn');
-                const replyId = btn.dataset.id;
-                const discussionId = btn.closest('.discussion-item').dataset.discussionId;
-                const voteStatus = btn.dataset.votestatus;
-                await voteReply(discussionId, replyId, voteStatus === 'UP' ? 'NONE' : 'UP');
-                return;
-            }
-            if (e.target.closest('.downvote-btn') && e.target.closest('.reply-item')) {
-                const btn = e.target.closest('.downvote-btn');
-                const replyId = btn.dataset.id;
-                const discussionId = btn.closest('.discussion-item').dataset.discussionId;
-                const voteStatus = btn.dataset.votestatus;
-                await voteReply(discussionId, replyId, voteStatus === 'DOWN' ? 'NONE' : 'DOWN');
-                return;
-            }
-            // 토론글 추천/비추천 (discussion-item는 reply-item보다 나중에 체크)
-            if (e.target.closest('.upvote-btn') && e.target.closest('.discussion-item')) {
-                const btn = e.target.closest('.upvote-btn');
-                const discussionId = btn.dataset.id;
-                const voteStatus = btn.dataset.votestatus;
-                await voteDiscussion(discussionId, voteStatus === 'UP' ? 'NONE' : 'UP');
-                return;
-            }
-            if (e.target.closest('.downvote-btn') && e.target.closest('.discussion-item')) {
-                const btn = e.target.closest('.downvote-btn');
-                const discussionId = btn.dataset.id;
-                const voteStatus = btn.dataset.votestatus;
-                await voteDiscussion(discussionId, voteStatus === 'DOWN' ? 'NONE' : 'DOWN');
-                return;
-            }
-            // 댓글 달기
-            if (e.target.classList.contains('reply-btn') && !e.target.closest('.reply-item')) {
-                const discussionId = e.target.dataset.id;
-                showReplyInput(discussionId, null, e.target);
-            }
-            // 대댓글 달기
-            if (e.target.classList.contains('reply-btn') && e.target.closest('.reply-item')) {
-                const replyId = e.target.dataset.id;
-                const discussionId = e.target.closest('.discussion-item').dataset.discussionId;
-                showReplyInput(discussionId, replyId, e.target);
-            }
-            // 토론글/댓글/대댓글 수정
-            if (e.target.classList.contains('edit-btn')) {
-                const item = e.target.closest('.discussion-item, .reply-item');
-                const contentEl = item.querySelector('.discussion-content');
-                const oldContent = contentEl.textContent;
-                // 이미 수정창이 열려있으면 return
-                if (item.querySelector('.edit-input-box')) return;
-                // textarea + 취소/저장 버튼
-                const box = document.createElement('div');
-                box.className = 'edit-input-box';
-                box.innerHTML = `
+        if (e.target.closest('.downvote-btn') && e.target.closest('.discussion-item')) {
+            const btn = e.target.closest('.downvote-btn');
+            const discussionId = btn.dataset.id;
+            const voteStatus = btn.dataset.votestatus;
+            await voteDiscussion(discussionId, voteStatus === 'DOWN' ? 'NONE' : 'DOWN');
+            return;
+        }
+        // 댓글 달기
+        if (e.target.classList.contains('reply-btn') && !e.target.closest('.reply-item')) {
+            const discussionId = e.target.dataset.id;
+            showReplyInput(discussionId, null, e.target);
+        }
+        // 대댓글 달기
+        if (e.target.classList.contains('reply-btn') && e.target.closest('.reply-item')) {
+            const replyId = e.target.dataset.id;
+            const discussionId = e.target.closest('.discussion-item').dataset.discussionId;
+            showReplyInput(discussionId, replyId, e.target);
+        }
+        // 토론글/댓글/대댓글 수정
+        if (e.target.classList.contains('edit-btn')) {
+            const item = e.target.closest('.discussion-item, .reply-item');
+            const contentEl = item.querySelector('.discussion-content');
+            const oldContent = contentEl.textContent;
+            // 이미 수정창이 열려있으면 return
+            if (item.querySelector('.edit-input-box')) return;
+            // textarea + 취소/저장 버튼
+            const box = document.createElement('div');
+            box.className = 'edit-input-box';
+            box.innerHTML = `
                     <textarea class="edit-input-text" style="width:100%;min-height:60px;">${oldContent}</textarea>
                     <div style="display:flex;gap:8px;justify-content:flex-end;">
                         <button class="edit-cancel-btn">취소</button>
                         <button class="edit-save-btn">저장</button>
                     </div>
                 `;
-                contentEl.style.display = 'none';
-                contentEl.after(box);
+            contentEl.style.display = 'none';
+            contentEl.after(box);
 
-                // 취소
-                box.querySelector('.edit-cancel-btn').onclick = () => {
-                    box.remove();
-                    contentEl.style.display = '';
-                };
+            // 취소
+            box.querySelector('.edit-cancel-btn').onclick = () => {
+                box.remove();
+                contentEl.style.display = '';
+            };
 
-                // 저장
-                box.querySelector('.edit-save-btn').onclick = async () => {
-                    const newContent = box.querySelector('.edit-input-text').value.trim();
-                    if (!newContent) return alert('내용을 입력하세요.');
-                    let url, method = 'PUT', payload = { languageId: 1, content: newContent };
-                    if (item.classList.contains('discussion-item')) {
-                        url = `/api/problems/${window.problemId}/discussions/${e.target.dataset.id}`;
-                    } else {
-                        const discussionId = item.closest('.discussion-item').dataset.discussionId;
-                        url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${e.target.dataset.id}`;
-                    }
-                    const res = await fetch(url, {
-                        method,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...tokenHeader()
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                    if (res.ok) {
-                        // 성공: 목록 새로고침
-                        if (item.classList.contains('discussion-item')) {
-                            loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
-                        } else {
-                            const discussionId = item.closest('.discussion-item').dataset.discussionId;
-                            const container = document.getElementById(`replies-for-${discussionId}`);
-                            if (container) {
-                                container.dataset.loaded = '';
-                                const replies = await fetchReplies(discussionId);
-                                renderReplies(container, replies, discussionId, 0);
-                            }
-                        }
-                    } else {
-                        alert('수정에 실패했습니다.');
-                    }
-                };
-            }
-            // 삭제
-            if (e.target.classList.contains('delete-btn')) {
-                if (!confirm('정말 삭제하시겠습니까?')) return;
-                const item = e.target.closest('.discussion-item, .reply-item');
-                let url, method = 'DELETE';
+            // 저장
+            box.querySelector('.edit-save-btn').onclick = async () => {
+                const newContent = box.querySelector('.edit-input-text').value.trim();
+                if (!newContent) return alert('내용을 입력하세요.');
+                let url, method = 'PUT', payload = { languageId: 1, content: newContent };
                 if (item.classList.contains('discussion-item')) {
                     url = `/api/problems/${window.problemId}/discussions/${e.target.dataset.id}`;
                 } else {
                     const discussionId = item.closest('.discussion-item').dataset.discussionId;
                     url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${e.target.dataset.id}`;
                 }
-                (async () => {
-                    const res = await fetch(url, {
-                        method,
-                        headers: {
-                            ...tokenHeader()
-                        }
-                    });
-                    if (res.ok) {
-                        if (item.classList.contains('discussion-item')) {
-                            loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
-                        } else {
-                            const discussionId = item.closest('.discussion-item').dataset.discussionId;
-                            const container = document.getElementById(`replies-for-${discussionId}`);
-                            if (container) {
-                                container.dataset.loaded = '';
-                                const replies = await fetchReplies(discussionId);
-                                renderReplies(container, replies, discussionId, 0);
-                            }
-                        }
+                const res = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...tokenHeader()
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    // 성공: 목록 새로고침
+                    if (item.classList.contains('discussion-item')) {
+                        loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
                     } else {
-                        alert('삭제에 실패했습니다.');
+                        const discussionId = item.closest('.discussion-item').dataset.discussionId;
+                        const container = document.getElementById(`replies-for-${discussionId}`);
+                        if (container) {
+                            container.dataset.loaded = '';
+                            const replies = await fetchReplies(discussionId);
+                            renderReplies(container, replies, discussionId, 0);
+                        }
                     }
-                })();
+                } else {
+                    alert('수정에 실패했습니다.');
+                }
+            };
+        }
+        // 삭제
+        if (e.target.classList.contains('delete-btn')) {
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+            const item = e.target.closest('.discussion-item, .reply-item');
+            let url, method = 'DELETE';
+            if (item.classList.contains('discussion-item')) {
+                url = `/api/problems/${window.problemId}/discussions/${e.target.dataset.id}`;
+            } else {
+                const discussionId = item.closest('.discussion-item').dataset.discussionId;
+                url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${e.target.dataset.id}`;
+            }
+            (async () => {
+                const res = await fetch(url, {
+                    method,
+                    headers: {
+                        ...tokenHeader()
+                    }
+                });
+                if (res.ok) {
+                    if (item.classList.contains('discussion-item')) {
+                        loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
+                    } else {
+                        const discussionId = item.closest('.discussion-item').dataset.discussionId;
+                        const container = document.getElementById(`replies-for-${discussionId}`);
+                        if (container) {
+                            container.dataset.loaded = '';
+                            const replies = await fetchReplies(discussionId);
+                            renderReplies(container, replies, discussionId, 0);
+                        }
+                    }
+                } else {
+                    alert('삭제에 실패했습니다.');
+                }
+            })();
+        }
+    });
+
+    async function voteDiscussion(discussionId, voteType) {
+        const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/votes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...tokenHeader()
+            },
+            body: JSON.stringify({ voteType })
+        });
+        if (res.ok) {
+            updateDiscussionVoteUI(discussionId);
+        } else {
+            alert('추천/비추천에 실패했습니다.');
+        }
+    }
+
+    async function updateDiscussionVoteUI(discussionId) {
+        const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/votes`, {
+            headers: {
+                'Accept': 'application/json',
+                ...tokenHeader()
             }
         });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.success) return;
+        const { voteType, upvoteCount, downvoteCount } = data.result;
+        // 버튼/카운트 갱신
+        const item = document.querySelector(`.discussion-item[data-discussion-id="${discussionId}"]`);
+        if (!item) return;
+        const upBtn = item.querySelector('.upvote-btn');
+        const downBtn = item.querySelector('.downvote-btn');
+        const upCount = item.querySelector('.vote-count');
+        upBtn.dataset.votestatus = voteType;
+        downBtn.dataset.votestatus = voteType;
+        upCount.textContent = upvoteCount;
+        // 아이콘도 갱신
+        upBtn.innerHTML = getUpvoteIcon(voteType === 'UP');
+        downBtn.innerHTML = getDownvoteIcon(voteType === 'DOWN');
+    }
 
-        async function voteDiscussion(discussionId, voteType) {
-            const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/votes`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...tokenHeader()
-                },
-                body: JSON.stringify({ voteType })
-            });
-            if (res.ok) {
-                updateDiscussionVoteUI(discussionId);
-            } else {
-                alert('추천/비추천에 실패했습니다.');
+    async function voteReply(discussionId, replyId, voteType) {
+        const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/replies/${replyId}/votes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...tokenHeader()
+            },
+            body: JSON.stringify({ voteType })
+        });
+        if (res.ok) {
+            updateReplyVoteUI(discussionId, replyId);
+        } else {
+            alert('추천/비추천에 실패했습니다.');
+        }
+    }
+
+    async function updateReplyVoteUI(discussionId, replyId) {
+        const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/replies/${replyId}/votes`, {
+            headers: {
+                'Accept': 'application/json',
+                ...tokenHeader()
             }
-        }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.success) return;
+        const { voteType, upvoteCount, downvoteCount } = data.result;
+        const item = document.querySelector(`.reply-item[data-reply-id="${replyId}"]`);
+        if (!item) return;
+        const upBtn = item.querySelector('.upvote-btn');
+        const downBtn = item.querySelector('.downvote-btn');
+        const upCount = item.querySelector('.vote-count');
+        upBtn.dataset.votestatus = voteType;
+        downBtn.dataset.votestatus = voteType;
+        upCount.textContent = upvoteCount;
+        upBtn.innerHTML = getUpvoteIcon(voteType === 'UP');
+        downBtn.innerHTML = getDownvoteIcon(voteType === 'DOWN');
+    }
 
-        async function updateDiscussionVoteUI(discussionId) {
-            const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/votes`, {
-                headers: {
-                    'Accept': 'application/json',
-                    ...tokenHeader()
-                }
-            });
-            if (!res.ok) return;
-            const data = await res.json();
-            if (!data.success) return;
-            const { voteType, upvoteCount, downvoteCount } = data.result;
-            // 버튼/카운트 갱신
-            const item = document.querySelector(`.discussion-item[data-discussion-id="${discussionId}"]`);
-            if (!item) return;
-            const upBtn = item.querySelector('.upvote-btn');
-            const downBtn = item.querySelector('.downvote-btn');
-            const upCount = item.querySelector('.vote-count');
-            upBtn.dataset.votestatus = voteType;
-            downBtn.dataset.votestatus = voteType;
-            upCount.textContent = upvoteCount;
-            // 아이콘도 갱신
-            upBtn.innerHTML = getUpvoteIcon(voteType === 'UP');
-            downBtn.innerHTML = getDownvoteIcon(voteType === 'DOWN');
-        }
+    function showReplyInput(discussionId, parentReplyId, btnEl) {
+        // 이미 열려있으면 return
+        const next = btnEl.closest('.comment-actions').nextElementSibling;
+        if (next && next.classList.contains('reply-input-box')) return;
 
-        async function voteReply(discussionId, replyId, voteType) {
-            const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/replies/${replyId}/votes`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...tokenHeader()
-                },
-                body: JSON.stringify({ voteType })
-            });
-            if (res.ok) {
-                updateReplyVoteUI(discussionId, replyId);
-            } else {
-                alert('추천/비추천에 실패했습니다.');
-            }
-        }
-
-        async function updateReplyVoteUI(discussionId, replyId) {
-            const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/replies/${replyId}/votes`, {
-                headers: {
-                    'Accept': 'application/json',
-                    ...tokenHeader()
-                }
-            });
-            if (!res.ok) return;
-            const data = await res.json();
-            if (!data.success) return;
-            const { voteType, upvoteCount, downvoteCount } = data.result;
-            const item = document.querySelector(`.reply-item[data-reply-id="${replyId}"]`);
-            if (!item) return;
-            const upBtn = item.querySelector('.upvote-btn');
-            const downBtn = item.querySelector('.downvote-btn');
-            const upCount = item.querySelector('.vote-count');
-            upBtn.dataset.votestatus = voteType;
-            downBtn.dataset.votestatus = voteType;
-            upCount.textContent = upvoteCount;
-            upBtn.innerHTML = getUpvoteIcon(voteType === 'UP');
-            downBtn.innerHTML = getDownvoteIcon(voteType === 'DOWN');
-        }
-
-        function showReplyInput(discussionId, parentReplyId, btnEl) {
-            // 이미 열려있으면 return
-            const next = btnEl.closest('.comment-actions').nextElementSibling;
-            if (next && next.classList.contains('reply-input-box')) return;
-
-            const box = document.createElement('div');
-            box.className = 'reply-input-box';
-            box.innerHTML = `
+        const box = document.createElement('div');
+        box.className = 'reply-input-box';
+        box.innerHTML = `
                 <textarea class="reply-input-text" rows="3" style="width:100%;resize:vertical;margin-bottom:6px;"></textarea>
                 <div style="display:flex;gap:8px;">
                     <button class="reply-cancel-btn">취소</button>
                     <button class="reply-submit-btn">작성</button>
                 </div>
             `;
-            btnEl.closest('.comment-actions').after(box);
+        btnEl.closest('.comment-actions').after(box);
 
-            // 취소
-            box.querySelector('.reply-cancel-btn').onclick = () => box.remove();
+        // 취소
+        box.querySelector('.reply-cancel-btn').onclick = () => box.remove();
 
-            // 작성
-            box.querySelector('.reply-submit-btn').onclick = async () => {
-                const content = box.querySelector('.reply-input-text').value.trim();
-                if (!content) return alert('내용을 입력하세요.');
-                const payload = parentReplyId ? { parentReplyId: Number(parentReplyId), content } : { content };
-                const token = sessionStorage.getItem('accessToken');
-                const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/replies`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        ...tokenHeader() 
-                    },
-                    body: JSON.stringify(payload)
-                });
-                if (res.ok) {
-                    if (parentReplyId) {
-                        // 대댓글: 해당 댓글의 대댓글만 새로고침
-                        const childContainer = document.getElementById(`child-replies-for-${parentReplyId}`);
-                        if (childContainer) {
-                            childContainer.dataset.loaded = 'true';
-                            const discussionId = btnEl.closest('.discussion-item').dataset.discussionId;
-                            const childReplies = await fetchChildReplies(discussionId, parentReplyId);
-                            renderReplies(childContainer, childReplies, discussionId, 1);
-                            // 펼쳐진 상태로 유지
-                            childContainer.style.display = 'block';
-                            // 버튼 텍스트/상태 갱신
-                            const toggleBtn = btnEl.closest('.reply-item').querySelector('.toggle-child-replies-btn');
-                            if (toggleBtn) {
-                                toggleBtn.textContent = '대댓글 접기';
-                                toggleBtn.dataset.open = 'true';
-                            }
-                        }
-                    } else {
-                        // 댓글: 전체 댓글 새로고침
-                        const container = document.getElementById(`replies-for-${discussionId}`);
-                        if (container) {
-                            container.dataset.loaded = 'true';
-                            const replies = await fetchReplies(discussionId);
-                            renderReplies(container, replies, discussionId, 0);
-                            // 펼쳐진 상태로 유지
-                            container.style.display = 'block';
-                            // 버튼 텍스트/상태 갱신
-                            const toggleBtn = btnEl.closest('.discussion-item').querySelector('.toggle-replies-btn');
-                            if (toggleBtn) {
-                                toggleBtn.textContent = '댓글 접기';
-                                toggleBtn.dataset.open = 'true';
-                            }
+        // 작성
+        box.querySelector('.reply-submit-btn').onclick = async () => {
+            const content = box.querySelector('.reply-input-text').value.trim();
+            if (!content) return alert('내용을 입력하세요.');
+            const payload = parentReplyId ? { parentReplyId: Number(parentReplyId), content } : { content };
+            const token = sessionStorage.getItem('accessToken');
+            const res = await fetch(`/api/problems/${window.problemId}/discussions/${discussionId}/replies`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...tokenHeader()
+                },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                if (parentReplyId) {
+                    // 대댓글: 해당 댓글의 대댓글만 새로고침
+                    const childContainer = document.getElementById(`child-replies-for-${parentReplyId}`);
+                    if (childContainer) {
+                        childContainer.dataset.loaded = 'true';
+                        const discussionId = btnEl.closest('.discussion-item').dataset.discussionId;
+                        const childReplies = await fetchChildReplies(discussionId, parentReplyId);
+                        renderReplies(childContainer, childReplies, discussionId, 1);
+                        // 펼쳐진 상태로 유지
+                        childContainer.style.display = 'block';
+                        // 버튼 텍스트/상태 갱신
+                        const toggleBtn = btnEl.closest('.reply-item').querySelector('.toggle-child-replies-btn');
+                        if (toggleBtn) {
+                            toggleBtn.textContent = '대댓글 접기';
+                            toggleBtn.dataset.open = 'true';
                         }
                     }
-                    box.remove();
                 } else {
-                    alert('작성에 실패했습니다.');
+                    // 댓글: 전체 댓글 새로고침
+                    const container = document.getElementById(`replies-for-${discussionId}`);
+                    if (container) {
+                        container.dataset.loaded = 'true';
+                        const replies = await fetchReplies(discussionId);
+                        renderReplies(container, replies, discussionId, 0);
+                        // 펼쳐진 상태로 유지
+                        container.style.display = 'block';
+                        // 버튼 텍스트/상태 갱신
+                        const toggleBtn = btnEl.closest('.discussion-item').querySelector('.toggle-replies-btn');
+                        if (toggleBtn) {
+                            toggleBtn.textContent = '댓글 접기';
+                            toggleBtn.dataset.open = 'true';
+                        }
+                    }
                 }
-            };
-        }
+                box.remove();
+            } else {
+                alert('작성에 실패했습니다.');
+            }
+        };
+    }
 
-        function renderDiscussionCreateBox() {
-            const box = document.getElementById('discussion-create-box');
-            box.innerHTML = `
+    function renderDiscussionCreateBox() {
+        const box = document.getElementById('discussion-create-box');
+        box.innerHTML = `
                 <textarea id="discussion-create-text" class="reply-input-text" rows="4" placeholder="토론글을 작성해보세요"></textarea>
                 <div style="display:flex;gap:10px;justify-content:flex-end;">
                     <button id="discussion-create-cancel" class="reply-cancel-btn">취소</button>
                     <button id="discussion-create-submit" class="reply-submit-btn">작성</button>
                 </div>
             `;
-            // 취소: 입력 내용만 비움
-            box.querySelector('#discussion-create-cancel').onclick = () => {
-                box.querySelector('#discussion-create-text').value = '';
-            };
-            // 작성
-            box.querySelector('#discussion-create-submit').onclick = async () => {
-                const content = box.querySelector('#discussion-create-text').value.trim();
-                if (!content) return alert('내용을 입력하세요.');
-                const token = sessionStorage.getItem('accessToken');
-                const res = await fetch(`/api/problems/${window.problemId}/discussions`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...tokenHeader()
-                    },
-                    body: JSON.stringify({ languageId: 1, content })
-                });
-                if (res.ok) {
-                    // 성공: 입력창 비우고 목록 새로고침
-                    box.querySelector('#discussion-create-text').value = '';
-                    loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
-                } else {
-                    alert('토론글 작성에 실패했습니다.');
-                }
-            };
-        }
-
-        // 페이지 진입 시 항상 렌더링
-        document.addEventListener('DOMContentLoaded', () => {
-            renderDiscussionCreateBox();
-        });
-
-        fetch('/html/header.html')
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
+        // 취소: 입력 내용만 비움
+        box.querySelector('#discussion-create-cancel').onclick = () => {
+            box.querySelector('#discussion-create-text').value = '';
+        };
+        // 작성
+        box.querySelector('#discussion-create-submit').onclick = async () => {
+            const content = box.querySelector('#discussion-create-text').value.trim();
+            if (!content) return alert('내용을 입력하세요.');
+            const token = sessionStorage.getItem('accessToken');
+            const res = await fetch(`/api/problems/${window.problemId}/discussions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...tokenHeader()
+                },
+                body: JSON.stringify({ languageId: 1, content })
             });
-    </script>
-    <script src="/js/headerUtils.js"></script>
-    <script src="/js/footerUtils.js"></script>
-    <script src="/js/headerNotification.js"></script>
-    <script>
-        loadHeaderWithAuthCheck();
-        loadFooter(); // 푸터 로드
-    </script>
-</body>
+            if (res.ok) {
+                // 성공: 입력창 비우고 목록 새로고침
+                box.querySelector('#discussion-create-text').value = '';
+                loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
+            } else {
+                alert('토론글 작성에 실패했습니다.');
+            }
+        };
+    }
 
+    // 페이지 진입 시 항상 렌더링
+    document.addEventListener('DOMContentLoaded', () => {
+        renderDiscussionCreateBox();
+    });
+</script>
+<script src="/js/headerUtils.js"></script>
+<script src="/js/footerUtils.js"></script>
+<script>
+    loadHeaderWithAuthCheck();
+    loadFooter(); // 푸터 로드
+</script>
+</body>
 </html>

@@ -12,4 +12,6 @@ public interface TestcaseJpaRepository extends JpaRepository<Testcase, Long> {
 	@EntityGraph(attributePaths = "problem")
 	List<Testcase> findAllByProblem(Problem problem);
 
+	@EntityGraph(attributePaths = "problem")
+	List<Testcase> findAllByProblem_Id(Long problemId);
 }

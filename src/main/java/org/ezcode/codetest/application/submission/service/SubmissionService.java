@@ -8,11 +8,14 @@ import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewR
 import org.ezcode.codetest.application.submission.dto.request.review.ReviewPayload;
 import org.ezcode.codetest.application.submission.dto.response.review.CodeReviewResponse;
 import org.ezcode.codetest.application.submission.dto.response.submission.GroupedSubmissionResponse;
+import org.ezcode.codetest.application.submission.dto.response.submission.SubmitResponse;
 import org.ezcode.codetest.application.submission.model.ReviewResult;
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.application.submission.port.ExceptionNotifier;
 import org.ezcode.codetest.application.submission.port.LockManager;
 import org.ezcode.codetest.application.submission.port.QueueProducer;
+import org.ezcode.codetest.domain.problem.model.entity.Testcase;
+import org.ezcode.codetest.domain.problem.service.TestcaseDomainService;
 import org.ezcode.codetest.domain.submission.exception.SubmissionException;
 import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
 import org.ezcode.codetest.infrastructure.event.dto.submission.SubmissionMessage;
@@ -43,6 +46,7 @@ public class SubmissionService {
     private final ReviewClient reviewClient;
     private final UserDomainService userDomainService;
     private final ProblemDomainService problemDomainService;
+    private final TestcaseDomainService testcaseDomainService;
     private final LanguageDomainService languageDomainService;
     private final SubmissionDomainService submissionDomainService;
     private final QueueProducer queueProducer;
@@ -51,7 +55,7 @@ public class SubmissionService {
     private final JudgementService judgementService;
     private final GitHubPushService gitHubPushService;
 
-    public String enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
+    public SubmitResponse enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
 
         boolean acquired = lockManager.tryLock("submission", authUser.getId(), problemId);
         if (!acquired) {
@@ -59,11 +63,13 @@ public class SubmissionService {
         }
 
         String sessionKey = authUser.getId() + "_" + UUID.randomUUID();
+        List<Testcase> testcaseList = testcaseDomainService.getTestcaseListByProblemId(problemId);
+
         queueProducer.enqueue(
             new SubmissionMessage(sessionKey, problemId, request.languageId(), authUser.getId(), request.sourceCode())
         );
 
-        return sessionKey;
+        return SubmitResponse.of(sessionKey, testcaseList);
     }
 
     @Async("judgeSubmissionExecutor")
@@ -73,7 +79,6 @@ public class SubmissionService {
             log.info("[Submission RUN] Thread = {}", Thread.currentThread().getName());
             log.info("[큐 수신] SubmissionMessage.sessionKey: {}", msg.sessionKey());
             SubmissionContext ctx = createSubmissionContext(msg);
-            judgementService.publishInitTestcases(ctx);
             judgementService.runTestcases(ctx);
             judgementService.finalizeAndPublish(ctx);
             gitHubPushService.pushSolutionToRepo(ctx);

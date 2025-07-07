@@ -22,9 +22,9 @@ public record TestcaseEvaluationInput(
     long memoryLimit
 
 ) {
-    public static TestcaseEvaluationInput from(JudgeResult result, SubmissionContext ctx, int seqId) {
+    public static TestcaseEvaluationInput from(JudgeResult result, SubmissionContext ctx, int index) {
         return new TestcaseEvaluationInput(
-            ctx.getExpectedOutput(seqId),
+            ctx.getExpectedOutput(index),
             result.actualOutput(),
             result.message(),
             result.success(),
