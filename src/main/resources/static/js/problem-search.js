@@ -95,7 +95,6 @@ async function handleSearchSubmit(e) {
                 <div><b>Difficulty:</b> ${item.difficulty}</div>
                 <div><b>Reference:</b> ${item.reference}</div>
                 <div><b>Description:</b> ${item.description}</div>
-                <div><b>Score:</b> ${item.score}</div>
               </div>`;
             });
             html += '</div>';
