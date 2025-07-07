@@ -86,27 +86,7 @@ window.bindHeaderNotificationEvents = function() {
     const moreBtn = document.getElementById('notificationMoreBtn');
     if (moreBtn) {
         moreBtn.addEventListener('click', () => {
-            window.location.href = '/notifications';
+            window.location.href = '/test/notifications';
         });
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 알림 버튼 클릭 이벤트
-    const notifBtn = document.getElementById('notificationBtn');
-    if (notifBtn) {
-        notifBtn.addEventListener('click', () => {
-            console.log('notifBtn : ' + notifBtn);
-            const modal = document.getElementById('notificationModal');
-            if (!modal) return;
-            modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
-            renderNotificationModal();
-        });
-    }
-    const moreBtn = document.getElementById('notificationMoreBtn');
-    if (moreBtn) {
-        moreBtn.addEventListener('click', () => {
-            window.location.href = '/notifications';
-        });
-    }
-});

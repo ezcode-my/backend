@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>알림 전체 보기</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <style>
+        body {
+            background: #10121a;
+            color: #eee;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .notification-page-container {
+            position: static;
+            width: 80vw;
+            height: 75vh;
+            min-width: 320px;
+            min-height: 400px;
+            margin: 5vh auto 0 auto;
+            background: #181a23;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .page-notification-list {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+            flex: 1 1 0;
+            overflow-y: auto;
+            height: auto;
+        }
+        .page-notification-item {
+            padding: 18px 8vw 12px 8vw;
+            border-bottom: 1px solid #23242c;
+            font-size: 16px;
+            color: #eee;
+            background: none;
+        }
+        .page-notification-item.unread .message {
+            color: #00d084;
+            font-weight: 600;
+        }
+        .page-notification-item:last-child {
+            border-bottom: none;
+        }
+        .page-notification-item .time {
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+        .notification-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00d084;
+            margin: 32px 0 24px 32px;
+        }
+        #pageMoreNotificationsBtn {
+            display: block;
+            margin: 24px auto 32px auto;
+            background: #23242c;
+            color: #00d084;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 14px 48px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        #pageMoreNotificationsBtn:hover {
+            background: #00d084;
+            color: #181a23;
+        }
+        .page-notification-item.newly-added {
+            animation: highlight-fade 1.2s, fade-in 0.7s;
+            background: #00d08422;
+            border-left: 6px solid #00d084;
+        }
+        @keyframes highlight-fade {
+            0% { background: #00d08488; }
+            60% { background: #00d08422; }
+            100% { background: none; }
+        }
+        @keyframes fade-in {
+            0% { opacity: 0; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <div class="notification-page-container">
+        <div class="notification-title">알림 전체 보기</div>
+        <div class="page-notification-list" id="pageNotificationList"></div>
+        <button id="pageMoreNotificationsBtn" style="display:none;">더 보기</button>
+    </div>
+    <script src="/js/headerUtils.js"></script>
+    <script src="/js/headerNotification.js"></script>
+    <script>
+        // 헤더 로드
+        loadHeaderWithAuthCheck();
+        if (window.connectNotificationWS) window.connectNotificationWS();
+        if (window.bindHeaderNotificationEvents) window.bindHeaderNotificationEvents();
+
+        let pageStompClient;
+        let allNotifications = [];
+        let pageData = { page: 0, size: 10, totalElements: 0, totalPages: 1 };
+        let isLoading = false;
+        let prevCount = 0;
+
+        function connectPageNotificationWS() {
+            const tokenOnly = (sessionStorage.getItem('accessToken') || '').replace(/^Bearer /, '');
+            if (!tokenOnly) return;
+            const socket = new SockJS(`/ws?token=${encodeURIComponent(tokenOnly)}`);
+            pageStompClient = Stomp.over(socket);
+
+            pageStompClient.connect({}, () => {
+                pageStompClient.subscribe('/user/queue/notifications', msg => {
+                    const data = JSON.parse(msg.body);
+                    pageData = {
+                        page: data.page ?? 0,
+                        size: data.size ?? 10,
+                        totalElements: data.totalElements ?? 0,
+                        totalPages: data.totalPages ?? Math.ceil((data.totalElements ?? 0) / (data.size ?? 10))
+                    };
+                    let newlyAddedCount = 0;
+                    if (pageData.page === 0) {
+                        allNotifications = data.content || [];
+                        newlyAddedCount = allNotifications.length;
+                    } else {
+                        newlyAddedCount = (data.content || []).length;
+                        allNotifications = allNotifications.concat(data.content || []);
+                    }
+                    renderNotificationList(allNotifications, newlyAddedCount);
+                    updateMoreBtn();
+                    isLoading = false;
+                });
+                fetchNotifications(0);
+            });
+        }
+
+        function fetchNotifications(page) {
+            if (isLoading) return;
+            isLoading = true;
+            fetch(`/api/notifications?page=${page}`, {
+                headers: { 'Authorization': sessionStorage.getItem('accessToken') }
+            });
+        }
+
+        function renderNotificationList(list, newlyAddedCount = 0) {
+            const listEl = document.getElementById('pageNotificationList');
+            if (!listEl) return;
+            if (!list.length) {
+                listEl.innerHTML = '<div style="color:#aaa;padding:32px;">알림이 없습니다.</div>';
+                return;
+            }
+            listEl.innerHTML = list.map((n, i) => `
+                <div class="page-notification-item${n.isRead ? '' : ' unread'}${i >= list.length - newlyAddedCount ? ' newly-added' : ''}">
+                    <div class="message">${n.message}</div>
+                    <div class="time">${formatTime(n.createdAt)}</div>
+                </div>
+            `).join('');
+            // 애니메이션 후 클래스 제거
+            if (newlyAddedCount > 0) {
+                setTimeout(() => {
+                    document.querySelectorAll('.page-notification-item.newly-added').forEach(el => {
+                        el.classList.remove('newly-added');
+                    });
+                }, 1200);
+            }
+        }
+
+        function updateMoreBtn() {
+            const btn = document.getElementById('pageMoreNotificationsBtn');
+            if (!btn) return;
+            // 더 불러올 데이터가 있으면 보이기
+            if ((pageData.page + 1) < pageData.totalPages) {
+                btn.style.display = 'block';
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+
+        function formatTime(iso) {
+            const d = new Date(iso);
+            const now = new Date();
+            const diff = (now - d) / 1000;
+            if (diff < 60) return '방금 전';
+            if (diff < 3600) return Math.floor(diff/60) + '분 전';
+            if (diff < 86400) return Math.floor(diff/3600) + '시간 전';
+            return d.toLocaleDateString();
+        }
+
+        document.getElementById('pageMoreNotificationsBtn').addEventListener('click', function() {
+            if ((pageData.page + 1) < pageData.totalPages) {
+                fetchNotifications(pageData.page + 1);
+            }
+        });
+
+        // 페이지 진입 시 실행
+        connectPageNotificationWS();
+    </script>
+</body>
+</html> 
