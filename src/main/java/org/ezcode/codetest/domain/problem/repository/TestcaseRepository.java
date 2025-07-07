@@ -11,6 +11,8 @@ public interface TestcaseRepository {
 
 	List<Testcase> findAllByProblem(Problem problem);
 
+	List<Testcase> findAllByProblemId(Long problemId);
+
 	Testcase findByTestcase(Long testcaseId);
 
 	void delete(Testcase testcase);
