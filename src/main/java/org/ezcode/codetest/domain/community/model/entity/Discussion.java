@@ -81,4 +81,7 @@ public class Discussion extends BaseEntity {
 		return this.problem.getId();
 	}
 
+	public Long getLanguageId() {
+		return this.language.getId();
+	}
 }

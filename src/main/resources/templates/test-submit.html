@@ -372,16 +372,18 @@
         }
 
         .discussion-item {
-            background: #222;
-            border-radius: 10px;
+            background: #23272f;
+            border-radius: 12px;
             margin-bottom: 18px;
-            padding: 18px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
-            transition: box-shadow 0.2s;
+            padding: 22px 18px 18px 18px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+            border: 1.5px solid #2d323c;
+            transition: box-shadow 0.2s, border 0.2s;
         }
 
         .discussion-item:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+            border-color: #00d084;
         }
 
         /* Header (profile/nickname) */
@@ -390,6 +392,7 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 2px;
+            margin-top: 8px;
         }
 
         .discussion-header img {
@@ -779,6 +782,19 @@
             border-color: #00d084;
             font-weight: 700;
         }
+        .lang-tag {
+            display: inline-block;
+            background: #2d323c;
+            color: #00e09e;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 4px 16px;
+            margin-bottom: 14px;
+            margin-top: 2px;
+            margin-right: 0;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 
@@ -800,6 +816,10 @@
                     <li>메모리 제한: <span id="prob-mem">--</span> KB</li>
                     <li>카테고리: <span id="prob-cats">--</span></li>
                 </ul>
+                
+                <div id="prob-image-wrapper">
+                    <img id="prob-image" src="" alt="문제 이미지" style="max-width: 100%; height: auto;" />
+                </div>
             </div>
 
             <div id="discussion-content" class="left-content">
@@ -814,10 +834,6 @@
                 </div>
                 <div id="discussion-list"></div>
                 <div id="discussion-pagination"></div>
-            </div>
-
-            <div id="prob-image-wrapper">
-                <img id="prob-image" src="" alt="문제 이미지" style="max-width: 100%; height: auto;" />
             </div>
 
         </div>
@@ -873,12 +889,48 @@
 
         const DEFAULT_PROFILE_IMG = "/static/images/user-icon.png"; // 임의 프사 경로
 
+        // ====== 언어 목록 불러오기 및 전역 저장 ======
+        async function loadLanguages() {
+            try {
+                const res = await fetch('/api/languages');
+                const data = await res.json();
+                if (data.success) {
+                    window.languageList = data.result;
+                } else {
+                    window.languageList = [];
+                }
+            } catch {
+                window.languageList = [];
+            }
+        }
+        // 언어 드롭다운 HTML 생성
+        function getLanguageSelectHtml(selectedId) {
+            if (!window.languageList) return '';
+            return `
+                <select class="discussion-language-select">
+                    ${window.languageList.map(lang =>
+                        `<option value="${lang.id}" ${lang.id === selectedId ? 'selected' : ''}>
+                            ${lang.name} ${lang.version}
+                        </option>`
+                    ).join('')}
+                </select>
+            `;
+        }
+        // 언어 id로 name+version 반환
+        function getLanguageTagById(id) {
+            if (!window.languageList) return '';
+            const lang = window.languageList.find(l => l.id === id);
+            return lang ? `${lang.name} ${lang.version}` : '';
+        }
+
         function tokenHeader() {
             const token = sessionStorage.getItem('accessToken');
             return token ? { 'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token } : {};
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadLanguages();
+            renderDiscussionCreateBox(); // 언어 목록 로드 후 호출
             const pid = new URLSearchParams(location.search).get('problemId');
             if (pid) {
                 window.problemId = pid;
@@ -1180,6 +1232,7 @@ if __name__ == "__main__":
             listEl.innerHTML = discussions.map(d => {
                 return `
                  <div class="discussion-item" data-discussion-id="${d.discussionId}">
+                     <span class="lang-tag">${getLanguageTagById(d.languageId)}</span>
                      <div class="discussion-header">
                          <img src="${d.userInfo.profileImageUrl || DEFAULT_PROFILE_IMG}" alt="profile">
                          <span class="nickname">${d.userInfo.nickname}</span>
@@ -1409,10 +1462,22 @@ if __name__ == "__main__":
                 const oldContent = contentEl.textContent;
                 // 이미 수정창이 열려있으면 return
                 if (item.querySelector('.edit-input-box')) return;
-                // textarea + 취소/저장 버튼
+                // 기존 언어 id (discussion-item만)
+                let oldLangId = 1;
+                if (item.classList.contains('discussion-item')) {
+                    // lang-tag에서 id 추출
+                    const langTag = item.querySelector('.lang-tag');
+                    if (langTag) {
+                        const text = langTag.textContent.trim();
+                        const found = window.languageList?.find(l => text.startsWith(l.name));
+                        if (found) oldLangId = found.id;
+                    }
+                }
+                // textarea + 언어 드롭다운 + 취소/저장 버튼
                 const box = document.createElement('div');
                 box.className = 'edit-input-box';
                 box.innerHTML = `
+                    <div style="margin-bottom:8px;">${item.classList.contains('discussion-item') ? getLanguageSelectHtml(oldLangId) : ''}</div>
                     <textarea class="edit-input-text" style="width:100%;min-height:60px;">${oldContent}</textarea>
                     <div style="display:flex;gap:8px;justify-content:flex-end;">
                         <button class="edit-cancel-btn">취소</button>
@@ -1431,13 +1496,19 @@ if __name__ == "__main__":
                 // 저장
                 box.querySelector('.edit-save-btn').onclick = async () => {
                     const newContent = box.querySelector('.edit-input-text').value.trim();
+                    let newLangId = oldLangId;
+                    if (item.classList.contains('discussion-item')) {
+                        newLangId = +box.querySelector('.discussion-language-select').value;
+                    }
                     if (!newContent) return alert('내용을 입력하세요.');
-                    let url, method = 'PUT', payload = { languageId: 1, content: newContent };
+                    let url, method = 'PUT', payload = { languageId: newLangId, content: newContent };
                     if (item.classList.contains('discussion-item')) {
                         url = `/api/problems/${window.problemId}/discussions/${e.target.dataset.id}`;
                     } else {
                         const discussionId = item.closest('.discussion-item').dataset.discussionId;
                         url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${e.target.dataset.id}`;
+                        // 대댓글/댓글은 언어 변경 불가 (기존대로 1)
+                        payload.languageId = 1;
                     }
                     const res = await fetch(url, {
                         method,
@@ -1659,7 +1730,13 @@ if __name__ == "__main__":
 
         function renderDiscussionCreateBox() {
             const box = document.getElementById('discussion-create-box');
+            if (!window.languageList || window.languageList.length === 0) {
+                box.innerHTML = '<div style="color:#aaa;">언어 목록을 불러오는 중...</div>';
+                return;
+            }
+            // 언어 드롭다운 + textarea
             box.innerHTML = `
+                <div style="margin-bottom:8px;">${getLanguageSelectHtml(window.languageList?.[0]?.id || 1)}</div>
                 <textarea id="discussion-create-text" class="reply-input-text" rows="4" placeholder="토론글을 작성해보세요"></textarea>
                 <div style="display:flex;gap:10px;justify-content:flex-end;">
                     <button id="discussion-create-cancel" class="reply-cancel-btn">취소</button>
@@ -1673,6 +1750,7 @@ if __name__ == "__main__":
             // 작성
             box.querySelector('#discussion-create-submit').onclick = async () => {
                 const content = box.querySelector('#discussion-create-text').value.trim();
+                const langId = +box.querySelector('.discussion-language-select').value;
                 if (!content) return alert('내용을 입력하세요.');
                 const token = sessionStorage.getItem('accessToken');
                 const res = await fetch(`/api/problems/${window.problemId}/discussions`, {
@@ -1681,7 +1759,7 @@ if __name__ == "__main__":
                         'Content-Type': 'application/json',
                         ...tokenHeader()
                     },
-                    body: JSON.stringify({ languageId: 1, content })
+                    body: JSON.stringify({ languageId: langId, content })
                 });
                 if (res.ok) {
                     // 성공: 입력창 비우고 목록 새로고침

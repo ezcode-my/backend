@@ -18,6 +18,8 @@ public class DiscussionQueryResult {
 
 	private final Long problemId;
 
+	private final Long languageId;
+
 	private final String content;
 
 	private final LocalDateTime createdAt;
@@ -37,6 +39,7 @@ public class DiscussionQueryResult {
 		Long discussionId,
 		SimpleUserInfoResponse userInfo,
 		Long problemId,
+		Long languageId,
 		String content,
 		LocalDateTime createdAt,
 		Long upvoteCount,
@@ -48,6 +51,7 @@ public class DiscussionQueryResult {
 		this.discussionId = discussionId;
 		this.userInfo = userInfo;
 		this.problemId = problemId;
+		this.languageId = languageId;
 		this.content = content;
 		this.createdAt = createdAt;
 		this.upvoteCount = upvoteCount;
