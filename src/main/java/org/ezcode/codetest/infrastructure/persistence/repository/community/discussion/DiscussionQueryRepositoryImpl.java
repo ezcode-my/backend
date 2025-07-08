@@ -41,10 +41,6 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 
 		NumberExpression<Long> bestScore = upvoteCount.subtract(downvoteCount);
 
-		long offset = pageable.getOffset();
-		int pageNumber = pageable.getPageNumber();
-		int pageSize = pageable.getPageSize();
-
 		return jpaQueryFactory
 			.select(discussion.id)
 			.from(discussion)
@@ -91,6 +87,7 @@ public class DiscussionQueryRepositoryImpl implements DiscussionQueryRepository 
 					user.profileImageUrl
 				),
 				discussion.problem.id,
+				discussion.language.id,
 				discussion.content,
 				discussion.createdAt,
 				upvoteCount,

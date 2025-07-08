@@ -23,6 +23,9 @@ public record DiscussionResponse(
 	@Schema(description = "관련 문제 ID", example = "45", requiredMode = REQUIRED)
 	Long problemId,
 
+	@Schema(description = "언어 ID", example = "1", requiredMode = REQUIRED)
+	Long languageId,
+
 	@Schema(description = "토론 내용", example = "이 문제는 이렇게 풀 수 있습니다...", requiredMode = REQUIRED)
 	String content,
 
@@ -50,7 +53,8 @@ public record DiscussionResponse(
 		return new DiscussionResponse(
 			discussion.getId(),
 			SimpleUserInfoResponse.fromEntity(discussion.getUser()),
-			discussion.getProblem().getId(),
+			discussion.getProblemId(),
+			discussion.getLanguageId(),
 			discussion.getContent(),
 			discussion.getCreatedAt(),
 			null,
@@ -66,6 +70,7 @@ public record DiscussionResponse(
 			result.getDiscussionId(),
 			result.getUserInfo(),
 			result.getProblemId(),
+			result.getLanguageId(),
 			result.getContent(),
 			result.getCreatedAt(),
 			result.getUpvoteCount(),
