@@ -11,4 +11,6 @@ public interface GameCharacterRepository {
 	Optional<GameCharacter> findByUserId(Long userId);
 
 	Optional<GameCharacter> findRandomCharacter(Long userId);
+
+	boolean isCharacterExist(Long userId);
 }

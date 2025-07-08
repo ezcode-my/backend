@@ -262,9 +262,9 @@
         stompClient = Stomp.over(socket);
 
         // ─── Heartbeat 5분(300,000ms) 설정 ───
-        stompClient.heartbeat.outgoing = 300000; // 클라이언트→서버 heartbeat 전송 간격
-        stompClient.heartbeat.incoming = 300000; // 서버→클라이언트 heartbeat 수신 허용 최대 간격
-        const hbHeader = {'heart-beat': '300000,300000'};
+        stompClient.heartbeat.outgoing = 20000; // 클라이언트→서버 heartbeat 전송 간격
+        stompClient.heartbeat.incoming = 600000; // 서버→클라이언트 heartbeat 수신 허용 최대 간격
+        const hbHeader = {'heart-beat': '20000,600000'};
         // ────────────────────────────────────
 
         stompClient.connect(

@@ -8,6 +8,7 @@ import org.ezcode.codetest.application.game.dto.request.item.ItemEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.item.ItemGamblingRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
+import org.ezcode.codetest.application.game.dto.response.character.CharacterCheckResponse;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.DefenceBattleHistoryResponse;
@@ -58,6 +59,20 @@ public class GamePlayController {
 		gamePlayUseCase.createCharacter(authUser.getEmail());
 
 		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
+	@Operation(
+		summary = "게임 캐릭터 생성 확인 API",
+		description = "현재 사용자가 게임 캐릭터를 생성했는지 확인합니다..",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "확인후 true / false 반환")
+		}
+	)
+	@GetMapping("/characters/check")
+	public ResponseEntity<CharacterCheckResponse> checkCharacter(
+		@AuthenticationPrincipal AuthUser authUser
+	) {
+		return ResponseEntity.status(HttpStatus.OK).body(gamePlayUseCase.isCharacterExist(authUser.getId()));
 	}
 
 	@Operation(
