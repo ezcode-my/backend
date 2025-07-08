@@ -26,6 +26,7 @@ import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
 import org.ezcode.codetest.domain.problem.service.TestcaseDomainService;
 import org.ezcode.codetest.domain.submission.exception.SubmissionException;
@@ -125,28 +126,44 @@ public class SubmissionServiceTest {
     class SuccessCases {
 
         @Test
-        @DisplayName("락 획득 성공 -> 메세지 큐에 전송하고 sessionKey 반환")
+        @DisplayName("락 획득 성공 -> sessionKey, testcaseList 반환")
+        void prepareSubmissionSuccess() {
+
+            // given
+            given(authUser.getId()).willReturn(userId);
+            given(lockManager.tryLock("submission", userId, problemId)).willReturn(true);
+
+            List<Testcase> testcaseList = List.of(mock(Testcase.class), mock(Testcase.class));
+            given(testcaseDomainService.getTestcaseListByProblemId(problemId)).willReturn(testcaseList);
+
+            // when
+            SubmitResponse result = submissionService.prepareSubmission(problemId, authUser);
+
+            // then
+            assertThat(result.sessionKey()).startsWith(userId + "_");
+            assertThat(result.testcaseIds()).hasSize(2);
+            then(lockManager).should().tryLock("submission", userId, problemId);
+            then(testcaseDomainService).should().getTestcaseListByProblemId(problemId);
+        }
+
+        @Test
+        @DisplayName("큐에 메세지 전송 확인")
         void enqueueCodeSubmissionSucceeds() {
 
             // given
             given(authUser.getId()).willReturn(userId);
             given(request.languageId()).willReturn(languageId);
             given(request.sourceCode()).willReturn(sourceCode);
-            given(lockManager.tryLock("submission", authUser.getId(), problemId))
-                .willReturn(true);
-            given(testcaseDomainService.getTestcaseListByProblemId(problemId)).willReturn(List.of());
 
             // when
-            SubmitResponse result = submissionService.enqueueCodeSubmission(problemId, request, authUser);
+            submissionService.enqueueCodeSubmission(problemId, request, authUser);
 
             then(queueProducer).should()
                 .enqueue(argThat(msg ->
-                    msg.sessionKey().startsWith(sessionKey) &&
                         msg.problemId().equals(problemId) &&
                         msg.languageId().equals(languageId) &&
                         msg.sourceCode().equals(sourceCode)
                 ));
-            assertThat(result.sessionKey()).startsWith(sessionKey);
         }
 
         @Test
@@ -251,7 +268,7 @@ public class SubmissionServiceTest {
 
         @Test
         @DisplayName("락 획득 실패 -> ALREADY_JUDGING 예외")
-        void enqueueCodeSubmissionFailed() {
+        void prepareSubmissionFailed() {
 
             // given
             given(authUser.getId()).willReturn(userId);
@@ -260,7 +277,7 @@ public class SubmissionServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                submissionService.enqueueCodeSubmission(problemId, request, authUser)
+                submissionService.prepareSubmission(problemId, authUser)
             )
                 .isInstanceOf(SubmissionException.class)
                 .hasMessage(SubmissionExceptionCode.ALREADY_JUDGING.getMessage());

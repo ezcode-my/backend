@@ -55,8 +55,7 @@ public class SubmissionService {
     private final JudgementService judgementService;
     private final GitHubPushService gitHubPushService;
 
-    public SubmitResponse enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
-
+    public SubmitResponse prepareSubmission(Long problemId, AuthUser authUser) {
         boolean acquired = lockManager.tryLock("submission", authUser.getId(), problemId);
         if (!acquired) {
             throw new SubmissionException(SubmissionExceptionCode.ALREADY_JUDGING);
@@ -65,11 +64,13 @@ public class SubmissionService {
         String sessionKey = authUser.getId() + "_" + UUID.randomUUID();
         List<Testcase> testcaseList = testcaseDomainService.getTestcaseListByProblemId(problemId);
 
-        queueProducer.enqueue(
-            new SubmissionMessage(sessionKey, problemId, request.languageId(), authUser.getId(), request.sourceCode())
-        );
-
         return SubmitResponse.of(sessionKey, testcaseList);
+    }
+
+    public void enqueueCodeSubmission(Long problemId, CodeSubmitRequest request, AuthUser authUser) {
+        queueProducer.enqueue(
+            SubmissionMessage.of(request, problemId, authUser.getId())
+        );
     }
 
     @Async("judgeSubmissionExecutor")

@@ -32,37 +32,46 @@ public class SubmissionController {
 
     private final SubmissionService submissionService;
 
-    @PostMapping("/problems/{problemId}/submit-ws")
+    @PostMapping("/problems/{problemId}/submit-prepare")
+    public ResponseEntity<SubmitResponse> prepareSubmission(
+        @PathVariable Long problemId,
+        @AuthenticationPrincipal AuthUser authUser
+    ) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(submissionService.prepareSubmission(problemId, authUser));
+    }
+
+    @PostMapping("/problems/{problemId}/submit-ready")
     @Operation(
         summary = "코드 제출 (WebSocket)",
         description = """
-        문제에 대한 코드를 제출하면 채점 큐에 등록되고,
-        서버는 WebSocket(STOMP)을 통해 채점 결과를 실시간으로 전송합니다.
-
-        반환된 sessionKey를 사용해 다음 경로로 구독하세요.
- 
-        • /user/queue/submission/{sessionKey}/case
-        
-        • /user/queue/submission/{sessionKey}/final
-        
-        • /topic/submission/{sessionKey}/error
-        
-        • /user/queue/submission/{sessionKey}/git-status
-        """
+            문제에 대한 코드를 제출하면 채점 큐에 등록되고,
+            서버는 WebSocket(STOMP)을 통해 채점 결과를 실시간으로 전송합니다.
+            
+            반환된 sessionKey를 사용해 다음 경로로 구독하세요.
+            
+            • /user/queue/submission/{sessionKey}/case
+            
+            • /user/queue/submission/{sessionKey}/final
+            
+            • /topic/submission/{sessionKey}/error
+            
+            • /user/queue/submission/{sessionKey}/git-status
+            """
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "코드 제출 성공 및 sessionKey 반환"),
         @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 데이터"),
         @ApiResponse(responseCode = "409", description = "이미 해당 문제를 채점 중인 경우"),
     })
-    public ResponseEntity<SubmitResponse> submitCodeStream(
+    public ResponseEntity<Void> submitCodeStream(
         @Parameter(description = "제출할 문제 ID", required = true) @PathVariable Long problemId,
         @RequestBody @Valid CodeSubmitRequest request,
         @AuthenticationPrincipal AuthUser authUser
     ) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(submissionService.enqueueCodeSubmission(problemId, request, authUser));
+        submissionService.enqueueCodeSubmission(problemId, request, authUser);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Operation(

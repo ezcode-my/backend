@@ -16,7 +16,10 @@ public record CodeSubmitRequest(
         example = "public class Main { public static void main(String[] args) { System.out.println(\"Hello World\"); } }"
     )
     @NotBlank(message = "소스 코드는 필수 입력 값입니다.")
-    String sourceCode
+    String sourceCode,
+
+    @NotBlank(message = "세션 키는 필수 입력 값입니다.")
+    String sessionKey
 
 ) {
 }
