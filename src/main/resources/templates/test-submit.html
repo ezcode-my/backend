@@ -953,7 +953,6 @@
             const pid = window.problemId;
             const languageId = +document.getElementById('language').value;
             const sourceCode = window.getEditorCode();
-            const payload = { languageId, sourceCode };
             const judgeEl = document.getElementById('judgeResult');
             judgeEl.innerHTML = '';
             reviewBox.style.display = 'none';
@@ -961,24 +960,38 @@
             finalIsCorrect = null;
 
             try {
-                const res = await fetch(`/api/problems/${pid}/submit-ws`, {
+                const res = await fetch(`/api/problems/${pid}/submit-prepare`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         ...tokenHeader()
                     },
-                    body: JSON.stringify(payload)
                 });
                 const resp = await res.json();
                 console.log('[DEBUG] 전체 응답:', resp);
                 console.log('[DEBUG] result:', resp.result);
                 if (!resp.success) {
-                    judgeEl.textContent = `Error: ${resp.message}`;
+                    judgeEl.textContent = `${resp.message}`;
                     return;
                 }
                 const { sessionKey, testcaseIds } = resp.result;
-                initWebSocket(sessionKey);
-                renderInitSlots(testcaseIds);
+
+                initWebSocket(sessionKey, async () => {
+                    renderInitSlots(testcaseIds);
+
+                    await fetch(`/api/problems/${pid}/submit-ready`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...tokenHeader()
+                        },
+                        body: JSON.stringify({
+                            sessionKey,
+                            languageId,
+                            sourceCode
+                        })
+                    });
+                });
             } catch (err) {
                 console.error(err);
                 judgeEl.textContent = '채점 요청 실패';
@@ -1058,7 +1071,7 @@ if __name__ == "__main__":
         // submitCode() 에서 호출할 함수
         window.getEditorCode = () => editor.getValue();
 
-        function initWebSocket(sessionKey) {
+        function initWebSocket(sessionKey, onReady) {
             const tokenOnly = (sessionStorage.getItem('accessToken') || '').replace(/^Bearer /, '');
             const socket = new SockJS(`/ws?token=${encodeURIComponent(tokenOnly)}`);
             stompClient = Stomp.over(socket);
@@ -1082,7 +1095,13 @@ if __name__ == "__main__":
                     else if (status === 'FAILED') gitDot.style.backgroundColor = '#ff4d4d';
                     else gitDot.style.backgroundColor = 'gray';
                 });
-            }, err => console.error('[STOMP] 연결 오류:', err));
+
+                if (typeof onReady === 'function') {
+                    onReady();
+                }
+            }, err => {
+                console.error('[STOMP] 연결 오류:', err);
+            });
         }
 
         function handleCase(data) {
@@ -1431,7 +1450,7 @@ if __name__ == "__main__":
                     if (res.ok) {
                         // 성공: 목록 새로고침
                         if (item.classList.contains('discussion-item')) {
-                            loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
+                            await loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
                         } else {
                             const discussionId = item.closest('.discussion-item').dataset.discussionId;
                             const container = document.getElementById(`replies-for-${discussionId}`);
@@ -1457,7 +1476,7 @@ if __name__ == "__main__":
                     const discussionId = item.closest('.discussion-item').dataset.discussionId;
                     url = `/api/problems/${window.problemId}/discussions/${discussionId}/replies/${e.target.dataset.id}`;
                 }
-                (async () => {
+                await (async () => {
                     const res = await fetch(url, {
                         method,
                         headers: {
@@ -1466,7 +1485,7 @@ if __name__ == "__main__":
                     });
                     if (res.ok) {
                         if (item.classList.contains('discussion-item')) {
-                            loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
+                            await loadDiscussions(window.problemId, 0, 10, document.getElementById('discussion-sort')?.value || 'best');
                         } else {
                             const discussionId = item.closest('.discussion-item').dataset.discussionId;
                             const container = document.getElementById(`replies-for-${discussionId}`);
@@ -1493,7 +1512,7 @@ if __name__ == "__main__":
                 body: JSON.stringify({ voteType })
             });
             if (res.ok) {
-                updateDiscussionVoteUI(discussionId);
+                await updateDiscussionVoteUI(discussionId);
             } else {
                 alert('추천/비추천에 실패했습니다.');
             }
@@ -1534,7 +1553,7 @@ if __name__ == "__main__":
                 body: JSON.stringify({ voteType })
             });
             if (res.ok) {
-                updateReplyVoteUI(discussionId, replyId);
+                await updateReplyVoteUI(discussionId, replyId);
             } else {
                 alert('추천/비추천에 실패했습니다.');
             }
