@@ -20,4 +20,6 @@ public interface GameCharacterJpaRepository extends JpaRepository<GameCharacter,
 
 	@Cacheable(value = "counts", key = "'count'")
 	long count();
+
+	boolean existsByUserId(Long userId);
 }
