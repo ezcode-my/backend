@@ -50,6 +50,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 			.setClientPasscode(mqPassword)
 			.setSystemLogin(mqUsername)
 			.setSystemPasscode(mqPassword)
+			.setSystemHeartbeatSendInterval(10000L)
+			.setSystemHeartbeatReceiveInterval(450000L)
 			.setUserDestinationBroadcast("/topic/simp-user-registry")
 			.setUserRegistryBroadcast("/topic/simp-user-registry");
 
