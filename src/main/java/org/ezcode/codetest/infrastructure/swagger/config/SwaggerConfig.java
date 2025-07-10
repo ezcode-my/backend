@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @OpenAPIDefinition(
 	servers = {
 		@Server(
-			url = "http://localhost:8080",           // ← 슬래시 없이 호스트만!
+			url = "https://ezcode.my",           // ← 슬래시 없이 호스트만!
 			description = "Production server"
 		)
 	},
