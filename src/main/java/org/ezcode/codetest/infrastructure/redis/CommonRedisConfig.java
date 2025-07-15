@@ -24,10 +24,14 @@ public class CommonRedisConfig {
     @Value("${spring.data.redis.password}")
     private String redisPassword;
 
+    @Bean(destroyMethod = "shutdown")
+    public DefaultClientResources clientResources() {
+        return DefaultClientResources.create();
+    }
+
     @Bean
     @Primary
-    public LettuceConnectionFactory redisConnectionFactory() {
-        DefaultClientResources resources = DefaultClientResources.create();
+    public LettuceConnectionFactory redisConnectionFactory(DefaultClientResources clientResources) {
         ClientOptions clientOptions = ClientOptions.builder()
             .autoReconnect(true)
             .pingBeforeActivateConnection(true)
@@ -37,7 +41,7 @@ public class CommonRedisConfig {
             .build();
 
         LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-            .clientResources(resources)
+            .clientResources(clientResources)
             .clientOptions(clientOptions)
             .build();
 
@@ -48,5 +52,4 @@ public class CommonRedisConfig {
 
         return new LettuceConnectionFactory(redisConfig, clientConfig);
     }
-
 }
