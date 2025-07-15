@@ -42,8 +42,8 @@ public class Judge0Client implements JudgeClient {
     @PostConstruct
     private void init() {
         ConnectionProvider provider = ConnectionProvider.builder("judge0-pool")
-            .maxConnections(1000)
-            .pendingAcquireMaxCount(2000)
+            .maxConnections(500)
+            .pendingAcquireMaxCount(1000)
             .pendingAcquireTimeout(Duration.ofSeconds(60))
             .build();
 
@@ -70,7 +70,7 @@ public class Judge0Client implements JudgeClient {
                 res -> Mono.error(new TimeoutException("Upstream 504 Gateway Timeout"))
             )
             .bodyToMono(ExecutionResultResponse.class)
-            .timeout(Duration.ofSeconds(20))
+            .timeout(Duration.ofSeconds(30))
             .retryWhen(Retry.backoff(5, Duration.ofSeconds(1))
                 .maxBackoff(Duration.ofSeconds(4))
                 .filter(ex -> {
