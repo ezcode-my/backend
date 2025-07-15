@@ -47,4 +47,9 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	public boolean existsByTitleAndIsDeletedIsFalse(String title) {
 		return problemJpaRepository.existsByTitleAndIsDeletedIsFalse(title);
 	}
+
+	@Override
+	public void problemCountAdjustment(Long problemId, int correctInc) {
+		problemJpaRepository.incrementCount(problemId, correctInc);
+	}
 }

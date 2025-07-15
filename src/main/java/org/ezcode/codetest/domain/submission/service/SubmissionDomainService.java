@@ -3,6 +3,7 @@ package org.ezcode.codetest.domain.submission.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.domain.submission.dto.DailyCorrectCount;
@@ -35,30 +36,26 @@ public class SubmissionDomainService {
 
         boolean allPassed = ctx.isPassed();
 
-        return getUserProblemResult(ctx.user().getId(), ctx.getProblem().getId()).map(
-                result -> {
-                    ctx.incrementTotalSubmissions();
-                    if (!result.isCorrect() && allPassed) {
-                        modifyUserProblemResult(result, true);
-                        ctx.incrementCorrectSubmissions();
-                        return SubmissionResult.from(result, ctx.getCategories(), false);
-                    }
-                    return SubmissionResult.from(result, ctx.getCategories(), true);
-                })
-            .orElseGet(() -> {
-                    ctx.incrementTotalSubmissions();
-                    if (allPassed) {
-                        ctx.incrementCorrectSubmissions();
-                    }
-                    return SubmissionResult.from(createUserProblemResult(
-                        UserProblemResult.builder()
-                            .user(ctx.user())
-                            .problem(ctx.getProblem())
-                            .isCorrect(allPassed)
-                            .build()
-                    ), ctx.getCategories(), false);
-                }
+        Optional<UserProblemResult> optionalUpr = getUserProblemResult(ctx.user().getId(), ctx.getProblem().getId());
+        boolean before = optionalUpr.map(UserProblemResult::isCorrect).orElse(false);
+        UserProblemResult upr;
+
+        if (optionalUpr.isPresent()) {
+            upr = optionalUpr.get();
+            if (!before && allPassed) {
+                modifyUserProblemResult(upr, true);
+            }
+        } else {
+            upr = createUserProblemResult(
+                UserProblemResult.builder()
+                    .user(ctx.user())
+                    .problem(ctx.getProblem())
+                    .isCorrect(allPassed)
+                    .build()
             );
+        }
+
+        return SubmissionResult.of(upr, ctx, allPassed, before);
     }
 
     public boolean handleEvaluationAndUpdateStats(

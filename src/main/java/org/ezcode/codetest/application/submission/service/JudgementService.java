@@ -5,6 +5,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import org.ezcode.codetest.application.submission.dto.event.ProblemCountAdjustmentEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionErrorEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionJudgingFinishedEvent;
 import org.ezcode.codetest.application.submission.dto.event.TestcaseEvaluatedEvent;
@@ -24,6 +25,7 @@ import org.ezcode.codetest.domain.submission.model.SubmissionResult;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
 import org.ezcode.codetest.domain.submission.service.SubmissionDomainService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,11 +58,13 @@ public class JudgementService {
         }
     }
 
+    @Transactional
     public void finalizeAndPublish(SubmissionContext ctx) {
         SubmissionResult submissionResult = submissionDomainService.finalizeSubmission(ctx);
 
         publishFinalResult(ctx);
         publishProblemSolve(submissionResult);
+        publishProblemCountAdjustment(ctx, submissionResult);
     }
 
     public void publishSubmissionError(String sessionKey, Exception e) {
@@ -102,5 +106,11 @@ public class JudgementService {
 
     private void publishProblemSolve(SubmissionResult submissionResult) {
         problemEventService.publishProblemSolveEvent(submissionResult);
+    }
+
+    private void publishProblemCountAdjustment(SubmissionContext ctx, SubmissionResult submissionResult) {
+        submissionEventService.publishProblemCountAdjustment(
+            new ProblemCountAdjustmentEvent(ctx.getProblemId(), submissionResult.isSolved())
+        );
     }
 }

@@ -14,9 +14,9 @@ public class ExecutorConfig {
     @Bean(name = "consumerExecutor")
     public Executor consumerExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(100);
+        executor.setCorePoolSize(40);
+        executor.setMaxPoolSize(80);
+        executor.setQueueCapacity(1000);
         executor.setThreadNamePrefix("consumer-");
         executor.initialize();
         return executor;
@@ -25,9 +25,9 @@ public class ExecutorConfig {
     @Bean(name = "judgeSubmissionExecutor")
     public Executor judgeSubmissionExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(100);
+        executor.setCorePoolSize(40);
+        executor.setMaxPoolSize(80);
+        executor.setQueueCapacity(1000);
         executor.setThreadNamePrefix("submission-");
         executor.initialize();
         return executor;
@@ -36,9 +36,9 @@ public class ExecutorConfig {
     @Bean(name = "judgeTestcaseExecutor")
     public Executor judgeTestcaseExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(25);
-        executor.setMaxPoolSize(50);
-        executor.setQueueCapacity(500);
+        executor.setCorePoolSize(40);
+        executor.setMaxPoolSize(80);
+        executor.setQueueCapacity(2000);
         executor.setThreadNamePrefix("testcase-");
         executor.initialize();
         return executor;
