@@ -49,7 +49,7 @@ public class Judge0Client implements JudgeClient {
 
         HttpClient httpClient = HttpClient.create(provider)
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5_000)
-            .responseTimeout(Duration.ofSeconds(30));
+            .responseTimeout(Duration.ofSeconds(10));
 
         this.webClient = WebClient.builder()
             .baseUrl(judge0ApiUrl)
@@ -70,8 +70,8 @@ public class Judge0Client implements JudgeClient {
                 res -> Mono.error(new TimeoutException("Upstream 504 Gateway Timeout"))
             )
             .bodyToMono(ExecutionResultResponse.class)
-            .timeout(Duration.ofSeconds(30))
-            .retryWhen(Retry.backoff(5, Duration.ofSeconds(1))
+            .timeout(Duration.ofSeconds(10))
+            .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
                 .maxBackoff(Duration.ofSeconds(4))
                 .filter(ex -> {
                     if (ex instanceof TimeoutException) {

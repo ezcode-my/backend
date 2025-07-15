@@ -150,7 +150,7 @@ public class Judge0ClientTest {
             mockWebServer.enqueue(new MockResponse()
                 .setBody("{\"token\":\"late\"}")
                 .setHeader("Content-Type", "application/json")
-                .setBodyDelay(10, TimeUnit.SECONDS));
+                .setBodyDelay(11, TimeUnit.SECONDS));
 
             // when & then
             assertThatThrownBy(() -> judge0Client.submitAndGetToken(request))
@@ -182,7 +182,7 @@ public class Judge0ClientTest {
         void pollUntilDone_throwTimeout() {
 
             // given
-            for (int i = 0; i < 65; i++) {
+            for (int i = 0; i < 61; i++) {
                 mockWebServer.enqueue(json("{\"status\":{\"id\":1}}"));
             }
 
