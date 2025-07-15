@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.domain.submission.model.entity.QSubmission;
+import org.ezcode.codetest.domain.user.model.entity.QUser;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.dsl.Expressions;
@@ -26,24 +27,27 @@ public class SubmissionQueryRepositoryImpl implements SubmissionQueryRepository 
         LocalDateTime endDateTime
     ) {
 
+        QUser u = QUser.user;
         QSubmission s = QSubmission.submission;
 
-        var dateOnly = Expressions.dateTemplate(java.sql.Date.class, "function('date',{0})", s.createdAt);
+        var dateOnly = Expressions.dateTemplate(java.sql.Date.class, "DATE({0})", s.createdAt);
         var cntExpr = dateOnly.countDistinct();
 
         return jpaQueryFactory
             .select(constructor(
                 WeeklySolveCount.class,
-                s.user.id,
+                u.id,
                 cntExpr
             ))
-            .from(s)
-            .where(
+            .from(u)
+            .leftJoin(s)
+            .on(
+                s.user.id.eq(u.id),
                 s.createdAt.goe(startDateTime),
                 s.createdAt.lt(endDateTime),
                 s.testCasePassedCount.eq(s.testCaseTotalCount)
             )
-            .groupBy(s.user.id)
+            .groupBy(u.id)
             .fetch();
     }
 }

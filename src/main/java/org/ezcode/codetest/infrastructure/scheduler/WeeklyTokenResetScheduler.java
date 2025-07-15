@@ -34,7 +34,7 @@ public class WeeklyTokenResetScheduler {
     @PostConstruct
     public void schedule() {
         CronTrigger trigger = new CronTrigger(
-            "0 0 0 * * MON",
+            "0 0 3 * * MON",
             TimeZone.getTimeZone("Asia/Seoul")
         );
 
