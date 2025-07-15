@@ -35,30 +35,22 @@ public class SubmissionDomainService {
 
         boolean allPassed = ctx.isPassed();
 
-        return getUserProblemResult(ctx.user().getId(), ctx.getProblem().getId()).map(
-                result -> {
-                    ctx.incrementTotalSubmissions();
-                    if (!result.isCorrect() && allPassed) {
-                        modifyUserProblemResult(result, true);
-                        ctx.incrementCorrectSubmissions();
-                        return SubmissionResult.from(result, ctx.getCategories(), false);
-                    }
-                    return SubmissionResult.from(result, ctx.getCategories(), true);
-                })
-            .orElseGet(() -> {
-                    ctx.incrementTotalSubmissions();
-                    if (allPassed) {
-                        ctx.incrementCorrectSubmissions();
-                    }
-                    return SubmissionResult.from(createUserProblemResult(
-                        UserProblemResult.builder()
-                            .user(ctx.user())
-                            .problem(ctx.getProblem())
-                            .isCorrect(allPassed)
-                            .build()
-                    ), ctx.getCategories(), false);
+        UserProblemResult upr = getUserProblemResult(ctx.user().getId(), ctx.getProblem().getId())
+            .map(existing -> {
+                if (!existing.isCorrect() && allPassed) {
+                    modifyUserProblemResult(existing, true);
                 }
-            );
+                return existing;
+            })
+            .orElseGet(() -> createUserProblemResult(
+                UserProblemResult.builder()
+                    .user(ctx.user())
+                    .problem(ctx.getProblem())
+                    .isCorrect(allPassed)
+                    .build()
+            ));
+
+        return SubmissionResult.of(upr, ctx.getCategories(), allPassed);
     }
 
     public boolean handleEvaluationAndUpdateStats(

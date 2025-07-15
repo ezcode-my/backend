@@ -21,4 +21,6 @@ public interface ProblemRepository {
 	Optional<Problem> findProblemWithTestcasesById(Long problemId);
 
 	boolean existsByTitleAndIsDeletedIsFalse(String title);
+
+	void problemCountAdjustment(Long problemId, int correctInc);
 }

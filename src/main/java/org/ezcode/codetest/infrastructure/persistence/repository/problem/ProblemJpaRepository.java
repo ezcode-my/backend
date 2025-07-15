@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,4 +22,16 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
 	Optional<Problem> findProblemWithTestcasesById(@Param("problemId") Long problemId);
 
 	boolean existsByTitleAndIsDeletedIsFalse(String title);
+
+	@Modifying(clearAutomatically = true)
+	@Query("""
+        UPDATE Problem p
+        SET p.totalSubmissions = p.totalSubmissions + 1,
+            p.correctSubmissions = p.correctSubmissions + :correctInc
+        WHERE p.id = :problemId
+    """)
+	void incrementCount(
+		@Param("problemId") Long problemId,
+		@Param("correctInc") int correctInc
+		);
 }

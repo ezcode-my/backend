@@ -74,7 +74,6 @@ public class SubmissionService {
     }
 
     @Async("judgeSubmissionExecutor")
-    @Transactional
     public void processSubmissionAsync(SubmissionMessage msg) {
         try {
             log.info("[Submission RUN] Thread = {}", Thread.currentThread().getName());

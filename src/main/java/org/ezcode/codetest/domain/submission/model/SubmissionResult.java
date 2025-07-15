@@ -18,12 +18,15 @@ public record SubmissionResult(
 	boolean hasBeenSolved
 
 ) {
-	public static SubmissionResult from(UserProblemResult result, List<String> problemCategory, boolean hasBeenSolved) {
+	public static SubmissionResult of(UserProblemResult upr, List<String> problemCategory, boolean allPassed) {
+		boolean before = upr.isCorrect();
+		boolean now = allPassed && !before;
+
 		return SubmissionResult.builder()
-			.userId(result.getUser().getId())
+			.userId(upr.getUser().getId())
 			.problemCategory(problemCategory)
-			.isSolved(result.isCorrect())
-			.hasBeenSolved(hasBeenSolved)
+			.isSolved(now)
+			.hasBeenSolved(before)
 			.build();
 	}
 }

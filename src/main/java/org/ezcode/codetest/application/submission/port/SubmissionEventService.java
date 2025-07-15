@@ -1,6 +1,7 @@
 package org.ezcode.codetest.application.submission.port;
 
 import org.ezcode.codetest.application.submission.dto.event.GitPushStatusEvent;
+import org.ezcode.codetest.application.submission.dto.event.ProblemCountAdjustmentEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionErrorEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionJudgingFinishedEvent;
 import org.ezcode.codetest.application.submission.dto.event.TestcaseListInitializedEvent;
@@ -17,4 +18,6 @@ public interface SubmissionEventService {
     void publishSubmissionError(SubmissionErrorEvent event);
 
     void publishGitPushStatus(GitPushStatusEvent event);
+
+    void publishProblemCountAdjustment(ProblemCountAdjustmentEvent event);
 }

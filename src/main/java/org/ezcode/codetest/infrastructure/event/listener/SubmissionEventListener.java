@@ -2,7 +2,9 @@ package org.ezcode.codetest.infrastructure.event.listener;
 
 import java.util.List;
 
+import org.ezcode.codetest.application.problem.service.ProblemService;
 import org.ezcode.codetest.application.submission.dto.event.GitPushStatusEvent;
+import org.ezcode.codetest.application.submission.dto.event.ProblemCountAdjustmentEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionErrorEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionJudgingFinishedEvent;
 import org.ezcode.codetest.application.submission.dto.event.TestcaseListInitializedEvent;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class SubmissionEventListener {
 
     private final StompMessageService messageService;
+    private final ProblemService problemService;
 
     @EventListener
     public void onTestcaseInit(TestcaseListInitializedEvent event) {
@@ -54,5 +57,10 @@ public class SubmissionEventListener {
     public void onGitPushStatus(GitPushStatusEvent event) {
         GitPushStatusResponse wsDto = new GitPushStatusResponse(event.pushStatus().name());
         messageService.sendGitStatus(event.sessionKey(), event.principalName(), wsDto);
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onProblemCountAdjustment(ProblemCountAdjustmentEvent event) {
+        problemService.problemCountAdjustment(event.problemId(), event.isSolved());
     }
 }

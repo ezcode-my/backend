@@ -165,4 +165,8 @@ public record SubmissionContext(
     public String getUserEmail() {
         return user.getEmail();
     }
+
+    public Long getProblemId() {
+        return getProblem().getId();
+    }
 }
