@@ -17,7 +17,7 @@ public class SecurityPath {
 		"/actuator/**",
 		"/chatting",
 		"/submit-test/**",
-		"/problems/**",
+		"/api/problems/**",
 		"/ws/**",
 		"/swagger-ui/**",
 		"/swagger-resources/**",
