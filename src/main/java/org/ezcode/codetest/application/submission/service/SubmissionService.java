@@ -56,6 +56,11 @@ public class SubmissionService {
     private final GitHubPushService gitHubPushService;
 
     public SubmitResponse prepareSubmission(Long problemId, AuthUser authUser) {
+
+        if (authUser == null) {
+            throw new SubmissionException(SubmissionExceptionCode.AUTH_REQUIRED);
+        }
+
         boolean acquired = lockManager.tryLock("submission", authUser.getId(), problemId);
         if (!acquired) {
             throw new SubmissionException(SubmissionExceptionCode.ALREADY_JUDGING);
