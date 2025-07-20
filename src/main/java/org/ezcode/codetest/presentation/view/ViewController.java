@@ -20,6 +20,11 @@ public class ViewController {
         return "test-login";
     }
 
+    @GetMapping("/test/reset-password")
+    public String getResetPasswordView(){
+        return "test-reset-password";
+    }
+
     @GetMapping("/test/submit")
     public String getSubmitView() {
         return "test-submit";

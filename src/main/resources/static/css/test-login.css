@@ -210,3 +210,75 @@ body {
     height: 100%;
     object-fit: contain;
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #101618;
+    color: #fff;
+    width: 360px;
+    padding: 30px 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    font-family: 'Gmarket Sans', sans-serif;
+}
+
+
+.modal-content h3 {
+    margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+.modal-content p {
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: #bbb;
+}
+
+.modal-content input {
+    width: 90%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+    background: #1e2a2f;
+    color: #fff;
+    font-size: 14px;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    margin: 0 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.modal-buttons button:first-child {
+    background-color: #555;
+    color: #fff;
+}
+
+.modal-buttons button:last-child {
+    background-color: #00c776;
+    color: #fff;
+}
+
+.modal-buttons button:hover {
+    opacity: 0.9;
+}

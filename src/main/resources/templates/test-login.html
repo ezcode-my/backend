@@ -24,7 +24,7 @@
       </div>
       <button class="login-button default">로그인</button>
       <button class="signup-email-button">이메일 회원가입</button>
-      <div class="find-account">아이디 | 비밀번호 찾기</div>
+      <div class="find-account">비밀번호 찾기</div>
       <div class="social-login-divider">
         <span class="social-login-text">소셜 로그인</span>
       </div>
@@ -47,8 +47,90 @@
     </div>
   </div>
 </div>
+<!-- 비밀번호 찾기 모달 -->
+<div id="email-modal" class="modal">
+  <div class="modal-content">
+    <h3>비밀번호 재설정</h3>
+    <p>가입한 이메일 주소를 입력해주세요.</p>
+    <input type="email" id="reset-email" placeholder="example@email.com" />
+    <div class="modal-buttons">
+      <button onclick="closeModal()">취소</button>
+      <button onclick="sendFindPassword()">전송</button>
+    </div>
+  </div>
+</div>
+
 </body>
 <script>
+
+  function closeModal() {
+    document.getElementById('email-modal').style.display = 'none';
+  }
+
+  function sendFindPassword() {
+    const email = document.getElementById('reset-email').value;
+
+    if (!email) {
+      alert("이메일을 입력해주세요.");
+      return;
+    }
+
+    const requestBody = {
+      email: email,
+      redirectUrl: "http://localhost:8080"
+    };
+
+    fetch("/api/auth/find-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody)
+    })
+            .then(response => {
+              if (!response.ok) throw new Error("이메일 전송에 실패했습니다.");
+              return response.json();
+            })
+            .then(data => {
+              const token = data.result?.tempResetToken;
+              if (token) {
+                window.location.href = `/test/reset-password?tempResetToken=${encodeURIComponent(token)}`;
+              } else {
+                alert("토큰이 응답되지 않았습니다.");
+              }
+            })
+            .catch(error => {
+              alert("에러가 발생했습니다: " + error.message);
+            });
+  }
+
+
+  document.querySelector('.find-account').addEventListener('click', function () {
+    document.getElementById('email-modal').style.display = 'block';
+  });
+    const requestBody = {
+      email: email,
+      redirectUrl: "http://localhost:8080"
+    };
+
+    fetch("/api/auth/find-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error("이메일 전송에 실패했습니다.");
+              }
+              return response.json();
+            })
+            .then(data => {
+              alert(data.message || "비밀번호 재설정 링크가 이메일로 전송되었습니다.");
+            })
+            .catch(error => {
+              alert("에러가 발생했습니다: " + error.message);
+            });
+
   const emailInput = document.querySelector('.input-field.email input');
   const passwordInput = document.querySelector('.input-field.password input');
   const loginButton = document.querySelector('.login-button');
