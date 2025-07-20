@@ -15,7 +15,7 @@ public class RedisLockManager implements LockManager {
     private final StringRedisTemplate redisTemplate;
 
     private static final String LOCK_KEY_FORMAT = "%s-lock:user:%d:problem:%d";
-    private static final Duration LOCK_DURATION = Duration.ofMinutes(5);
+    private static final Duration LOCK_DURATION = Duration.ofMinutes(1);
 
     @Override
     public boolean tryLock(String prefix, Long userId, Long problemId) {

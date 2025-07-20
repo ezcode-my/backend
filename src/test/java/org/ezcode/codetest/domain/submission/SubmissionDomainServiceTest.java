@@ -118,10 +118,9 @@ public class SubmissionDomainServiceTest {
 
         // then
         then(submissionRepository).should().saveSubmission(any());
-        then(ctx).should().incrementTotalSubmissions();
-        then(ctx).should().incrementCorrectSubmissions();
         then(userProblemResultRepository).should().saveUserProblemResult(any());
-        assertThat(submissionResult.isSolved()).isFalse();
+        assertThat(submissionResult.isSolved()).isTrue();
+        assertThat(submissionResult.hasBeenSolved()).isFalse();
     }
 
     @Test
@@ -159,10 +158,9 @@ public class SubmissionDomainServiceTest {
 
         // then
         then(submissionRepository).should().saveSubmission(any());
-        then(ctx).should().incrementTotalSubmissions();
-        then(ctx).should(never()).incrementCorrectSubmissions();
         then(userProblemResultRepository).should().saveUserProblemResult(any());
         assertThat(submissionResult.isSolved()).isFalse();
+        assertThat(submissionResult.hasBeenSolved()).isFalse();
     }
 
     @Test
@@ -200,10 +198,9 @@ public class SubmissionDomainServiceTest {
 
         // then
         then(submissionRepository).should().saveSubmission(any());
-        then(ctx).should().incrementTotalSubmissions();
-        then(ctx).should().incrementCorrectSubmissions();
         then(userProblemResultRepository).should().updateUserProblemResult(userProblemResult, true);
-        assertThat(submissionResult.isSolved()).isFalse();
+        assertThat(submissionResult.isSolved()).isTrue();
+        assertThat(submissionResult.hasBeenSolved()).isFalse();
     }
 
     @Test
@@ -241,11 +238,10 @@ public class SubmissionDomainServiceTest {
 
         // then
         then(submissionRepository).should().saveSubmission(any());
-        then(ctx).should().incrementTotalSubmissions();
-        then(ctx).should(never()).incrementCorrectSubmissions();
         then(userProblemResultRepository).should(never())
             .updateUserProblemResult(any(UserProblemResult.class), anyBoolean());
         assertThat(submissionResult.isSolved()).isFalse();
+        assertThat(submissionResult.hasBeenSolved()).isFalse();
     }
 
     @Test
@@ -283,11 +279,10 @@ public class SubmissionDomainServiceTest {
 
         // then
         then(submissionRepository).should().saveSubmission(any());
-        then(ctx).should().incrementTotalSubmissions();
-        then(ctx).should(never()).incrementCorrectSubmissions();
         then(userProblemResultRepository).should(never())
             .updateUserProblemResult(any(UserProblemResult.class), anyBoolean());
-        assertThat(submissionResult.isSolved()).isTrue();
+        assertThat(submissionResult.isSolved()).isFalse();
+        assertThat(submissionResult.hasBeenSolved()).isTrue();
     }
 
     @Test

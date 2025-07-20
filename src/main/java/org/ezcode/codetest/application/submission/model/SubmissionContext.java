@@ -102,12 +102,16 @@ public record SubmissionContext(
         return language.getJudge0Id();
     }
 
-    public String getInput(int seqId) {
-        return getTestcases().get(seqId - 1).getInput();
+    public String getInput(int index) {
+        return getTestcases().get(index).getInput();
     }
 
-    public String getExpectedOutput(int seqId) {
-        return getTestcases().get(seqId - 1).getOutput();
+    public String getExpectedOutput(int index) {
+        return getTestcases().get(index).getOutput();
+    }
+
+    public Long getTestcaseId(int index) {
+        return getTestcases().get(index).getId();
     }
 
     public long getTimeLimit() {
@@ -160,5 +164,9 @@ public record SubmissionContext(
 
     public String getUserEmail() {
         return user.getEmail();
+    }
+
+    public Long getProblemId() {
+        return getProblem().getId();
     }
 }

@@ -55,6 +55,11 @@ public class ViewController {
         return "game-page";
     }
 
+    @GetMapping("/test/notifications")
+    public String getNotificationPage() {
+        return "test-notifications";
+    }
+
     @GetMapping("/ezlogin")
     public String loginPage(){
         return "login-page";

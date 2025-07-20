@@ -42,8 +42,10 @@ public record ReplyResponse(
 	Long childReplyCount,
 
 	@Schema(description = "현재 사용자의 추천 상태 (UP, DOWN, NONE)", example = "UP")
-	VoteType voteStatus
+	VoteType voteStatus,
 
+	@Schema(description = "로그인한 유저의 해당 토론글 작성 여부", example = "true")
+	boolean isAuthor
 ) {
 
 	public static ReplyResponse fromEntity(Reply reply) {
@@ -62,7 +64,8 @@ public record ReplyResponse(
 			null,
 			null,
 			null,
-			null
+			null,
+			false
 		);
 	}
 
@@ -78,7 +81,8 @@ public record ReplyResponse(
 			result.getUpvoteCount(),
 			result.getDownvoteCount(),
 			result.getChildReplyCount(),
-			result.getVoteStatus()
+			result.getVoteStatus(),
+			result.isAuthor()
 		);
 	}
 }

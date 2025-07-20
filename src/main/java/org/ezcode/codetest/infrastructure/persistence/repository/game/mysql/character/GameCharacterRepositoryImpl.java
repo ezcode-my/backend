@@ -22,6 +22,12 @@ public class GameCharacterRepositoryImpl implements GameCharacterRepository {
 	}
 
 	@Override
+	public boolean isCharacterExist(Long userId) {
+
+		return characterRepository.existsByUserId(userId);
+	}
+
+	@Override
 	public Optional<GameCharacter> findByUserId(Long userId) {
 
 		return characterRepository.findByUserId(userId);

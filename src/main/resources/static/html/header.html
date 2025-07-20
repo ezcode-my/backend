@@ -6,26 +6,36 @@
     /* 반투명 뒤배경 */
     .chat-overlay {
         display: none;
-        position: fixed; top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.4);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
         z-index: 9998;
     }
+
     .chat-overlay.open {
         display: block;
     }
 
     /* 우측 슬라이드 패널 */
     .chat-drawer {
-        position: fixed; top: 0; right: 0; bottom: 0;
-        width: 90%; max-width: 800px;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 90%;
+        max-width: 800px;
         background: #1c1e2b;
         transform: translateX(100%);
         transition: transform 0.3s ease-out;
         z-index: 9999;
-        display: flex; flex-direction: column;
-        box-shadow: -2px 0 8px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
     }
+
     .chat-drawer.open {
         transform: translateX(0);
     }
@@ -57,16 +67,93 @@
         margin-left: 12px;
         transition: fill 0.3s;
     }
+
     #joypadIcon:hover {
         fill: #0f0;
+    }
+
+    #notificationBtn.has-unread svg {
+        filter: drop-shadow(0 0 4px #f00);
+    }
+
+    #notificationBtn.has-unread::after {
+        content: '';
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #f00;
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        right: 2px;
+    }
+
+    #notificationBtn {
+        position: relative;
+    }
+
+    #notificationModal {
+        position: absolute;
+        top: 48px; /* 헤더 아래에 위치 */
+        right: 24px;
+        width: 340px;
+        max-height: 420px;
+        background: #181a23;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        z-index: 10001;
+        display: none;
+        padding: 0 0 8px 0;
+        overflow: hidden;
+        border: 1px solid #222;
+    }
+
+    .notification-list {
+        max-height: 340px;
+        overflow-y: auto;
+        padding: 12px 0 0 0;
+    }
+
+    .notification-item {
+        padding: 12px 20px 8px 20px;
+        border-bottom: 1px solid #23242c;
+        font-size: 15px;
+        color: #eee;
+        background: none;
+    }
+    .notification-item.unread .message {
+        color: #00d084;
+        font-weight: 600;
+    }
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+    .notification-item .time {
+        font-size: 12px;
+        color: #aaa;
+        margin-top: 2px;
+    }
+    #notificationMoreBtn {
+        width: 100%;
+        background: none;
+        border: none;
+        color: #aaa;
+        font-size: 14px;
+        padding: 10px 0 6px 0;
+        cursor: pointer;
+        border-top: 1px solid #23242c;
+        border-radius: 0 0 16px 16px;
+        transition: background 0.15s;
+    }
+    #notificationMoreBtn:hover {
+        background: #23242c;
+        color: #00d084;
     }
 </style>
 
 <!-- 3) 기존 <header>…</header> -->
 <header>
-    <div class="logo-placeholder"
-         onclick="location.href='/test/main'"
-         style="cursor:pointer;"></div>
+    <div class="logo-placeholder" onclick="location.href='/test/main'" style="cursor:pointer;"></div>
     <nav>
         <ul>
             <li><a href="/test/problems">문제풀이</a></li>
@@ -74,46 +161,43 @@
 
             <!-- ★ 알람 벨 아이콘 복구 ★ -->
             <li id="notificationBtn" style="cursor:pointer;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"
-                     xmlns="http://www.w3.org/2000/svg">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5
                    c0-3.07-1.64-5.64-4.5-6.32V4a1.5 1.5 0 0
                    0-3 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1
-                   l-2-2z"/>
+                   l-2-2z" />
                 </svg>
             </li>
 
             <!-- ★ 채팅 아이콘: 클릭 시 overlay·drawer 에 .open 추가 ★ -->
-            <li id="chatToggle" style="cursor:pointer;"
-                onclick="
+            <li id="chatToggle" style="cursor:pointer;" onclick="
             document.getElementById('chatOverlay').classList.add('open');
             document.getElementById('chatDrawer').classList.add('open');
           ">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
-                    <path d="M4 4H20V16H7L4 19V4Z"/>
+                    <path d="M4 4H20V16H7L4 19V4Z" />
                 </svg>
             </li>
 
             <!-- ★ 조이패드 아이콘 href 직접 지정, id 유지 ★ -->
             <li style="cursor:pointer;" title="게임 실행">
                 <a href="/test/gaming" id="joypadIcon" aria-label="게임 실행">
-                    <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" >
+                    <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
                         <!-- 조이스틱 모양 아이콘 -->
-                        <circle cx="12" cy="12" r="10" stroke="#0f0" stroke-width="1.5" fill="none"/>
-                        <rect x="9" y="6" width="6" height="12" fill="#0f0" rx="2" ry="2"/>
-                        <circle cx="12" cy="10" r="1.5" fill="#111"/>
+                        <circle cx="12" cy="12" r="10" stroke="#0f0" stroke-width="1.5" fill="none" />
+                        <rect x="9" y="6" width="6" height="12" fill="#0f0" rx="2" ry="2" />
+                        <circle cx="12" cy="10" r="1.5" fill="#111" />
                     </svg>
                 </a>
             </li>
 
             <li>
-                <button id="loginBtn" class="login-button-header"
-                        onclick="location.href='/test/signin'">
+                <button id="loginBtn" class="login-button-header" onclick="location.href='/test/signin'">
                     로그인
                 </button>
             </li>
             <li class="user-menu" style="display:none;" id="userMenu">
-                <img id="userIcon" src="/images/user-icon.png" alt="유저 아이콘"/>
+                <img id="userIcon" src="/images/user-icon.png" alt="유저 아이콘" />
                 <div class="dropdown" id="userDropdown">
                     <a href="/test/mypage">마이페이지</a>
                     <button id="logoutBtn">로그아웃</button>
@@ -124,8 +208,7 @@
 </header>
 
 <!-- 4) 기존 오버레이 & 드로어 HTML (채팅용) -->
-<div id="chatOverlay" class="chat-overlay"
-     onclick="
+<div id="chatOverlay" class="chat-overlay" onclick="
        this.classList.remove('open');
        document.getElementById('chatDrawer').classList.remove('open');
      ">
@@ -133,13 +216,12 @@
 
 <div id="chatDrawer" class="chat-drawer">
     <!-- 닫기 버튼 (×) -->
-    <span class="chat-drawer-close"
-          onclick="
+    <span class="chat-drawer-close" onclick="
           document.getElementById('chatOverlay').classList.remove('open');
           document.getElementById('chatDrawer').classList.remove('open');
         ">
-    &times;
-  </span>
+        &times;
+    </span>
 
     <!-- 실제 채팅 페이지 -->
     <iframe src="/test/chatting"></iframe>
@@ -149,8 +231,8 @@
 <script>
     const toggle = document.getElementById('chatToggle');
     const overlay = document.getElementById('chatOverlay');
-    const drawer  = document.getElementById('chatDrawer');
-    const closeBtn= document.querySelector('.chat-drawer-close');
+    const drawer = document.getElementById('chatDrawer');
+    const closeBtn = document.querySelector('.chat-drawer-close');
 
     function openChat() {
         overlay.classList.add('open');
@@ -166,9 +248,9 @@
     );
     closeBtn.addEventListener('click', closeChat);
     overlay.addEventListener('click', closeChat);
-
-    // 알람 클릭 이벤트 (필요시 추가 기능 구현)
-    document.getElementById('notificationBtn').addEventListener('click', () => {
-        alert('알림 기능은 곧 제공됩니다.');
-    });
 </script>
+
+<div id="notificationModal" class="notification-modal" style="display:none;">
+    <div class="notification-list" id="notificationList"></div>
+    <button id="notificationMoreBtn">알림 더보기</button>
+</div>

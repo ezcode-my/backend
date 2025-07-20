@@ -7,6 +7,7 @@ import org.ezcode.codetest.application.game.dto.request.encounter.BattleRequest;
 import org.ezcode.codetest.application.game.dto.request.encounter.EncounterChoiceRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillEquipRequest;
 import org.ezcode.codetest.application.game.dto.request.skill.SkillUnEquipRequest;
+import org.ezcode.codetest.application.game.dto.response.character.CharacterCheckResponse;
 import org.ezcode.codetest.application.game.dto.response.character.CharacterStatusResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.BattleHistoryResponse;
 import org.ezcode.codetest.application.game.dto.response.encounter.DefenceBattleHistoryResponse;
@@ -57,6 +58,12 @@ public class GamePlayUseCase {
 		User user = userDomainService.getUser(email);
 
 		characterService.createGameCharacter(new GameCharacter(user));
+	}
+
+	@Transactional
+	public CharacterCheckResponse isCharacterExist(Long userId) {
+
+		return new CharacterCheckResponse(characterService.isCharacterExist(userId));
 	}
 
 	@Transactional

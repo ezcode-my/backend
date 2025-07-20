@@ -29,6 +29,7 @@ public class ReplyDomainService {
 		if (parentReplyId != null) {
 			parentReply = getReplyById(parentReplyId);
 			validateDiscussionMatches(parentReply, discussion);
+			checkNoExistingParentForReply(parentReply);
 		}
 
 		Reply reply = Reply.builder()
@@ -96,12 +97,20 @@ public class ReplyDomainService {
 		if (!reply.isDiscussionMatches(discussion.getId())) {
 			throw new CommunityException(CommunityExceptionCode.REPLY_DISCUSSION_MISMATCH);
 		}
+
 	}
 
 	public void validateIsAuthor(Reply reply, Long userId) {
 
 		if (!reply.isAuthor(userId)) {
 			throw new CommunityException(CommunityExceptionCode.USER_NOT_AUTHOR);
+		}
+	}
+
+	public void checkNoExistingParentForReply(Reply parentReply) {
+
+		if (parentReply.getParent() != null) {
+			throw new CommunityException(CommunityExceptionCode.REPLY_PARENT_ALREADY_EXISTS);
 		}
 	}
 

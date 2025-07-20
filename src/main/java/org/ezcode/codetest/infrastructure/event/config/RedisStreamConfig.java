@@ -1,10 +1,7 @@
 package org.ezcode.codetest.infrastructure.event.config;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.Executor;
 
 import org.ezcode.codetest.infrastructure.event.listener.RedisJudgeQueueConsumer;
@@ -14,10 +11,8 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.ReadOffset;
-import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
-import org.springframework.data.redis.connection.stream.Consumer;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +25,9 @@ public class RedisStreamConfig {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final Executor consumerExecutor;
+    private final RedisStreamConsumerRegistrar consumerRegistrar;
+
+    private StreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
 
     @PostConstruct
     public void initConsumerGroup() {
@@ -39,7 +37,7 @@ public class RedisStreamConfig {
             if (Boolean.FALSE.equals(exists)) {
                 log.info("Redis Stream 'judge-queue'를 생성합니다.");
                 redisTemplate.opsForStream().add("judge-queue", Map.of(
-                    "emitterKey", "dummy",
+                    "sessionKey", "dummy",
                     "problemId", "0",
                     "languageId", "0",
                     "userId", "0",
@@ -53,21 +51,20 @@ public class RedisStreamConfig {
                     connection.xGroupDelConsumer(
                         "judge-queue".getBytes(),
                         "judge-group",
-                        getConsumerName().replace("consumer-", "")
+                        consumerRegistrar.getConsumerName()
                     );
                     return null;
                 });
             } catch (Exception e) {
-                log.warn("DELCONSUMER 중 오류 발생: {}", e.getMessage());
+                log.warn("기존 컨슈머 삭제 중 오류 발생: {}", e.getMessage());
             }
 
             redisTemplate.opsForStream().createGroup("judge-queue", ReadOffset.latest(), "judge-group");
 
             log.info("Redis Stream 'judge-queue'에 대한 Consumer Group 'judge-group'을 생성했습니다.");
         } catch (Exception e) {
-            log.info("예외 발생: {}, 메시지: {}", e.getClass(), e.getMessage());
             if (e.getCause() instanceof io.lettuce.core.RedisBusyException) {
-                log.info("Redis Consumer Group 'judge-group'이 이미 존재하여 생성을 건너뜁니다.");
+                log.info("이미 존재하는 Consumer Group이므로 생성을 생략합니다.");
             } else {
                 log.error("Redis Consumer Group 초기화에 실패했습니다.", e);
                 throw e;
@@ -80,34 +77,20 @@ public class RedisStreamConfig {
         RedisConnectionFactory factory,
         RedisJudgeQueueConsumer consumer
     ) {
-        StreamMessageListenerContainer
-            .StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
-            StreamMessageListenerContainer
+        var options = StreamMessageListenerContainer
                 .StreamMessageListenerContainerOptions
                 .builder()
                 .executor(consumerExecutor)
                 .pollTimeout(Duration.ofSeconds(2))
+                .errorHandler(e ->
+                    log.error("[Redis Listener] 예외 발생 - 컨테이너가 죽었을 수 있음", e))
                 .build();
 
-        StreamMessageListenerContainer<String, MapRecord<String, String, String>> container =
-            StreamMessageListenerContainer.create(factory, options);
+        this.container = StreamMessageListenerContainer.create(factory, options);
 
-        container.receive(
-            Consumer.from("judge-group", getConsumerName()),
-            StreamOffset.create("judge-queue", ReadOffset.lastConsumed()),
-            consumer
-        );
+        consumerRegistrar.registerConsumer(this.container, consumer);
+        this.container.start();
 
-        container.start();
-        return container;
-    }
-
-    private String getConsumerName() {
-        try {
-            return "consumer-" + InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            log.warn("호스트명 확인 실패, UUID 사용: {}", e.getMessage());
-            return "consumer-" + UUID.randomUUID().toString().substring(0, 8);
-        }
+        return this.container;
     }
 }

@@ -10,6 +10,7 @@ import org.ezcode.codetest.application.submission.dto.request.review.CodeReviewR
 import org.ezcode.codetest.application.submission.dto.request.submission.CodeSubmitRequest;
 import org.ezcode.codetest.application.submission.dto.response.review.CodeReviewResponse;
 import org.ezcode.codetest.application.submission.dto.response.submission.GroupedSubmissionResponse;
+import org.ezcode.codetest.application.submission.dto.response.submission.SubmitResponse;
 import org.ezcode.codetest.application.submission.model.ReviewResult;
 import org.ezcode.codetest.application.submission.model.SubmissionContext;
 import org.ezcode.codetest.application.submission.port.ExceptionNotifier;
@@ -25,7 +26,9 @@ import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
+import org.ezcode.codetest.domain.problem.service.TestcaseDomainService;
 import org.ezcode.codetest.domain.submission.exception.SubmissionException;
 import org.ezcode.codetest.domain.submission.exception.code.SubmissionExceptionCode;
 import org.ezcode.codetest.domain.submission.model.entity.Submission;
@@ -39,7 +42,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -65,6 +67,9 @@ public class SubmissionServiceTest {
 
     @Mock
     private SubmissionDomainService submissionDomainService;
+
+    @Mock
+    private TestcaseDomainService testcaseDomainService;
 
     @Mock
     private QueueProducer queueProducer;
@@ -121,27 +126,44 @@ public class SubmissionServiceTest {
     class SuccessCases {
 
         @Test
-        @DisplayName("락 획득 성공 -> 메세지 큐에 전송하고 sessionKey 반환")
+        @DisplayName("락 획득 성공 -> sessionKey, testcaseList 반환")
+        void prepareSubmissionSuccess() {
+
+            // given
+            given(authUser.getId()).willReturn(userId);
+            given(lockManager.tryLock("submission", userId, problemId)).willReturn(true);
+
+            List<Testcase> testcaseList = List.of(mock(Testcase.class), mock(Testcase.class));
+            given(testcaseDomainService.getTestcaseListByProblemId(problemId)).willReturn(testcaseList);
+
+            // when
+            SubmitResponse result = submissionService.prepareSubmission(problemId, authUser);
+
+            // then
+            assertThat(result.sessionKey()).startsWith(userId + "_");
+            assertThat(result.testcaseIds()).hasSize(2);
+            then(lockManager).should().tryLock("submission", userId, problemId);
+            then(testcaseDomainService).should().getTestcaseListByProblemId(problemId);
+        }
+
+        @Test
+        @DisplayName("큐에 메세지 전송 확인")
         void enqueueCodeSubmissionSucceeds() {
 
             // given
             given(authUser.getId()).willReturn(userId);
             given(request.languageId()).willReturn(languageId);
             given(request.sourceCode()).willReturn(sourceCode);
-            given(lockManager.tryLock("submission", authUser.getId(), problemId))
-                .willReturn(true);
 
             // when
-            String result = submissionService.enqueueCodeSubmission(problemId, request, authUser);
+            submissionService.enqueueCodeSubmission(problemId, request, authUser);
 
             then(queueProducer).should()
                 .enqueue(argThat(msg ->
-                    msg.sessionKey().startsWith(sessionKey) &&
                         msg.problemId().equals(problemId) &&
                         msg.languageId().equals(languageId) &&
                         msg.sourceCode().equals(sourceCode)
                 ));
-            assertThat(result).startsWith(sessionKey);
         }
 
         @Test
@@ -160,13 +182,9 @@ public class SubmissionServiceTest {
             submissionService.processSubmissionAsync(msg);
 
             // then
-            ArgumentCaptor<SubmissionContext> captor = ArgumentCaptor.forClass(SubmissionContext.class);
-            then(judgementService).should().publishInitTestcases(captor.capture());
-            SubmissionContext ctx = captor.getValue();
-
-            then(judgementService).should().runTestcases(ctx);
-            then(judgementService).should().finalizeAndPublish(ctx);
-            then(gitHubPushService).should().pushSolutionToRepo(ctx);
+            then(judgementService).should().runTestcases(any(SubmissionContext.class));
+            then(judgementService).should().finalizeAndPublish(any(SubmissionContext.class));
+            then(gitHubPushService).should().pushSolutionToRepo(any(SubmissionContext.class));
 
             then(lockManager).should().releaseLock("submission", userId, problemId);
         }
@@ -250,7 +268,7 @@ public class SubmissionServiceTest {
 
         @Test
         @DisplayName("락 획득 실패 -> ALREADY_JUDGING 예외")
-        void enqueueCodeSubmissionFailed() {
+        void prepareSubmissionFailed() {
 
             // given
             given(authUser.getId()).willReturn(userId);
@@ -259,7 +277,7 @@ public class SubmissionServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                submissionService.enqueueCodeSubmission(problemId, request, authUser)
+                submissionService.prepareSubmission(problemId, authUser)
             )
                 .isInstanceOf(SubmissionException.class)
                 .hasMessage(SubmissionExceptionCode.ALREADY_JUDGING.getMessage());

@@ -14,7 +14,7 @@ public enum GameExceptionCode implements ResponseCode {
 	ITEM_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 아이템이 인벤토리에 없습니다."),
 	SKILL_NOT_EXISTS(false, HttpStatus.NOT_FOUND, "해당 스킬이 존재하지 않습니다."),
 	ITEM_NOT_EXISTS(false, HttpStatus.NOT_FOUND, "해당 아이템이 존재하지 않습니다."),
-	CHARACTER_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 캐릭터가 조회되지 없습니다."),
+	CHARACTER_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 캐릭터가 조회되지 않습니다."),
 	RANDOM_CHARACTER_MATCHING_FAIL(false, HttpStatus.NOT_FOUND, "현재 매칭가능한 유저가 존재하지 않습니다."),
 	NOT_ENOUGH_GOLD(false, HttpStatus.BAD_REQUEST, "도박을 하기에 충분한 골드가 있지 않습니다."),
 	SKILL_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 스킬이 조회되지 없습니다."),

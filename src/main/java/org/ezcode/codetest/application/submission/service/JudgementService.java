@@ -5,6 +5,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import org.ezcode.codetest.application.submission.dto.event.ProblemCountAdjustmentEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionErrorEvent;
 import org.ezcode.codetest.application.submission.dto.event.SubmissionJudgingFinishedEvent;
 import org.ezcode.codetest.application.submission.dto.event.TestcaseEvaluatedEvent;
@@ -24,6 +25,7 @@ import org.ezcode.codetest.domain.submission.model.SubmissionResult;
 import org.ezcode.codetest.domain.submission.model.TestcaseEvaluationInput;
 import org.ezcode.codetest.domain.submission.service.SubmissionDomainService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,37 +49,40 @@ public class JudgementService {
     }
 
     public void runTestcases(SubmissionContext ctx) throws InterruptedException {
-        IntStream.rangeClosed(1, ctx.getTestcaseCount())
-            .forEach(seqId -> runTestcaseAsync(seqId, ctx));
+
+        IntStream.range(0, ctx.getTestcaseCount())
+            .forEach(i -> runTestcaseAsync(i, ctx));
 
         if (!ctx.latch().await(100, TimeUnit.SECONDS)) {
             throw new SubmissionException(SubmissionExceptionCode.TESTCASE_TIMEOUT);
         }
     }
 
+    @Transactional
     public void finalizeAndPublish(SubmissionContext ctx) {
         SubmissionResult submissionResult = submissionDomainService.finalizeSubmission(ctx);
 
         publishFinalResult(ctx);
         publishProblemSolve(submissionResult);
+        publishProblemCountAdjustment(ctx, submissionResult);
     }
 
     public void publishSubmissionError(String sessionKey, Exception e) {
         submissionEventService.publishSubmissionError(new SubmissionErrorEvent(sessionKey, e));
     }
 
-    private void runTestcaseAsync(int seqId, SubmissionContext ctx) {
+    private void runTestcaseAsync(int index, SubmissionContext ctx) {
         CompletableFuture.runAsync(() -> {
             try {
                 log.info("[Judge RUN] Thread = {}", Thread.currentThread().getName());
-                String token = judgeClient.submitAndGetToken(CodeCompileRequest.of(seqId, ctx));
+                String token = judgeClient.submitAndGetToken(CodeCompileRequest.of(index, ctx));
                 JudgeResult result = judgeClient.pollUntilDone(token);
 
-                TestcaseEvaluationInput input = TestcaseEvaluationInput.from(result, ctx, seqId);
+                TestcaseEvaluationInput input = TestcaseEvaluationInput.from(result, ctx, index);
 
                 boolean isPassed = submissionDomainService.handleEvaluationAndUpdateStats(input, ctx);
 
-                publishTestcaseUpdate(seqId, ctx, isPassed, result);
+                publishTestcaseUpdate(index, ctx, isPassed, result);
             } catch (Exception e) {
                 if (ctx.notified().compareAndSet(false, true)) {
                     publishSubmissionError(ctx.getSessionKey(), e);
@@ -89,9 +94,9 @@ public class JudgementService {
         }, judgeTestcaseExecutor);
     }
 
-    private void publishTestcaseUpdate(int seqId, SubmissionContext ctx, boolean isPassed, JudgeResult result) {
+    private void publishTestcaseUpdate(int index, SubmissionContext ctx, boolean isPassed, JudgeResult result) {
         submissionEventService.publishTestcaseUpdate(TestcaseEvaluatedEvent.of(
-            ctx, TestcaseResultPayload.fromEvaluation(seqId, isPassed, result))
+            ctx, TestcaseResultPayload.fromEvaluation(ctx.getTestcaseId(index), isPassed, result))
         );
     }
 
@@ -101,5 +106,11 @@ public class JudgementService {
 
     private void publishProblemSolve(SubmissionResult submissionResult) {
         problemEventService.publishProblemSolveEvent(submissionResult);
+    }
+
+    private void publishProblemCountAdjustment(SubmissionContext ctx, SubmissionResult submissionResult) {
+        submissionEventService.publishProblemCountAdjustment(
+            new ProblemCountAdjustmentEvent(ctx.getProblemId(), submissionResult.isSolved())
+        );
     }
 }

@@ -32,6 +32,8 @@ public class ReplyQueryResult {
 
 	private final VoteType voteStatus;
 
+	private final boolean isAuthor;
+
 	@QueryProjection
 	public ReplyQueryResult(
 		Long replyId,
@@ -43,7 +45,8 @@ public class ReplyQueryResult {
 		Long upvoteCount,
 		Long downvoteCount,
 		Long childReplyCount,
-		VoteType voteType
+		VoteType voteType,
+		boolean isAuthor
 	) {
 
 		this.replyId = replyId;
@@ -63,5 +66,7 @@ public class ReplyQueryResult {
 		} else {
 			this.voteStatus = VoteType.DOWN;
 		}
+
+		this.isAuthor = isAuthor;
 	}
 }

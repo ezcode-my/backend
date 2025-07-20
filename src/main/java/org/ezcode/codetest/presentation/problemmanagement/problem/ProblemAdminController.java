@@ -8,6 +8,7 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,7 +49,7 @@ public class ProblemAdminController {
 	}
 
 	@PutMapping(path = "/{problemId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	@Operation(summary = "문제 수정", description = "문제를 수정합니다.")
+	@Operation(summary = "문제 전체 수정", description = "문제 전체를 수정합니다.")
 	@ApiResponse(responseCode = "200", description = "문제 수정 성공")
 	public ResponseEntity<Void> modifyProblem(
 		@PathVariable Long problemId,
@@ -60,6 +61,18 @@ public class ProblemAdminController {
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.build();
+	}
+
+	@PutMapping("/image/{problemId}")
+	@Operation(summary = "문제 이미지 수정", description = "문제 이미지 수정합니다.")
+	@PreAuthorize("hasRole('ADMIN')")
+	@ApiResponse(responseCode = "200", description = "문제 수정 성공")
+	public ResponseEntity<Void> updateProblemImage(
+		@PathVariable Long problemId,
+		@RequestPart(value = "image", required = false) MultipartFile imageFile
+	) {
+		problemService.addImageToExistingProblem(problemId, imageFile);
+		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{problemId}")

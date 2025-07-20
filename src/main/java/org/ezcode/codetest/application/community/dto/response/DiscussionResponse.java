@@ -23,6 +23,9 @@ public record DiscussionResponse(
 	@Schema(description = "관련 문제 ID", example = "45", requiredMode = REQUIRED)
 	Long problemId,
 
+	@Schema(description = "언어 ID", example = "1", requiredMode = REQUIRED)
+	Long languageId,
+
 	@Schema(description = "토론 내용", example = "이 문제는 이렇게 풀 수 있습니다...", requiredMode = REQUIRED)
 	String content,
 
@@ -39,7 +42,10 @@ public record DiscussionResponse(
 	Long replyCount,
 
 	@Schema(description = "현재 사용자의 추천 상태 (UP, DOWN, NONE)", example = "UP")
-	VoteType voteStatus
+	VoteType voteStatus,
+	
+	@Schema(description = "로그인한 유저의 해당 토론글 작성 여부", example = "true")
+	boolean isAuthor
 
 ) {
 
@@ -47,13 +53,15 @@ public record DiscussionResponse(
 		return new DiscussionResponse(
 			discussion.getId(),
 			SimpleUserInfoResponse.fromEntity(discussion.getUser()),
-			discussion.getProblem().getId(),
+			discussion.getProblemId(),
+			discussion.getLanguageId(),
 			discussion.getContent(),
 			discussion.getCreatedAt(),
 			null,
 			null,
 			null,
-			null
+			null,
+			false
 		);
 	}
 
@@ -62,12 +70,14 @@ public record DiscussionResponse(
 			result.getDiscussionId(),
 			result.getUserInfo(),
 			result.getProblemId(),
+			result.getLanguageId(),
 			result.getContent(),
 			result.getCreatedAt(),
 			result.getUpvoteCount(),
 			result.getDownvoteCount(),
 			result.getReplyCount(),
-			result.getVoteStatus()
+			result.getVoteStatus(),
+			result.isAuthor()
 		);
 	}
 }

@@ -8,12 +8,10 @@ import org.ezcode.codetest.common.security.hander.CustomSuccessHandler;
 import org.ezcode.codetest.common.security.util.ExceptionHandlingFilter;
 import org.ezcode.codetest.common.security.util.JwtFilter;
 import org.ezcode.codetest.common.security.util.JwtUtil;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -38,12 +36,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
 	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final CustomOAuth2UserService customOAuth2UserService; //OAuth2.0 서비스
 	private final CustomSuccessHandler customSuccessHandler;
-
-
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -81,6 +78,7 @@ public class SecurityConfig {
 						SecurityPath.PUBLIC_PATH).permitAll()
 					.requestMatchers("/api/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.requestMatchers(HttpMethod.GET,
+						"/api/languages",
 						"/api/problems",
 						"/api/problems/{problemId}",
 						"/api/problems/*/discussions",

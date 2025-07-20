@@ -51,6 +51,11 @@ public class CharacterStatusDomainService {
 		return savedCharacter;
 	}
 
+	public boolean isCharacterExist(Long userId) {
+
+		return characterRepository.isCharacterExist(userId);
+	}
+
 	public GameCharacter getGameCharacter(Long userId) {
 
 		return characterRepository.findByUserId(userId)

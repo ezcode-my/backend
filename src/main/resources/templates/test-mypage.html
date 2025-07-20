@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/test-mypage.css">
     <link href="https://fonts.googleapis.com/css?family=Inter:400,700,800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 </head>
 <body>
 <div id="header-placeholder"></div>
@@ -77,8 +79,11 @@
 </div>
 
 <script src="/js/headerUtils.js"></script>
+<script src="/js/footerUtils.js"></script>
+<script src="/js/headerNotification.js"></script>
 <script>
     loadHeaderWithAuthCheck();
+    loadFooter(); // 푸터 로드
 </script>
 <script src="/js/test-mypage.js">
 </script>

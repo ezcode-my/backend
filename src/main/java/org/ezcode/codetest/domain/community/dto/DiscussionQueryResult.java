@@ -18,6 +18,8 @@ public class DiscussionQueryResult {
 
 	private final Long problemId;
 
+	private final Long languageId;
+
 	private final String content;
 
 	private final LocalDateTime createdAt;
@@ -30,22 +32,26 @@ public class DiscussionQueryResult {
 
 	private final VoteType voteStatus;
 
+	private final boolean isAuthor;
+
 	@QueryProjection
 	public DiscussionQueryResult(
 		Long discussionId,
 		SimpleUserInfoResponse userInfo,
 		Long problemId,
+		Long languageId,
 		String content,
 		LocalDateTime createdAt,
 		Long upvoteCount,
 		Long downvoteCount,
 		Long replyCount,
-		VoteType voteType
+		VoteType voteType, boolean isAuthor
 	) {
 
 		this.discussionId = discussionId;
 		this.userInfo = userInfo;
 		this.problemId = problemId;
+		this.languageId = languageId;
 		this.content = content;
 		this.createdAt = createdAt;
 		this.upvoteCount = upvoteCount;
@@ -59,5 +65,7 @@ public class DiscussionQueryResult {
 		} else {
 			this.voteStatus = VoteType.DOWN;
 		}
+
+		this.isAuthor = isAuthor;
 	}
 }
