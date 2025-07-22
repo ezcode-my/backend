@@ -56,7 +56,7 @@ function fetchUserData() {
             const user = res.result;
             // 2. 받아온 정보로 화면 반영
             document.getElementById('nickname').textContent = user.nickname || '';
-            document.getElementById('profileImage').src = user.profileImageUrl || '/images/logo.png';
+            // document.getElementById('profileImage').src = user.profileImageUrl || '/images/logo.png';
             document.getElementById('userId').textContent = user.username || '';
             document.getElementById('email').textContent = user.email || '';
             document.getElementById('tier').textContent = user.tier || '';

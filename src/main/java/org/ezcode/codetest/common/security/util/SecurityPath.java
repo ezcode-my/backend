@@ -17,7 +17,7 @@ public class SecurityPath {
 		"/actuator/**",
 		"/chatting",
 		"/submit-test/**",
-		"/api/problems/**",
+		// "/api/problems/**", //문제의 HTTP 요청에 따라 다르게 처리될 수 있도록 SecurityConfig에서 설정함
 		"/ws/**",
 		"/swagger-ui/**",
 		"/swagger-resources/**",
