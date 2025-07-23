@@ -58,6 +58,7 @@ public class Testcase {
 	}
 
 	public String getOutput() {
-		return this.output.replace("\\n", "\n");
+		if (output != null) return this.output.replace("\\n", "\n");
+		return null;
 	}
 }
