@@ -28,12 +28,17 @@ public class GitHubPushService {
             return;
         }
 
-        eventService.publishGitPushStatus(GitPushStatusEvent.started(ctx));
-        UserGithubInfo info = userGithubService.getUserGithubInfoById(ctx.getUserId());
-
         try {
+            UserGithubInfo info = userGithubService.getUserGithubInfoById(ctx.getUserId());
             String decryptedToken = aesUtil.decrypt(info.getGithubAccessToken());
-            gitHubClient.commitAndPushToRepo(GitHubPushRequest.of(ctx, info, decryptedToken));
+            GitHubPushRequest req = GitHubPushRequest.of(ctx, info, decryptedToken);
+
+            if (!gitHubClient.isSourceCodeNewOrChanged(req)) {
+                return;
+            }
+
+            eventService.publishGitPushStatus(GitPushStatusEvent.started(ctx));
+            gitHubClient.commitAndPushToRepo(req);
             eventService.publishGitPushStatus(GitPushStatusEvent.succeeded(ctx));
         } catch (Exception e) {
             exceptionNotifier.notifyException("commitAndPush", e);

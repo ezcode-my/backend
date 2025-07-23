@@ -56,13 +56,10 @@ public class GitHubClientTest {
         given(gitHubApiClient.fetchSourceBlobSha(request)).willReturn(Optional.of(sha));
 
         // when
-        gitHubClientImpl.commitAndPushToRepo(request);
+        boolean result = gitHubClientImpl.isSourceCodeNewOrChanged(request);
 
         // then
-        then(gitHubApiClient).should(never()).fetchCommitContext(any());
-        then(templateBuilder).should(never()).buildGitTreeEntries(any(), any());
-        then(gitHubApiClient).should(never()).createTree(any(), any(), anyList());
-        then(gitHubApiClient).should(never()).commitAndPush(any(), any(), any());
+        assert !result;
     }
 
     @Test
@@ -70,18 +67,16 @@ public class GitHubClientTest {
     void newBlobEqualsTreeBlob_earlyReturn() {
 
         // given
-        String oldSha = "old";
         String newSha = "new";
         given(request.sourceCode()).willReturn(sourceCode);
         given(blobCalculator.calculateBlobSha(request.sourceCode())).willReturn(newSha);
-        given(gitHubApiClient.fetchSourceBlobSha(request)).willReturn(Optional.of(oldSha));
-        given(gitHubApiClient.fetchCommitContext(request)).willReturn(ctx);
 
         List<Map<String, Object>> entries = List.of(Map.of());
         given(templateBuilder.buildGitTreeEntries(request, newSha)).willReturn(entries);
 
         given(ctx.baseTreeSha()).willReturn("tree");
         given(gitHubApiClient.createTree(request, "tree", entries)).willReturn("tree");
+        given(gitHubApiClient.fetchCommitContext(request)).willReturn(ctx);
 
         // when
         gitHubClientImpl.commitAndPushToRepo(request);
@@ -98,24 +93,27 @@ public class GitHubClientTest {
     void blobAndTreeChanged_commitAndPush() {
 
         // given
-        String oldSha = "old";
         String newSha = "new";
-        given(blobCalculator.calculateBlobSha(request.sourceCode())).willReturn(newSha);
-        given(gitHubApiClient.fetchSourceBlobSha(request)).willReturn(Optional.of(oldSha));
-        given(gitHubApiClient.fetchCommitContext(request)).willReturn(ctx);
+        String baseTree = "tree";
+        String head = "head";
+        String newTree = "newTree";
 
         List<Map<String,Object>> entries = List.of(Map.of());
+
+        given(request.sourceCode()).willReturn(sourceCode);
+        given(blobCalculator.calculateBlobSha(sourceCode)).willReturn(newSha);
         given(templateBuilder.buildGitTreeEntries(request, newSha)).willReturn(entries);
 
-        given(ctx.baseTreeSha()).willReturn("tree");
-        given(ctx.headCommitSha()).willReturn("head");
-        String newTree = "newTree";
-        given(gitHubApiClient.createTree(request, "tree", entries)).willReturn(newTree);
+        given(gitHubApiClient.fetchCommitContext(request)).willReturn(ctx);
+
+        given(ctx.baseTreeSha()).willReturn(baseTree);
+        given(ctx.headCommitSha()).willReturn(head);
+        given(gitHubApiClient.createTree(request, baseTree, entries)).willReturn(newTree);
 
         // when
         gitHubClientImpl.commitAndPushToRepo(request);
 
         // then
-        then(gitHubApiClient).should().commitAndPush(request, "head", newTree);
+        then(gitHubApiClient).should().commitAndPush(request, head, newTree);
     }
 }
