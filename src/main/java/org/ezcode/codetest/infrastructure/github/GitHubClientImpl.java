@@ -20,13 +20,16 @@ public class GitHubClientImpl implements GitHubClient {
     private final GitBlobCalculator blobCalculator;
 
     @Override
-    public void commitAndPushToRepo(GitHubPushRequest req) {
+    public boolean isSourceCodeNewOrChanged(GitHubPushRequest req) {
         String codeBlobSha = blobCalculator.calculateBlobSha(req.sourceCode());
         Optional<String> existingSha = gitHubApiClient.fetchSourceBlobSha(req);
 
-        if (existingSha.map(codeBlobSha::equals).orElse(false)) {
-            return;
-        }
+        return !existingSha.map(codeBlobSha::equals).orElse(false);
+    }
+
+    @Override
+    public void commitAndPushToRepo(GitHubPushRequest req) {
+        String codeBlobSha = blobCalculator.calculateBlobSha(req.sourceCode());
 
         List<Map<String, Object>> entries = templateBuilder.buildGitTreeEntries(req, codeBlobSha);
 

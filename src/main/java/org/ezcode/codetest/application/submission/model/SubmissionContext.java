@@ -134,14 +134,6 @@ public record SubmissionContext(
         return problemInfo.categories();
     }
 
-    public void incrementTotalSubmissions() {
-        getProblem().incrementTotalSubmissions();
-    }
-
-    public void incrementCorrectSubmissions() {
-        getProblem().incrementCorrectSubmissions();
-    }
-
     public boolean isGitPushStatus() {
         return user.getGitPushStatus();
     }

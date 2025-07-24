@@ -106,6 +106,38 @@ public class GitHubPushServiceTest {
         }
 
         @Test
+        @DisplayName("코드 변경 없음 -> 푸시 생략")
+        void noPushWhenCodeNotChanged() throws Exception {
+
+            // given
+            given(ctx.isGitPushStatus()).willReturn(true);
+            given(ctx.isPassed()).willReturn(true);
+
+            given(ctx.getSessionKey()).willReturn(sessionKey);
+            given(ctx.getUserId()).willReturn(userId);
+
+            given(userGithubService.getUserGithubInfoById(userId)).willReturn(info);
+            given(info.getGithubAccessToken()).willReturn(encryptedToken);
+
+            given(aesUtil.decrypt(encryptedToken)).willReturn(decryptedToken);
+
+            try (var ms = mockStatic(GitHubPushRequest.class)) {
+                ms.when(() -> GitHubPushRequest.of(ctx, info, decryptedToken)).thenReturn(req);
+
+                given(gitHubClient.isSourceCodeNewOrChanged(req)).willReturn(false);
+
+                // when
+                gitHubPushService.pushSolutionToRepo(ctx);
+
+                // then
+                then(gitHubClient).should(never()).commitAndPushToRepo(any());
+                then(eventService).should(never()).publishGitPushStatus(GitPushStatusEvent.started(ctx));
+                then(eventService).should(never()).publishGitPushStatus(GitPushStatusEvent.succeeded(ctx));
+                then(exceptionNotifier).should(never()).notifyException(anyString(), any());
+            }
+        }
+
+        @Test
         @DisplayName("활성화 & 정답 제출 -> 메서드 실행 및 시작 & 성공 이벤트 발행")
         void pushSuccess() throws Exception {
 
@@ -123,6 +155,8 @@ public class GitHubPushServiceTest {
             // when & then
             try (var ms = mockStatic(GitHubPushRequest.class)) {
                 ms.when(() -> GitHubPushRequest.of(ctx, info, decryptedToken)).thenReturn(req);
+
+                given(gitHubClient.isSourceCodeNewOrChanged(req)).willReturn(true);
 
                 gitHubPushService.pushSolutionToRepo(ctx);
 
@@ -157,6 +191,8 @@ public class GitHubPushServiceTest {
             try (var ms = mockStatic(GitHubPushRequest.class)) {
                 ms.when(() -> GitHubPushRequest.of(ctx, info, decryptedToken))
                     .thenReturn(req);
+
+                given(gitHubClient.isSourceCodeNewOrChanged(req)).willReturn(true);
 
                 gitHubPushService.pushSolutionToRepo(ctx);
 
