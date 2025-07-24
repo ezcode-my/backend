@@ -78,13 +78,20 @@ public class SecurityConfig {
 						SecurityPath.PUBLIC_PATH).permitAll()
 					//GET요청인 문제 목록 조회, 문제 상세 조회는 가능하게, 나머지 HTTP메서드는 인증 필요하게 설정하기
 					.requestMatchers(HttpMethod.GET, "/api/problems", "/api/problems/{problemId}").permitAll()
-					.requestMatchers("/api/problems/**").authenticated()
 					.requestMatchers("/api/admin/**").hasRole("ADMIN") //어드민 권한 필요 (문제 생성, 관리 등)
 					.requestMatchers(HttpMethod.GET,
 						"/api/languages",
 						"/api/problems/*/discussions",
 						"/api/problems/{problemId}/discussions/{discussionId}/replies",
 						"/api/problems/{problemId}/discussions/{discussionId}/replies/**").permitAll()
+
+					//랭킹 조회
+					.requestMatchers(HttpMethod.GET, "/api/rankings/me/around").authenticated()
+					.requestMatchers(HttpMethod.GET,
+						"/api/rankings/*/around",
+						"/api/rankings/weekly",
+						"/api/rankings/last-week",
+						"/api/rankings/all-time").permitAll()
 					.anyRequest().authenticated() //나머지는 일반 인증
 			)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
