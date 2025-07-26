@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.submission.model.entity.Submission;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -13,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
-@JsonPropertyOrder({"problemId", "problemTitle", "problemDescription", "submissions"})
+@JsonPropertyOrder({"problemId", "problemTitle","problemDifficulty", "problemDescription", "submissions"})
 @Schema(description = "문제 단위로 묶은 제출 목록 응답")
 public class GroupedSubmissionResponse {
 
@@ -22,6 +23,9 @@ public class GroupedSubmissionResponse {
 
     @Schema(description = "문제 제목", example = "A + B")
     private final String problemTitle;
+
+    @Schema(description = "문제 난이도", example = "LV1")
+    private final Difficulty problemDifficulty;
 
     @Schema(description = "문제 설명", example = "두 수의 합을 구하는 문제입니다.")
     private final String problemDescription;
@@ -49,6 +53,7 @@ public class GroupedSubmissionResponse {
     private GroupedSubmissionResponse(Problem problem, List<Submission> submissions) {
         this.problemId = problem.getId();
         this.problemTitle = problem.getTitle();
+        this.problemDifficulty = problem.getDifficulty();
         this.problemDescription = problem.getDescription();
         this.submissions = submissions.stream()
             .map(SubmissionDetailResponse::from)

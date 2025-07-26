@@ -7,6 +7,7 @@ import org.ezcode.codetest.domain.user.model.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,11 +31,11 @@ public class Submission extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id", nullable = false)
     private Language language;
 
@@ -76,6 +77,10 @@ public class Submission extends BaseEntity {
 
     public Long getProblemId() {
         return this.problem.getId();
+    }
+
+    public String getLanguageInfo() {
+        return language.getName() + language.getVersion();
     }
 
     public boolean isCorrect() {
