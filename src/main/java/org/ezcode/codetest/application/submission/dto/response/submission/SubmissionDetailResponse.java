@@ -12,6 +12,9 @@ public record SubmissionDetailResponse(
     @Schema(description = "제출 ID", example = "101")
     Long id,
 
+    @Schema(description = "제출 언어", example = "Java(17)")
+    String language,
+
     @Schema(description = "소스 코드", example = "System.out.println(\"Hello\");")
     String sourceCode,
 
@@ -34,6 +37,7 @@ public record SubmissionDetailResponse(
     public static SubmissionDetailResponse from(Submission submission) {
         return new SubmissionDetailResponse(
             submission.getId(),
+            submission.getLanguageInfo(),
             submission.getCode(),
             submission.isCorrect(),
             submission.getMessage(),
