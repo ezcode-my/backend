@@ -126,4 +126,13 @@ public class UserGithubService {
 
         return new UserGitubAutoPushResponse("변경되었습니다", user.getGitPushStatus());
     }
+
+    public UserGitubAutoPushResponse getAutoPushStatus(AuthUser authUser) {
+        UserGithubInfo userGithubInfo = userGithubInfoRepository.getUserGithubInfo(authUser.getId());
+        if (userGithubInfo == null) { //유저의 깃허브 정보가 없으면 에러 반환
+            throw new UserException(UserExceptionCode.NO_GITHUB_INFO);
+        }
+        User user = userGithubInfo.getUser();
+        return new UserGitubAutoPushResponse("현재 githubAutoPush 설정", user.getGitPushStatus());
+    }
 }
