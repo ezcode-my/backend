@@ -54,4 +54,15 @@ public class UserGithubController {
     ){
         return ResponseEntity.status(HttpStatus.OK).body(userGithubService.changeAutoPushSetting(authUser));
     }
+
+    @Operation(
+        summary = "깃허브 자동 push 여부 true false 조회",
+        description = "유저 DB에서 autoPush 여부를 찾아 true/false로 반환합니다. ex- message : '현재 githubAutoPush 설정', gitPushStatus : true "
+    )
+    @GetMapping("/users/github/status")
+    public ResponseEntity<UserGitubAutoPushResponse> AutoPushStatus(
+        @AuthenticationPrincipal AuthUser authUser
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(userGithubService.getAutoPushStatus(authUser));
+    }
 }
