@@ -13,9 +13,6 @@ public record ModifyUserInfoRequest(
 	@Schema(description = "블로그 주소", example = "https://blog.example.com")
 	String blogUrl,
 
-	@Schema(description = "프로필 이미지 URL", example = "https://cdn.example.com/images/profile.jpg")
-	String profileImageUrl,
-
 	@Schema(description = "자기소개", example = "안녕하세요, 백엔드 개발자입니다.")
 	String introduction,
 

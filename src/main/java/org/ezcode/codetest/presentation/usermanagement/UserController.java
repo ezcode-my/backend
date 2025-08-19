@@ -52,21 +52,10 @@ public class UserController {
 	@PutMapping("/users")
 	public ResponseEntity<UserInfoResponse> modifyUserInfo(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestBody ModifyUserInfoRequest modifyUserInfoRequest
-	){
-		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserInfo(authUser, modifyUserInfoRequest));
-	}
-
-	//유저 프로필 이미지 등록
-	@Operation(
-		summary = "프로필 이미지 등록",
-		description = "유저의 프로필 이미지를 등록합니다. 기존의 이미지가 있는 경우, 기존 이미지가 삭제되고 새로운 이미지로 교체됩니다.")
-	@PutMapping("/users/profile")
-	public ResponseEntity<UserProfileImageResponse> uploadUserProfileImage(
-		@AuthenticationPrincipal AuthUser authUser,
+		@RequestPart("request") ModifyUserInfoRequest request,
 		@RequestPart(value = "image", required = false) MultipartFile image
 	){
-		return ResponseEntity.status(HttpStatus.OK).body(userService.uploadUserProfileImage(authUser, image));
+		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserInfo(authUser, request, image));
 	}
 
 	@Operation(

@@ -152,11 +152,10 @@ public class User extends BaseEntity {
 	유저 정보 업데이트
 	- 만약 입력 값이 없다면, 기존 값 유지
 	 */
-	public void modifyUserInfo(String nickname, String githubUrl, String blogUrl, String profileImageUrl, String introduction, Integer age){
+	public void modifyUserInfo(String nickname, String githubUrl, String blogUrl, String introduction, Integer age){
 		this.nickname = (nickname == null || nickname.isBlank()) ? this.nickname : nickname;
 		this.githubUrl = (githubUrl == null || githubUrl.isBlank()) ? this.githubUrl : githubUrl;
 		this.blogUrl = (blogUrl == null || blogUrl.isBlank()) ? this.blogUrl : blogUrl;
-		this.profileImageUrl = (profileImageUrl == null || profileImageUrl.isBlank()) ? this.profileImageUrl : profileImageUrl;
 		this.introduction = (introduction == null || introduction.isBlank()) ? this.introduction : introduction;
 		this.age = (age == null) ? this.age : age;
 	}
