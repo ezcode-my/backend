@@ -84,12 +84,14 @@ public class UserService {
 			request.age());
 
 		if (image != null && !image.isEmpty()) {
-			if (user.getProfileImageUrl()!=null) {
-				s3Uploader.delete(user.getProfileImageUrl(), "profile");
-			}
 			String profileImageUrl = uploadProfileImage(image);
+			String oldImageUrl = user.getProfileImageUrl();
 
 			user.modifyProfileImage(profileImageUrl);
+			if (oldImageUrl!=null) {
+				s3Uploader.delete(user.getProfileImageUrl(), "profile");
+			}
+
 		}
 
 		return UserInfoResponse.builder()

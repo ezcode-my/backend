@@ -90,9 +90,9 @@ public class UserGithubService {
     @Transactional
     public UserGithubRepoResponse selectGithubRepo(AuthUser authUser, UserGithubRepoSelectRequest request) throws
         Exception {
-        UserGithubInfo userGithub = userGithubInfoRepository.getUserGithubInfo(authUser.getId());
+        UserGithubInfo userGithubInfo = userGithubInfoRepository.getUserGithubInfo(authUser.getId());
 
-        if (userGithub == null) {
+        if (userGithubInfo == null) {
             throw new UserException(UserExceptionCode.NO_GITHUB_INFO);
         }
 
@@ -103,11 +103,11 @@ public class UserGithubService {
             .findFirst()
             .orElseThrow(() -> new UserException(UserExceptionCode.NO_GITHUB_REPO));
 
-        userGithub.setGithubRepo(request.repositoryName(), selectedRepo.getDefaultBranch());
+        userGithubInfo.setGithubRepo(request.repositoryName(), selectedRepo.getDefaultBranch());
 
-        userGithubInfoRepository.updateGithubInfo(userGithub);
+        userGithubInfoRepository.updateGithubInfo(userGithubInfo);
 
-        User user = userGithub.getUser();
+        User user = userGithubInfo.getUser();
         user.setGitPushStatus(true); //레포를 선택하면 자동으로 push 설정이 true
 
         return selectedRepo;

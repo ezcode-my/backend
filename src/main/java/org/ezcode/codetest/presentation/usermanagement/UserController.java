@@ -52,7 +52,7 @@ public class UserController {
 	@PutMapping("/users")
 	public ResponseEntity<UserInfoResponse> modifyUserInfo(
 		@AuthenticationPrincipal AuthUser authUser,
-		@RequestPart("request") ModifyUserInfoRequest request,
+		@Valid @RequestPart("request") ModifyUserInfoRequest request,
 		@RequestPart(value = "image", required = false) MultipartFile image
 	){
 		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyUserInfo(authUser, request, image));
