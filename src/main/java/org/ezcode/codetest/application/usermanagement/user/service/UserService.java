@@ -73,16 +73,26 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserInfoResponse modifyUserInfo(AuthUser authUser, ModifyUserInfoRequest modifyUserInfoRequest) {
+	public UserInfoResponse modifyUserInfo(AuthUser authUser, ModifyUserInfoRequest request, MultipartFile image) {
 		User user = userDomainService.getUserById(authUser.getId());
 
 		user.modifyUserInfo(
-			modifyUserInfoRequest.nickname(),
-			modifyUserInfoRequest.githubUrl(),
-			modifyUserInfoRequest.blogUrl(),
-			modifyUserInfoRequest.profileImageUrl(),
-			modifyUserInfoRequest.introduction(),
-			modifyUserInfoRequest.age());
+			request.nickname(),
+			request.githubUrl(),
+			request.blogUrl(),
+			request.introduction(),
+			request.age());
+
+		if (image != null && !image.isEmpty()) {
+			String profileImageUrl = uploadProfileImage(image);
+			String oldImageUrl = user.getProfileImageUrl();
+
+			user.modifyProfileImage(profileImageUrl);
+			if (oldImageUrl!=null) {
+				s3Uploader.delete(user.getProfileImageUrl(), "profile");
+			}
+
+		}
 
 		return UserInfoResponse.builder()
 			.username(user.getUsername())
@@ -140,18 +150,6 @@ public class UserService {
 		long weekLength = ChronoUnit.DAYS.between(startDateTime, endDateTime);
 
 		userDomainService.resetReviewTokensForUsers(UsersByWeek.from(counts, weekLength));
-	}
-
-	@Transactional
-	public UserProfileImageResponse uploadUserProfileImage(AuthUser authUser, MultipartFile image) {
-		User user = userDomainService.getUserById(authUser.getId());
-		if (user.getProfileImageUrl()!=null) {
-			s3Uploader.delete(user.getProfileImageUrl(), "profile");
-		}
-		String profileImageUrl = uploadProfileImage(image);
-
-		user.modifyProfileImage(profileImageUrl);
-		return new UserProfileImageResponse(profileImageUrl);
 	}
 
 	private String uploadProfileImage(MultipartFile image) {
