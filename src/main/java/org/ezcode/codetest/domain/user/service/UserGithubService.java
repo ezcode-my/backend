@@ -124,7 +124,7 @@ public class UserGithubService {
         user.setGitPushStatus(!userGitPushStatus);
         log.info("기존 status: {} || 변경 status : {}", userGitPushStatus, user.getGitPushStatus());
 
-        return new UserGitubAutoPushResponse("변경되었습니다", user.getGitPushStatus());
+        return new UserGitubAutoPushResponse("변경되었습니다", user.getGitPushStatus(), userGithubInfo.getRepo(), userGithubInfo.getBranch());
     }
 
     public UserGitubAutoPushResponse getAutoPushStatus(AuthUser authUser) {
@@ -133,6 +133,6 @@ public class UserGithubService {
             throw new UserException(UserExceptionCode.NO_GITHUB_INFO);
         }
         User user = userGithubInfo.getUser();
-        return new UserGitubAutoPushResponse("현재 githubAutoPush 설정", user.getGitPushStatus());
+        return new UserGitubAutoPushResponse("현재 githubAutoPush 설정", user.getGitPushStatus(),userGithubInfo.getRepo(), userGithubInfo.getBranch());
     }
 }

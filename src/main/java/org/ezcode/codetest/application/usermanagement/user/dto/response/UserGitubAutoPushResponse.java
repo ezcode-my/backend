@@ -12,4 +12,8 @@ public class UserGitubAutoPushResponse {
     private final String message;
     @Schema(description = "현재 상태", example = "true")
     private final boolean gitPushStatus;
+    @Schema(description = "선택된 레포", example = "myRepo")
+    private final String githubRepoName;
+    @Schema(description = "선택된 브랜치", example = "dev")
+    private final String branch;
 }
