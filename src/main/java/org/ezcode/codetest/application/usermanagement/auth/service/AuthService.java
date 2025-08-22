@@ -16,6 +16,8 @@ import org.ezcode.codetest.application.usermanagement.user.dto.request.ResetPass
 import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.LogoutResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.VerifyFindPasswordResponse;
+import org.ezcode.codetest.domain.language.model.entity.Language;
+import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.user.exception.AuthException;
 import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
@@ -41,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthService {
 
 	private final UserDomainService userDomainService;
+	private final LanguageDomainService languageDomainService;
 	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final MailService mailService;
@@ -80,12 +83,14 @@ public class AuthService {
 	//3. 만약 아예 첫 가입 유저일 때
 	private void createNewUser(SignupRequest request, String encodedPassword) {
 		String nickname = userDomainService.generateUniqueNickname();
+		Language language = languageDomainService.getLanguage(1L); //기본적으로 1번 언어로 가입 시 세팅
 		User newUser = User.emailUser(
 			request.getEmail(),
 			encodedPassword,
 			request.getUsername(),
 			nickname,
-			request.getAge()
+			request.getAge(),
+			language
 		);
 
 		userDomainService.createUser(newUser);

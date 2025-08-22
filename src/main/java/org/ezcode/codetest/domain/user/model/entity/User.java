@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,7 +17,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -72,17 +75,20 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UserAuthType> userAuthTypes = new ArrayList<>();
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "language_id")
+	private Language language;
+
 	private boolean verified; //이메일 인증 여부
 
 	private boolean gitPushStatus; //깃허브 자동 push 여부
-
 
 	/*
 	처음 유저 생성(가입) 시에는 기본 정보만 받음
 	- 이메일, 비번, 이름, 별명, 나이
 	-> 이후 회원정보 업데이트할 때, 원하는 정보를 입력할 수 있도록 함
 	 */
-	public static User emailUser(String email, String password, String username, String nickname, Integer age){
+	public static User emailUser(String email, String password, String username, String nickname, Integer age, Language language) {
 		return User.builder()
 			.email(email)
 			.password(password)
@@ -94,6 +100,7 @@ public class User extends BaseEntity {
 			.isDeleted(false)
 			.verified(false)
 			.gitPushStatus(false)
+			.language(language)
 			.build();
 	}
 
@@ -101,7 +108,7 @@ public class User extends BaseEntity {
 	OAuth2로 로그인한 유저 저장
 	구글 이외의 다른 소셜 로그인 확장 가능성을 고려해 socialUser 이름 유지
 	 */
-	public static User socialUser(String email, String username, String nickname, String password){
+	public static User socialUser(String email, String username, String nickname, String password, Language language) {
 		return User.builder()
 			.email(email)
 			.username(username)
@@ -112,11 +119,12 @@ public class User extends BaseEntity {
 			.isDeleted(false)
 			.verified(false)
 			.gitPushStatus(false)
+			.language(language)
 			.build();
 	}
 
 	//깃허브 아이디와 url을 함께 저장하기 위해 따로 저장
-	public static User githubUser(String email, String username, String nickname, String password, String githubUrl){
+	public static User githubUser(String email, String username, String nickname, String password, String githubUrl, Language language){
 		return User.builder()
 			.email(email)
 			.username(username)
@@ -128,13 +136,14 @@ public class User extends BaseEntity {
 			.verified(false)
 			.githubUrl(githubUrl)
 			.gitPushStatus(false)
+			.language(language)
 			.build();
 	}
 
 
 	@Builder
 	public User(String email, String password, String username, String nickname,
-		Integer age, Tier tier, UserRole role, boolean isDeleted, boolean verified, String githubUrl, boolean gitPushStatus) {
+		Integer age, Tier tier, UserRole role, boolean isDeleted, boolean verified, String githubUrl, boolean gitPushStatus, Language language) {
 		this.email = email;
 		this.password = password;
 		this.username = username;
@@ -146,6 +155,7 @@ public class User extends BaseEntity {
 		this.verified = verified;
 		this.githubUrl = githubUrl;
 		this.gitPushStatus = gitPushStatus;
+		this.language = language;
 	}
 
 	/*

@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.usermanagement.user.dto.response;
 
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
@@ -47,10 +48,14 @@ public class UserInfoResponse {
 	@Schema(description = "사용자가 푼 문제 총 개수", example = "1235")
 	private final int totalSolvedCount;
 
+	@Schema(description = "사용자가 선택한 언어. 기본적으로 1번 언어로 세팅됩니다", example = "1")
+	private final Language language;
+
 	@Builder
 	public UserInfoResponse(String username, String email, String nickname, UserRole userRole, Tier tier,
 		Integer age, String githubUrl, String blogUrl, String profileImageUrl, String introduction, boolean verified,
-        int totalSolvedCount) {
+        int totalSolvedCount,
+		Language language) {
 		this.username = username;
 		this.email = email;
 		this.nickname = nickname;
@@ -63,6 +68,7 @@ public class UserInfoResponse {
 		this.userRole = userRole;
         this.verified = verified;
         this.totalSolvedCount = totalSolvedCount;
+		this.language = language;
     }
 
 	public static UserInfoResponse fromEntity(User user) {

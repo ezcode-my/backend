@@ -69,6 +69,7 @@ public class UserService {
 			.tier(user.getTier())
 			.verified(user.isVerified())
 			.totalSolvedCount(userSubmissionCount)
+			.language(user.getLanguage())
 			.build();
 	}
 
