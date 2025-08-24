@@ -29,9 +29,7 @@ public class UserAuthTypeRepositoryImpl implements UserAuthTypeRepository {
 
 	@Override
 	public List<UserAuthType> getUserAuthTypesByUser(User user) {
-		userAuthTypeJpaRepository.findUserAuthTypeByUser(user).stream()
-			.map(UserAuthType::getAuthType).toList();
-		return List.of();
+		return userAuthTypeJpaRepository.findUserAuthTypeByUser(user);
 	}
 
 }
