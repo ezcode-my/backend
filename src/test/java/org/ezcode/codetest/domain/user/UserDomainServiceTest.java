@@ -40,10 +40,10 @@ public class UserDomainServiceTest {
     @InjectMocks
     private UserDomainService userDomainService;
 
-    @InjectMocks
-    private LanguageDomainService languageDomainService;
-
-    private final Language language = languageDomainService.getLanguage(1L);
+    private final Language language = Language.builder()
+        .judge0Id(30L)
+        .name("java")
+        .version("17").build();
 
     // 테스트 유저 정보 설정
     private final User testUser = new User(
@@ -166,7 +166,6 @@ public class UserDomainServiceTest {
     // 8. 탈퇴 회원 테스트
     @Test
     void isDeletedUser_shouldThrowWhenDeleted() {
-        Language language = languageDomainService.getLanguage(1L);
         User deletedUser = new User("email@gmail.com","Aa12345**", "username",
             "full@week.com", 100, Tier.CODER, UserRole.USER, true, true, "gitUrl.com", true, language);
         assertThrows(AuthException.class, () -> userDomainService.isDeletedUser(deletedUser));
