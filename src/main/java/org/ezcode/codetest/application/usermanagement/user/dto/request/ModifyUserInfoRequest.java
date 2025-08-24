@@ -17,6 +17,9 @@ public record ModifyUserInfoRequest(
 	String introduction,
 
 	@Schema(description = "나이", example = "28")
-	Integer age
+	Integer age,
+
+	@Schema(description = "언어 id", example = "1")
+	Long languageId
 ) {
 }

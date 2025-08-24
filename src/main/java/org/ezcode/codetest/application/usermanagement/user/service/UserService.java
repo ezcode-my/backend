@@ -3,12 +3,15 @@ package org.ezcode.codetest.application.usermanagement.user.service;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GrantAdminRoleResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserDailySolvedHistoryResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserReviewTokenResponse;
 import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
+import org.ezcode.codetest.domain.language.model.entity.Language;
+import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.submission.dto.DailyCorrectCount;
 import org.ezcode.codetest.domain.submission.dto.WeeklySolveCount;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
@@ -23,6 +26,7 @@ import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
 import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
+import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.model.enums.UserRole;
 import org.ezcode.codetest.domain.user.service.MailService;
@@ -46,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
 	private final UserDomainService userDomainService;
+	private final LanguageDomainService languageDomainService;
 	private final SubmissionDomainService submissionDomainService;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final S3Uploader s3Uploader;
@@ -55,6 +60,9 @@ public class UserService {
 		log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
 		User user = userDomainService.getUserById(authUser.getId());
 		int userSubmissionCount = submissionDomainService.findSubmissionCountByUserId(user.getId());
+		List<UserAuthType> userAuthTypes = userDomainService.getUserAuthTypesByUser(user);
+		List<AuthType> authTypes = userAuthTypes.stream()
+			.map(UserAuthType::getAuthType).toList();
 
 		return UserInfoResponse.builder()
 			.username(user.getUsername())
@@ -70,19 +78,22 @@ public class UserService {
 			.verified(user.isVerified())
 			.totalSolvedCount(userSubmissionCount)
 			.language(user.getLanguage())
+			.userAuthTypes(authTypes)
 			.build();
 	}
 
 	@Transactional
 	public UserInfoResponse modifyUserInfo(AuthUser authUser, ModifyUserInfoRequest request, MultipartFile image) {
 		User user = userDomainService.getUserById(authUser.getId());
+		Language findLangauge = languageDomainService.getLanguage(request.languageId());
 
 		user.modifyUserInfo(
 			request.nickname(),
 			request.githubUrl(),
 			request.blogUrl(),
 			request.introduction(),
-			request.age());
+			request.age(),
+			findLangauge);
 
 		if (image != null && !image.isEmpty()) {
 			String profileImageUrl = uploadProfileImage(image);
@@ -106,6 +117,7 @@ public class UserService {
 			.githubUrl(user.getGithubUrl())
 			.userRole(user.getRole())
 			.tier(user.getTier())
+			.language(user.getLanguage())
 			.build();
 	}
 
