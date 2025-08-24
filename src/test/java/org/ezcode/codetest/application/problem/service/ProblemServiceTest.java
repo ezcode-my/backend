@@ -15,6 +15,7 @@ import org.ezcode.codetest.application.problem.dto.response.ProblemDetailRespons
 import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.domain.game.model.character.CategoryStat;
 import org.ezcode.codetest.domain.game.util.StatUpdateUtil;
+import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.model.entity.Category;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
@@ -58,6 +59,7 @@ class ProblemServiceTest {
 	@InjectMocks
 	private ProblemService problemService;
 
+
 	@Test
 	@DisplayName("카테고리 생성")
 	void createCategory() {
@@ -79,11 +81,11 @@ class ProblemServiceTest {
 	@Test
 	@DisplayName("문제 생성 요청 시 유저 조회 및 문제 도메인 저장")
 	void createProblem_shouldCreateWithoutImage() {
+		Language language = new Language("java", "17", 30L);
 		// given
 		AuthUser auth = new AuthUser(1L, "test", "test", "test@test", UserRole.ADMIN, Tier.NEWBIE);
-
 		User user = new User("test@test", "test", "test1", "test1", 13,
-			Tier.NEWBIE, UserRole.ADMIN, false, false, "testurl", false);
+			Tier.NEWBIE, UserRole.ADMIN, false, false, "testurl", false, language);
 
 		ProblemCreateRequest request = new ProblemCreateRequest(
 			Map.of("Math", "수학"),
