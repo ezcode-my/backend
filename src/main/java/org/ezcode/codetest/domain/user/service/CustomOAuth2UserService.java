@@ -5,6 +5,8 @@ import java.util.Map;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GithubOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.GoogleOAuth2Response;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.OAuth2Response;
+import org.ezcode.codetest.domain.language.model.entity.Language;
+import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.CustomOAuth2User;
@@ -33,6 +35,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	private final UserRepository userRepository;
 	private final UserAuthTypeRepository userAuthTypeRepository;
 	private final UserDomainService userDomainService;
+	private final LanguageDomainService languageDomainService;
 	private final UserGithubService userGithubService;
 
 	@Override
@@ -82,7 +85,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 	private void createNewUser(OAuth2Response response, AuthType authType, String provider) {
 		String nickname = userDomainService.generateUniqueNickname();
-		User newUser = UserFactory.createSocialUser(response, nickname, provider);
+		Language language = languageDomainService.getLanguage(1L); //기본적으로 1번 언어로 가입 시 세팅
+		User newUser = UserFactory.createSocialUser(response, nickname, provider, language);
 		newUser.setVerified();
 		newUser.setReviewToken(20);
 		userRepository.createUser(newUser);

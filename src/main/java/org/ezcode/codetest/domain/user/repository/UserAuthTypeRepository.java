@@ -10,4 +10,6 @@ public interface UserAuthTypeRepository {
 	void createUserAuthType(UserAuthType userAuthType);
 
 	List<AuthType> getUserAuthType(User user);
+
+    List<UserAuthType> getUserAuthTypesByUser(User user);
 }

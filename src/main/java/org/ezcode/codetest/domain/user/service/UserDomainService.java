@@ -128,5 +128,8 @@ public class UserDomainService {
 		return userRepository.getUserByEmail(email);
 	}
 
+	public List<UserAuthType> getUserAuthTypesByUser(User user) {
+		return userAuthTypeRepository.getUserAuthTypesByUser(user);
+	}
 
 }

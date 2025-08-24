@@ -1,10 +1,10 @@
 package org.ezcode.codetest.domain.user;
 
 import org.ezcode.codetest.common.security.util.PasswordEncoder;
+import org.ezcode.codetest.domain.language.model.entity.Language;
+import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.user.exception.AuthException;
-import org.ezcode.codetest.domain.user.exception.UserException;
 import org.ezcode.codetest.domain.user.exception.code.AuthExceptionCode;
-import org.ezcode.codetest.domain.user.exception.code.UserExceptionCode;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
@@ -37,9 +37,13 @@ public class UserDomainServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-
     @InjectMocks
     private UserDomainService userDomainService;
+
+    private final Language language = Language.builder()
+        .judge0Id(30L)
+        .name("java")
+        .version("17").build();
 
     // 테스트 유저 정보 설정
     private final User testUser = new User(
@@ -53,7 +57,8 @@ public class UserDomainServiceTest {
         false,  // isDeleted
         true,   // verified
         "https://github.com/test",
-        false   // gitPushStatus
+        false, // gitPushStatus
+        language
     ) {
         public Long getId() { return 1L; }
         public int getReviewToken() { return 5; }
@@ -162,7 +167,7 @@ public class UserDomainServiceTest {
     @Test
     void isDeletedUser_shouldThrowWhenDeleted() {
         User deletedUser = new User("email@gmail.com","Aa12345**", "username",
-            "full@week.com", 100, Tier.CODER, UserRole.USER, true, true, "gitUrl.com", true);
+            "full@week.com", 100, Tier.CODER, UserRole.USER, true, true, "gitUrl.com", true, language);
         assertThrows(AuthException.class, () -> userDomainService.isDeletedUser(deletedUser));
     }
 
