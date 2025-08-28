@@ -10,6 +10,7 @@ import org.ezcode.codetest.application.usermanagement.user.dto.response.UserDail
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserReviewTokenResponse;
 import org.ezcode.codetest.application.usermanagement.user.model.UsersByWeek;
+import org.ezcode.codetest.application.submission.dto.response.language.LanguageResponse;
 import org.ezcode.codetest.domain.language.model.entity.Language;
 import org.ezcode.codetest.domain.language.service.LanguageDomainService;
 import org.ezcode.codetest.domain.submission.dto.DailyCorrectCount;
@@ -77,7 +78,7 @@ public class UserService {
 			.tier(user.getTier())
 			.verified(user.isVerified())
 			.totalSolvedCount(userSubmissionCount)
-			.language(user.getLanguage())
+			.language(LanguageResponse.from(user.getLanguage()))
 			.userAuthTypes(authTypes)
 			.build();
 	}
@@ -117,7 +118,7 @@ public class UserService {
 			.githubUrl(user.getGithubUrl())
 			.userRole(user.getRole())
 			.tier(user.getTier())
-			.language(user.getLanguage())
+			.language(LanguageResponse.from(user.getLanguage()))
 			.build();
 	}
 

@@ -46,7 +46,7 @@ public class UserController {
 	}
 
 	@Operation(summary = "내 정보 수정", description = "닉네임, 블로그, 깃허브, 소개 등 개인 정보를 추가하거나 수정합니다.")
-	@PutMapping("/users")
+    @PutMapping(path = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<UserInfoResponse> modifyUserInfo(
 		@AuthenticationPrincipal AuthUser authUser,
 		@Valid @RequestPart("request") ModifyUserInfoRequest request,

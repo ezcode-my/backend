@@ -2,7 +2,7 @@ package org.ezcode.codetest.application.usermanagement.user.dto.response;
 
 import java.util.List;
 
-import org.ezcode.codetest.domain.language.model.entity.Language;
+import org.ezcode.codetest.application.submission.dto.response.language.LanguageResponse;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
 import org.ezcode.codetest.domain.user.model.enums.Tier;
@@ -51,8 +51,8 @@ public class UserInfoResponse {
 	@Schema(description = "사용자가 푼 문제 총 개수", example = "1235")
 	private final int totalSolvedCount;
 
-	@Schema(description = "사용자가 선택한 언어. 기본적으로 1번 언어로 세팅됩니다", example = "1")
-	private final Language language;
+	@Schema(description = "사용자가 선택한 언어 정보")
+	private final LanguageResponse language;
 
 	@Schema(description = "사용자가 가입한 경로(자체/소셜)의 리스트를 보여줍니다", example = "[GOOGLE, GITHUB, EMAIL]")
 	private final List<AuthType> userAuthTypes;
@@ -61,7 +61,7 @@ public class UserInfoResponse {
 	public UserInfoResponse(String username, String email, String nickname, UserRole userRole, Tier tier,
 		Integer age, String githubUrl, String blogUrl, String profileImageUrl, String introduction, boolean verified,
         int totalSolvedCount,
-		Language language,
+		LanguageResponse language,
 		List<AuthType> userAuthTypes) {
 		this.username = username;
 		this.email = email;
