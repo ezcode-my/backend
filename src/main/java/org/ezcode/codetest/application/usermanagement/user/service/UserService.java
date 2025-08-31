@@ -56,7 +56,7 @@ public class UserService {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final S3Uploader s3Uploader;
 
-	@Transactional(readOnly = true)
+	@Transactional
 	public UserInfoResponse getUserInfo(AuthUser authUser) {
 		log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
 		User user = userDomainService.getUserById(authUser.getId());
@@ -64,6 +64,10 @@ public class UserService {
 		List<UserAuthType> userAuthTypes = userDomainService.getUserAuthTypesByUser(user);
 		List<AuthType> authTypes = userAuthTypes.stream()
 			.map(UserAuthType::getAuthType).toList();
+		if (user.getLanguage() == null) {
+			Language userLanguage = languageDomainService.getLanguage(1L);
+			user.setLanguage(userLanguage);
+		}
 
 		return UserInfoResponse.builder()
 			.username(user.getUsername())
