@@ -132,4 +132,11 @@ public class UserDomainService {
 		return userAuthTypeRepository.getUserAuthTypesByUser(user);
 	}
 
+    public List<String> getUserNicknames() {
+		return userRepository.getUserNicknames();
+    }
+
+    public boolean existsByNickname(String nickname) {
+		return userRepository.existsByNickname(nickname);
+    }
 }

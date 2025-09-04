@@ -1,5 +1,7 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.FindPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ResetPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SendEmailRequest;
@@ -34,6 +36,12 @@ import lombok.extern.slf4j.Slf4j;
 public class UserVerifyController {
     private final AuthService authService;
 
+    @Value("${app.redirect.verify.success:/}")
+    private String verifySuccessRedirect;
+
+    @Value("${app.redirect.verify.failure:/}")
+    private String verifyFailureRedirect;
+
     @Operation(summary = "이메일 인증 코드 전송", description = "현재 로그인된 회원의 이메일로 인증 코드를 전송합니다.")
     @PostMapping("/email/send")
     public ResponseEntity<SendEmailResponse> sendMailCode(
@@ -51,6 +59,24 @@ public class UserVerifyController {
         @RequestParam String key
     ){
         return ResponseEntity.status(HttpStatus.OK).body(authService.verifyEmailCode(email, key));
+    }
+
+    @Operation(summary = "이메일 코드 인증 후 페이지 리다이렉트", description = "이메일의 '인증하기' 버튼 클릭 시 성공/실패 페이지로 리다이렉트합니다.")
+    @GetMapping("/auth/verify-page")
+    public ResponseEntity<Void> verifyEmailCodeAndRedirect(
+        @RequestParam String email,
+        @RequestParam String key
+    ){
+        try {
+            authService.verifyEmailCode(email, key);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, verifySuccessRedirect)
+                .build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, verifyFailureRedirect)
+                .build();
+        }
     }
 
 

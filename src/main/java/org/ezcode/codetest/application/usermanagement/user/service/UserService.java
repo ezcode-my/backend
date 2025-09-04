@@ -91,6 +91,12 @@ public class UserService {
 	public UserInfoResponse modifyUserInfo(AuthUser authUser, ModifyUserInfoRequest request, MultipartFile image) {
 		User user = userDomainService.getUserById(authUser.getId());
 		Language findLangauge = languageDomainService.getLanguage(request.languageId());
+		if (request.nickname() != null && !request.nickname().equals(user.getNickname())) {
+			if (userDomainService.existsByNickname(request.nickname())) {
+				log.info("중복 닉네임");
+				throw new UserException(UserExceptionCode.ALREADY_EXIST_NICKNAME);
+			}
+		}
 
 		user.modifyUserInfo(
 			request.nickname(),
