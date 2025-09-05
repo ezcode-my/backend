@@ -91,6 +91,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getReviewToken(authUser));
 	}
 
+	@Operation(summary = "회원의 푼 문제 수 조회", description = "날짜, 날짜마다 푼 문제 번호 리스트, 푼 문제 개수")
 	@GetMapping("/users/daily-solved")
 	public ResponseEntity<UserDailySolvedHistoryResponse> getUserDailySolvedHistory(
 		@AuthenticationPrincipal AuthUser authUser
