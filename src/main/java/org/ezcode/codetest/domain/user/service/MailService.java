@@ -51,7 +51,7 @@ public class MailService {
 			String body = "";
 			body += "<h3>" + "아래 버튼을 클릭하여 이메일 인증을 완료해 주세요" + "</h3>";
 			// 이메일 버튼
-			body += "<a href='" + redirectUrl + "/api/auth/verify-page?email="+ email + "&key=" + key + "' target='_blenk'>이메일 인증 확인</a>";
+			body += "<a href='" + redirectUrl + "/api/auth/verify?email="+ email + "&key=" + key + "' target='_blenk'>이메일 인증 확인</a>";
 			body += "<h3>" + "감사합니다." + "</h3>";
 			message.setText(body,"UTF-8", "html");
 		} catch (MessagingException e) {
