@@ -1,6 +1,7 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.submission.query;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class UserProblemResultQueryRepositoryImpl implements UserProblemResultQu
 
         QUserProblemResult upr = QUserProblemResult.userProblemResult;
 
-        var date = Expressions.dateTemplate(java.sql.Date.class, "DATE({0})", upr.modifiedAt);
+        var date = Expressions.dateTemplate(LocalDate.class, "DATE({0})", upr.modifiedAt);
         NumberExpression<Long> countDistinctProblem = upr.problem.id.countDistinct();
 
         return queryFactory
