@@ -15,8 +15,7 @@ public enum UserExceptionCode implements ResponseCode {
 	NO_GITHUB_INFO(false, HttpStatus.BAD_REQUEST, "깃허브 정보가 없습니다."),
 	NO_GITHUB_REPO(false, HttpStatus.BAD_REQUEST, "해당하는 Repository를 찾을 수 없습니다."),
 
-
-	;
+    ALREADY_EXIST_NICKNAME(false, HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다");
 	private final boolean success;
 	private final HttpStatus status;
 	private final String message;

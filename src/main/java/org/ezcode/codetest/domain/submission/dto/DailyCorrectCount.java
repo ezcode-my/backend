@@ -1,12 +1,10 @@
 package org.ezcode.codetest.domain.submission.dto;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public record DailyCorrectCount(
     LocalDate date,
-    int count
-) {
-    public DailyCorrectCount(java.sql.Date date, int count) {
-        this(date.toLocalDate(), count);
-    }
-}
+    Long count,
+    Set<Long> problemIds
+) {  }

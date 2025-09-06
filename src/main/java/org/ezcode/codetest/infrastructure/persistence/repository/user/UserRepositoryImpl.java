@@ -53,6 +53,9 @@ public class UserRepositoryImpl implements UserRepository {
 		userJpaRepository.save(loginUser);
 	}
 
-
+	@Override
+	public List<String> getUserNicknames() {
+		return userJpaRepository.findAllNicknames();
+	}
 
 }
