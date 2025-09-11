@@ -1,6 +1,5 @@
 package org.ezcode.codetest.application.problem.dto.response;
 
-import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 
 import io.swagger.v3.oas.annotations.media.Schema;

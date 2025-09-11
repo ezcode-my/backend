@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+]
 
 import org.ezcode.codetest.domain.submission.dto.DailyCorrectCount;
 import org.ezcode.codetest.domain.submission.model.entity.QUserProblemResult;
@@ -33,8 +34,6 @@ public class UserProblemResultQueryRepositoryImpl implements UserProblemResultQu
         QUserProblemResult upr = QUserProblemResult.userProblemResult;
 
         var date = Expressions.dateTemplate(LocalDate.class, "DATE({0})", upr.modifiedAt);
-
-        // transform() 대신 일반 쿼리로 변경
         var results = queryFactory
             .select(
                 date,
@@ -46,7 +45,6 @@ public class UserProblemResultQueryRepositoryImpl implements UserProblemResultQu
                 upr.user.id.eq(userId),
                 upr.isCorrect.eq(true)
             )
-            .groupBy(date)
             .orderBy(date.asc())
             .fetch();
 

@@ -1,6 +1,7 @@
 package org.ezcode.codetest.domain.problem.model.entity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.ezcode.codetest.common.base.entity.BaseEntity;
@@ -154,12 +155,13 @@ public class Problem extends BaseEntity {
 		this.imageUrl.clear();
 	}
 
-	public void incrementTotalSubmissions() {
-		totalSubmissions += 1;
-	}
-
-	public void incrementCorrectSubmissions() {
-		correctSubmissions += 1;
-
+	public List<Testcase> top2Testcases() {
+		if (testcases == null || testcases.isEmpty()) {
+			return List.of();
+		}
+		return testcases.stream()
+			.sorted(Comparator.comparing(Testcase::getId))
+			.limit(2)
+			.toList();
 	}
 }

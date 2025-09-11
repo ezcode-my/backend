@@ -51,8 +51,9 @@ public record ProblemDetailResponse(
 	LocalDateTime modifiedAt,
 
 	@Schema(description = "문제 이미지 URL", example = "https://bucket.s3.ap-northeast-2.amazonaws.com/problem/example.jpg")
-	String imageUrl
+	String imageUrl,
 
+	List<TestcaseResponse> testcases
 ) {
 
 	public static ProblemDetailResponse from(Problem problem, List<Category> categories) {
@@ -71,6 +72,7 @@ public record ProblemDetailResponse(
 			.createdAt(problem.getCreatedAt())
 			.modifiedAt(problem.getModifiedAt())
 			.imageUrl(problem.getImageUrl().isEmpty() ? null : problem.getImageUrl().get(0))
+			.testcases(problem.top2Testcases().stream().map(TestcaseResponse::from).toList())
 			.build();
 	}
 }
