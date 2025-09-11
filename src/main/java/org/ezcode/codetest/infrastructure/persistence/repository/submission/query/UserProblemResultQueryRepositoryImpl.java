@@ -2,8 +2,12 @@ package org.ezcode.codetest.infrastructure.persistence.repository.submission.que
 
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.ezcode.codetest.domain.submission.dto.DailyCorrectCount;
 import org.ezcode.codetest.domain.submission.model.entity.QUserProblemResult;
@@ -29,24 +33,41 @@ public class UserProblemResultQueryRepositoryImpl implements UserProblemResultQu
         QUserProblemResult upr = QUserProblemResult.userProblemResult;
 
         var date = Expressions.dateTemplate(LocalDate.class, "DATE({0})", upr.modifiedAt);
-        NumberExpression<Long> countDistinctProblem = upr.problem.id.countDistinct();
 
-        return queryFactory
+        // transform() 대신 일반 쿼리로 변경
+        var results = queryFactory
+            .select(
+                date,
+                upr.problem.id.countDistinct(),
+                upr.problem.id
+            )
             .from(upr)
             .where(
                 upr.user.id.eq(userId),
                 upr.isCorrect.eq(true)
             )
+            .groupBy(date)
             .orderBy(date.asc())
-            .transform(
-                GroupBy.groupBy(date).list(
-                    Projections.constructor(
-                        DailyCorrectCount.class,
-                        date,
-                        countDistinctProblem,
-                        GroupBy.set(upr.problem.id)
-                    )
-                )
-            );
+            .fetch();
+
+        // 결과를 수동으로 그룹화해야함
+        Map<LocalDate, Set<Long>> problemIdsByDate = new LinkedHashMap<>();
+        Map<LocalDate, Long> countsByDate = new LinkedHashMap<>();
+        
+        for (var result : results) {
+            LocalDate resultDate = result.get(0, LocalDate.class);
+            Long problemId = result.get(2, Long.class);
+            
+            problemIdsByDate.computeIfAbsent(resultDate, k -> new HashSet<>()).add(problemId);
+            countsByDate.put(resultDate, (long) problemIdsByDate.get(resultDate).size());
+        }
+        
+        return problemIdsByDate.entrySet().stream()
+            .map(entry -> new DailyCorrectCount(
+                entry.getKey(),
+                countsByDate.get(entry.getKey()),
+                entry.getValue()
+            ))
+            .collect(Collectors.toList());
     }
 }
