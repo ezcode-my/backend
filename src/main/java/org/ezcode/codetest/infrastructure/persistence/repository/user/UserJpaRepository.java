@@ -24,4 +24,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 		@Param("ids") List<Long> ids,
 		@Param("newToken") int newToken
 	);
+
+	@Query("select u.nickname from User u ")
+	List<String> findAllNicknames();
 }

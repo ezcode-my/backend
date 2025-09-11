@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.ezcode.codetest.domain.submission.dto.DailyCorrectCount;
 import org.ezcode.codetest.domain.submission.model.entity.QUserProblemResult;
 import org.springframework.stereotype.Repository;
-
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 

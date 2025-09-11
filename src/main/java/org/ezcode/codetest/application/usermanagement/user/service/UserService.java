@@ -1,5 +1,6 @@
 package org.ezcode.codetest.application.usermanagement.user.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -56,7 +57,7 @@ public class UserService {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final S3Uploader s3Uploader;
 
-	@Transactional(readOnly = true)
+	@Transactional
 	public UserInfoResponse getUserInfo(AuthUser authUser) {
 		log.info("authUserEmail: {}, authUserID : {}", authUser.getEmail(), authUser.getId());
 		User user = userDomainService.getUserById(authUser.getId());
@@ -64,6 +65,10 @@ public class UserService {
 		List<UserAuthType> userAuthTypes = userDomainService.getUserAuthTypesByUser(user);
 		List<AuthType> authTypes = userAuthTypes.stream()
 			.map(UserAuthType::getAuthType).toList();
+		if (user.getLanguage() == null) {
+			Language userLanguage = languageDomainService.getLanguage(1L);
+			user.setLanguage(userLanguage);
+		}
 
 		return UserInfoResponse.builder()
 			.username(user.getUsername())
@@ -87,6 +92,12 @@ public class UserService {
 	public UserInfoResponse modifyUserInfo(AuthUser authUser, ModifyUserInfoRequest request, MultipartFile image) {
 		User user = userDomainService.getUserById(authUser.getId());
 		Language findLangauge = languageDomainService.getLanguage(request.languageId());
+		if (request.nickname() != null && !request.nickname().equals(user.getNickname())) {
+			if (userDomainService.existsByNickname(request.nickname())) {
+				log.info("중복 닉네임");
+				throw new UserException(UserExceptionCode.ALREADY_EXIST_NICKNAME);
+			}
+		}
 
 		user.modifyUserInfo(
 			request.nickname(),

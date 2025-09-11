@@ -90,7 +90,7 @@ class ProblemDomainServiceTest {
 		Long problemId = 1L;
 		Problem problem = mock(Problem.class);
 
-		when(problemRepository.findByIdNotDeleted(problemId)).thenReturn(Optional.ofNullable(problem));
+		when(problemRepository.findProblemWithTestcasesById(problemId)).thenReturn(Optional.ofNullable(problem));
 
 		// when
 		Problem result = problemDomainService.getProblem(problemId);
@@ -98,7 +98,7 @@ class ProblemDomainServiceTest {
 		// then
 		assertNotNull(result);
 		assertEquals(problem, result);
-		verify(problemRepository).findByIdNotDeleted(problemId);
+		verify(problemRepository).findProblemWithTestcasesById(problemId);
 	}
 
 	@Test

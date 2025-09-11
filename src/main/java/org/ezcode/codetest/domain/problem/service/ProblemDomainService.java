@@ -97,7 +97,7 @@ public class ProblemDomainService {
 
 	public Problem getProblem(Long problemId) {
 
-		return problemRepository.findByIdNotDeleted(problemId)
+		return problemRepository.findProblemWithTestcasesById(problemId)
 			.orElseThrow(() -> new ProblemException(ProblemExceptionCode.PROBLEM_NOT_FOUND));
 	}
 

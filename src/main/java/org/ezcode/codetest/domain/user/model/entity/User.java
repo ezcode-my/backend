@@ -216,4 +216,8 @@ public class User extends BaseEntity {
 	public void modifyUserRole(UserRole userRole) {
 		this.role = userRole;
 	}
+
+	public void setLanguage(Language userLanguage) {
+		this.language = userLanguage;
+	}
 }

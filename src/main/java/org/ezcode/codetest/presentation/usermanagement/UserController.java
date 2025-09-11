@@ -13,6 +13,7 @@ import org.ezcode.codetest.application.usermanagement.user.dto.response.Withdraw
 import org.ezcode.codetest.application.usermanagement.user.service.UserService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +47,7 @@ public class UserController {
 	}
 
 	@Operation(summary = "내 정보 수정", description = "닉네임, 블로그, 깃허브, 소개 등 개인 정보를 추가하거나 수정합니다.")
-    @PutMapping("/users")
+    @PutMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<UserInfoResponse> modifyUserInfo(
 		@AuthenticationPrincipal AuthUser authUser,
 		@Valid @RequestPart("request") ModifyUserInfoRequest request,
@@ -90,6 +91,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getReviewToken(authUser));
 	}
 
+	@Operation(summary = "회원의 푼 문제 수 조회", description = "날짜, 날짜마다 푼 문제 번호 리스트, 푼 문제 개수")
 	@GetMapping("/users/daily-solved")
 	public ResponseEntity<UserDailySolvedHistoryResponse> getUserDailySolvedHistory(
 		@AuthenticationPrincipal AuthUser authUser

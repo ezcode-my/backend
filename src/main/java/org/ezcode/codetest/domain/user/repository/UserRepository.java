@@ -22,4 +22,5 @@ public interface UserRepository {
 
 	void updateUserGithubAccessToken(User loginUser);
 
+	List<String> getUserNicknames();
 }
