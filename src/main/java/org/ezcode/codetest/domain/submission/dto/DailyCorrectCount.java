@@ -5,6 +5,7 @@ import java.util.Set;
 
 public record DailyCorrectCount(
     LocalDate date,
-    Long count,
+    int count,
     Set<Long> problemIds
-) {  }
+) {
+}
