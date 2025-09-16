@@ -18,6 +18,7 @@ import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
 import org.ezcode.codetest.domain.problem.repository.ProblemRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 
@@ -130,4 +131,8 @@ public class ProblemDomainService {
 	public void problemCountAdjustment(Long problemId, int correctInc) {
 		problemRepository.problemCountAdjustment(problemId, correctInc);
 	}
+
+    public List<Long> getProblemIdList() {
+		return problemRepository.getProblemIdList();
+    }
 }

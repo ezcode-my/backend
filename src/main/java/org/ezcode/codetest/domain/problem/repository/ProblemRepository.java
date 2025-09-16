@@ -1,11 +1,13 @@
 package org.ezcode.codetest.domain.problem.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 
 public interface ProblemRepository {
@@ -23,4 +25,6 @@ public interface ProblemRepository {
 	boolean existsByTitleAndIsDeletedIsFalse(String title);
 
 	void problemCountAdjustment(Long problemId, int correctInc);
+
+    List<Long> getProblemIdList();
 }

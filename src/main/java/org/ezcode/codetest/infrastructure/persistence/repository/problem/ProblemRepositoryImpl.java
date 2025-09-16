@@ -1,5 +1,6 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.problem;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
@@ -51,5 +52,12 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	@Override
 	public void problemCountAdjustment(Long problemId, int correctInc) {
 		problemJpaRepository.incrementCount(problemId, correctInc);
+	}
+
+	@Override
+	public List<Long> getProblemIdList() {
+		return problemJpaRepository.findAll().stream()
+			.map(Problem::getId)
+			.toList();
 	}
 }
