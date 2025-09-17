@@ -57,7 +57,6 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	@Override
 	public List<Long> getProblemIdList() {
 		return problemJpaRepository.findAll().stream()
-			.map(Problem::getId)
-			.toList();
+			.filter(p -> !p.getIsDeleted()).map(Problem::getId).toList();
 	}
 }
