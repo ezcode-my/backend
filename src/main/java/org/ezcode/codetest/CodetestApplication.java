@@ -6,7 +6,11 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
+@SpringBootApplication(
+		exclude = {
+				org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration.class
+		}
+)
 @EnableJpaAuditing
 @EnableScheduling
 @EnableAspectJAutoProxy(proxyTargetClass = true)
