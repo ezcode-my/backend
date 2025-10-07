@@ -13,6 +13,7 @@ import org.ezcode.codetest.infrastructure.notification.dto.NotificationResponse;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +32,7 @@ public class NotificationEventListener {
 
 	private final ObjectMapper objectMapper;
 
+	@Transactional
 	@JmsListener(destination = NOTIFICATION_QUEUE_CREATE)
 	public void handleNotificationCreateEvent(String message) {
 
