@@ -9,22 +9,27 @@ import org.ezcode.codetest.application.notification.exception.NotificationExcept
 import org.ezcode.codetest.application.notification.exception.NotificationExceptionCode;
 import org.ezcode.codetest.infrastructure.notification.dto.NotificationPageResponse;
 import org.ezcode.codetest.infrastructure.notification.dto.NotificationResponse;
+import org.ezcode.codetest.infrastructure.notification.event.NotificationSavedEvent;
 import org.ezcode.codetest.infrastructure.notification.model.NotificationDocument;
 import org.ezcode.codetest.infrastructure.notification.repository.NotificationMongoRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class NotificationService {
 
 	private final NotificationMongoRepository mongoRepository;
+	private final ApplicationEventPublisher publisher;
 
 	public NotificationService(
-		NotificationMongoRepository mongoRepository
+		NotificationMongoRepository mongoRepository, ApplicationEventPublisher publisher
 	) {
 		this.mongoRepository = mongoRepository;
+		this.publisher = publisher;
 	}
 
 	public NotificationPageResponse<NotificationResponse> getNotifications(NotificationListRequestEvent event) {
@@ -45,11 +50,18 @@ public class NotificationService {
 		);
 	}
 
-	public NotificationDocument createNewNotification(NotificationCreateEvent event) {
+	@Transactional
+	public void createNewNotification(NotificationCreateEvent event) {
 
-		return mongoRepository.save(NotificationDocument.from(event));
+		NotificationDocument savedNotification = mongoRepository.save(NotificationDocument.from(event));
+
+		publisher.publishEvent(new NotificationSavedEvent(
+			event.principalName(),
+			NotificationResponse.from(savedNotification)
+		));
 	}
 
+	@Transactional
 	public void markAsRead(NotificationMarkReadEvent event) {
 
 		NotificationDocument notificationDocument = mongoRepository
