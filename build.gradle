@@ -120,6 +120,10 @@ dependencies {
 
     //AES 암호화
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
+    // Circuit Breaker
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
+    implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.2.0'
 }
 
 tasks.named('test') {

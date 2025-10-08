@@ -19,7 +19,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class NotificationService {
 
 	private final NotificationMongoRepository mongoRepository;
@@ -50,6 +54,7 @@ public class NotificationService {
 		);
 	}
 
+	@CircuitBreaker(name = "db-circuit", fallbackMethod = "createNewNotificationFallback")
 	@Transactional
 	public void createNewNotification(NotificationCreateEvent event) {
 
@@ -70,5 +75,22 @@ public class NotificationService {
 
 		notificationDocument.markAsRead();
 		mongoRepository.save(notificationDocument);
+	}
+
+	/**
+	 * createNewNotification의 Fallback 메서드
+	 * 서킷이 열리면 이 메서드가 대신 실행됨
+	 * @param event 원본 메서드와 동일한 파라미터
+	 * @param ex 발생한 예외
+	 */
+	private void createNewNotificationFallback(NotificationCreateEvent event, Throwable ex) {
+		// 어떤 예외 때문에 서킷이 열렸는지 로그를 남김
+		log.warn("Circuit Breaker is open for createNewNotification. Event: {}, Error: {}", event, ex.getMessage());
+
+		//  메시지를 "처리 실패"로 알려서 MQ가 재시도하거나 DLQ로 보내도록 함
+		throw new NotificationException(
+			NotificationExceptionCode.NOTIFICATION_DB_ERROR,
+			ex.getMessage()
+		);
 	}
 }
