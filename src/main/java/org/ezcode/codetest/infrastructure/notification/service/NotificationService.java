@@ -55,7 +55,7 @@ public class NotificationService {
 	}
 
 	@CircuitBreaker(name = "db-circuit", fallbackMethod = "createNewNotificationFallback")
-	@Transactional
+	@Transactional(transactionManager = "mongoTransactionManager")
 	public void createNewNotification(NotificationCreateEvent event) {
 
 		NotificationDocument savedNotification = mongoRepository.save(NotificationDocument.from(event));
@@ -66,7 +66,7 @@ public class NotificationService {
 		));
 	}
 
-	@Transactional
+	@Transactional(transactionManager = "mongoTransactionManager")
 	public void markAsRead(NotificationMarkReadEvent event) {
 
 		NotificationDocument notificationDocument = mongoRepository

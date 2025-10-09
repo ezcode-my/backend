@@ -29,7 +29,7 @@ public class ProcessLogService {
 	 * @param payload 메시지 본문
 	 * @return 처리를 계속해야 하면 true, 중복 메시지이면 false를 반환
 	 */
-	@Transactional
+	@Transactional(transactionManager = "mongoTransactionManager")
 	public boolean startProcessing(String messageId, String payload) {
 		
 		Optional<NotificationProcessLog> existingLogOpt = processLogRepository.findById(messageId);
@@ -57,7 +57,7 @@ public class ProcessLogService {
 	}
 
 	// 메시지 처리 성공으로 기록
-	@Transactional
+	@Transactional(transactionManager = "mongoTransactionManager")
 	public void finishProcessing(String messageId) {
 
 		processLogRepository.findById(messageId).ifPresent(log -> {
@@ -67,7 +67,7 @@ public class ProcessLogService {
 	}
 
 	// 메시지 처리 실패로 기록
-	@Transactional
+	@Transactional(transactionManager = "mongoTransactionManager")
 	public void failProcessing(String messageId, String errorMessage) {
 
 		processLogRepository.findById(messageId).ifPresent(log -> {
@@ -77,7 +77,7 @@ public class ProcessLogService {
 	}
 
 	// 재시도할 작업 목록 조회
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "mongoTransactionManager")
 	public List<NotificationProcessLog> findRetryableJobs() {
 
 		return processLogRepository.findByStatusAndRetryCountLessThan(ProcessStatus.FAILED, maxRetries);
