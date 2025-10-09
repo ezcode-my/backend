@@ -10,6 +10,7 @@ import org.ezcode.codetest.application.notification.exception.NotificationExcept
 import org.ezcode.codetest.infrastructure.notification.dto.NotificationPageResponse;
 import org.ezcode.codetest.infrastructure.notification.dto.NotificationResponse;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -22,19 +23,36 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NotificationQueueListener {
+public class NotificationQueueConsumer {
 
 	private final NotificationService notificationService;
 
 	private final SimpMessagingTemplate messagingTemplate;
 
 	private final ObjectMapper objectMapper;
+	private final ProcessLogService processLogService;
 
 	@JmsListener(destination = NOTIFICATION_QUEUE_CREATE)
-	public void handleNotificationCreateEvent(String message) {
+	public void handleNotificationCreateEvent(Message<String> message) {
 
-		NotificationCreateEvent event = convertObject(message, NotificationCreateEvent.class);
-		notificationService.createNewNotification(event);
+		log.info(">>>>>> JMS 메시지를 수신했습니다! <<<<<<");
+		String messageId = (String) message.getHeaders().get(CUSTOM_HEADER_MESSAGE_ID);
+		String payload = message.getPayload();
+
+		if (!processLogService.startProcessing(messageId, payload)) {
+			log.warn("이미 처리되었거나 처리 중인 메시지입니다. messageId: {}", messageId);
+			return;
+		}
+
+		try {
+			NotificationCreateEvent event = convertObject(payload, NotificationCreateEvent.class);
+			notificationService.createNewNotification(event);
+
+			processLogService.finishProcessing(messageId);
+		} catch (Exception e) {
+			log.error("메시지 처리 실패. 재시도를 위해 FAILED로 기록합니다. messageId: {}", messageId);
+			processLogService.failProcessing(messageId, e.getMessage());
+		}
 	}
 
 	@JmsListener(destination = NOTIFICATION_QUEUE_LIST)

@@ -2,6 +2,8 @@ package org.ezcode.codetest.infrastructure.notification.publisher;
 
 import static org.ezcode.codetest.infrastructure.notification.model.NotificationQueueConstants.*;
 
+import java.util.UUID;
+
 import org.ezcode.codetest.application.notification.event.*;
 import org.ezcode.codetest.application.notification.exception.NotificationException;
 import org.ezcode.codetest.application.notification.exception.NotificationExceptionCode;
@@ -27,21 +29,18 @@ public class NotificationEventPublisher implements NotificationEventService {
 	public void notify(NotificationCreateEvent dto) {
 
 		sendMessage(NOTIFICATION_QUEUE_CREATE, dto);
-		// publisher.publishEvent(dto);
 	}
 
 	@Override
 	public void notifyList(NotificationListRequestEvent dto) {
 
 		sendMessage(NOTIFICATION_QUEUE_LIST, dto);
-		// publisher.publishEvent(dto);
 	}
 
 	@Override
 	public void setRead(NotificationMarkReadEvent dto) {
 
 		sendMessage(NOTIFICATION_QUEUE_MARK_READ, dto);
-		// publisher.publishEvent(dto);
 	}
 
 	private void sendMessage(String destination, Object data) {
@@ -49,7 +48,12 @@ public class NotificationEventPublisher implements NotificationEventService {
 		try {
 			String jsonMessage = objectMapper.writeValueAsString(data);
 
-			jmsTemplate.convertAndSend(destination, jsonMessage);
+			String customMessageId = "ID-" + UUID.randomUUID();
+			jmsTemplate.convertAndSend(destination, jsonMessage, message -> {
+				message.setStringProperty(CUSTOM_HEADER_MESSAGE_ID, customMessageId);
+				return message;
+			});
+
 			log.info("알림 메시지 전송 성공 ({}) : {}", destination, jsonMessage);
 		} catch (JsonProcessingException ex) {
 			log.error("알림 메시지 변환 및 전송 실패 : {}", ex.getMessage());
