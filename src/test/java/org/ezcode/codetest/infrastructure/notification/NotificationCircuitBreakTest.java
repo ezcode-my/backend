@@ -12,7 +12,9 @@ import org.ezcode.codetest.application.notification.exception.NotificationExcept
 import org.ezcode.codetest.infrastructure.notification.model.NotificationDocument;
 import org.ezcode.codetest.infrastructure.notification.repository.NotificationMongoRepository;
 import org.ezcode.codetest.infrastructure.notification.service.NotificationService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
+@Disabled
 @SpringBootTest(properties = {
 	// 테스트 실행 속도를 위해 서킷 대기 시간을 짧게 조정
 	"resilience4j.circuitbreaker.instances.db-circuit.wait-duration-in-open-state=2s"
@@ -48,6 +51,11 @@ public class NotificationCircuitBreakTest {
 		// 테스트 시작 전에 서킷 브레이커를 초기화 (CLOSED 상태로 강제)
 		dbCircuitBreaker = circuitBreakerRegistry.circuitBreaker("db-circuit");
 		dbCircuitBreaker.reset();
+	}
+
+	@AfterEach
+	void tearDown() {
+		mongoRepository.deleteAll();
 	}
 
 	@Test

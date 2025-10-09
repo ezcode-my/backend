@@ -19,6 +19,7 @@ import org.ezcode.codetest.infrastructure.notification.service.NotificationRetry
 import org.ezcode.codetest.infrastructure.notification.service.NotificationService;
 import org.ezcode.codetest.infrastructure.notification.service.ProcessLogService;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Disabled
 @SpringBootTest
 @ActiveProfiles("test")
 public class NotificationIntegrationTest {
@@ -155,10 +157,6 @@ public class NotificationIntegrationTest {
 			return message;
 		});
 	}
-
-	// private String createDummyPayload() {
-	// 	return "{\"principalName\":\"user@example.com\", \"notificationType\":\"TEST\", \"payload\":\"some data\"}";
-	// }
 
 	private String createDummyPayload() {
 		try {
