@@ -24,4 +24,13 @@ public class NotificationException extends BaseException {
 		this.httpStatus = responseCode.getStatus();
 		this.message = responseCode.getMessage() + " : " + message;
 	}
+
+	public NotificationException(ResponseCode responseCode, Throwable cause, String message) {
+		super();
+
+		this.responseCode = responseCode;
+		this.httpStatus = responseCode.getStatus();
+		super.initCause(cause);
+		this.message = message;
+	}
 }

@@ -90,6 +90,7 @@ public class NotificationService {
 		//  메시지를 "처리 실패"로 알려서 MQ가 재시도하거나 DLQ로 보내도록 함
 		throw new NotificationException(
 			NotificationExceptionCode.NOTIFICATION_DB_ERROR,
+			ex,
 			ex.getMessage()
 		);
 	}

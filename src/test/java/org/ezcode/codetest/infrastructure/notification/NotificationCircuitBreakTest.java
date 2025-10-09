@@ -9,7 +9,6 @@ import java.time.Duration;
 import org.ezcode.codetest.application.notification.enums.NotificationType;
 import org.ezcode.codetest.application.notification.event.NotificationCreateEvent;
 import org.ezcode.codetest.application.notification.exception.NotificationException;
-import org.ezcode.codetest.application.notification.exception.NotificationExceptionCode;
 import org.ezcode.codetest.infrastructure.notification.model.NotificationDocument;
 import org.ezcode.codetest.infrastructure.notification.repository.NotificationMongoRepository;
 import org.ezcode.codetest.infrastructure.notification.service.NotificationService;
@@ -18,9 +17,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
@@ -72,13 +73,13 @@ public class NotificationCircuitBreakTest {
 		// Given
 		String errorMessage = "DB Connection Failed";
 		when(mongoRepository.save(any(NotificationDocument.class)))
-			.thenThrow(new NotificationException(NotificationExceptionCode.NOTIFICATION_DB_ERROR, errorMessage));
+			.thenThrow(new DataAccessResourceFailureException(errorMessage));
 
 		// When & Then
 		for (int i = 0; i < 5; i++) {
 			assertThatThrownBy(() -> notificationService.createNewNotification(createNotificationCreateEvent()))
 				.isInstanceOf(NotificationException.class)
-				.hasMessageContaining(errorMessage);
+				.hasCauseInstanceOf(DataAccessResourceFailureException.class);
 		}
 
 		assertThat(dbCircuitBreaker.getState()).isEqualTo(CircuitBreaker.State.OPEN);
@@ -119,7 +120,7 @@ public class NotificationCircuitBreakTest {
 
 		// 2. HALF_OPEN 상태에서 DB가 여전히 장애 상황임을 흉내
 		when(mongoRepository.save(any(NotificationDocument.class)))
-			.thenThrow(new NotificationException(NotificationExceptionCode.NOTIFICATION_DB_ERROR, errorMessage));
+			.thenThrow(new DataAccessResourceFailureException(errorMessage));
 
 		// When: 최소 호출 횟수만큼 실패를 유도
 		for (int i = 0; i < minimumCalls; i++) {
@@ -130,6 +131,22 @@ public class NotificationCircuitBreakTest {
 		// Then: 이제 충분한 실패 데이터가 쌓였으므로 서킷은 다시 OPEN 상태로 돌아가야 함
 		assertThat(dbCircuitBreaker.getState()).isEqualTo(CircuitBreaker.State.OPEN);
 		System.out.println("✅ 성공: 복구 실패 테스트 완료");
+	}
+
+	@Test
+	@DisplayName("5. 서킷이 OPEN일 때 Fallback 동작 검증")
+	void whenCircuitIsOpen_thenFallbackIsExecuted() {
+		// Given
+		dbCircuitBreaker.transitionToOpenState();
+
+		// When & Then
+		assertThatThrownBy(() -> notificationService.createNewNotification(createNotificationCreateEvent()))
+			.isInstanceOf(NotificationException.class)
+			.hasCauseInstanceOf(CallNotPermittedException.class);
+
+		// DB Repository는 절대 호출되지 않았어야 함
+		verify(mongoRepository, never()).save(any(NotificationDocument.class));
+		System.out.println("✅ 성공: OPEN 상태에서 Fallback 동작 검증 완료");
 	}
 
 
