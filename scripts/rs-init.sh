@@ -1,3 +1,5 @@
+#!/bin/bash
+
 mongosh --port 10021 <<EOF
 use ezcode;
 var config = {

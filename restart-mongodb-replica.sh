@@ -1,3 +1,5 @@
+#!/bin/bash
+
 DATA_FILE_PATH="./replicaset"
 DOCKER_FILE_PATH="./docker-compose.dev.yml"
 MONGO_PRIMARY_NAME="rs01p"
