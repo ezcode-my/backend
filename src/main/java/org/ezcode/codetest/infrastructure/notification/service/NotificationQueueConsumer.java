@@ -35,9 +35,13 @@ public class NotificationQueueConsumer {
 	@JmsListener(destination = NOTIFICATION_QUEUE_CREATE)
 	public void handleNotificationCreateEvent(Message<String> message) {
 
-		log.info(">>>>>> JMS 메시지를 수신했습니다! <<<<<<");
 		String messageId = (String) message.getHeaders().get(CUSTOM_HEADER_MESSAGE_ID);
 		String payload = message.getPayload();
+
+		if (messageId == null) {
+			log.error("커스텀 메시지 ID 헤더가 없어 메시지를 처리할 수 없습니다. payload={}", payload);
+			return;
+		}
 
 		if (!processLogService.startProcessing(messageId, payload)) {
 			log.warn("이미 처리되었거나 처리 중인 메시지입니다. messageId: {}", messageId);
