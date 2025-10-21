@@ -20,7 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -96,7 +95,7 @@ public class User extends BaseEntity {
 			.nickname(nickname)
 			.age(age)
 			.tier(Tier.NEWBIE)
-			.role(UserRole.ADMIN) // 테스트용
+			.role(UserRole.USER)
 			.isDeleted(false)
 			.verified(false)
 			.gitPushStatus(false)
