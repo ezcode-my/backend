@@ -96,7 +96,7 @@ public class User extends BaseEntity {
 			.nickname(nickname)
 			.age(age)
 			.tier(Tier.NEWBIE)
-			.role(UserRole.ADMIN) // 테스트용
+			.role(UserRole.USER)
 			.isDeleted(false)
 			.verified(false)
 			.gitPushStatus(false)

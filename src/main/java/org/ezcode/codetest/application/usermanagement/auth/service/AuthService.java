@@ -52,13 +52,18 @@ public class AuthService {
 	이메일 회원가입
 	- 이미 가입된 이메일 거절
 	- 비밀번호 암호화
+	- 토큰 자동 발급 (자동 로그인)
 	 */
 	@Transactional
 	public SignupResponse signup(SignupRequest request) {
 		validateRequest(request);
-		userRegisterationProcess(request);
+		User createdUser = userRegisterationProcess(request);
 
-		return SignupResponse.from("회원가입이 완료되었습니다.");
+		// 회원가입 성공 후 자동 로그인을 위한 토큰 발급
+		String accessToken = createAccessToken(createdUser);
+		String refreshToken = createRefreshToken(createdUser);
+
+		return SignupResponse.from("회원가입이 완료되었습니다.", accessToken, refreshToken);
 	}
 
 	//1. 보낸 요청의 비밀번호&비밀번호확인이 일치하는지
@@ -70,18 +75,18 @@ public class AuthService {
 	}
 
 	//2. 이미 다른 방식으로 회원가입한 유저인지 검증
-	private void userRegisterationProcess(SignupRequest request) {
+	private User userRegisterationProcess(SignupRequest request) {
 		String encodedPassword = userDomainService.encodePassword(request.getPassword());
 		User existUser = userDomainService.getUserByEmail(request.getEmail());
 		if ((existUser == null)) {
-			createNewUser(request, encodedPassword);
+			return createNewUser(request, encodedPassword);
 		} else {
-			updateExistingUser(existUser, encodedPassword);
+			return updateExistingUser(existUser, encodedPassword);
 		}
 	}
 
 	//3. 만약 아예 첫 가입 유저일 때
-	private void createNewUser(SignupRequest request, String encodedPassword) {
+	private User createNewUser(SignupRequest request, String encodedPassword) {
 		String nickname = userDomainService.generateUniqueNickname();
 		Language language = languageDomainService.getLanguage(1L); //기본적으로 1번 언어로 가입 시 세팅
 		User newUser = User.emailUser(
@@ -96,15 +101,17 @@ public class AuthService {
 		userDomainService.createUser(newUser);
 		userDomainService.createUserAuthType(new UserAuthType(newUser, AuthType.EMAIL));
 
+		return newUser;
 	}
 
 	//4. 만약 이전에 다른 방식으로 가입했었던(소셜) 회원일 때 -> UserAuthType테이블에 인증 방식만 추가
-	private void updateExistingUser(User existUser, String encodedPassword) {
+	private User updateExistingUser(User existUser, String encodedPassword) {
 		//로컬 가입(이메일)은 안되어있는데 소셜은 되어있는 경우이므로, UUID 비번을 사용자가 지정한 비번으로 변경한다.
 		// -> 이후 비번 변경하면 User테이블에서 변경하면됨.
 		existUser.modifyPassword(encodedPassword);
 		UserAuthType userAuthType = new UserAuthType(existUser, AuthType.EMAIL);
 		userDomainService.createUserAuthType(userAuthType);
+		return existUser;
 	}
 
 	@Transactional
