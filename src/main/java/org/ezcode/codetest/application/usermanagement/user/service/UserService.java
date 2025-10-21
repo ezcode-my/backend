@@ -70,10 +70,6 @@ public class UserService {
 			user.setLanguage(userLanguage);
 		}
 
-        if (user.getLanguage().isEmpty || user.getLanguage() == null){
-            user.set
-        }
-
 		return UserInfoResponse.builder()
 			.username(user.getUsername())
 			.age(user.getAge())
