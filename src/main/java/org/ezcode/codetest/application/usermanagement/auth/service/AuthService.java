@@ -71,7 +71,7 @@ public class AuthService {
 		userDomainService.checkEmailUnique(request.getEmail());
 		if (!request.getPassword().equals(request.getPasswordConfirm())){
 			throw new AuthException(AuthExceptionCode.PASSWORD_NOT_MATCH);
-		};
+		}
 	}
 
 	//2. 이미 다른 방식으로 회원가입한 유저인지 검증
