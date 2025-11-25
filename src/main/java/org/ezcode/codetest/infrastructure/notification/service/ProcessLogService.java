@@ -60,20 +60,28 @@ public class ProcessLogService {
 	@Transactional(transactionManager = "mongoTransactionManager")
 	public void finishProcessing(String messageId) {
 
-		processLogRepository.findById(messageId).ifPresent(log -> {
-			log.markAsSuccess();
-			processLogRepository.save(log);
-		});
+		NotificationProcessLog log = processLogRepository.findById(messageId)
+			.orElseThrow(() -> {
+				ProcessLogService.log.error("처리 완료할 로그를 찾을 수 없습니다. messageId={}", messageId);
+				return new IllegalStateException("Process log not found: " + messageId);
+			});
+
+		log.markAsSuccess();
+		processLogRepository.save(log);
+
 	}
 
 	// 메시지 처리 실패로 기록
 	@Transactional(transactionManager = "mongoTransactionManager")
 	public void failProcessing(String messageId, String errorMessage) {
 
-		processLogRepository.findById(messageId).ifPresent(log -> {
-			log.markAsFailed(errorMessage, maxRetries);
-			processLogRepository.save(log);
-		});
+		NotificationProcessLog log = processLogRepository.findById(messageId)
+			.orElseThrow(() -> {
+				ProcessLogService.log.error("실패 기록할 로그를 찾을 수 없습니다. messageId={}", messageId);
+				return new IllegalStateException("Process log not found: " + messageId);
+			});
+		log.markAsFailed(errorMessage, maxRetries);
+		processLogRepository.save(log);
 	}
 
 	// 재시도할 작업 목록 조회
