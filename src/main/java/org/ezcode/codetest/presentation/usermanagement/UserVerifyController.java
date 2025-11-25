@@ -1,5 +1,7 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.FindPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ResetPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.auth.dto.request.SendEmailRequest;

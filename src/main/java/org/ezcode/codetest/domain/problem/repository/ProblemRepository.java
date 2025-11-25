@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.problem.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
@@ -23,4 +24,6 @@ public interface ProblemRepository {
 	boolean existsByTitleAndIsDeletedIsFalse(String title);
 
 	void problemCountAdjustment(Long problemId, int correctInc);
+
+    List<Long> getProblemIdList();
 }

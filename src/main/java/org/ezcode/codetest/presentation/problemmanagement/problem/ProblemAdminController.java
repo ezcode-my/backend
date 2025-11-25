@@ -1,5 +1,7 @@
 package org.ezcode.codetest.presentation.problemmanagement.problem;
 
+import java.util.List;
+
 import org.ezcode.codetest.application.problem.dto.request.CategoryCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -95,6 +98,13 @@ public class ProblemAdminController {
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.build();
+	}
+
+	@Operation(summary = "문제 Id 리스트로 반환", description = "문제 번호만 묶어서 리스트로 반환 -> 무조건 관리자 권한이 있어야만 가능")
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/list")
+	public ResponseEntity<List<Long>> getProblemIds(){
+		return ResponseEntity.status(HttpStatus.OK).body(problemService.getProblemIdList());
 	}
 
 }

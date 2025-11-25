@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.submission.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -120,4 +121,5 @@ public class SubmissionDomainService {
     public int findSubmissionCountByUserId(Long userId) {
         return submissionRepository.findSubmissionCountByUserId(userId);
     }
+
 }

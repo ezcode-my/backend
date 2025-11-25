@@ -3,9 +3,6 @@ package org.ezcode.codetest.application.usermanagement.user.service;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.ezcode.codetest.application.usermanagement.user.dto.response.GrantAdminRoleResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserDailySolvedHistoryResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserReviewTokenResponse;
@@ -29,8 +26,6 @@ import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.ezcode.codetest.domain.user.model.entity.UserAuthType;
 import org.ezcode.codetest.domain.user.model.enums.AuthType;
-import org.ezcode.codetest.domain.user.model.enums.UserRole;
-import org.ezcode.codetest.domain.user.service.MailService;
 import org.ezcode.codetest.domain.user.service.UserDomainService;
 import org.ezcode.codetest.infrastructure.s3.S3Directory;
 import org.ezcode.codetest.infrastructure.s3.S3Uploader;
@@ -91,6 +86,12 @@ public class UserService {
 	public UserInfoResponse modifyUserInfo(AuthUser authUser, ModifyUserInfoRequest request, MultipartFile image) {
 		User user = userDomainService.getUserById(authUser.getId());
 		Language findLangauge = languageDomainService.getLanguage(request.languageId());
+		if (request.nickname() != null && !request.nickname().equals(user.getNickname())) {
+			if (userDomainService.existsByNickname(request.nickname())) {
+				log.info("중복 닉네임");
+				throw new UserException(UserExceptionCode.ALREADY_EXIST_NICKNAME);
+			}
+		}
 
 		user.modifyUserInfo(
 			request.nickname(),
