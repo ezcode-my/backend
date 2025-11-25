@@ -43,6 +43,7 @@ src/main/resources/application.properties
 docker-compose.dev.yml
 /data/
 /db/
+/replicaset
 
 # 환경변수
 .env
