@@ -1,10 +1,11 @@
 package org.ezcode.codetest.domain.problem.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
-import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
+import org.ezcode.codetest.domain.problem.model.entity.Problem;
+import org.ezcode.codetest.domain.problem.repository.ProblemSearchRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -13,15 +14,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProblemSearchDomainService {
 
-	private final ProblemDocumentRepository searchRepository;
+	// private final ProblemDocumentRepository searchRepository;
+	private final ProblemSearchRepository searchRepository;
 
-	public Set<ProblemSearchDocument> getSuggestionsByKeyword(String keyword) {
+	public List<Problem> searchByKeywordMatch(String keyword) {
 
-		return searchRepository.findDocumentContainingKeyword(keyword);
-	}
-
-	public List<ProblemSearchDocument> searchByKeywordMatch(String keyword) {
-
-		return searchRepository.findProblemsByKeyword(keyword);
+		return searchRepository.searchProblems(keyword);
 	}
 }
