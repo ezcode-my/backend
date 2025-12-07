@@ -101,7 +101,6 @@ class ProblemDomainServiceTest {
 
 		// given
 		Problem problem = mock(Problem.class);
-		when(problem.getId()).thenReturn(1L);
 
 		// when
 		problemDomainService.removeProblem(problem);
