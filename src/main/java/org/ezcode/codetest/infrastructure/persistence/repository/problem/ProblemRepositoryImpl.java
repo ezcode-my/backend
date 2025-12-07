@@ -2,6 +2,7 @@ package org.ezcode.codetest.infrastructure.persistence.repository.problem;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.repository.ProblemRepository;
@@ -27,6 +28,11 @@ public class ProblemRepositoryImpl implements ProblemRepository {
 	@Override
 	public Optional<Problem> findByIdNotDeleted(Long problemId) {
 		return problemJpaRepository.findByIdNotDeleted(problemId);
+	}
+
+	@Override
+	public Set<String> findAutoComplete(String keyword) {
+		return problemRepositoryCustom.findAutoComplete(keyword);
 	}
 
 	@Override

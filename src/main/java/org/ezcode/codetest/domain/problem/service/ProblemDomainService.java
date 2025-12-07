@@ -3,6 +3,7 @@ package org.ezcode.codetest.domain.problem.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.exception.ProblemException;
@@ -87,6 +88,11 @@ public class ProblemDomainService {
 		searchRepository.save(ProblemSearchDocument.from(savedProblem, categoryList));
 
 		return savedProblem;
+	}
+
+	public Set<String> getSearchKeywordSuggestions(String keyword) {
+
+		return problemRepository.findAutoComplete(keyword);
 	}
 
 	public Page<Problem> getProblemBySearchCondition(Pageable pageable, ProblemSearchCondition searchCondition) {

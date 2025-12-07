@@ -1,6 +1,9 @@
 package org.ezcode.codetest.infrastructure.persistence.repository.problem;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
@@ -29,6 +32,41 @@ public class ProblemQueryRepositoryImpl implements ProblemRepositoryCustom {
 	QProblem problem = QProblem.problem;
 	QCategory category = QCategory.category;
 	QProblemCategory problemCategory = QProblemCategory.problemCategory;
+
+	@Override
+	public Set<String> findAutoComplete(String keyword) {
+		if (keyword == null || keyword.isBlank()) {
+			return Collections.emptySet();
+		}
+
+		// 1. 카테고리 검색 (Category korName)
+		List<String> categories = jpaQueryFactory
+			.select(category.korName)
+			.from(category)
+			.where(category.korName.containsIgnoreCase(keyword))
+			.limit(5) // 카테고리는 최대 5개까지만 노출
+			.fetch();
+
+		// 2. 문제 검색 (Title, Description 대상)
+		// 설명(description)에 키워드가 있어도, 자동완성 목록에는 '제목(title)'을 보여주는 것이 일반적입니다.
+		List<String> problems = jpaQueryFactory
+			.select(problem.title)
+			.from(problem)
+			.where(
+				problem.title.containsIgnoreCase(keyword)
+					.or(problem.description.containsIgnoreCase(keyword))
+			)
+			.limit(10) // 문제는 최대 10개까지만 노출
+			.fetch();
+
+		// 3. 결과 합치기 (LinkedHashSet: 입력 순서 보장 + 중복 제거)
+		// 카테고리를 먼저 add 해서 상단에 노출되도록 함
+		Set<String> result = new LinkedHashSet<>();
+		result.addAll(categories);
+		result.addAll(problems);
+
+		return result;
+	}
 
 	@Override
 	public Page<Problem> searchByCondition(Pageable pageable, ProblemSearchCondition searchCondition) {

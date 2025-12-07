@@ -2,6 +2,7 @@ package org.ezcode.codetest.application.problem.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ezcode.codetest.application.problem.dto.request.CategoryCreateRequest;
@@ -67,6 +68,13 @@ public class ProblemService {
 			updateProblemWithImage(savedProblem.getId(), imageUrl);
 		}
 
+	}
+
+	// 검색 키워드 자동 완성
+	@Transactional(readOnly = true)
+	public Set<String> getSearchKeywordSuggestions(String keyword) {
+
+		return problemDomainService.getSearchKeywordSuggestions(keyword);
 	}
 
 	// 문제 전체 조회
