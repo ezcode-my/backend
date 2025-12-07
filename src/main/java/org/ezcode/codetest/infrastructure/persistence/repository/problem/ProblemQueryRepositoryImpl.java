@@ -53,7 +53,8 @@ public class ProblemQueryRepositoryImpl implements ProblemRepositoryCustom {
 			.select(problem.title)
 			.from(problem)
 			.where(
-				problem.title.containsIgnoreCase(keyword)
+				problem.isDeleted.isFalse()
+					.and(problem.title.containsIgnoreCase(keyword))
 					.or(problem.description.containsIgnoreCase(keyword))
 			)
 			.limit(10) // 문제는 최대 10개까지만 노출
