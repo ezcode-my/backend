@@ -2,6 +2,7 @@ package org.ezcode.codetest.application.problem.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ezcode.codetest.application.problem.dto.request.CategoryCreateRequest;
@@ -26,7 +27,6 @@ import org.ezcode.codetest.infrastructure.s3.exception.code.S3ExceptionCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,9 +70,16 @@ public class ProblemService {
 
 	}
 
+	// 검색 키워드 자동 완성
+	@Transactional(readOnly = true)
+	public Set<String> getSearchKeywordSuggestions(String keyword) {
+
+		return problemDomainService.getSearchKeywordSuggestions(keyword);
+	}
+
 	// 문제 전체 조회
 	@Transactional(readOnly = true)
-	public Page<ProblemResponse> getProblemsList(Pageable pageable, ProblemSearchCondition searchCondition) {
+	public Page<ProblemResponse> getProblemWithCondition(Pageable pageable, ProblemSearchCondition searchCondition) {
 
 		Page<Problem> problemPage = problemDomainService.getProblemBySearchCondition(pageable, searchCondition);
 		List<Problem> problems = problemPage.getContent();

@@ -10,12 +10,10 @@ import java.util.Optional;
 import org.ezcode.codetest.domain.problem.model.entity.Category;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.ProblemCategory;
-import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.problem.repository.CategoryRepository;
 import org.ezcode.codetest.domain.problem.repository.ProblemCategoryRepository;
-import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
 import org.ezcode.codetest.domain.problem.repository.ProblemRepository;
 import org.ezcode.codetest.domain.user.model.entity.User;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +28,6 @@ class ProblemDomainServiceTest {
 
 	@Mock
 	private ProblemRepository problemRepository;
-	@Mock private ProblemDocumentRepository searchRepository;
 	@Mock private CategoryRepository categoryRepository;
 	@Mock private ProblemCategoryRepository problemCategoryRepository;
 
@@ -55,9 +52,6 @@ class ProblemDomainServiceTest {
 
 		ProblemCategory pc = ProblemCategory.from(problem, category);
 		when(problemCategoryRepository.saveAll(anyList())).thenReturn(List.of(pc));
-
-		ProblemSearchDocument doc = ProblemSearchDocument.from(problem, List.of(category));
-		when(searchRepository.save(any(ProblemSearchDocument.class))).thenReturn(doc);
 
 		// when
 		Problem result = problemDomainService.createProblem(problem, categoryMap);
@@ -107,21 +101,13 @@ class ProblemDomainServiceTest {
 
 		// given
 		Problem problem = mock(Problem.class);
-		when(problem.getId()).thenReturn(1L);
-
-		ProblemSearchDocument searchDocument = mock(ProblemSearchDocument.class);
-		when(searchRepository.findById(1L)).thenReturn(Optional.of(searchDocument));
 
 		// when
 		problemDomainService.removeProblem(problem);
 
 		// then
 		verify(problemRepository).delete(problem);
-		verify(searchRepository).findById(1L);
-		verify(searchRepository).delete(searchDocument);
 	}
-
-
 
 	@Test
 	@DisplayName("카테고리 생성 성공")

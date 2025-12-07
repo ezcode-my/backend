@@ -2,12 +2,12 @@ package org.ezcode.codetest.domain.problem.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.NonNull;
 
 public interface ProblemRepository {
 
@@ -15,7 +15,9 @@ public interface ProblemRepository {
 
 	Optional<Problem> findByIdNotDeleted(Long problemId);
 
-	Page<Problem> searchByCondition(@NonNull Pageable pageable, @NonNull ProblemSearchCondition searchCondition);
+	Set<String> findAutoComplete(String keyword);
+
+	Page<Problem> searchByCondition(Pageable pageable, ProblemSearchCondition searchCondition);
 
 	void delete(Problem problem);
 

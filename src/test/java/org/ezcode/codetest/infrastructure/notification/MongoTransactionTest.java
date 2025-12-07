@@ -11,8 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
 @Disabled
+@SpringBootTest
 @ActiveProfiles("test")
 public class MongoTransactionTest {
 
@@ -20,7 +20,7 @@ public class MongoTransactionTest {
 	private NotificationMongoRepository mongoRepository;
 
 	@Test
-	@Transactional
+	@Transactional(transactionManager = "mongoTransactionManager")
 	void transactionTest() {
 		mongoRepository.save(NotificationDocument.from(
 			NotificationCreateEvent.of(
