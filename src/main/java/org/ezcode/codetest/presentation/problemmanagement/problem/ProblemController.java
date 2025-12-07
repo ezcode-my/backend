@@ -11,9 +11,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,19 +30,16 @@ public class ProblemController {
 	private final ProblemService problemService;
 
 	@GetMapping
-	@Operation(summary = "문제 전체조회", description = "문제를 전체조회 합니다.")
-	@ApiResponse(responseCode = "200", description = "문제 전체 조회성공")
-	public ResponseEntity<Page<ProblemResponse>> getProblemsList(
-		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-		@RequestParam(required = false) String categoryCode,
-		@RequestParam(required = false) String difficulty
+	@Operation(summary = "문제 목록 조회", description = "문제를 조건에 따라 목록 조회 합니다.")
+	@ApiResponse(responseCode = "200", description = "문제 목록 조회 성공")
+	public ResponseEntity<Page<ProblemResponse>> getProblemsListWithCondition(
+		@ModelAttribute ProblemSearchCondition condition,
+		@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable
 	) {
-
-		ProblemSearchCondition searchCondition = new ProblemSearchCondition(categoryCode, difficulty);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.body(problemService.getProblemsList(pageable, searchCondition));
+				.body(problemService.getProblemWithCondition(pageable, condition));
 	}
 
 	@GetMapping("/{problemId}")
