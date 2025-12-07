@@ -10,14 +10,11 @@ import org.ezcode.codetest.application.problem.dto.request.CategoryCreateRequest
 import org.ezcode.codetest.application.problem.dto.request.ProblemCreateRequest;
 import org.ezcode.codetest.application.problem.dto.request.ProblemUpdateRequest;
 import org.ezcode.codetest.application.problem.dto.response.ProblemDetailResponse;
-import org.ezcode.codetest.application.problem.dto.response.ProblemResponse;
 import org.ezcode.codetest.domain.game.model.character.CategoryStat;
 import org.ezcode.codetest.domain.game.util.StatUpdateUtil;
 import org.ezcode.codetest.domain.language.model.entity.Language;
-import org.ezcode.codetest.domain.problem.model.ProblemSearchCondition;
 import org.ezcode.codetest.domain.problem.model.entity.Category;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
-import org.ezcode.codetest.domain.problem.model.entity.ProblemCategory;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
 import org.ezcode.codetest.domain.problem.model.enums.Reference;
 import org.ezcode.codetest.domain.problem.service.ProblemDomainService;
@@ -34,10 +31,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class ProblemServiceTest {

@@ -12,10 +12,8 @@ import org.ezcode.codetest.domain.problem.model.ProblemInfo;
 import org.ezcode.codetest.domain.problem.model.entity.Category;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.ProblemCategory;
-import org.ezcode.codetest.domain.problem.model.entity.ProblemSearchDocument;
 import org.ezcode.codetest.domain.problem.repository.CategoryRepository;
 import org.ezcode.codetest.domain.problem.repository.ProblemCategoryRepository;
-import org.ezcode.codetest.domain.problem.repository.ProblemDocumentRepository;
 import org.ezcode.codetest.domain.problem.repository.ProblemRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class ProblemDomainService {
 
 	private final ProblemRepository problemRepository;
-	private final ProblemDocumentRepository searchRepository;
 	private final CategoryRepository categoryRepository;
 	private final ProblemCategoryRepository problemCategoryRepository;
 
@@ -61,10 +58,7 @@ public class ProblemDomainService {
 			.map(cat -> ProblemCategory.from(problem, cat))
 			.toList();
 
-		List<ProblemCategory> savedCategories = problemCategoryRepository.saveAll(problemCategories);
-
-		searchRepository.save(ProblemSearchDocument.from(problem, savedCategories.stream().map(
-			ProblemCategory::getCategory).toList()));
+		problemCategoryRepository.saveAll(problemCategories);
 	}
 
 	public Problem createProblem(Problem problem, Map<String, String> categories) {
@@ -84,8 +78,6 @@ public class ProblemDomainService {
 			.toList();
 
 		problemCategoryRepository.saveAll(problemCategories);
-
-		searchRepository.save(ProblemSearchDocument.from(savedProblem, categoryList));
 
 		return savedProblem;
 	}
@@ -109,11 +101,6 @@ public class ProblemDomainService {
 	public void removeProblem(Problem problem) {
 
 		problemRepository.delete(problem);
-
-		ProblemSearchDocument document = searchRepository.findById(problem.getId())
-			.orElseThrow(() -> new ProblemException(ProblemExceptionCode.PROBLEM_NOT_FOUND));
-
-		searchRepository.delete(document);
 	}
 
 	public ProblemInfo getProblemInfo(Long problemId) {

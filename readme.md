@@ -140,7 +140,7 @@ my.ezcode.codetest
 | **🖥️ 언어**         | Java 17                                      |
 | **🔧 백엔드**         | Spring Boot, Spring Data JPA, QueryDSL       |
 | **🔐 보안**          | Spring Security, JWT                         |
-| **💾 데이터베이스**      | MySQL, Redis, MongoDB, Elastic search        |
+| **💾 데이터베이스**      | MySQL, Redis, MongoDB                        |
 | **📨 메시지 큐**       | ActiveMQ, Redis Stream                       |
 | **🧠 개발 도구 (IDE)** | IntelliJ IDEA                                |
 | **🌐 외부 API**      | Gmail SMTP, OpenAI, Judge0                   |
