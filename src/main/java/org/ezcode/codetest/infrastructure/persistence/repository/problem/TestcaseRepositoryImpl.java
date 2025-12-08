@@ -42,7 +42,7 @@ public class TestcaseRepositoryImpl implements TestcaseRepository {
 	@Override
 	public void delete(Testcase testcase) {
 
-		testcaseJpaRepository.delete(testcase);
+		testcaseJpaRepository.deleteById(testcase.getId());
 	}
 
 }
