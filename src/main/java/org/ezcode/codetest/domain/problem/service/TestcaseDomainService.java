@@ -3,9 +3,7 @@ package org.ezcode.codetest.domain.problem.service;
 import java.util.List;
 
 import org.ezcode.codetest.domain.problem.exception.ProblemException;
-import org.ezcode.codetest.domain.problem.exception.TestcaseException;
 import org.ezcode.codetest.domain.problem.exception.code.ProblemExceptionCode;
-import org.ezcode.codetest.domain.problem.exception.code.TestcaseExceptionCode;
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.entity.Testcase;
 import org.ezcode.codetest.domain.problem.repository.TestcaseRepository;
@@ -50,9 +48,8 @@ public class TestcaseDomainService {
 
 		Testcase findTestcase = testcaseRepository.findByTestcase(testcaseId);
 
-		// 테스트 케이스 문제와 요청한 값의 문제 id 일치한가 여부
-		if(!findTestcase.problemIdMatched(problem.getId())) {
-			throw new TestcaseException(TestcaseExceptionCode.TESTCASE_NOT_FOUND);
+		if (problem.getTestcases() != null) {
+			problem.getTestcases().remove(findTestcase);
 		}
 
 		testcaseRepository.delete(findTestcase);
