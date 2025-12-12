@@ -41,7 +41,7 @@ public class ProblemAdminController {
 	@Operation(summary = "문제 등록", description = "문제를 등록합니다.")
 	@ApiResponse(responseCode = "201", description = "문제 생성 성공")
 	public ResponseEntity<Void> createProblem(
-		@RequestPart @Valid ProblemCreateRequest request,
+		@RequestPart("request") @Valid ProblemCreateRequest request,
 		@RequestPart(value = "image", required = false) MultipartFile image,
 		@AuthenticationPrincipal AuthUser user
 	) {
@@ -56,7 +56,7 @@ public class ProblemAdminController {
 	@ApiResponse(responseCode = "200", description = "문제 수정 성공")
 	public ResponseEntity<Void> modifyProblem(
 		@PathVariable Long problemId,
-		@RequestPart @Valid ProblemUpdateRequest request,
+		@RequestPart("request") @Valid ProblemUpdateRequest request,
 		@RequestPart(value = "image", required = false) MultipartFile image
 	) {
 		problemService.modifyProblem(problemId, request, image);
