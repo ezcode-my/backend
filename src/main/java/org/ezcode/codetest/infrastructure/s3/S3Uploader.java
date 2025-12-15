@@ -1,6 +1,8 @@
 package org.ezcode.codetest.infrastructure.s3;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.ezcode.codetest.infrastructure.s3.exception.S3Exception;
@@ -78,7 +80,10 @@ public class S3Uploader {
 			if (dirName.equalsIgnoreCase("profile")) {
 				fileName = extractKeyFromProfileUrl(fileUrl);
 			}
-			amazonS3.deleteObject(bucket, fileName); // S3 내 이미지 객체 제거.
+
+			String decodedFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+			amazonS3.deleteObject(bucket, decodedFileName); // S3 내 이미지 객체 제거.
+
 			log.info("S3에서 이미지 삭제 완료: {}", fileName);
 		} catch (Exception e) {
 			log.error("S3 이미지 삭제 실패: {}", fileUrl, e);

@@ -16,6 +16,10 @@ import io.swagger.v3.oas.annotations.servers.Server;
 		@Server(
 			url = "https://api.ezcode.my",           // ← 슬래시 없이 호스트만!
 			description = "Production server"
+		),
+		@Server(
+			url = "http://localhost:8080",
+			description = "Local Server"
 		)
 	},
 	info = @Info(title = "API 문서", version = "v1"),
