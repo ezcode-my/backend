@@ -106,10 +106,10 @@ public class UserService {
 			String oldImageUrl = user.getProfileImageUrl();
 
 			user.modifyProfileImage(profileImageUrl);
-			if (oldImageUrl!=null) {
-				s3Uploader.delete(user.getProfileImageUrl(), "profile");
-			}
 
+			if (oldImageUrl != null) {
+				s3Uploader.delete(oldImageUrl, "profile");
+			}
 		}
 
 		return UserInfoResponse.builder()
