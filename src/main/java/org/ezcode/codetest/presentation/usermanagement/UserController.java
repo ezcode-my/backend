@@ -1,10 +1,8 @@
 package org.ezcode.codetest.presentation.usermanagement;
 
-import org.ezcode.codetest.application.submission.dto.response.language.LanguageResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ModifyUserInfoRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.request.ChangeUserPasswordRequest;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUserPasswordResponse;
-import org.ezcode.codetest.application.usermanagement.user.dto.response.GrantAdminRoleResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserDailySolvedHistoryResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserInfoResponse;
 import org.ezcode.codetest.application.usermanagement.user.dto.response.UserProfileImageResponse;
@@ -26,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,17 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(authUser));
 	}
 
-	@Operation(summary = "내 정보 수정", description = "닉네임, 블로그, 깃허브, 소개 등 개인 정보를 추가하거나 수정합니다.")
+	@Operation(
+		summary = "내 정보 수정",
+		description = "닉네임, 블로그, 깃허브, 소개 등 개인 정보를 추가하거나 수정합니다.",
+		// ▼ 이 부분이 핵심입니다. Swagger에게 'request' 파트의 Content-Type을 강제합니다.
+		requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+			content = @Content(
+				mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+				encoding = @Encoding(name = "request", contentType = MediaType.APPLICATION_JSON_VALUE)
+			)
+		)
+	)
     @PutMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<UserInfoResponse> modifyUserInfo(
 		@AuthenticationPrincipal AuthUser authUser,
