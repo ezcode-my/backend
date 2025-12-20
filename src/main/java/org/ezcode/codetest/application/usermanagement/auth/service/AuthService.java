@@ -128,6 +128,7 @@ public class AuthService {
 
 		if (isMatch){
 			user.setVerified();
+			user.setDefaultReviewToken();
 			return VerifyEmailCodeResponse.from("인증되었습니다", isMatch);
 		} else {
 			throw new UserException(UserExceptionCode.NOT_MATCH_CODE);

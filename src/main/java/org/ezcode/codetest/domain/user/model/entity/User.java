@@ -188,10 +188,6 @@ public class User extends BaseEntity {
 		this.verified = true;
 	}
 
-	public void setReviewToken(int reviewToken){
-		this.reviewToken = reviewToken;
-	}
-
 	public void setGithubUrl(String githubUrl){
 		this.githubUrl = githubUrl;
 	}
@@ -218,5 +214,22 @@ public class User extends BaseEntity {
 
 	public void setLanguage(Language userLanguage) {
 		this.language = userLanguage;
+	}
+
+	public static final int DEFAULT_REVIEW_TOKEN = 20;
+	public static final int FULL_WEEK_REVIEW_TOKEN = 40;
+
+	/**
+	 * 기본 리뷰 토큰을 설정 이메일 인증 직후, OAuth 가입 시 사용)
+	 */
+	public void setDefaultReviewToken() {
+		this.reviewToken = DEFAULT_REVIEW_TOKEN;
+	}
+
+	/**
+	 * 주간 풀 참여 리뷰 토큰을 설정 (주간 스케줄러에서 사용)
+	 */
+	public void setFullWeekReviewToken() {
+		this.reviewToken = FULL_WEEK_REVIEW_TOKEN;
 	}
 }
