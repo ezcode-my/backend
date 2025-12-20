@@ -113,8 +113,8 @@ public class UserDomainService {
 	}
 
 	public void resetReviewTokensForUsers(UsersByWeek users) {
-		userRepository.updateReviewTokens(users.fullWeek(), 40);
-		userRepository.updateReviewTokens(users.partialWeek(), 20);
+		userRepository.updateReviewTokens(users.fullWeek(), User.FULL_WEEK_REVIEW_TOKEN);
+		userRepository.updateReviewTokens(users.partialWeek(), User.DEFAULT_REVIEW_TOKEN);
 	}
 
 	private static String generateRandomNickname() {

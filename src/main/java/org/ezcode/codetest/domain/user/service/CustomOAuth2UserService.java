@@ -88,7 +88,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		Language language = languageDomainService.getLanguage(1L); //기본적으로 1번 언어로 가입 시 세팅
 		User newUser = UserFactory.createSocialUser(response, nickname, provider, language);
 		newUser.setVerified();
-		newUser.setReviewToken(20);
+		newUser.setDefaultReviewToken();
 		userRepository.createUser(newUser);
 		userAuthTypeRepository.createUserAuthType(new UserAuthType(newUser, authType));
 		updateGithubUrl(newUser, response, provider);
@@ -98,7 +98,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		if (!userDomainService.getUserAuthTypes(user).contains(authType)) {
 			if (!user.isVerified()) {
 				user.setVerified();
-				user.setReviewToken(20);
+				user.setDefaultReviewToken();
 			}
 			userAuthTypeRepository.createUserAuthType(new UserAuthType(user, authType));
 			updateGithubUrl(user, response, provider);

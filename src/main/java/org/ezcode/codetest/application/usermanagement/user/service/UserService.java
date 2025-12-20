@@ -156,7 +156,7 @@ public class UserService {
 
 		userDomainService.isDeletedUser(user);
 
-		user.setDeleted();
+		user.markAsDeleted();
 
 		redisTemplate.delete("RefreshToken:" + authUser.getId());
 
