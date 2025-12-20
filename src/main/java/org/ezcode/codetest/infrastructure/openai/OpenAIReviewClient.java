@@ -14,6 +14,7 @@ import org.ezcode.codetest.domain.submission.exception.CodeReviewException;
 import org.ezcode.codetest.domain.submission.exception.code.CodeReviewExceptionCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -30,10 +31,10 @@ import reactor.util.retry.Retry;
 @RequiredArgsConstructor
 public class OpenAIReviewClient implements ReviewClient {
 
-    @Value("${OPEN_API_URL}")
+    @Value("${openai.api.url}")
     private String openApiUrl;
 
-    @Value("${OPEN_API_KEY}")
+    @Value("${openai.api.key}")
     private String openApiKey;
     private WebClient webClient;
     private final OpenAIMessageBuilder openAiMessageBuilder;
@@ -77,7 +78,6 @@ public class OpenAIReviewClient implements ReviewClient {
     }
 
     private String callChatApi(Map<String, Object> requestBody) {
-
         OpenAIResponse response = webClient.post()
             .uri("/v1/chat/completions")
             .bodyValue(requestBody)
@@ -87,14 +87,29 @@ public class OpenAIReviewClient implements ReviewClient {
             .retryWhen(
                 Retry.backoff(3, Duration.ofSeconds(1))
                     .maxBackoff(Duration.ofSeconds(5))
-                    .filter(ex -> ex instanceof WebClientResponseException
-                        || ex instanceof TimeoutException)
+                    .filter(ex -> {
+                        if (ex instanceof TimeoutException) {
+                            return true;
+                        }
+                        if (ex instanceof WebClientResponseException) {
+                            HttpStatusCode statusCode = ((WebClientResponseException) ex).getStatusCode();
+                            // 5xx 서버 오류만 재시도 (502, 503 등)
+                            return statusCode.is5xxServerError();
+                        }
+                        return false;
+                    })
                     .onRetryExhaustedThrow((spec, signal) -> signal.failure())
             )
-            .onErrorMap(WebClientResponseException.class,
-                ex -> new CodeReviewException(CodeReviewExceptionCode.REVIEW_SERVER_ERROR))
-            .onErrorMap(TimeoutException.class,
-                ex -> new CodeReviewException(CodeReviewExceptionCode.REVIEW_TIMEOUT))
+            .onErrorMap(WebClientResponseException.class, ex -> {
+                HttpStatusCode statusCode = ex.getStatusCode();
+                String responseBody = ex.getResponseBodyAsString();
+                log.error("OpenAI API 호출 실패 - Status: {}, Response Body: {}", statusCode, responseBody, ex);
+                return new CodeReviewException(CodeReviewExceptionCode.REVIEW_SERVER_ERROR);
+            })
+            .onErrorMap(TimeoutException.class, ex -> {
+                log.error("OpenAI API 호출 타임아웃", ex);
+                return new CodeReviewException(CodeReviewExceptionCode.REVIEW_TIMEOUT);
+            })
             .block();
 
         return Objects.requireNonNull(response).getReviewContent();
