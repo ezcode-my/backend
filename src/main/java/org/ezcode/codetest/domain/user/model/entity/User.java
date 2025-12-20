@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.user.model.entity;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,8 +173,18 @@ public class User extends BaseEntity {
 	}
 
 
-	public void setDeleted() {
+	/**
+	 * 회원 탈퇴 시 호출되는 메서드
+	 * - isDeleted 플래그를 true로 설정
+	 * - 이메일을 변경하여 동일 이메일 재가입 시 unique key 충돌 방지
+	 *   (예: user@example.com -> user@example.com__deleted_20231220)
+	 */
+	public void markAsDeleted() {
 		this.isDeleted = true;
+		if (this.email != null && !this.email.isBlank()) {
+			String deletedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+			this.email = this.email + "__deleted_" + deletedDate;
+		}
 	}
 
 	public boolean shouldSkipNotification(User recipient) {
