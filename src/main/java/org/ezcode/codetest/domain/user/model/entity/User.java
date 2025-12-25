@@ -1,5 +1,7 @@
 package org.ezcode.codetest.domain.user.model.entity;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,8 +173,18 @@ public class User extends BaseEntity {
 	}
 
 
-	public void setDeleted() {
+	/**
+	 * 회원 탈퇴 시 호출되는 메서드
+	 * - isDeleted 플래그를 true로 설정
+	 * - 이메일을 변경하여 동일 이메일 재가입 시 unique key 충돌 방지
+	 *   (예: user@example.com -> user@example.com__deleted_20231220)
+	 */
+	public void markAsDeleted() {
 		this.isDeleted = true;
+		if (this.email != null && !this.email.isBlank()) {
+			String deletedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+			this.email = this.email + "__deleted_" + deletedDate;
+		}
 	}
 
 	public boolean shouldSkipNotification(User recipient) {
@@ -186,10 +198,6 @@ public class User extends BaseEntity {
 
 	public void setVerified(){
 		this.verified = true;
-	}
-
-	public void setReviewToken(int reviewToken){
-		this.reviewToken = reviewToken;
 	}
 
 	public void setGithubUrl(String githubUrl){
@@ -218,5 +226,22 @@ public class User extends BaseEntity {
 
 	public void setLanguage(Language userLanguage) {
 		this.language = userLanguage;
+	}
+
+	public static final int DEFAULT_REVIEW_TOKEN = 20;
+	public static final int FULL_WEEK_REVIEW_TOKEN = 40;
+
+	/**
+	 * 기본 리뷰 토큰을 설정 이메일 인증 직후, OAuth 가입 시 사용)
+	 */
+	public void setDefaultReviewToken() {
+		this.reviewToken = DEFAULT_REVIEW_TOKEN;
+	}
+
+	/**
+	 * 주간 풀 참여 리뷰 토큰을 설정 (주간 스케줄러에서 사용)
+	 */
+	public void setFullWeekReviewToken() {
+		this.reviewToken = FULL_WEEK_REVIEW_TOKEN;
 	}
 }
