@@ -13,7 +13,8 @@ public enum S3ExceptionCode implements ResponseCode {
 	S3_UPLOAD_FAILED(false, HttpStatus.INTERNAL_SERVER_ERROR, "S3 이미지 업로드 중 오류가 발생 했습니다."),
 	S3_INVALID_FILE_TYPE(false, HttpStatus.BAD_REQUEST, "이미지 파일만 업로드할 수 있습니다."),
 	S3_DELETE_FAILED(false, HttpStatus.INTERNAL_SERVER_ERROR, "S3 이미지 삭제 중 오류가 발생 했습니다."),
-	S3_FILE_TOO_LARGE(false, HttpStatus.BAD_REQUEST, "파일 크기가 허용 범위를 초과했습니다.");
+	S3_FILE_TOO_LARGE(false, HttpStatus.BAD_REQUEST, "파일 크기가 허용 범위를 초과했습니다."),
+	S3_FILE_EMPTY(false, HttpStatus.BAD_REQUEST, "업로드할 이미지 파일이 없습니다.");
 
 	private final boolean success;
 
