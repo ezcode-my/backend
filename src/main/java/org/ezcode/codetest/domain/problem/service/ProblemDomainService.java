@@ -48,11 +48,12 @@ public class ProblemDomainService {
 		return problemCategoryRepository.findByProblemIdsIn(problemIds);
 	}
 
-	public void updateCategoryAndSearchEngine(Problem problem, List<String> categories) {
+	public void updateCategoryAndSearchEngine(Problem problem, Map<String, String> categories) {
 
 		problemCategoryRepository.deleteAllByProblemId(problem.getId());
 
-		List<Category> categoryList = categoryRepository.findAllByCategoryCodeIn(categories);
+		List<String> codes = new ArrayList<>(categories.keySet());
+		List<Category> categoryList = categoryRepository.findAllByCategoryCodeIn(codes);
 
 		List<ProblemCategory> problemCategories = categoryList.stream()
 			.map(cat -> ProblemCategory.from(problem, cat))

@@ -163,13 +163,13 @@ class ProblemServiceTest {
 
 		when(problemDomainService.getProblem(1L)).thenReturn(problem);
 		when(updateRequest.title()).thenReturn("새 제목");
-		when(updateRequest.categories()).thenReturn(List.of("MATH"));
+		when(updateRequest.categories()).thenReturn(Map.of("MATH", "수학"));
 		// when
 		problemService.modifyProblem(1L, updateRequest, null);
 
 		// then
 		verify(problem).update(any(), any(), any(), any(), any(), any(), any());
-		verify(problemDomainService).updateCategoryAndSearchEngine(problem, List.of("MATH"));
+		verify(problemDomainService).updateCategoryAndSearchEngine(problem, Map.of("MATH", "수학"));
 	}
 
 	@Test

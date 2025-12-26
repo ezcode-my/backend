@@ -1,6 +1,6 @@
 package org.ezcode.codetest.application.problem.dto.request;
 
-import java.util.List;
+import java.util.Map;
 
 import org.ezcode.codetest.domain.problem.model.entity.Problem;
 import org.ezcode.codetest.domain.problem.model.enums.Difficulty;
@@ -11,9 +11,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProblemUpdateRequest(
 
-	// 리스트 이므로, [] 대괄호 사용
-	@Schema(description = "카테고리", example = "FOR_BEGINNER")
-	List<String> categories,
+	// Map으로 묶여있으니 {} 중괄호 사용
+	@Schema(description = "카테고리 코드 식별자(영어) / 한글 이름", example = "FOR_BEGINNER : 입문자용")
+	Map<String, String> categories,
 
 	@Schema(description = "제목", example = "A+B")
 	String title,

@@ -190,6 +190,10 @@ public class ProblemService {
 
 	@Transactional
 	public void addImageToExistingProblem(Long problemId, MultipartFile imageFile) {
+		if (imageFile == null || imageFile.isEmpty()) {
+			throw new S3Exception(S3ExceptionCode.S3_FILE_EMPTY);
+		}
+
 		Problem problem = problemDomainService.getProblem(problemId);
 
 		// 1. S3 업로드
