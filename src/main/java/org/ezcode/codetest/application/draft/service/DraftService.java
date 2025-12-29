@@ -1,4 +1,4 @@
-package org.ezcode.codetest.application.draft.servcie;
+package org.ezcode.codetest.application.draft.service;
 
 import java.util.Optional;
 

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.ezcode.codetest.application.draft.dto.request.DraftSaveRequest;
 import org.ezcode.codetest.application.draft.dto.response.DraftResponse;
-import org.ezcode.codetest.application.draft.servcie.DraftService;
+import org.ezcode.codetest.application.draft.service.DraftService;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
