@@ -1,5 +1,7 @@
 package org.ezcode.codetest.application.draft.servcie;
 
+import java.util.Optional;
+
 import org.ezcode.codetest.application.draft.dto.request.DraftSaveRequest;
 import org.ezcode.codetest.application.draft.dto.response.DraftResponse;
 import org.ezcode.codetest.domain.draft.exception.DraftException;
@@ -53,15 +55,14 @@ public class DraftService {
 		return DraftResponse.from(draft);
 	}
 
-	@Transactional
-	public DraftResponse getDraft(Long userId, Long problemId, Long languageId) {
+	@Transactional(readOnly = true)
+	public Optional<DraftResponse> getDraft(Long userId, Long problemId, Long languageId) {
 
 		User user = userDomainService.getUserById(userId);
 		Problem problem = problemDomainService.getProblem(problemId);
 		Language language = languageDomainService.getLanguage(languageId);
 
-		Draft draft = draftDomainService.getDraft(user, problem, language);
-
-		return DraftResponse.from(draft);
+		return draftDomainService.getDraft(user, problem, language)
+			.map(DraftResponse::from);
 	}
 }

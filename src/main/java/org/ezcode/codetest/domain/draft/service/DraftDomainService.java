@@ -50,9 +50,8 @@ public class DraftDomainService {
 		}
 	}
 
-	public Draft getDraft(User user, Problem problem, Language language) {
+	public Optional<Draft> getDraft(User user, Problem problem, Language language) {
 
-		return draftRepository.findByUserAndProblemAndLanguage(user, problem, language)
-			.orElseThrow(() -> new DraftException(DraftExceptionCode.DRAFT_NOT_FOUND));
+		return draftRepository.findByUserAndProblemAndLanguage(user, problem, language);
 	}
 }
