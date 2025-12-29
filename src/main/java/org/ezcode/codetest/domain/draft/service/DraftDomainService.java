@@ -1,5 +1,6 @@
 package org.ezcode.codetest.domain.draft.service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.ezcode.codetest.domain.draft.exception.DraftException;
@@ -29,7 +30,7 @@ public class DraftDomainService {
 			Draft draft = existingDraftOpt.get();
 
 			// 명시적 버전 검증: 클라이언트가 보낸 version과 DB의 version이 일치해야 함
-			if (version != null && !draft.getVersion().equals(version)) {
+			if (version != null && !Objects.equals(version, draft.getVersion())) {
 				throw new DraftException(DraftExceptionCode.DRAFT_VERSION_CONFLICT);
 			}
 
