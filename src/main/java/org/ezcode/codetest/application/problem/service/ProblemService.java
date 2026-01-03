@@ -196,13 +196,21 @@ public class ProblemService {
 
 		Problem problem = problemDomainService.getProblem(problemId);
 
-		// 1. S3 업로드
+		// 1. 기존 이미지가 있으면 S3에서 삭제
+		if (!problem.getImageUrl().isEmpty()) {
+			for (String fileUrl : problem.getImageUrl()) {
+				s3Uploader.delete(fileUrl, "problem");
+			}
+			problem.clearImages();
+		}
+
+		// 2. S3 업로드
 		String key = s3Uploader.upload(imageFile, "problem");
 
-		// 2. 문제에 이미지 연결
-		problem.addImage(key); // 또는 setImageUrl(List.of(key))
+		// 3. 문제에 이미지 연결
+		problem.addImage(key);
 
-		// 3. 저장
+		// 4. 저장
 		problemDomainService.saveProblem(problem);
 	}
 

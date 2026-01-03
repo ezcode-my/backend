@@ -53,10 +53,14 @@ public record ProblemDetailResponse(
 	@Schema(description = "문제 이미지 URL", example = "https://bucket.s3.ap-northeast-2.amazonaws.com/problem/example.jpg")
 	String imageUrl,
 
+	@Schema(description = "문제 이미지 파일명", example = "example.jpg")
+	String imageName,
+
 	List<TestcaseResponse> testcases
 ) {
 
 	public static ProblemDetailResponse from(Problem problem, List<Category> categories) {
+		String imageUrl = problem.getImageUrl().isEmpty() ? null : problem.getImageUrl().get(0);
 
 		return ProblemDetailResponse.builder()
 			.id(problem.getId())
@@ -71,8 +75,17 @@ public record ProblemDetailResponse(
 			.reference(problem.getReference())
 			.createdAt(problem.getCreatedAt())
 			.modifiedAt(problem.getModifiedAt())
-			.imageUrl(problem.getImageUrl().isEmpty() ? null : problem.getImageUrl().get(0))
+			.imageUrl(imageUrl)
+			.imageName(extractFileName(imageUrl))
 			.testcases(problem.top2Testcases().stream().map(TestcaseResponse::from).toList())
 			.build();
+	}
+
+	private static String extractFileName(String url) {
+		if (url == null || url.isBlank()) {
+			return null;
+		}
+		int lastSlashIndex = url.lastIndexOf('/');
+		return lastSlashIndex >= 0 ? url.substring(lastSlashIndex + 1) : url;
 	}
 }
