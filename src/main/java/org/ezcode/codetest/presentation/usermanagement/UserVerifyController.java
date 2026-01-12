@@ -10,6 +10,7 @@ import org.ezcode.codetest.application.usermanagement.user.dto.response.ChangeUs
 import org.ezcode.codetest.application.usermanagement.user.dto.response.VerifyFindPasswordResponse;
 import org.ezcode.codetest.domain.user.model.entity.AuthUser;
 import org.ezcode.codetest.domain.user.exception.UserException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,6 +41,9 @@ import java.nio.charset.StandardCharsets;
 public class UserVerifyController {
     private final AuthService authService;
 
+    @Value("${app.redirect.verify.url}")
+    String verifyUrl;
+
     @Operation(summary = "이메일 인증 코드 전송", description = "현재 로그인된 회원의 이메일로 인증 코드를 전송합니다.")
     @PostMapping("/email/send")
     public ResponseEntity<SendEmailResponse> sendMailCode(
@@ -59,25 +63,25 @@ public class UserVerifyController {
     ) throws IOException {
         try {
             authService.verifyEmailCode(email, key);
-            
+
             // 성공 시 프론트엔드로 리디렉션
             String redirectUrl = UriComponentsBuilder
-                .fromUriString("https://ezcode.my/email-verify-success")
+                .fromUriString(verifyUrl)
                 .queryParam("status", "success")
                 .build()
                 .toUriString();
-            
+
             response.sendRedirect(redirectUrl);
         } catch (UserException e) {
             // 실패 시 프론트엔드로 리디렉션 (에러 메시지 포함)
             String errorMessage = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
             String redirectUrl = UriComponentsBuilder
-                .fromUriString("https://ezcode.my/email-verify-failure")
+                .fromUriString(verifyUrl)
                 .queryParam("status", "failure")
                 .queryParam("message", errorMessage)
                 .build()
                 .toUriString();
-            
+
             response.sendRedirect(redirectUrl);
         }
     }
