@@ -47,7 +47,7 @@ public class OAuth2Controller {
 
         String target = UriComponentsBuilder.newInstance()
             .scheme("https")
-            .host("api.ezcode.my")
+            .host("ezcode.my")
             .path("/oauth2/authorization/" + provider)
             .build()
             .toUriString();
